@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "../../components/ui/header/header";
 import { ClerkProvider } from '@clerk/nextjs'
 import PageContainer from "../../components/ui/containers/page-container";
+import Providers from "../../components/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,22 +28,24 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body
-          style={{
-            backgroundImage: 'url(/lawn3.jpg)',
-            backgroundSize: 'cover',
-            backgroundAttachment: 'fixed',
-            backgroundRepeat: 'no-repeat',
-          }}
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <Header />
-          <PageContainer>
-            {children}
-          </PageContainer>
-        </body>
-      </html >
+      <Providers>
+        <html lang="en">
+          <body
+            style={{
+              backgroundImage: 'url(/lawn3.jpg)',
+              backgroundSize: 'cover',
+              backgroundAttachment: 'fixed',
+              backgroundRepeat: 'no-repeat',
+            }}
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <Header />
+            <PageContainer>
+              {children}
+            </PageContainer>
+          </body>
+        </html >
+      </Providers>
     </ClerkProvider>
   );
 }

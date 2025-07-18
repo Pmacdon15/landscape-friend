@@ -1,8 +1,10 @@
+
 import { Suspense } from "react";
 import { FetchAllClients } from "../../../DAL/dal";
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { Client } from "../../../types/types";
+import { LoadScript, StreetViewPanorama } from '@react-google-maps/api';
 
 export default async function ClientListAll() {
     const clients: Client[] = await FetchAllClients();
@@ -17,7 +19,7 @@ export default async function ClientListAll() {
                             <p>Address: {client.address}</p>
                             <p>Maintenance Week{client.maintenanceweek}</p>
                             <p>Amount owing: ${client.amountowing} </p>
-                            <MapComponent address={client.address} />
+                            <MapComponent address={client.address} />                           
                         </li>
                     </ContentContainer>
                 ))}
