@@ -4,4 +4,5 @@ export interface Client {
     emailaddress: string;
     address: string;
     amountowing: string;
+    maintenanceweek:number;
 }
