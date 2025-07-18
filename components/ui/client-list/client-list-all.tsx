@@ -1,4 +1,5 @@
 import ContentContainer from "../containers/content-container";
+import MapComponent from "../map-component/map-component";
 
 const clients = [
     {
@@ -40,15 +41,16 @@ const clients = [
 
 export default function ClientListAll() {
     return (
-        <ContentContainer>            
+        <ContentContainer>
             <ul className="flex flex-col gap-4 p-4 rounded-sm">
                 {clients.map(client => (
-                    <li 
-                    className="border p-4 rounded-sm"
-                    key={client.id}>
+                    <li
+                        className="border p-4 rounded-sm"
+                        key={client.id}>
                         <p>Name: {client.fullName}</p>
                         <p>Email: {client.emailAddress}</p>
                         <p>Address: {client.address}</p>
+                        <MapComponent />
                     </li>
                 ))}
             </ul>
