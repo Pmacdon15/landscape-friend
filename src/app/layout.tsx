@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "../../components/ui/header/header";
+import Header from "../components/ui/header/header";
 import { ClerkProvider } from '@clerk/nextjs'
-import PageContainer from "../../components/ui/containers/page-container";
-import Providers from "../../components/Providers";
+import PageContainer from "../components/ui/containers/page-container";
+import Providers from "../components/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -1,6 +1,6 @@
 
 import { Suspense } from "react";
-import { FetchAllClients } from "../../../DAL/dal";
+import { FetchAllClients } from "../../../../DAL/dal";
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { Client } from "../../../types/types";
