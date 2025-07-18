@@ -17,7 +17,7 @@ export default async function ClientListAll() {
                             <p>Name: {client.fullname}</p>
                             <p>Email: {client.emailaddress}</p>
                             <p>Address: {client.address}</p>
-                            <p>Maintenance Week{client.maintenanceweek}</p>
+                            <p>Maintenance Week {client.maintenanceweek}</p>
                             <p>Amount owing: ${client.amountowing} </p>
                             <MapComponent address={client.address} />                           
                         </li>
