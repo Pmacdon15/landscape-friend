@@ -1,29 +1,29 @@
 
-import { Suspense } from "react";
-import { FetchAllClients } from "../../../../DAL/dal";
+import { FetchAllClients } from "../../../DAL/dal";
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { Client } from "../../../types/types";
-import { LoadScript, StreetViewPanorama } from '@react-google-maps/api';
 
 export default async function ClientListAll() {
     const clients: Client[] = await FetchAllClients();
+
+    if (!clients) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
+    if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
+    
     return (
-        <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
-            <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
-                {clients.map(client => (
-                    <ContentContainer key={client.id}>
-                        <li className="border p-4 rounded-sm">
-                            <p>Name: {client.fullname}</p>
-                            <p>Email: {client.emailaddress}</p>
-                            <p>Address: {client.address}</p>
-                            <p>Maintenance Week {client.maintenanceweek}</p>
-                            <p>Amount owing: ${client.amountowing} </p>
-                            <MapComponent address={client.address} />                           
-                        </li>
-                    </ContentContainer>
-                ))}
-            </ul >
-        </Suspense >
+        <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
+            {clients.map(client => (
+                <ContentContainer key={client.id}>
+                    <li className="border p-4 rounded-sm">
+                        <p>Name: {client.fullname}</p>
+                        <p>Email: {client.emailaddress}</p>
+                        <p>Address: {client.address}</p>
+                        <p>Maintenance Week {client.maintenanceweek}</p>
+                        <p>Amount owing: ${client.amountowing} </p>
+                        <MapComponent address={client.address} />
+                    </li>
+                </ContentContainer>
+            ))}
+        </ul >
     );
 }
