@@ -20,7 +20,6 @@ export const metadata: Metadata = {
   description: "Track and Invoice your lawn clients easily",
 };
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,9 +31,11 @@ export default function RootLayout({
         <body
           style={{
             backgroundImage: 'url(/lawn3.jpg)',
-
+            backgroundSize: 'cover',
+            backgroundAttachment: 'fixed',
+            backgroundRepeat: 'no-repeat',
           }}
-          className={`${geistSans.variable} ${geistMono.variable} antialiased `}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <Header />
           <PageContainer>
