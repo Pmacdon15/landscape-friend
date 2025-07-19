@@ -54,4 +54,3 @@ VALUES (
         '520 King St W, Toronto, ON M5V 1K4'
     );
 
-select * FROM clients;
