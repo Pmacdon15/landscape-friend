@@ -33,7 +33,7 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): 
 
 export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload): Promise<boolean> {
     const sql = neon(process.env.DATABASE_URL!); // Use ! for non-null assertion if you're sure it's defined
-    const companyName = sessionClaims.org_name;
+    const companyName = sessionClaims.orgName;
     const userName = sessionClaims.name;    
 
     const emails = await sql`
@@ -41,7 +41,7 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
     ` as Email[]; // No quotes around ${sessionClaims.org_id}
     
     try {
-        await sendEmail(String(companyName || userName || "Your LandScaper"), emails, data);
+        await sendEmail(String(companyName || userName || "Your-LandScaper"), emails, data);
         return true;
     } catch (error) {
         console.error(error);
