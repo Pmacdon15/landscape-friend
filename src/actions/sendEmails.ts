@@ -4,16 +4,14 @@ import { Email } from '@/types/types';
 import { Resend } from 'resend';
 import z from 'zod';
 
-export async function sendEmail(companyName: string, clientsEmails: Email[], data: z.infer<typeof schemaSendNewsLetter>) {
+export async function sendEmail(companyName: string, clientsEmails: string[], data: z.infer<typeof schemaSendNewsLetter>) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     try {
-        const emailAddresses = clientsEmails.map(client => client.email_address);
-
         resend.emails.send({
             from: `${companyName}@lawn-buddy.patmac.ca`,
-            to: emailAddresses,
+            to: clientsEmails,
             subject: data.title,
             html: data.message
         });
