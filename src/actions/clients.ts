@@ -45,7 +45,7 @@ export async function deleteClient(clientId: number) {
 }
 
 export async function sendNewsLetter(formData: FormData) {
-    const { isAdmin, sessionClaims } = await isOrgAdmin();
+    const { isAdmin, sessionClaims, userId } = await isOrgAdmin();
 
     if (!isAdmin) throw new Error("Not Admin");
 
@@ -57,7 +57,7 @@ export async function sendNewsLetter(formData: FormData) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await sendNewsLetterDb(validatedFields.data, sessionClaims)
+        const result = await sendNewsLetterDb(validatedFields.data, sessionClaims, userId)
         if (!result) throw new Error('Failed to Send News Letter');
         return result;
     } catch (e: unknown) {
