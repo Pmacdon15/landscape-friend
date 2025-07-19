@@ -1,9 +1,7 @@
 'use server'
-import { addClientDB, deleteClientDB } from "@/lib/db";
+import { addClientDB, deleteClientDB, sendNewsLetterDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/functions";
-import { schemaAddClient, schemaDeleteClient } from "@/lib/zod/schemas";
-// import { auth } from "@clerk/nextjs/server";
-// import { redirect } from "next/navigation";
+import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -28,7 +26,7 @@ export async function addClient(formData: FormData) {
 
 export async function deleteClient(clientId: number) {
     await isOrgAdmin()
-    
+
     const validatedFields = schemaDeleteClient.safeParse({
         client_id: clientId
     });
@@ -45,5 +43,25 @@ export async function deleteClient(clientId: number) {
     }
 }
 
+export async function sendNewsLetter(formData: FormData) {
+    const { orgId, userId , isAdmin} = await isOrgAdmin();
 
+    if(!isAdmin) throw new Error("Not Admin");
+
+    const validatedFields = schemaSendNewsLetter.safeParse({
+        title: formData.get("title"),
+        message: formData.get("message"),
+    });
+
+    if (!validatedFields.success) throw new Error("Invalid form data");
+
+    try {
+        const result = await sendNewsLetterDb(validatedFields.data, orgId || userId)
+        if (!result) throw new Error('Failed to add to inventory');
+        return result;
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        throw new Error(errorMessage);
+    }
+}
 
