@@ -2,11 +2,13 @@ import AddClientFormClientComponent from "@/components/ui/client-list/add-client
 import { AddClientFormServerComponent } from "@/components/ui/client-list/add-client-form-server-component";
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import ContentContainer from "@/components/ui/containers/content-container";
+import { FetchAllClients } from "@/lib/DAL/dal";
 import { isOrgAdmin } from "@/lib/functions";
 import { Suspense } from "react";
 
 export default async function page() {
     const { isAdmin } = await isOrgAdmin()
+    const clientsPromise = FetchAllClients();
     return (
         <>
             <ContentContainer>
@@ -18,7 +20,7 @@ export default async function page() {
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
-                <ClientListAll />
+                <ClientListAll clientsPromise={clientsPromise} />
             </Suspense>
         </>
     );
