@@ -3,8 +3,8 @@ import { useSendNewsLetter } from "@/mutations/mutations";
 import { Button } from "../button";
 
 export default function SendNewsLetterButton() {
-    const { mutate } = useSendNewsLetter()
+    const { mutate, isPending } = useSendNewsLetter()
     return (
-        <Button formAction={mutate} variant={"outline"}>Send</Button>
+        <Button formAction={mutate} disabled={isPending} variant={"outline"}>Send</Button>
     );
 }
