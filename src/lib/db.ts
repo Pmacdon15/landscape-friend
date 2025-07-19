@@ -45,7 +45,7 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
     console.log("Emails:", emailList)
 
     try {
-        await sendEmail(senderName, emailList, data);
+        sendEmail(senderName, emailList, data);
         return true;
     } catch (error) {
         console.error(error);
