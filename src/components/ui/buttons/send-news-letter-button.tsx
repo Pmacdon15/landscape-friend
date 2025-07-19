@@ -1,3 +1,4 @@
+'use client'
 import { useSendNewsLetter } from "@/mutations/mutations";
 import { Button } from "../button";
 

@@ -44,9 +44,9 @@ export async function deleteClient(clientId: number) {
 }
 
 export async function sendNewsLetter(formData: FormData) {
-    const { orgId, userId , isAdmin} = await isOrgAdmin();
+    const { isAdmin, sessionClaims } = await isOrgAdmin();
 
-    if(!isAdmin) throw new Error("Not Admin");
+    if (!isAdmin) throw new Error("Not Admin");
 
     const validatedFields = schemaSendNewsLetter.safeParse({
         title: formData.get("title"),
@@ -56,7 +56,7 @@ export async function sendNewsLetter(formData: FormData) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await sendNewsLetterDb(validatedFields.data, orgId || userId)
+        const result = await sendNewsLetterDb(validatedFields.data, sessionClaims)
         if (!result) throw new Error('Failed to add to inventory');
         return result;
     } catch (e: unknown) {

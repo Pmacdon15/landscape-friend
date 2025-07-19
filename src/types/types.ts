@@ -10,3 +10,4 @@ export interface Client {
 export interface Email {
     email_address: string;
 }
+

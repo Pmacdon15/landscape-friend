@@ -3,8 +3,8 @@ import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter } from "./zod
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import revalidatePathAction from "@/actions/revalidatePath";
-import { auth } from "@clerk/nextjs/server";
 import { sendEmail } from "@/actions/sendEmails";
+import { JwtPayload } from "@clerk/types";
 
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<Client[]> {
     const sql = neon(`${process.env.DATABASE_URL}`);
@@ -30,15 +30,20 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): 
     return result;
 }
 
-export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, organization_id: string): Promise<boolean> {
+export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload): Promise<boolean> {
     const sql = neon(`${process.env.DATABASE_URL}`);
-    const { sessionClaims } = await auth.protect()
-    const companyName = sessionClaims.orgName
-    const userName = sessionClaims.userFullName
+    const companyName = sessionClaims.org_name
+    const userName = sessionClaims.name
 
-    const result = await (sql`
-        SELECT email_address FROM clients WHERE organization_id
+    const emails = await (sql`
+        SELECT email_address FROM clients WHERE organization_id = ${sessionClaims.org_id}
     `) as Email[];
 
-    return sendEmail((companyName as string ?? userName as string ?? "Your LandScaper"), result, data)
+    try {
+        await sendEmail(String(companyName || userName || "Your LandScaper"), emails, data);
+        return true;
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
 }

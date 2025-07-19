@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import SendNewsLetterButton from "@/components/ui/buttons/send-news-letter-button";
 import ContentContainer from "@/components/ui/containers/content-container";
 import { InputField } from "@/components/ui/inputs/input";

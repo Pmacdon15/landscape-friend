@@ -3,8 +3,6 @@ import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { Client } from "../../../types/types";
 import DeleteClientButton from "../buttons/delete-client-button";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import { isOrgAdmin } from "@/lib/functions";
 
 export default async function ClientListAll() {
