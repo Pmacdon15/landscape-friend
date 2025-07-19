@@ -6,10 +6,10 @@ import z from 'zod';
 
 export async function sendEmail(companyName: string, clientsEmails: Email[], data: z.infer<typeof schemaSendNewsLetter>) {
 
-    const resend = new Resend('re_PA1Wyy7i_CGvZWXmhysTKZfVJHraZNyXb');
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     try {
-        // const emailAddresses = clientsEmails.map(client => client.email_address);
+        const emailAddresses = clientsEmails.map(client => client.email_address);
 
         resend.emails.send({
             from: `${companyName}@lawn-buddy.patmac.ca`,
