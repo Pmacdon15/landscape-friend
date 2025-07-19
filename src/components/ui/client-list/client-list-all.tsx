@@ -3,8 +3,13 @@ import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { Client } from "../../../types/types";
 import DeleteClientButton from "../buttons/delete-client-button";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import { isOrgAdmin } from "@/lib/functions";
 
 export default async function ClientListAll() {
+    
+    await isOrgAdmin()
     const clients: Client[] = await FetchAllClients();
 
     if (!clients) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
@@ -16,7 +21,7 @@ export default async function ClientListAll() {
                 {clients.map(client => (
                     <ContentContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative">
-                            <div className="absolute top-4 right-4">
+                            <div className="absolute top-1 right-1">
                                 <DeleteClientButton clientId={client.id} />
                             </div>
                             <p>Name: {client.full_name}</p>

@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
+import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import Image from 'next/image'
 
 export default function Header() {
@@ -21,6 +21,7 @@ export default function Header() {
                     <div className='right-1 absolute'>
                         <SignedIn>
                             <UserButton />
+                            <OrganizationSwitcher />
                         </SignedIn>
                     </div>
                 </div>

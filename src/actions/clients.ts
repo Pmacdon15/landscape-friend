@@ -1,11 +1,12 @@
 'use server'
 import { addClientDB, deleteClientDB } from "@/lib/db";
+import { isOrgAdmin } from "@/lib/functions";
 import { schemaAddClient, schemaDeleteClient } from "@/lib/zod/schemas";
-
 import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export async function addClient(formData: FormData) {
-    const { orgId, userId } = await auth.protect()
+    const { orgId, userId } = await isOrgAdmin();
 
     const validatedFields = schemaAddClient.safeParse({
         full_name: formData.get("full_name"),
@@ -26,10 +27,8 @@ export async function addClient(formData: FormData) {
 }
 
 export async function deleteClient(clientId: number) {
-    const { orgId, userId, sessionClaims } = await auth.protect()
-    let invalidPermissions = false;
-    // if(orgId&& sessionClaims.org_role !== "org")
-    console.log("session claims: ", sessionClaims)
+    await isOrgAdmin()
+    
     const validatedFields = schemaDeleteClient.safeParse({
         client_id: clientId
     });
