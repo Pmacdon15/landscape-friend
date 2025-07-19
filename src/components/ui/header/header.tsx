@@ -4,7 +4,7 @@ import Image from 'next/image'
 export default function Header() {
     return (
         <>
-            <div className="flex flex-col justify-start items-center bg-mainColor border p-4">
+            <div className="flex flex-col justify-start items-center bg-background border p-4">
                 <div className="flex justify-start items-center w-full relative">
                     <div
                         style={{
@@ -15,7 +15,7 @@ export default function Header() {
                     >
                         <Image src='/lawn-mower.png' height={100} width={100} alt={"logo"} />
                     </div>
-                    <div className="text-2xl md:text-4xl p-2 md:p-6 md:px-16 bg-background/30 rounded-sm absolute left-1/2 transform -translate-x-1/2 shadow-lg">
+                    <div className="text-2xl md:text-4xl p-2 md:p-6 md:px-16 bg-white/30 rounded-sm absolute left-1/2 transform -translate-x-1/2 shadow-lg">
                         <span>Lawn Buddy</span>
                     </div>
                     <div className='right-1 absolute'>

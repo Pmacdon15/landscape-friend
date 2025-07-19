@@ -1,31 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #088c0f;
+  --background: #138b10;
   --foreground: #061a05;
-  --border: #ffffff; /* Define the border color for light theme */
-  --mainColor: #138b10; /* Define the mainColor variable */
+
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-mainColor: var(--mainColor);
-  --color-borderColor: var(--borderColor);
+  /* --color-mainColor: var(--mainColor); */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #fdfdfd;
+    --background: #138b10;
     --foreground: #061a05;
-    --mainColor: #138b10;
-    --borderColor: #cccccc; /* Define the border color for dark theme */
+    /* --mainColor: #138b10; */
+    /* Define the border color for dark theme */
   }
 }
 
-body {  
+body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;

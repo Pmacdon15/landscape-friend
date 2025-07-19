@@ -1,8 +1,8 @@
 export interface Client {
     id: number;
-    fullname: string;
-    emailaddress: string;
+    full_name: string;
+    email_address: string;
     address: string;
-    amountowing: string;
-    maintenanceweek:number;
+    amount_owing: number;
+    maintenance_week:number;
 }
