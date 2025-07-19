@@ -2,6 +2,7 @@ import { FetchAllClients } from "../../../lib/DAL/dal";
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { Client } from "../../../types/types";
+import DeleteClientButton from "../buttons/delete-client-button";
 
 export default async function ClientListAll() {
     const clients: Client[] = await FetchAllClients();
@@ -14,7 +15,10 @@ export default async function ClientListAll() {
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 {clients.map(client => (
                     <ContentContainer key={client.id}>
-                        <li className="border p-4 rounded-sm">
+                        <li className="border p-4 rounded-sm relative">
+                            <div className="absolute top-4 right-4">
+                                <DeleteClientButton clientId={client.id} />
+                            </div>
                             <p>Name: {client.full_name}</p>
                             <p>Email: {client.email_address}</p>
                             <p>Address: {client.address}</p>
@@ -28,4 +32,3 @@ export default async function ClientListAll() {
         </>
     );
 }
-

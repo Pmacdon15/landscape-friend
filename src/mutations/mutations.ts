@@ -1,15 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
-import revalidatePathAction from '@/actions/revalidatePath'
-import { addClient } from "@/actions/clients";
+import { addClient, deleteClient } from "@/actions/clients";
 
 export const useAddClient = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
             return addClient(formData);
         },
-        // onSuccess: () => {
-        //     revalidatePathAction("/client-list")
-        // },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+};
+
+
+export const useDeleteClient = () => {
+    return useMutation({
+        mutationFn: (clientId: number) => {
+            return deleteClient(clientId);
+        },
         onError: (error) => {
             console.error('Mutation error:', error);
         }
