@@ -13,7 +13,7 @@ export async function sendEmail(companyName: string, clientsEmails: Email[], dat
 
         resend.emails.send({
             from: `${companyName}@lawn-buddy.patmac.ca`,
-            to: "pmacdonald15@gmail.com",
+            to: emailAddresses,
             subject: data.title,
             html: data.message
         });
