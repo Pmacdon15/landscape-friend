@@ -35,9 +35,8 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
     const companyName = sessionClaims.org_name
     const userName = sessionClaims.name
 
-    console.log(sessionClaims)
     const emails = await (sql`
-        SELECT email_address FROM clients WHERE organization_id = '${sessionClaims.org_id}'
+    SELECT email_address FROM clients WHERE organization_id = '${sessionClaims.org_id}'
     `) as Email[];
 
     try {

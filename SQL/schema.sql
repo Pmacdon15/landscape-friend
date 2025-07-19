@@ -54,3 +54,8 @@ VALUES (
         '520 King St W, Toronto, ON M5V 1K4'
     );
 
+select * FROM clients;
+
+
+
+SELECT email_address FROM clients WHERE organization_id = 'org_304Zg6ArtcRA3gtiqISN35la8ut';
