@@ -1,6 +1,6 @@
 'use server'
 import { schemaSendNewsLetter } from '@/lib/zod/schemas';
-import { Email } from '@/types/types';
+
 import { Resend } from 'resend';
 import z from 'zod';
 

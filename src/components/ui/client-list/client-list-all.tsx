@@ -5,10 +5,11 @@ import { Client } from "../../../types/types";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { isOrgAdmin } from "@/lib/functions";
 
-export default async function ClientListAll() {
+export default async function ClientListAll({ clientsPromise }: { clientsPromise: Promise<Client[]> }) {
+
 
     const { isAdmin } = await isOrgAdmin()
-    const clients: Client[] = await FetchAllClients();
+    const clients = await clientsPromise;
 
     if (!clients) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
     if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
