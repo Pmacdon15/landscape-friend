@@ -16,7 +16,7 @@ export async function addClient(formData: FormData) {
 
     try {
         const result = await addClientDB(validatedFields.data, orgId || userId)
-        if (!result) throw new Error('Failed to add to inventory');
+        if (!result) throw new Error('Failed to add Client');
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
@@ -35,7 +35,7 @@ export async function deleteClient(clientId: number) {
 
     try {
         const result = await deleteClientDB(validatedFields.data)
-        if (!result) throw new Error('Failed to add to inventory');
+        if (!result) throw new Error('Delete Client');
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
@@ -54,10 +54,10 @@ export async function sendNewsLetter(formData: FormData) {
     });
 
     if (!validatedFields.success) throw new Error("Invalid form data");
-
+   
     try {
         const result = await sendNewsLetterDb(validatedFields.data, sessionClaims)
-        if (!result) throw new Error('Failed to add to inventory');
+        if (!result) throw new Error('Failed to Send News Letter');
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);

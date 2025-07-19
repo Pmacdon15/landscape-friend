@@ -10,8 +10,8 @@ export async function sendEmail(companyName: string, clientsEmails: Email[], dat
 
     try {
         const emailAddresses = clientsEmails.map(client => client.email_address);
-        console.log("emails:", emailAddresses)
-        resend.emails.send({
+        
+        await resend.emails.send({
             from: `${companyName}@lawn-buddy.patmac.ca`,
             to: emailAddresses,
             subject: data.title,
