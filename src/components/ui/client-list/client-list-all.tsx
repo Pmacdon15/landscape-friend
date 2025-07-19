@@ -8,8 +8,8 @@ import { redirect } from "next/navigation";
 import { isOrgAdmin } from "@/lib/functions";
 
 export default async function ClientListAll() {
-    
-    await isOrgAdmin()
+
+    const { isAdmin } = await isOrgAdmin()
     const clients: Client[] = await FetchAllClients();
 
     if (!clients) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
@@ -21,9 +21,11 @@ export default async function ClientListAll() {
                 {clients.map(client => (
                     <ContentContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative">
-                            <div className="absolute top-1 right-1">
-                                <DeleteClientButton clientId={client.id} />
-                            </div>
+                            {isAdmin &&
+                                <div className="absolute top-1 right-1">
+                                    <DeleteClientButton clientId={client.id} />
+                                </div>
+                            }
                             <p>Name: {client.full_name}</p>
                             <p>Email: {client.email_address}</p>
                             <p>Address: {client.address}</p>

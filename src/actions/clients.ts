@@ -2,8 +2,8 @@
 import { addClientDB, deleteClientDB } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/functions";
 import { schemaAddClient, schemaDeleteClient } from "@/lib/zod/schemas";
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+// import { auth } from "@clerk/nextjs/server";
+// import { redirect } from "next/navigation";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
