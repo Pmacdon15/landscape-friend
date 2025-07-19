@@ -1,6 +1,7 @@
 export interface Client {
     id: number;
     full_name: string;
+    phone_number: number;
     email_address: string;
     address: string;
     amount_owing: number;

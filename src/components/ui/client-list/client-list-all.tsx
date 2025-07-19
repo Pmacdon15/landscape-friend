@@ -25,6 +25,7 @@ export default async function ClientListAll() {
                                 </div>
                             }
                             <p>Name: {client.full_name}</p>
+                            <p>Phone Number: {client.phone_number}</p>
                             <p>Email: {client.email_address}</p>
                             <p>Address: {client.address}</p>
                             <p>Maintenance Week {client.maintenance_week}</p>

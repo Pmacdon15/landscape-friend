@@ -8,6 +8,7 @@ export async function addClient(formData: FormData) {
 
     const validatedFields = schemaAddClient.safeParse({
         full_name: formData.get("full_name"),
+        phone_number: Number(formData.get("phone_number")),
         email_address: formData.get("email_address"),
         address: formData.get("address"),
     });
@@ -54,7 +55,7 @@ export async function sendNewsLetter(formData: FormData) {
     });
 
     if (!validatedFields.success) throw new Error("Invalid form data");
-   
+
     try {
         const result = await sendNewsLetterDb(validatedFields.data, sessionClaims)
         if (!result) throw new Error('Failed to Send News Letter');
