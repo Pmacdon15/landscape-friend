@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS price_per_cut CASCADE;
 DROP TABLE IF EXISTS payments CASCADE;
 
 DROP TABLE IF EXISTS accounts CASCADE;
@@ -27,6 +28,11 @@ CREATE TABLE payments (
     amount FLOAT NOT NULL,
     FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
+
+CREATE TABLE price_per_cut (
+    id SERIAL PRIMARY KEY,
+    amount FLOAT NOT NULL DEFAULT 51.5
+)
 
 -- INSERT INTO
 --     clients (
