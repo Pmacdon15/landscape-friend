@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS payments CASCADE;
+
+DROP TABLE IF EXISTS accounts CASCADE;
+
 DROP TABLE IF EXISTS clients CASCADE;
 
 CREATE TABLE clients (
@@ -7,8 +11,21 @@ CREATE TABLE clients (
     email_address VARCHAR(75) UNIQUE NOT NULL,
     organization_id VARCHAR(75) NOT NULL,
     maintenance_week INT,
-    address VARCHAR(200) NOT NULL,
-    amount_owing FLOAT DEFAULT 0.00
+    address VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE accounts (
+    id SERIAL PRIMARY KEY,
+    client_id INT NOT NULL,
+    current_balance FLOAT NOT NULL DEFAULT 0.0,
+    FOREIGN KEY (client_id) REFERENCES clients (id)
+);
+
+CREATE TABLE payments (
+    id SERIAL PRIMARY KEY,
+    account_id INT NOT NULL,
+    amount FLOAT NOT NULL,
+    FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
 
 -- INSERT INTO

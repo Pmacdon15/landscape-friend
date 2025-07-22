@@ -1,4 +1,4 @@
-import { Client, Email } from "@/types/types";
+import { Account, Client, Email } from "@/types/types";
 import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
@@ -6,13 +6,24 @@ import revalidatePathAction from "@/actions/revalidatePath";
 import { sendEmail } from "@/actions/sendEmails";
 import { JwtPayload } from "@clerk/types";
 
-export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<Client[]> {
+export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await (sql`
-        INSERT INTO clients (full_name, phone_number, email_address, organization_id, address)
-        VALUES (${data.full_name},${data.phone_number} ,${data.email_address}, ${organization_id},  ${data.address})
-        RETURNING *;
-    `) as Client[];
+        WITH new_client AS (
+            INSERT INTO clients (full_name, phone_number, email_address, organization_id, address)
+            VALUES (${data.full_name}, ${data.phone_number}, ${data.email_address}, ${organization_id}, ${data.address})
+            RETURNING *
+        ),
+        new_account AS (
+            INSERT INTO accounts (client_id)
+            SELECT id
+            FROM new_client
+            RETURNING *
+        )
+        SELECT 
+            (SELECT row_to_json(new_client.*)::jsonb AS client FROM new_client),
+            (SELECT row_to_json(new_account.*)::jsonb AS account FROM new_account);
+    `) as { client: Client; account: Account }[];
 
     if (result) revalidatePathAction("/client-list")
     return result;
