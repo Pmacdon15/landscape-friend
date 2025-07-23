@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
             signingSecret: process.env.CLERK_WEBHOOK_SIGNING_SECRET,
         }) as WebhookEvent;
 
+        console.log("Webhook Type: ", evt.type)
         if (evt.type === 'subscriptionItem.active') {
             if (isSubscriptionItem(evt.data)) {
                 const plan = evt.data.plan.slug;
