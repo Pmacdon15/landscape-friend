@@ -1,12 +1,12 @@
-import { clerkClient, WebhookEvent } from '@clerk/nextjs/server';
+import { WebhookEvent } from '@clerk/nextjs/server';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 
 
-function isSubscriptionItem(data: any): data is { plan: { slug: string } } {
-    return 'plan' in data && 'slug' in data.plan;
-}
-type BillingEventType = WebhookEvent['type'] | 'subscriptionItem.active' 
+// function isSubscriptionItem(data: any): data is { plan: { slug: string } } {
+//     return 'plan' in data && 'slug' in data.plan;
+// }
+// type BillingEventType = WebhookEvent['type'] | 'subscriptionItem.active' 
 
 export async function POST(req: NextRequest) {
     try {
