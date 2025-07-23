@@ -22,8 +22,7 @@ export async function POST(req: NextRequest) {
             }
         } else if (evt.type === "user.created") {
             const userId = (evt.data as UserCreatedEvent).id;
-            handleOrganizationCreated(userId);
-            console.log(`User created with ID: ${userId}`);
+            await handleOrganizationCreated(userId);
         } else if (evt.type === "organization.created") {
             const orgId = (evt.data as OrganizationCreatedEvent).id
             await handleOrganizationCreated(orgId);
