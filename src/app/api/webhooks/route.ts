@@ -1,7 +1,7 @@
 import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate } from '@/lib/functions';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
-import { SubscriptionItem, OrganizationCreatedEvent, WebhookEvent, UserCreatedEvent } from '@/types/types'
+import { SubscriptionItem, OrganizationCreatedEvent, WebhookEvent, UserCreatedEvent, UserDeletedEvent } from '@/types/types'
 
 function isSubscriptionItem(data: WebhookEvent['data']): data is SubscriptionItem {
     return 'plan' in data && 'slug' in data.plan;
@@ -26,6 +26,9 @@ export async function POST(req: NextRequest) {
         } else if (evt.type === "organization.created") {
             const orgId = (evt.data as OrganizationCreatedEvent).id
             await handleOrganizationCreated(orgId);
+        } else if (evt.type === "user.deleted") {
+            const orgId = (evt.data as UserDeletedEvent).id
+            await handleOrganizationDeleted(orgId);
         } else if (evt.type === "organization.deleted") {
             const orgId = (evt.data as OrganizationCreatedEvent).id
             await handleOrganizationDeleted(orgId);

@@ -34,6 +34,10 @@ export interface SubscriptionItem {
 export interface UserCreatedEvent {
     id: string;   
 }
+
+export interface UserDeletedEvent {
+    id: string;   
+}
 export interface OrganizationCreatedEvent {
     id: string;
 }
