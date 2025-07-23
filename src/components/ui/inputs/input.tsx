@@ -2,12 +2,15 @@ interface InputFieldProps {
     id: string;
     name: string;
     type: string;
-    placeholder: string;
+    placeholder?: string;
     required?: boolean;
     className?: string;
+    step?: string;
+    defaultValue?: number | string;
+
 }
 
-export function InputField({ id, name, type, placeholder, required = false, className = '' }: InputFieldProps) {
+export function InputField({ id, name, type, placeholder, required = false, className = '', step, defaultValue }: InputFieldProps) {
     return (
         <input
             id={id}
@@ -16,6 +19,8 @@ export function InputField({ id, name, type, placeholder, required = false, clas
             placeholder={placeholder}
             required={required}
             className={`border rounded sm p-2 bg-white ${className}`}
+            step={step || 1}
+            defaultValue={defaultValue}
         />
     );
 }
