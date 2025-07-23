@@ -27,6 +27,7 @@ export async function handleSubscriptionUpdate(orgId: string, plan: string) {
 }
 
 export async function handleOrganizationCreated(orgId: string) {
+    console.log("Org or user Created", orgId)
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`
         INSERT INTO price_per_cut (organization_id)
