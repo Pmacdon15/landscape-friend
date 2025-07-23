@@ -9,23 +9,12 @@ function isSubscriptionItem(data: WebhookEvent['data']): data is SubscriptionIte
 
 export async function POST(req: NextRequest) {
     try {
-        console.log("Webhook Type: ", evt.type)
         const evt = await verifyWebhook(req, {
             signingSecret: process.env.CLERK_WEBHOOK_SIGNING_SECRET,
-        }) as WebhookEvent;
+        }) 
 
-        
-        if (evt.type === 'subscriptionItem.active') {
-            if (isSubscriptionItem(evt.data)) {
-                const plan = evt.data.plan.slug;
-                const orgId = evt.data.payer?.organization_id
-                if (orgId) await handleSubscriptionUpdate(orgId, plan);
-            }
-        } else if (evt.type === "organization.created") {
-            const orgId = (evt.data as OrganizationCreatedEvent).id
-            await handleOrganizationCreated(orgId);
-        }
-
+        console.log("Webhook Type: ", evt.type)
+      
         return new Response('Webhook received', { status: 200 })
     } catch (err) {
         if (err instanceof Error) {
