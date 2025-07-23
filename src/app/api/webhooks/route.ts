@@ -1,4 +1,4 @@
-import { handleOrganizationCreated, handleSubscriptionUpdate } from '@/lib/functions';
+import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate } from '@/lib/functions';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 import { SubscriptionItem, OrganizationCreatedEvent, WebhookEvent } from '@/types/types'
@@ -22,6 +22,9 @@ export async function POST(req: NextRequest) {
         } else if (evt.type === "organization.created") {
             const orgId = (evt.data as OrganizationCreatedEvent).id
             await handleOrganizationCreated(orgId);
+        } else if (evt.type === "organization.deleted") {
+            const orgId = (evt.data as OrganizationCreatedEvent).id
+            await handleOrganizationDeleted(orgId);
         }
 
         return new Response('Webhook received', { status: 200 })

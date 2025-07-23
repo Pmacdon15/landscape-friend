@@ -30,7 +30,14 @@ export async function handleOrganizationCreated(orgId: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`
         INSERT INTO price_per_cut (organization_id)
-        VALUES (${orgId})
-        ON CONFLICT DO NOTHING;
+        VALUES (${orgId})        
+    `;
+}
+
+export async function handleOrganizationDeleted(orgId: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    await sql`
+        DELETE FROM price_per_cut
+        WHERE organization_id = ${orgId}        
     `;
 }
