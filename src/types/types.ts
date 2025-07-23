@@ -21,3 +21,21 @@ export interface Account {
 export interface Price {
     price: number;
 }
+
+export interface SubscriptionItem {
+    plan: {
+        slug: string;
+    };
+    payer?: {
+        organization_id: string;
+    };
+}
+
+export interface OrganizationCreatedEvent {
+    id: string;
+}
+
+export interface WebhookEvent {
+    type: string;
+    data: SubscriptionItem | OrganizationCreatedEvent;
+}

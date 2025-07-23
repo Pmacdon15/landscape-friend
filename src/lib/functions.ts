@@ -33,5 +33,4 @@ export async function handleOrganizationCreated(orgId: string) {
         VALUES (${orgId})
         ON CONFLICT DO NOTHING;
     `;
-
 }
