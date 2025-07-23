@@ -31,6 +31,9 @@ export interface SubscriptionItem {
     };
 }
 
+export interface UserCreatedEvent {
+    id: string;   
+}
 export interface OrganizationCreatedEvent {
     id: string;
 }

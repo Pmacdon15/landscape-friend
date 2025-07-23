@@ -9,10 +9,11 @@ interface Props {
 
 export default async function PricePerCutInput({ pricePerCutPromise }: Props) {
     const pricePerCut = (await pricePerCutPromise)?.price;
+    console.log("Price per cut", pricePerCut)
     return (
         <InputDiv >
             <SettingsLabel text="Price Per Cut" />
-            <InputField id={"price_pre_cut"} name={"price_pre_cut"} type={"number"} step="0.01" defaultValue={pricePerCut} />
+            <InputField id={"price_pre_cut"} name={"price_pre_cut"} type={"number"} step="0.01" defaultValue={pricePerCut || 0.00} />
         </InputDiv>
     );
 }

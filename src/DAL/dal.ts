@@ -20,8 +20,9 @@ export async function FetchPricePerCut(): Promise<Price | null> {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await sql`
         SELECT amount FROM price_per_cut
-        WHERE organization_id = ${orgId} OR organization_id = ${userId}
+        WHERE organization_id = ${orgId || userId} 
         LIMIT 1;
     `;
+    console.log("result", result)
     return result.length > 0 ? { price: result[0].amount } : null;
 }
