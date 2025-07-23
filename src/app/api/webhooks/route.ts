@@ -6,6 +6,7 @@ import { NextRequest } from 'next/server'
 function isSubscriptionItem(data: any): data is { plan: { slug: string } } {
     return 'plan' in data && 'slug' in data.plan;
 }
+type BillingEventType = WebhookEvent['type'] | 'subscriptionItem.active' 
 
 export async function POST(req: NextRequest) {
     try {
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
         //             }
         //         }
         //     }
-
+// 
         // }
 
         return new Response('Webhook received', { status: 200 })
