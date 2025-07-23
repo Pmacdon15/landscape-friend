@@ -32,15 +32,22 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
 export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): Promise<Client[]> {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await (sql`
-        DELETE FROM clients
-        WHERE id = ${data.client_id}
-        RETURNING *;
+        WITH deleted_account AS (
+            DELETE FROM accounts
+            WHERE client_id = ${data.client_id}
+            RETURNING *
+        ),
+        deleted_client AS (
+            DELETE FROM clients
+            WHERE id = ${data.client_id}
+            RETURNING *
+        )
+        SELECT * FROM deleted_client;
     `) as Client[];
 
     if (result) revalidatePathAction("/client-list")
     return result;
 }
-
 
 export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
     const sql = neon(process.env.DATABASE_URL!);

@@ -1,4 +1,4 @@
-import { Client } from "@/types/types";
+import { Client, Price } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 import { neon } from "@neondatabase/serverless";
 
@@ -13,4 +13,15 @@ export async function FetchAllClients(): Promise<Client[]> {
         WHERE c.organization_id = ${orgId || userId};
     `) as Client[];
     return result;
+}
+
+export async function FetchPricePerCut(): Promise<Price | null> {
+    const { orgId, userId } = await auth.protect();
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const result = await sql`
+        SELECT amount FROM price_per_cut
+        WHERE organization_id = ${orgId} OR organization_id = ${userId}
+        LIMIT 1;
+    `;
+    return result.length > 0 ? { price: result[0].amount } : null;
 }

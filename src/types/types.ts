@@ -17,3 +17,7 @@ export interface Account {
     client_id: number;
     current_balance: number;
 }
+
+export interface Price {
+    price: number;
+}

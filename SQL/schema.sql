@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS price_per_cut CASCADE;
+
 DROP TABLE IF EXISTS payments CASCADE;
 
 DROP TABLE IF EXISTS accounts CASCADE;
@@ -31,9 +32,12 @@ CREATE TABLE payments (
 
 CREATE TABLE price_per_cut (
     id SERIAL PRIMARY KEY,
-    amount FLOAT NOT NULL DEFAULT 51.5
-)
+    amount DECIMAL(10, 2) NOT NULL DEFAULT 51.50,
+    organization_id VARCHAR(75) NOT NULL UNIQUE
+);
 
+
+SELECT * from price_per_cut ;
 -- INSERT INTO
 --     clients (
 --         full_name,
