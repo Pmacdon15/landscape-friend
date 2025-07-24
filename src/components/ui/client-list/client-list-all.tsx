@@ -4,7 +4,9 @@ import { Client } from "../../../types/types";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { isOrgAdmin } from "@/lib/functions";
 
-export default async function ClientListAll({ clientsPromise }: { clientsPromise: Promise<Client[]> }) {
+import { PaginationTabs } from "../pagination/pagination-tabs";
+
+export default async function ClientListAll({ clientsPromise, clientListPage }: { clientsPromise: Promise<Client[]>, clientListPage: number }) {
 
     const { isAdmin } = await isOrgAdmin()
     const clients = await clientsPromise;
@@ -17,6 +19,7 @@ export default async function ClientListAll({ clientsPromise }: { clientsPromise
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 {clients.map(client => (
                     <ContentContainer key={client.id}>
+                        <PaginationTabs clientListPage={clientListPage} totalPages={11} />
                         <li className="border p-4 rounded-sm relative">
                             {isAdmin &&
                                 <div className="absolute top-1 right-1">
@@ -31,6 +34,7 @@ export default async function ClientListAll({ clientsPromise }: { clientsPromise
                             <p>Amount owing: ${client.amount_owing} </p>
                             <MapComponent address={client.address} />
                         </li>
+                        <PaginationTabs clientListPage={clientListPage} totalPages={11} />
                     </ContentContainer>
                 ))}
             </ul >
