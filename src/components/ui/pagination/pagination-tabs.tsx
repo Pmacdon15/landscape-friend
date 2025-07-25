@@ -21,13 +21,11 @@ export function PaginationTabs({
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationItem>
-          {clientListPage > 0 && (
-            <PaginationItem>
-              <PaginationPrevious href="client-list" query={{ clientListPage: clientListPage - 1 }} />
-            </PaginationItem>
-          )}
-        </PaginationItem>
+        {clientListPage > 0 && (
+          <PaginationItem>
+            <PaginationPrevious href="client-list" query={{ clientListPage: clientListPage - 1 }} />
+          </PaginationItem>
+        )}
         {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
           <PaginationItem key={page}>
             <PaginationLink href="client-list" isActive={clientListPage === page} query={{ clientListPage: page }}>
