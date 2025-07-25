@@ -3,7 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { neon } from "@neondatabase/serverless";
 
 
-export async function FetchAllClients(): Promise<Client[]> {
+export async function FetchAllClients(clientPageNumber: number): Promise<Client[]> {
+    console.log("client Page Number: ", clientPageNumber)
     const { orgId, userId } = await auth.protect();
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await (sql`

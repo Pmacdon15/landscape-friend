@@ -14,7 +14,7 @@ export default async function page({
     const params = await searchParams;
     const clientListPage = params.clientListPage
     const { isAdmin } = await isOrgAdmin()
-    const clientsPromise = FetchAllClients();
+    const clientsPromise = FetchAllClients(Number(clientListPage) || 0);
     return (
         <>
             <ContentContainer>
@@ -26,7 +26,7 @@ export default async function page({
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
-                <ClientListAll clientsPromise={clientsPromise} clientListPage={Number(clientListPage)} />
+                <ClientListAll clientsPromise={clientsPromise} clientListPage={Number(clientListPage) || 0} />
             </Suspense>
         </>
     );

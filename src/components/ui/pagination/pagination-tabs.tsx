@@ -22,7 +22,6 @@ export function PaginationTabs({
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-
           {clientListPage > 0 && (
             <PaginationItem>
               <PaginationPrevious href="client-list" query={{ clientListPage: clientListPage - 1 }} />
