@@ -1,5 +1,7 @@
 'use client' // Error boundaries must be Client Components
 
+import { Button } from '@/components/ui/button'
+import ContentContainer from '@/components/ui/containers/content-container'
 import { useEffect } from 'react'
 
 export default function Error({
@@ -15,16 +17,16 @@ export default function Error({
     }, [error])
 
     return (
-        <div>
+        <ContentContainer>
             <h2>Something went wrong!</h2>
-            <button
+            <Button variant={"outline"}
                 onClick={
                     // Attempt to recover by trying to re-render the segment
                     () => reset()
                 }
             >
                 Try again
-            </button>
-        </div>
+            </Button>
+        </ContentContainer>
     )
 }
