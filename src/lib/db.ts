@@ -29,7 +29,7 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
     return result;
 }
 
-export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
+export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {    
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await sql`
         UPDATE clients
@@ -40,6 +40,7 @@ export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpda
     if (result) revalidatePathAction("/client-list")
     return result;
 }
+
 //TODO: confirm org id on delete so auth confirms users is admin and part of the same org
 export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): Promise<Client[]> {
     const sql = neon(`${process.env.DATABASE_URL}`);
