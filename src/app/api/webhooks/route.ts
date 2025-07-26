@@ -1,4 +1,4 @@
-import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate } from '@/lib/functions';
+import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate } from '@/lib/webhooks';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 import { SubscriptionItem, OrganizationCreatedEvent, WebhookEvent, UserCreatedEvent, UserDeletedEvent } from '@/types/types'

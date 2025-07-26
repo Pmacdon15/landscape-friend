@@ -1,6 +1,6 @@
 'use server'
 import { addClientDB, deleteClientDB, sendNewsLetterDb } from "@/lib/db";
-import { isOrgAdmin } from "@/lib/functions";
+import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {

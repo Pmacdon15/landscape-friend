@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS price_per_cut CASCADE;
+DROP TABLE IF EXISTS cutting_schedule CASCADE;
 
 DROP TABLE IF EXISTS payments CASCADE;
 
@@ -12,7 +12,7 @@ CREATE TABLE clients (
     phone_number VARCHAR(50) NOT NULL, -- Changed from BIGINT to VARCHAR
     email_address VARCHAR(75) UNIQUE NOT NULL,
     organization_id VARCHAR(75) NOT NULL,
-    maintenance_week INT,
+    price_per_cut FLOAT NOT NULL DEFAULT 51.5,
     address VARCHAR(200) NOT NULL
 );
 
@@ -30,14 +30,17 @@ CREATE TABLE payments (
     FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
 
-CREATE TABLE price_per_cut (
-    id SERIAL PRIMARY KEY,
-    amount DECIMAL(10, 2) NOT NULL DEFAULT 51.50,
-    organization_id VARCHAR(75) NOT NULL UNIQUE
-);
 
--- SELECT *
--- FROM clients
+CREATE TABLE cutting_schedule (
+    id SERIAL PRIMARY KEY,
+    cutting_week INT NOT NULL,
+    cutting_day VARCHAR(10) NOT NULL,
+    client_id INT NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients (id)
+)
+
+SELECT *
+FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
@@ -48,7 +51,7 @@ INSERT INTO
         organization_id,
         address,
         phone_number,
-        amount_owing
+        price_per_cut
     )
 VALUES (
         'Emily Chen',

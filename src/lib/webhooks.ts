@@ -41,3 +41,5 @@ export async function handleOrganizationDeleted(orgId: string) {
         WHERE organization_id = ${orgId}        
     `;
 }
+
+
