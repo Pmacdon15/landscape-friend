@@ -7,7 +7,8 @@ import { CuttingWeekDropDownContainer } from "./cutting-week";
 import { Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 
-export default async function ClientListAll({ clientsPromise, clientListPage }: { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
+export default async function ClientListAll({ clientsPromise, clientListPage }:
+  { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
 
   const { isAdmin } = await isOrgAdmin()
   const result = await clientsPromise;
@@ -16,8 +17,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }: 
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
-
-  console.log("Clients: ", clients)
+  
   return (
     <>
       <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
@@ -33,9 +33,9 @@ export default async function ClientListAll({ clientsPromise, clientListPage }: 
               <p>Phone Number: {client.phone_number}</p>
               <p>Email: {client.email_address}</p>
               <p>Address: {client.address}</p>
-              <PricePerCutUpdateInput client={client} />
+              <PricePerCutUpdateInput isAdmin={isAdmin} client={client} />
               <p>Amount owing: ${client.amount_owing} </p>
-              <CuttingWeekDropDownContainer client={client} />
+              <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <MapComponent address={client.address} />
             </li>
           </ContentContainer>
