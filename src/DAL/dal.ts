@@ -1,6 +1,6 @@
 import { fetchClientsWithSchedules } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
-import { Client, ClientResult, PaginatedClients, Price } from "@/types/types";
+import { ClientResult, PaginatedClients } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
 export async function FetchAllClients(clientPageNumber: number): Promise<PaginatedClients | null> {
@@ -12,7 +12,7 @@ export async function FetchAllClients(clientPageNumber: number): Promise<Paginat
 
     if (!clientsResult) return null;
 
-   const { clients, totalPages } = processClientsResult(clientsResult as ClientResult[]);
+    const { clients, totalPages } = processClientsResult(clientsResult as ClientResult[]);
 
     return { clients, totalPages };
 }

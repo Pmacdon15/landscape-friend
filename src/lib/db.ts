@@ -1,5 +1,5 @@
 import { Account, Client, Email } from "@/types/types";
-import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter } from "./zod/schemas";
+import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import revalidatePathAction from "@/actions/revalidatePath";
@@ -29,6 +29,18 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
     return result;
 }
 
+export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const result = await sql`
+        UPDATE clients
+        SET price_per_cut = ${data.pricePerCut}
+        WHERE id = ${data.clientId} AND organization_id = ${orgId}
+    `
+
+    if (result) revalidatePathAction("/client-list")
+    return result;
+}
+//TODO: confirm org id on delete so auth confirms users is admin and part of the same org
 export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): Promise<Client[]> {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await (sql`
@@ -73,8 +85,8 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
 
 
 export async function fetchClientsWithSchedules(orgId: string, pageSize: number, offset: number) {
-    const sql = neon(`${process.env.DATABASE_URL}`);    
-        const result = await sql`
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const result = await sql`
             WITH clients_with_balance AS (
                 SELECT 
                 c.*,
@@ -106,5 +118,5 @@ export async function fetchClientsWithSchedules(orgId: string, pageSize: number,
             ORDER BY cws.id
             LIMIT ${pageSize} OFFSET ${offset};
         `;
-        return result;   
+    return result;
 }

@@ -1,7 +1,7 @@
 'use server'
-import { addClientDB, deleteClientDB, sendNewsLetterDb } from "@/lib/db";
+import { addClientDB, updatedClientPricePerCutDb, deleteClientDB, sendNewsLetterDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaSendNewsLetter } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -18,6 +18,27 @@ export async function addClient(formData: FormData) {
     try {
         const result = await addClientDB(validatedFields.data, orgId || userId)
         if (!result) throw new Error('Failed to add Client');
+        return result;
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        throw new Error(errorMessage);
+    }
+}
+
+export async function updateClientPricePerCut(clientId: number, pricePerCut: number) {
+    const { isAdmin, orgId, userId } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const validatedFields = schemaUpdatePricePerCut.safeParse({
+        clientId: clientId,
+        pricePerCut: pricePerCut
+    });
+
+    if (!validatedFields.success) throw new Error("Invalid input data");
+
+    try {
+        const result = await updatedClientPricePerCutDb(validatedFields.data, orgId || userId)
+        if (!result) throw new Error('Failed to update Client price per cut');
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
@@ -66,3 +87,24 @@ export async function sendNewsLetter(formData: FormData) {
     }
 }
 
+// export async function updateClientPricePerCut(clientId: number, cuttingWeek: number, updatedDay: string) {
+//     const { isAdmin } = await isOrgAdmin();
+//     if (!isAdmin) throw new Error("Not Admin");
+
+//     const validatedFields = schemaUpdatePricePerCut.safeParse({
+//         clientId: clientId,
+//         cuttingWeek: cuttingWeek,
+//         updatedDay: updatedDay
+//     });
+
+//     if (!validatedFields.success) throw new Error("Invalid input data");
+
+//     try {
+//         const result = await updatedClientPricePerCutDb(validatedFields.data)
+//         if (!result) throw new Error('Failed to update Client price per cut');
+//         return result;
+//     } catch (e: unknown) {
+//         const errorMessage = e instanceof Error ? e.message : String(e);
+//         throw new Error(errorMessage);
+//     }
+// }

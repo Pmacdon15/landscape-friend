@@ -1,10 +1,11 @@
 import { auth, clerkClient } from "@clerk/nextjs/server"
 import { neon } from "@neondatabase/serverless"
 
-export async function isOrgAdmin() {
+export async function isOrgAdmin(redirect?: boolean) {
     const { userId, orgId, sessionClaims } = await auth.protect()
     let isAdmin = true
     if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false
+
     return { userId, orgId, sessionClaims, isAdmin }
 }
 

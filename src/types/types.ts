@@ -70,3 +70,8 @@ export interface ClientResult {
     cutting_day: string;
     total_count: number;
 }
+
+export interface MutationData {
+  clientId: number;
+  pricePerCut: number;
+}

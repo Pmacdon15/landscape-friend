@@ -5,6 +5,7 @@ import { isOrgAdmin } from "@/lib/webhooks";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "./cutting-week";
 import { Client, PaginatedClients } from "@/types/types";
+import PricePerCutUpdateInput from "./price-per-cut-update-input";
 
 export default async function ClientListAll({ clientsPromise, clientListPage }: { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
 
@@ -32,9 +33,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }: 
               <p>Phone Number: {client.phone_number}</p>
               <p>Email: {client.email_address}</p>
               <p>Address: {client.address}</p>
-              <p className="flex gap-1">Price Per Cut: ${" "}
-                <input className="w-2/6" name="price_per_cut" type="number" defaultValue={client.price_per_cut || 51.5} />
-              </p>
+              <PricePerCutUpdateInput client={client} />
               <p>Amount owing: ${client.amount_owing} </p>
               <CuttingWeekDropDownContainer />
               <MapComponent address={client.address} />
