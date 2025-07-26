@@ -1,7 +1,3 @@
-export interface CuttingSchedule {
-    cutting_week: number;
-    cutting_day: string;
-}
 
 export interface Client {
     id: number;
@@ -74,4 +70,9 @@ export interface ClientResult {
 export interface MutationData {
   clientId: number;
   pricePerCut: number;
+}
+
+export interface CuttingSchedule {
+  cutting_week: number | null;
+  cutting_day: string | null;
 }

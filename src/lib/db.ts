@@ -29,7 +29,7 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
     return result;
 }
 
-export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {    
+export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await sql`
         UPDATE clients
@@ -82,42 +82,39 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
     }
 }
 
-
-
-
 export async function fetchClientsWithSchedules(orgId: string, pageSize: number, offset: number) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await sql`
-            WITH clients_with_balance AS (
-                SELECT 
-                c.*,
-                a.current_balance AS amount_owing
-                FROM clients c
-                LEFT JOIN accounts a ON c.id = a.client_id
-                WHERE c.organization_id = ${orgId}
-            ),
-            clients_with_schedules AS (
-                SELECT 
-                cwb.*,
-                cs.cutting_week,
-                cs.cutting_day
-                FROM clients_with_balance cwb
-                LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-            )
-            SELECT 
-                (SELECT COUNT(*) FROM clients c WHERE c.organization_id = ${orgId}) AS total_count,
-                cws.id,
-                cws.full_name,
-                cws.phone_number,
-                cws.email_address,
-                cws.address,
-                cws.amount_owing,
-                cws.price_per_cut,
-                cws.cutting_week,
-                cws.cutting_day
-            FROM clients_with_schedules cws
-            ORDER BY cws.id
-            LIMIT ${pageSize} OFFSET ${offset};
-        `;
+    WITH clients_with_balance AS (
+        SELECT 
+        c.*,
+        a.current_balance AS amount_owing
+        FROM clients c
+        LEFT JOIN accounts a ON c.id = a.client_id
+        WHERE c.organization_id = ${orgId}
+    ),
+    clients_with_schedules AS (
+        SELECT 
+        cwb.*,
+        COALESCE(cs.cutting_week, 0) AS cutting_week,
+        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
+        FROM clients_with_balance cwb
+        LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+    )
+    SELECT 
+        (SELECT COUNT(*) FROM clients c WHERE c.organization_id = ${orgId}) AS total_count,
+        cws.id,
+        cws.full_name,
+        cws.phone_number,
+        cws.email_address,
+        cws.address,
+        cws.amount_owing,
+        cws.price_per_cut,
+        cws.cutting_week,
+        cws.cutting_day
+    FROM clients_with_schedules cws
+    ORDER BY cws.id
+    LIMIT ${pageSize} OFFSET ${offset};
+`;
     return result;
 }

@@ -27,15 +27,14 @@ export default async function ClientListAll({ clientsPromise, clientListPage }: 
               {isAdmin &&
                 <div className="absolute top-1 right-1">
                   <DeleteClientButton clientId={client.id} />
-                </div>
-              }
+                </div>}
               <p>Name: {client.full_name}</p>
               <p>Phone Number: {client.phone_number}</p>
               <p>Email: {client.email_address}</p>
               <p>Address: {client.address}</p>
               <PricePerCutUpdateInput client={client} />
               <p>Amount owing: ${client.amount_owing} </p>
-              <CuttingWeekDropDownContainer />
+              <CuttingWeekDropDownContainer client={client} />
               <MapComponent address={client.address} />
             </li>
           </ContentContainer>

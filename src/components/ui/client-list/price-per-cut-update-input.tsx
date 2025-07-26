@@ -10,7 +10,7 @@ export default function PricePerCutUpdateInput({ client }: { client: Client }) {
     const handlePricePerCutChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         debouncedMutate({ clientId: client.id, pricePerCut: Number(event.target.value) });
     };
-
+    
     return (
         <p className="flex gap-1"> Price Per Cut: ${" "}
             <input

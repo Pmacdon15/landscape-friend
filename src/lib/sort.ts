@@ -9,8 +9,8 @@ export function processClientsResult(clientsResult: ClientResult[]): { clients: 
         const existingClient = acc.find((client: Client) => client.id === current.id);
         if (existingClient) {
             existingClient.cutting_schedules.push({
-                cutting_week: current.cutting_week,
-                cutting_day: current.cutting_day,
+                cutting_week: current.cutting_week !== null ? current.cutting_week : 0,
+                cutting_day: current.cutting_day !== null ? current.cutting_day : "No cut",
             });
         } else {
             acc.push({
@@ -22,8 +22,8 @@ export function processClientsResult(clientsResult: ClientResult[]): { clients: 
                 amount_owing: current.amount_owing,
                 price_per_cut: current.price_per_cut,
                 cutting_schedules: [{
-                    cutting_week: current.cutting_week,
-                    cutting_day: current.cutting_day,
+                    cutting_week: current.cutting_week !== null ? current.cutting_week : 0,
+                    cutting_day: current.cutting_day !== null ? current.cutting_day : "No cut",
                 }],
             });
         }
