@@ -1,11 +1,12 @@
 import { Account, Client, Email } from "@/types/types";
-import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter } from "./zod/schemas";
+import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { sendEmail } from "@/actions/sendEmails";
 import { JwtPayload } from "@clerk/types";
 
+//MARK: Add clients
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await (sql`
@@ -29,6 +30,8 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
     return result;
 }
 
+//MARK: Delete clients
+//TODO: confirm org id on delete so auth confirms users is admin and part of the same org
 export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): Promise<Client[]> {
     const sql = neon(`${process.env.DATABASE_URL}`);
     const result = await (sql`
@@ -49,6 +52,41 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): 
     return result;
 }
 
+//MARK: Update price per cut
+export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const result = await sql`
+        UPDATE clients
+        SET price_per_cut = ${data.pricePerCut}
+        WHERE id = ${data.clientId} AND organization_id = ${orgId}
+    `
+
+    if (result) revalidatePathAction("/client-list")
+    return result;
+}
+
+//MARK: Updated Client Cut Day
+export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCuttingDay>, orgId: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const clientCheck = await sql`
+        SELECT id FROM clients
+        WHERE clients.id = ${data.clientId} AND clients.organization_id = ${orgId}
+    `;
+    if (!clientCheck || clientCheck.length === 0) {
+        throw new Error("Client not found or orgId mismatch");
+    }
+    const result = await sql`
+        INSERT INTO cutting_schedule (client_id, cutting_week, cutting_day)
+        VALUES (${data.clientId}, ${data.cuttingWeek}, ${data.updatedDay})
+        ON CONFLICT (client_id, cutting_week) DO UPDATE
+        SET cutting_day = EXCLUDED.cutting_day
+        RETURNING *
+    `;
+    revalidatePathAction("/client-list")
+    return result;
+}
+
+//MARK: Send newsletter
 export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
     const sql = neon(process.env.DATABASE_URL!);
     const baseName = String(sessionClaims.orgName || sessionClaims.name || "Your-LandScaper");
@@ -68,3 +106,41 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
         return false;
     }
 }
+
+export async function fetchClientsWithSchedules(orgId: string, pageSize: number, offset: number) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const result = await sql`
+    WITH clients_with_balance AS (
+        SELECT 
+        c.*,
+        a.current_balance AS amount_owing
+        FROM clients c
+        LEFT JOIN accounts a ON c.id = a.client_id
+        WHERE c.organization_id = ${orgId}
+    ),
+    clients_with_schedules AS (
+        SELECT 
+        cwb.*,
+        COALESCE(cs.cutting_week, 0) AS cutting_week,
+        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
+        FROM clients_with_balance cwb
+        LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+    )
+    SELECT 
+        (SELECT COUNT(*) FROM clients c WHERE c.organization_id = ${orgId}) AS total_count,
+        cws.id,
+        cws.full_name,
+        cws.phone_number,
+        cws.email_address,
+        cws.address,
+        cws.amount_owing,
+        cws.price_per_cut,
+        cws.cutting_week,
+        cws.cutting_day
+    FROM clients_with_schedules cws
+    ORDER BY cws.id
+    LIMIT ${pageSize} OFFSET ${offset};
+`;
+    return result;
+}
+

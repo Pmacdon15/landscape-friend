@@ -3,7 +3,7 @@ import { AddClientFormServerComponent } from "@/components/ui/client-list/add-cl
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import ContentContainer from "@/components/ui/containers/content-container";
 import { FetchAllClients } from "@/DAL/dal";
-import { isOrgAdmin } from "@/lib/functions";
+import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
 
 export default async function page({

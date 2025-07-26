@@ -1,11 +1,13 @@
+
 export interface Client {
     id: number;
     full_name: string;
-    phone_number: number;
+    phone_number: string;
     email_address: string;
     address: string;
     amount_owing: number;
-    maintenance_week: number;
+    price_per_cut: number;
+    cutting_schedules: CuttingSchedule[];
 }
 
 export interface Email {
@@ -32,11 +34,11 @@ export interface SubscriptionItem {
 }
 
 export interface UserCreatedEvent {
-    id: string;   
+    id: string;
 }
 
 export interface UserDeletedEvent {
-    id: string;   
+    id: string;
 }
 export interface OrganizationCreatedEvent {
     id: string;
@@ -45,4 +47,32 @@ export interface OrganizationCreatedEvent {
 export interface WebhookEvent {
     type: string;
     data: SubscriptionItem | OrganizationCreatedEvent;
+}
+
+export interface PaginatedClients {
+    clients: Client[];
+    totalPages: number;
+}
+
+export interface ClientResult {
+    id: number;
+    full_name: string;
+    phone_number: string;
+    email_address: string;
+    address: string;
+    amount_owing: number;
+    price_per_cut: number;
+    cutting_week: number;
+    cutting_day: string;
+    total_count: number;
+}
+
+export interface MutationData {
+  clientId: number;
+  pricePerCut: number;
+}
+
+export interface CuttingSchedule {
+  cutting_week: number | null;
+  cutting_day: string | null;
 }

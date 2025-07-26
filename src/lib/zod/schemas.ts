@@ -7,6 +7,11 @@ export const schemaAddClient = z.object({
     address: z.string(),
 })
 
+export const schemaUpdatePricePerCut = z.object({
+    clientId: z.number(),
+    pricePerCut: z.number(),
+})
+
 export const schemaDeleteClient = z.object({
     client_id: z.number(),
 })
@@ -14,4 +19,10 @@ export const schemaDeleteClient = z.object({
 export const schemaSendNewsLetter = z.object({
     title: z.string(),
     message: z.string(),
+})
+
+export const schemaUpdateCuttingDay = z.object({
+    clientId: z.number(),
+    cuttingWeek: z.number(),
+    updatedDay: z.string(),
 })
