@@ -17,7 +17,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
-  
+
   return (
     <>
       <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
@@ -33,8 +33,12 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
               <p>Phone Number: {client.phone_number}</p>
               <p>Email: {client.email_address}</p>
               <p>Address: {client.address}</p>
-              <PricePerCutUpdateInput isAdmin={isAdmin} client={client} />
-              <p>Amount owing: ${client.amount_owing} </p>
+              {isAdmin &&
+                <>
+                  <PricePerCutUpdateInput client={client} />
+                  <p>Amount owing: ${client.amount_owing} </p>
+                </>
+              }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <MapComponent address={client.address} />
             </li>

@@ -3,7 +3,7 @@ import { useDebouncedMutation } from "@/hooks/hooks";
 import { useUpdateClientPricePerCut } from "@/mutations/mutations";
 import { Client } from "@/types/types";
 
-export default function PricePerCutUpdateInput({ client, isAdmin }: { client: Client, isAdmin: boolean }) {
+export default function PricePerCutUpdateInput({ client }: { client: Client }) {
     const { mutate, isPending, isError } = useUpdateClientPricePerCut();
     const debouncedMutate = useDebouncedMutation(mutate);
 
@@ -15,7 +15,7 @@ export default function PricePerCutUpdateInput({ client, isAdmin }: { client: Cl
                 type="number"
                 defaultValue={client.price_per_cut || 51.5}
                 onChange={(event) => debouncedMutate({ clientId: client.id, pricePerCut: Number(event.target.value) })}
-                disabled={isPending || !isAdmin}
+                disabled={isPending}
             />
             {isError && <span className="text-red-500">Error Updating Price</span>}
         </p>
