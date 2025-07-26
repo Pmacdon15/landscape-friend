@@ -21,8 +21,8 @@ export const schemaSendNewsLetter = z.object({
     message: z.string(),
 })
 
-// export const schemaUpdatePricePerCut = z.object({
-//     clientId: z.number(),
-//     cuttingWeek: z.number(),
-//     updatedDay: z.string(),
-// })
+export const schemaUpdateCuttingDay = z.object({
+    clientId: z.number(),
+    cuttingWeek: z.number(),
+    updatedDay: z.string(),
+})

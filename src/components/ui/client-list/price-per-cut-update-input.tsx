@@ -6,10 +6,6 @@ import { Client } from "@/types/types";
 export default function PricePerCutUpdateInput({ client }: { client: Client }) {
     const { mutate, isPending, isError } = useUpdateClientPricePerCut();
     const debouncedMutate = useDebouncedMutation(mutate);
-
-    const handlePricePerCutChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        debouncedMutate({ clientId: client.id, pricePerCut: Number(event.target.value) });
-    };
     
     return (
         <p className="flex gap-1"> Price Per Cut: ${" "}
@@ -18,7 +14,7 @@ export default function PricePerCutUpdateInput({ client }: { client: Client }) {
                 name="updated_price_per_cut"
                 type="number"
                 defaultValue={client.price_per_cut || 51.5}
-                onChange={handlePricePerCutChange}
+                onChange={(event) => debouncedMutate({ clientId: client.id, pricePerCut: Number(event.target.value) })}
                 disabled={isPending}
             />
             {isError && <span className="text-red-500">Error Updating Price</span>}

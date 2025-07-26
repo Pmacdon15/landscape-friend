@@ -1,10 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, sendNewsLetter, updateClientPricePerCut } from "@/actions/clients";
+import { addClient, deleteClient, sendNewsLetter, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
 
 export const useAddClient = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
             return addClient(formData);
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+};
+
+export const useDeleteClient = () => {
+    return useMutation({
+        mutationFn: (clientId: number) => {
+            return deleteClient(clientId);
         },
         onError: (error) => {
             console.error('Mutation error:', error);
@@ -23,11 +34,10 @@ export const useUpdateClientPricePerCut = () => {
     });
 };
 
-
-export const useDeleteClient = () => {
+export const useUpdateCuttingDay = () => {
     return useMutation({
-        mutationFn: (clientId: number) => {
-            return deleteClient(clientId);
+        mutationFn: ({ clientId, cuttingWeek, cuttingDay }: { clientId: number, cuttingWeek: number, cuttingDay: string }) => {
+            return updateCuttingDay(clientId, cuttingWeek, cuttingDay);
         },
         onError: (error) => {
             console.error('Mutation error:', error);
@@ -45,4 +55,3 @@ export const useSendNewsLetter = () => {
         }
     });
 };
-

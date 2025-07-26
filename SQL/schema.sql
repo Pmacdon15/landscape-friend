@@ -30,17 +30,16 @@ CREATE TABLE payments (
     FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
 
-
 CREATE TABLE cutting_schedule (
     id SERIAL PRIMARY KEY,
     cutting_week INT NOT NULL,
     cutting_day VARCHAR(10) NOT NULL,
     client_id INT NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients (id)
-)
+    FOREIGN KEY (client_id) REFERENCES clients (id),
+    UNIQUE (client_id, cutting_week)
+);
 
-SELECT *
-FROM clients;
+SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
