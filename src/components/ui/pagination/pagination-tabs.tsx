@@ -15,9 +15,9 @@ export function PaginationTabs({
   clientListPage: number;
   totalPages: number;
 }) {
-  
-  return (
-    <div className="rounded-sm w-full md:w-4/6 p-2 md:p-4 bg-white/30 backdrop-filter backdrop-blur-sm shadow-lg  ">
+
+  return totalPages > 1 ? (
+    <div className="rounded-sm w-full md:w-4/6 p-2 md:p-4 bg-white/30 backdrop-filter backdrop-blur-sm shadow-lg">
       <Pagination>
         <PaginationContent>
           {clientListPage > 1 &&
@@ -63,5 +63,5 @@ export function PaginationTabs({
         </PaginationContent>
       </Pagination>
     </div>
-  );
+  ) : null;
 }
