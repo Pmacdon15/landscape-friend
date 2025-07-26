@@ -60,8 +60,6 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
 
     const emailList = emails.map(email => email.email_address);
 
-    console.log("Emails:", emailList)
-
     try {
         sendEmail(senderName, emailList, data);
         return true;

@@ -9,7 +9,6 @@ interface Props {
 
 export default async function PricePerCutInput({ pricePerCutPromise }: Props) {
     const pricePerCut = (await pricePerCutPromise)?.price;
-    console.log("Price per cut", pricePerCut)
     return (
         <InputDiv >
             <SettingsLabel text="Price Per Cut" />

@@ -6,9 +6,15 @@ import { FetchAllClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/functions";
 import { Suspense } from "react";
 
-export default async function page() {
+export default async function page({
+    searchParams,
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+    const params = await searchParams;
+    const clientListPage = params.clientListPage
     const { isAdmin } = await isOrgAdmin()
-    const clientsPromise = FetchAllClients();
+    const clientsPromise = FetchAllClients(Number(clientListPage) || 1);
     return (
         <>
             <ContentContainer>
@@ -20,7 +26,7 @@ export default async function page() {
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
-                <ClientListAll clientsPromise={clientsPromise} />
+                <ClientListAll clientsPromise={clientsPromise} clientListPage={Number(clientListPage) || 1} />
             </Suspense>
         </>
     );
