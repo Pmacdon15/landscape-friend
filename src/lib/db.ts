@@ -137,21 +137,19 @@ export async function fetchClientsWithSchedules(
   `;
 
   let countQuery = sql`
-    SELECT COUNT(*) AS total_count 
+    SELECT COUNT(DISTINCT cws.id) AS total_count 
     FROM clients_with_schedules cws
   `;
 
   let selectQuery = sql`
-    SELECT 
+    SELECT DISTINCT 
       cws.id,
       cws.full_name,
       cws.phone_number,
       cws.email_address,
       cws.address,
       cws.amount_owing,
-      cws.price_per_cut,
-      cws.cutting_week,
-      cws.cutting_day
+      cws.price_per_cut
     FROM clients_with_schedules cws
   `;
 
@@ -166,13 +164,30 @@ export async function fetchClientsWithSchedules(
     `);
   }
 
-  if (searchTermCuttingWeek > 0) {
+  if (searchTermCuttingWeek > 0 && searchTermCuttingDay !== "") {
+    whereClauses.push(sql`
+      cws.id IN (
+        SELECT cws2.id
+        FROM clients_with_schedules cws2
+        WHERE cws2.cutting_week = ${searchTermCuttingWeek} 
+        AND cws2.cutting_day = ${searchTermCuttingDay}
+      )
+    `);
+  } else if (searchTermCuttingWeek > 0) {
     whereClauses.push(sql`
       cws.id IN (
         SELECT cws2.id
         FROM clients_with_schedules cws2
         WHERE cws2.cutting_week = ${searchTermCuttingWeek} 
         AND cws2.cutting_day != 'No cut'
+      )
+    `);
+  } else if (searchTermCuttingDay !== "") {
+    whereClauses.push(sql`
+      cws.id IN (
+        SELECT cws2.id
+        FROM clients_with_schedules cws2
+        WHERE cws2.cutting_day = ${searchTermCuttingDay}
       )
     `);
   }
@@ -213,7 +228,11 @@ export async function fetchClientsWithSchedules(
       cws.price_per_cut,
       cws.cutting_week,
       cws.cutting_day
-    FROM (${selectQuery}) AS cws
+    FROM clients_with_schedules cws
+    WHERE cws.id IN (
+      SELECT id
+      FROM (${selectQuery}) AS subquery
+    )
     ORDER BY cws.id
     LIMIT ${pageSize} OFFSET ${offset};
   `;
