@@ -3,6 +3,7 @@ import MapComponent from "../map-component/map-component";
 // import { isOrgAdmin } from "@/lib/webhooks";
 import { Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
+import { Button } from "../button";
 
 export default async function ClientListCutting({ clientsPromise, clientListPage}:
     { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number}) {
@@ -27,6 +28,7 @@ export default async function ClientListCutting({ clientsPromise, clientListPage
                             <p>Address: {client.address}</p>
                             <MapComponent address={client.address} />
                         </li>
+                        <Button variant="outline">Mark Grass Cut</Button>
                     </ContentContainer>
                 ))}
             </ul >
