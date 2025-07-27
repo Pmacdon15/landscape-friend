@@ -16,8 +16,7 @@ export default function SearchForm() {
     // Debounce effect for search input
     useEffect(() => {
         const timeout = setTimeout(() => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set('clientListPage', '1'); // Reset clientListPage to 1
+            const params = new URLSearchParams(searchParams.toString());            
             if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
             else params.delete('search');
             router.replace(`?${params.toString()}`, { scroll: false });

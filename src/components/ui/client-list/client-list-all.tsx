@@ -14,8 +14,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
   const result = await clientsPromise;
 
   if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
-  const { clients, totalPages } = result;
-  console.log("clients:", clients)
+  const { clients, totalPages } = result;  
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
 
