@@ -14,7 +14,7 @@ export default async function page({
     const params = await searchParams;
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
-    const cuttingDate = new Date(String(params.date))
+    const cuttingDate = params.date ? new Date(String(params.date)) : new Date();
 
     const { isAdmin } = await isOrgAdmin();
     if (!isAdmin) redirect("/")

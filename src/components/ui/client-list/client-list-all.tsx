@@ -14,10 +14,10 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
   const result = await clientsPromise;
 
   if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
-  const { clients, totalPages } = result;  
+  const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
-
+  
   return (
     <>
       <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />

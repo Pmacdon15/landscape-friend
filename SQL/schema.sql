@@ -38,7 +38,7 @@ CREATE TABLE cutting_schedule (
     FOREIGN KEY (client_id) REFERENCES clients (id),
     UNIQUE (client_id, cutting_week)
 );
-
+SELECT * FROM cutting_schedule;
 SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';

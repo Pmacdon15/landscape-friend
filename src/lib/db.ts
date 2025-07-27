@@ -86,159 +86,7 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
   return result;
 }
 
-//MARK: Fetch cutting day
-export async function fetchClientsCuttingSchedules(
-  orgId: string,
-  pageSize: number,
-  offset: number,
-  searchTerm: string,
-  cuttingDate: Date
-) {
-  console.log("data: ", searchTerm, " ", cuttingDate);
-  const sql = neon(`${process.env.DATABASE_URL}`);
-
-  // Calculate the cutting week (1 to 4) and day from cuttingDate
-  const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1);
-  const daysSinceStart = Math.floor(
-    (cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  const cuttingWeek = ((daysSinceStart % 28) / 7 + 1) | 0; // 28 days in a 4-week cycle
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const cuttingDay = daysOfWeek[cuttingDate.getDay()];
-
-  let query = sql`
-    WITH clients_with_balance AS (
-      SELECT
-        c.*,
-        a.current_balance AS amount_owing
-      FROM clients c
-      LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId}
-    ),
-    clients_with_schedules AS (
-      SELECT
-        cwb.*,
-        COALESCE(cs.cutting_week, 0) AS cutting_week,
-        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
-      FROM clients_with_balance cwb
-      LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-    )
-  `;
-
-  let countQuery = sql`
-    SELECT COUNT(DISTINCT cws.id) AS total_count
-    FROM clients_with_schedules cws
-  `;
-
-  let selectQuery = sql`
-    SELECT DISTINCT
-      cws.id,
-      cws.full_name,
-      cws.phone_number,
-      cws.email_address,
-      cws.address,
-      cws.amount_owing,
-      cws.price_per_cut,
-      cws.cutting_week,
-      cws.cutting_day
-    FROM clients_with_schedules cws
-  `;
-
-  let whereClauses = [];
-
-  if (searchTerm !== "") {
-    whereClauses.push(sql`
-      (cws.full_name ILIKE ${`%${searchTerm}%`}
-      OR cws.phone_number ILIKE ${`%${searchTerm}%`}
-      OR cws.email_address ILIKE ${`%${searchTerm}%`}
-      OR cws.address ILIKE ${`%${searchTerm}%`})
-    `);
-  }
-
-  // Filter by calculated cutting week and day
-  whereClauses.push(sql`
-    cws.cutting_week = ${cuttingWeek}
-    AND cws.cutting_day = ${cuttingDay}
-  `);
-
-  if (whereClauses.length > 0) {
-    let whereClause = sql`WHERE ${whereClauses[0]}`;
-    if (whereClauses.length > 1) {
-      whereClause = sql`${whereClause} AND ${whereClauses[1]}`;
-    }
-
-    countQuery = sql`
-      ${countQuery}
-      ${whereClause}
-    `;
-
-    selectQuery = sql`
-      ${selectQuery}
-      ${whereClause}
-    `;
-  }
-
-  const countResult = await sql`
-    ${query}
-    ${countQuery}
-  `;
-  const totalCount = countResult[0]?.total_count || 0;
-
-  // Include total_count in the final result set
-  query = sql`
-    ${query}
-    SELECT
-      ${totalCount} AS total_count,
-      cws.id,
-      cws.full_name,
-      cws.phone_number,
-      cws.email_address,
-      cws.address,
-      cws.amount_owing,
-      cws.price_per_cut,
-      cws.cutting_week,
-      cws.cutting_day
-    FROM clients_with_schedules cws
-    WHERE cws.id IN (
-      SELECT id
-      FROM (${selectQuery}) AS subquery
-    )
-    ORDER BY cws.id
-    LIMIT ${pageSize} OFFSET ${offset};
-  `;
-
-  const result = await query;
-  return result;
-}
-//MARK: Send newsletter
-export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
-  const sql = neon(process.env.DATABASE_URL!);
-  const baseName = String(sessionClaims.orgName || sessionClaims.name || "Your-LandScaper");
-  const senderName = baseName.replace(/\s+/g, '-');
-
-  const emails = await sql`
-        SELECT email_address FROM clients WHERE organization_id = ${sessionClaims.orgId || userId}
-    ` as Email[];
-
-  const emailList = emails.map(email => email.email_address);
-
-  try {
-    sendEmail(senderName, emailList, data);
-    return true;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
+//MARK: Fetch clients
 export async function fetchClientsWithSchedules(
   orgId: string,
   pageSize: number,
@@ -362,9 +210,142 @@ export async function fetchClientsWithSchedules(
       cws.cutting_week,
       cws.cutting_day
     FROM clients_with_schedules cws
+    ORDER BY cws.id
   `;
 
   const clientsResult = await clientsQuery;
 
   return { clientsResult, totalCount };
+}
+
+//MARK: Fetch cutting day
+export async function fetchClientsCuttingSchedules(
+  orgId: string,
+  pageSize: number,
+  offset: number,
+  searchTerm: string,
+  cuttingDate: Date
+) {
+  console.log("data: ", searchTerm, " ", cuttingDate);
+  const sql = neon(`${process.env.DATABASE_URL}`);
+
+  // Calculate the cutting week (1 to 4) and day from cuttingDate
+  const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1);
+  const daysSinceStart = Math.floor(
+    (cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const cuttingWeek = ((daysSinceStart % 28) / 7 + 1) | 0; // 28 days in a 4-week cycle
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const cuttingDay = daysOfWeek[cuttingDate.getDay()];
+
+  let query = sql`
+    WITH clients_with_balance AS (
+      SELECT
+        c.*,
+        a.current_balance AS amount_owing
+      FROM clients c
+      LEFT JOIN accounts a ON c.id = a.client_id
+      WHERE c.organization_id = ${orgId}
+    ),
+    clients_with_schedules AS (
+      SELECT
+        cwb.*,
+        COALESCE(cs.cutting_week, 0) AS cutting_week,
+        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
+      FROM clients_with_balance cwb
+      LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+    )
+  `;
+
+  let countQuery = sql`
+    SELECT COUNT(DISTINCT cws.id) AS total_count
+    FROM clients_with_schedules cws
+  `;
+
+  let selectQuery = sql`
+    SELECT DISTINCT
+      cws.id,
+      cws.full_name,
+      cws.phone_number,
+      cws.email_address,
+      cws.address,
+      cws.amount_owing,
+      cws.price_per_cut,
+      cws.cutting_week,
+      cws.cutting_day
+    FROM clients_with_schedules cws
+  `;
+
+  let whereClauses = [];
+
+  if (searchTerm !== "") {
+    whereClauses.push(sql`
+      (cws.full_name ILIKE ${`%${searchTerm}%`}
+      OR cws.phone_number ILIKE ${`%${searchTerm}%`}
+      OR cws.email_address ILIKE ${`%${searchTerm}%`}
+      OR cws.address ILIKE ${`%${searchTerm}%`})
+    `);
+  }
+
+  // Filter by calculated cutting week and day
+  whereClauses.push(sql`
+    cws.cutting_week = ${cuttingWeek}
+    AND cws.cutting_day = ${cuttingDay}
+  `);
+
+  if (whereClauses.length > 0) {
+    let whereClause = sql`WHERE ${whereClauses[0]}`;
+    if (whereClauses.length > 1) {
+      whereClause = sql`${whereClause} AND ${whereClauses[1]}`;
+    }
+
+    countQuery = sql`
+      ${countQuery}
+      ${whereClause}
+    `;
+
+    selectQuery = sql`
+      ${selectQuery}
+      ${whereClause}
+    `;
+  }
+
+  const finalQuery = sql`
+    ${query}
+    ${selectQuery}
+    ORDER BY cws.id
+    LIMIT ${pageSize} OFFSET ${offset}
+  `;
+
+  const result = await finalQuery;
+  return result;
+}
+
+//MARK: Send newsletter
+export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
+  const sql = neon(process.env.DATABASE_URL!);
+  const baseName = String(sessionClaims.orgName || sessionClaims.name || "Your-LandScaper");
+  const senderName = baseName.replace(/\s+/g, '-');
+
+  const emails = await sql`
+        SELECT email_address FROM clients WHERE organization_id = ${sessionClaims.orgId || userId}
+    ` as Email[];
+
+  const emailList = emails.map(email => email.email_address);
+
+  try {
+    sendEmail(senderName, emailList, data);
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }
