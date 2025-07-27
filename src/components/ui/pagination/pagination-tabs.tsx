@@ -27,7 +27,7 @@ export function PaginationTabs({
               <PaginationPrevious href={path} query={{ page: clientListPage - 1 }} />
             </PaginationItem>
           }
-          {clientListPage > 3 &&
+          {clientListPage > 2 &&
             <PaginationItem>
               <PaginationLink  href={path} query={{ page: 1 }}>
                 1
@@ -39,14 +39,14 @@ export function PaginationTabs({
               <PaginationEllipsis />
             </PaginationItem>
           }
-          {Array.from({ length: Math.min(2, totalPages - Math.max(clientListPage - 1, 0)) }, (_, i) => Math.max(clientListPage - 0, 1) + i).map((page) =>
+          {Array.from({ length: Math.min(totalPages, clientListPage + 1) - Math.max(1, clientListPage - 1) + 1 }, (_, i) => Math.max(1, clientListPage - 1) + i).map((page) =>
             <PaginationItem key={page}>
               <PaginationLink  href={path} isActive={clientListPage === page} query={{ page: page }}>
                 {page}
               </PaginationLink>
             </PaginationItem>
           )}
-          {clientListPage < totalPages - 1 &&
+          {clientListPage < totalPages - 2 &&
             <PaginationItem>
               <PaginationEllipsis />
             </PaginationItem>
