@@ -155,23 +155,42 @@ export async function fetchClientsWithSchedules(
     FROM clients_with_schedules cws
   `;
 
+  let whereClauses = [];
+
   if (searchTerm !== "") {
+    whereClauses.push(sql`
+      (cws.full_name ILIKE ${`%${searchTerm}%`} 
+      OR cws.phone_number ILIKE ${`%${searchTerm}%`} 
+      OR cws.email_address ILIKE ${`%${searchTerm}%`} 
+      OR cws.address ILIKE ${`%${searchTerm}%`})
+    `);
+  }
+
+  if (searchTermCuttingWeek > 0) {
+    whereClauses.push(sql`
+      cws.id IN (
+        SELECT cws2.id
+        FROM clients_with_schedules cws2
+        WHERE cws2.cutting_week = ${searchTermCuttingWeek} 
+        AND cws2.cutting_day != 'No cut'
+      )
+    `);
+  }
+
+  if (whereClauses.length > 0) {
+    let whereClause = sql`WHERE ${whereClauses[0]}`;
+    if (whereClauses.length > 1) {
+      whereClause = sql`${whereClause} AND ${whereClauses[1]}`;
+    }
+
     countQuery = sql`
       ${countQuery}
-      WHERE 
-        cws.full_name ILIKE ${`%${searchTerm}%`} 
-        OR cws.phone_number ILIKE ${`%${searchTerm}%`} 
-        OR cws.email_address ILIKE ${`%${searchTerm}%`} 
-        OR cws.address ILIKE ${`%${searchTerm}%`}
+      ${whereClause}
     `;
 
     selectQuery = sql`
       ${selectQuery}
-      WHERE 
-        cws.full_name ILIKE ${`%${searchTerm}%`} 
-        OR cws.phone_number ILIKE ${`%${searchTerm}%`} 
-        OR cws.email_address ILIKE ${`%${searchTerm}%`} 
-        OR cws.address ILIKE ${`%${searchTerm}%`}
+      ${whereClause}
     `;
   }
 
