@@ -20,7 +20,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
 
   return (
     <>
-      <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <ContentContainer key={client.id}>
@@ -45,7 +45,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
           </ContentContainer>
         ))}
       </ul >
-      <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
     </>
   );
 }

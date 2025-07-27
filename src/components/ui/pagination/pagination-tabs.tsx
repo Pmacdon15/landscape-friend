@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/pagination"
 
 export function PaginationTabs({
+  path,
   clientListPage,
   totalPages,
 }: {
+  path: string;
   clientListPage: number;
   totalPages: number;
 }) {
@@ -22,12 +24,12 @@ export function PaginationTabs({
         <PaginationContent>
           {clientListPage > 1 &&
             <PaginationItem>
-              <PaginationPrevious href="client-list" query={{ page: clientListPage - 1 }} />
+              <PaginationPrevious href={path} query={{ page: clientListPage - 1 }} />
             </PaginationItem>
           }
           {clientListPage > 3 &&
             <PaginationItem>
-              <PaginationLink href="client-list" query={{ page: 1 }}>
+              <PaginationLink  href={path} query={{ page: 1 }}>
                 1
               </PaginationLink>
             </PaginationItem>
@@ -39,7 +41,7 @@ export function PaginationTabs({
           }
           {Array.from({ length: Math.min(2, totalPages - Math.max(clientListPage - 1, 0)) }, (_, i) => Math.max(clientListPage - 0, 1) + i).map((page) =>
             <PaginationItem key={page}>
-              <PaginationLink href="client-list" isActive={clientListPage === page} query={{ page: page }}>
+              <PaginationLink  href={path} isActive={clientListPage === page} query={{ page: page }}>
                 {page}
               </PaginationLink>
             </PaginationItem>
@@ -51,14 +53,14 @@ export function PaginationTabs({
           }
           {clientListPage < totalPages - 1 &&
             <PaginationItem>
-              <PaginationLink href="client-list" query={{ page: totalPages }}>
+              <PaginationLink  href={path} query={{ page: totalPages }}>
                 {totalPages}
               </PaginationLink>
             </PaginationItem>
           }
           {clientListPage < totalPages &&
             <PaginationItem>
-              <PaginationNext href="client-list" query={{ page: clientListPage + 1 }} />
+              <PaginationNext  href={path} query={{ page: clientListPage + 1 }} />
             </PaginationItem>}
         </PaginationContent>
       </Pagination>
