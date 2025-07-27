@@ -13,7 +13,7 @@ export default async function page({
     searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>
 }) {
     const params = await searchParams;
-    const clientListPage = Number(params.clientListPage ?? 1);
+    const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const searchTermCuttingWeek = Number(params.week ?? 0);
     const searchTermCuttingDay = String(params.day ?? '');

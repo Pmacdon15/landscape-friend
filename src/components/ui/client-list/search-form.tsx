@@ -29,7 +29,7 @@ export default function SearchForm() {
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = event.target;
         const params = new URLSearchParams(searchParams.toString());
-        params.set('clientListPage', '1'); // Reset clientListPage to 1
+        params.set('page', '1'); // Reset clientListPage to 1
 
         switch (name) {
             case 'search':
