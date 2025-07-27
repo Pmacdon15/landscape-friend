@@ -25,7 +25,7 @@ export default async function page({
         <>
             <ContentContainer>
                 <HeaderWithSearch>
-                    <h1 className="text-2xl">Client Cutting List</h1>
+                    <h1 className="flex text-2xl flex-shrink-0 items-center">Client Cutting List</h1>
                     <SearchForm isCuttingDayComponent={true} />
                 </ HeaderWithSearch>
             </ContentContainer>

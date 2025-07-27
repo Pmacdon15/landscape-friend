@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CuttingListDatePicker } from '../cutting-list/cutting-list-date-picker';
 
 export default function SearchForm({ isCuttingDayComponent = false }) {
   const searchParams = useSearchParams();
@@ -42,26 +43,26 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
 
   // Handle input changes
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  const { name, value } = event.target;
-  const params = new URLSearchParams(searchParams.toString());
-  params.set('page', '1'); // Reset page to 1 on any change
+    const { name, value } = event.target;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', '1'); // Reset page to 1 on any change
 
-  if (name === 'search') {
-    setSearchTerm(value);
-    setDebouncedSearchTerm(value);
-  } else {
-    if (value) {
-      params.set(name, value);
+    if (name === 'search') {
+      setSearchTerm(value);
+      setDebouncedSearchTerm(value);
     } else {
-      params.delete(name);
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
+      setCuttingWeek(name === 'week' ? value : cuttingWeek);
+      setCuttingDay(name === 'day' ? value : cuttingDay);
+      setCuttingDate(name === 'date' ? value : cuttingDate);
     }
-    setCuttingWeek(name === 'week' ? value : cuttingWeek);
-    setCuttingDay(name === 'day' ? value : cuttingDay);
-    setCuttingDate(name === 'date' ? value : cuttingDate);
-  }
 
-  router.replace(`?${params.toString()}`, { scroll: false });
-};
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="flex flex-col md:flex-row gap-2 justify-center ">
@@ -72,7 +73,7 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
         value={searchTerm}
         onChange={handleChange}
       />
-      {!isCuttingDayComponent ? (
+      {!isCuttingDayComponent ?
         <>
           <div className="flex gap-1">
             <label className="flex items-center">Cutting Week </label>
@@ -109,15 +110,13 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
             </select>
           </div>
         </>
-      ) : (
-        <input
-          name="date"
-          className="border rounded-sm p-2"
-          type="date"
+        :
+        <CuttingListDatePicker
+          cuttingDate={cuttingDate}
           value={cuttingDate}
           onChange={handleChange}
         />
-      )}
+      }
     </div>
   );
 }
