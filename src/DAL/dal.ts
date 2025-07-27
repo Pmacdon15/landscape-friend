@@ -43,5 +43,9 @@ export async function FetchCuttingClients(
     pageSize
   );
 
-  return { clients, totalPages };
+  return { 
+    clients, 
+    totalPages, 
+    totalClients: result.totalCount 
+  };
 }

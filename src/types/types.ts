@@ -52,6 +52,7 @@ export interface WebhookEvent {
 export interface PaginatedClients {
     clients: Client[];
     totalPages: number;
+    totalClients?: number;
 }
 
 export interface ClientResult {
@@ -68,11 +69,11 @@ export interface ClientResult {
 }
 
 export interface MutationData {
-  clientId: number;
-  pricePerCut: number;
+    clientId: number;
+    pricePerCut: number;
 }
 
 export interface CuttingSchedule {
-  cutting_week: number | null;
-  cutting_day: string | null;
+    cutting_week: number | null;
+    cutting_day: string | null;
 }

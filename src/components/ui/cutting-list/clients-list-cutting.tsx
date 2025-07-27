@@ -5,20 +5,23 @@ import { Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Button } from "../button";
 
-export default async function ClientListCutting({ clientsPromise, clientListPage}:
-    { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number}) {
+export default async function ClientListCutting({ clientsPromise, clientListPage }:
+    { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
     // const { isAdmin } = await isOrgAdmin()
     const result = await clientsPromise;
 
     if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
-    const { clients, totalPages } = result;
+    const { clients, totalPages, totalClients } = result;
     if (clients.length < 1) return <ContentContainer> <p>No clients scheduled for today</p> </ContentContainer>
-    // console.log("Clients: ", clients)
+    console.log("Clients: ", totalClients)
     // console.log("totalPages: ", totalPages)
     return (
         <>
             <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
+                <ContentContainer>
+                Total Clients Left to Cut: {totalClients}
+                </ContentContainer>
                 {clients.map((client: Client) => (
                     <ContentContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative">
