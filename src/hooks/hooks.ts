@@ -2,8 +2,6 @@ import { MutationData } from '@/types/types';
 import { useState, useEffect } from 'react';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-const DEBOUNCE_DELAY = 500; // 500ms
-
 
 export const useDebouncedMutation = (mutate: (data: MutationData) => void, delay: number = 500) => {
   const [value, setValue] = useState<MutationData | null>(null);

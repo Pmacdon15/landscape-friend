@@ -97,7 +97,7 @@ export async function fetchClientsWithSchedules(
 ) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
-  let baseQuery = sql`
+  const baseQuery = sql`
     WITH clients_with_balance AS (
       SELECT 
         c.*,
@@ -122,7 +122,7 @@ export async function fetchClientsWithSchedules(
     FROM clients_with_schedules cws
   `;
 
-  let whereClauses = [];
+  const whereClauses = [];
 
   if (searchTerm !== "") {
     whereClauses.push(sql`
@@ -246,7 +246,7 @@ export async function fetchClientsCuttingSchedules(
   ];
   const cuttingDay = daysOfWeek[cuttingDate.getDay()];
 
-  let query = sql`
+  const query = sql`
     WITH clients_with_balance AS (
       SELECT
         c.*,
@@ -284,7 +284,7 @@ export async function fetchClientsCuttingSchedules(
     FROM clients_with_schedules cws
   `;
 
-  let whereClauses = [];
+  const whereClauses = [];
 
   if (searchTerm !== "") {
     whereClauses.push(sql`

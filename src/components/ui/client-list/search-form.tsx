@@ -42,34 +42,26 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
 
   // Handle input changes
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('page', '1'); // Reset page to 1 on any change
+  const { name, value } = event.target;
+  const params = new URLSearchParams(searchParams.toString());
+  params.set('page', '1'); // Reset page to 1 on any change
 
-    switch (name) {
-      case 'search':
-        setSearchTerm(value);
-        setDebouncedSearchTerm(value);
-        break;
-      case 'week':
-        setCuttingWeek(value);
-        value ? params.set('week', value) : params.delete('week');
-        router.replace(`?${params.toString()}`, { scroll: false });
-        break;
-      case 'day':
-        setCuttingDay(value);
-        value ? params.set('day', value) : params.delete('day');
-        router.replace(`?${params.toString()}`, { scroll: false });
-        break;
-      case 'date':
-        setCuttingDate(value);
-        value ? params.set('date', value) : params.delete('date');
-        router.replace(`?${params.toString()}`, { scroll: false });
-        break;
-      default:
-        break;
+  if (name === 'search') {
+    setSearchTerm(value);
+    setDebouncedSearchTerm(value);
+  } else {
+    if (value) {
+      params.set(name, value);
+    } else {
+      params.delete(name);
     }
-  };
+    setCuttingWeek(name === 'week' ? value : cuttingWeek);
+    setCuttingDay(name === 'day' ? value : cuttingDay);
+    setCuttingDate(name === 'date' ? value : cuttingDate);
+  }
+
+  router.replace(`?${params.toString()}`, { scroll: false });
+};
 
   return (
     <div className="flex flex-col md:flex-row gap-2">

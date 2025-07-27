@@ -18,8 +18,7 @@ export default async function page({
     const searchTerm = String(params.search ?? '');
     const searchTermCuttingWeek = Number(params.week ?? 0);
     const searchTermCuttingDay = String(params.day ?? '');
-
-    console.log("searchTerm: ", searchTerm)
+    
     const { isAdmin } = await isOrgAdmin()
     const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     return (
