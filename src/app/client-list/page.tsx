@@ -3,6 +3,7 @@ import { AddClientFormServerComponent } from "@/components/ui/client-list/add-cl
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import ContentContainer from "@/components/ui/containers/content-container";
+import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import { FetchAllClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
@@ -24,14 +25,14 @@ export default async function page({
     return (
         <>
             <ContentContainer>
-                <div className="flex justify-between">
+                <HeaderWithSearch>
                     <h1 className="text-2xl">Client List</h1>
                     <SearchForm />
-                </div>
+                </HeaderWithSearch>
             </ContentContainer>
             {isAdmin &&
                 <AddClientFormClientComponent>
-                    <AddClientFormServerComponent />``
+                    <AddClientFormServerComponent />
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>

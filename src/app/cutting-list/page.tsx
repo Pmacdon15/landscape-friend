@@ -1,5 +1,6 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import ContentContainer from "@/components/ui/containers/content-container";
+import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import ClientListCutting from "@/components/ui/cutting-list/clients-list-cutting";
 import { FetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
@@ -23,10 +24,10 @@ export default async function page({
     return (
         <>
             <ContentContainer>
-                <div className="flex justify-between">
+                <HeaderWithSearch>
                     <h1 className="text-2xl">Client Cutting List</h1>
                     <SearchForm isCuttingDayComponent={true} />
-                </div>
+                </ HeaderWithSearch>
             </ContentContainer>
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
                 <ClientListCutting clientsPromise={clientsPromise} clientListPage={clientListPage} searchTerm={"searchTerm"} date={cuttingDate} />
