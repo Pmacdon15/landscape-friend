@@ -325,8 +325,16 @@ export async function fetchClientsCuttingSchedules(
     LIMIT ${pageSize} OFFSET ${offset}
   `;
 
-  const result = await finalQuery;
-  return result;
+  const finalCountQuery = sql`${query} ${countQuery}`;
+
+  const [clientsResult, totalCountResult] = await Promise.all([
+    finalQuery,
+    finalCountQuery
+  ]);
+
+  const totalCount = totalCountResult[0]?.total_count || 0;
+
+  return { clientsResult, totalCount };
 }
 
 //MARK: Send newsletter

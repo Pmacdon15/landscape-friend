@@ -12,8 +12,8 @@ export default async function ClientListCutting({ clientsPromise, clientListPage
     if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
     const { clients, totalPages } = result;
     if (clients.length < 1) return <ContentContainer> <p>No clients scheduled for today</p> </ContentContainer>
-    console.log("Clients: ", clients)
-    console.log("totalPages: ", totalPages)
+    // console.log("Clients: ", clients)
+    // console.log("totalPages: ", totalPages)
     return (
         <>
             <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />

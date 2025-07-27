@@ -35,12 +35,11 @@ export async function FetchCuttingClients(
     cuttingDate
   );
 
-  if (!result) return null;
+  if (!result.clientsResult) return null;
 
-  const totalCount = result[0]?.total_count || 0;
   const { clients, totalPages } = processClientsResult(
-    result as ClientResult[],
-    totalCount,
+    result.clientsResult as ClientResult[],
+    result.totalCount,
     pageSize
   );
 
