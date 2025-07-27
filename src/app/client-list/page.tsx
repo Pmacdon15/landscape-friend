@@ -10,12 +10,17 @@ import { Suspense } from "react";
 export default async function page({
     searchParams,
 }: {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+    searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>
 }) {
     const params = await searchParams;
-    const clientListPage = params.clientListPage
+    const clientListPage = Number(params.clientListPage ?? 1);
+    const searchTerm = String(params.search ?? '');
+    const searchTermCuttingWeek = Number(params.week ?? 0);
+    const searchTermCuttingDay = String(params.day ?? '');
+
+    console.log("searchTerm: ", searchTerm)
     const { isAdmin } = await isOrgAdmin()
-    const clientsPromise = FetchAllClients(Number(clientListPage) || 1);
+    const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     return (
         <>
             <ContentContainer>
@@ -30,7 +35,7 @@ export default async function page({
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
-                <ClientListAll clientsPromise={clientsPromise} clientListPage={Number(clientListPage) || 1} />
+                <ClientListAll clientsPromise={clientsPromise} clientListPage={clientListPage} />
             </Suspense>
         </>
     );

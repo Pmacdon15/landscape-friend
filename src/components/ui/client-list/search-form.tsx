@@ -8,7 +8,9 @@ export default function SearchForm() {
 
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-    const [cuttingWeek, setCuttingWeek] = useState(searchParams.get('week') || '');
+    const [cuttingWeek, setCuttingWeek] = useState(
+        searchParams.get('week') ? Number(searchParams.get('week')) : 0
+    );
     const [cuttingDay, setCuttingDay] = useState(searchParams.get('day') || '');
 
     // Debounce effect for search input
@@ -25,31 +27,31 @@ export default function SearchForm() {
 
     // Immediate update for week and day
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    const params = new URLSearchParams(searchParams.toString());
+        const { name, value } = event.target;
+        const params = new URLSearchParams(searchParams.toString());
 
-    switch (name) {
-        case 'search':
-            setSearchTerm(value);
-            setDebouncedSearchTerm(value);
-            break;
+        switch (name) {
+            case 'search':
+                setSearchTerm(value);
+                setDebouncedSearchTerm(value);
+                break;
 
-        case 'week':
-            setCuttingWeek(value);
-            value ? params.set('week', value) : params.delete('week');
-            router.replace(`?${params.toString()}`, { scroll: false });
-            break;
+            case 'week':
+                setCuttingWeek(searchParams.get('week') ? Number(searchParams.get('week')) : 0);
+                value ? params.set('week', value) : params.delete('week');
+                router.replace(`?${params.toString()}`, { scroll: false });
+                break;
 
-        case 'day':
-            setCuttingDay(value);
-            value ? params.set('day', value) : params.delete('day');
-            router.replace(`?${params.toString()}`, { scroll: false });
-            break;
+            case 'day':
+                setCuttingDay(value);
+                value ? params.set('day', value) : params.delete('day');
+                router.replace(`?${params.toString()}`, { scroll: false });
+                break;
 
-        default:
-            break;
-    }
-};
+            default:
+                break;
+        }
+    };
 
     return (
         <div className="flex gap-2">

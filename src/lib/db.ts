@@ -107,40 +107,98 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter
     }
 }
 
-export async function fetchClientsWithSchedules(orgId: string, pageSize: number, offset: number) {
-    const sql = neon(`${process.env.DATABASE_URL}`);
-    const result = await sql`
+export async function fetchClientsWithSchedules(
+  orgId: string,
+  pageSize: number,
+  offset: number,
+  searchTerm: string,
+  searchTermCuttingWeek: number,
+  searchTermCuttingDay: string
+) {
+  console.log("data: ", searchTerm, " ", searchTermCuttingWeek, ' ', searchTermCuttingDay)
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  let query = sql`
     WITH clients_with_balance AS (
-        SELECT 
+      SELECT 
         c.*,
         a.current_balance AS amount_owing
-        FROM clients c
-        LEFT JOIN accounts a ON c.id = a.client_id
-        WHERE c.organization_id = ${orgId}
+      FROM clients c
+      LEFT JOIN accounts a ON c.id = a.client_id
+      WHERE c.organization_id = ${orgId}
     ),
     clients_with_schedules AS (
-        SELECT 
+      SELECT 
         cwb.*,
         COALESCE(cs.cutting_week, 0) AS cutting_week,
         COALESCE(cs.cutting_day, 'No cut') AS cutting_day
-        FROM clients_with_balance cwb
-        LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+      FROM clients_with_balance cwb
+      LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
     )
-    SELECT 
-        (SELECT COUNT(*) FROM clients c WHERE c.organization_id = ${orgId}) AS total_count,
-        cws.id,
-        cws.full_name,
-        cws.phone_number,
-        cws.email_address,
-        cws.address,
-        cws.amount_owing,
-        cws.price_per_cut,
-        cws.cutting_week,
-        cws.cutting_day
+  `;
+
+  let countQuery = sql`
+    SELECT COUNT(*) AS total_count 
     FROM clients_with_schedules cws
+  `;
+
+  let selectQuery = sql`
+    SELECT 
+      cws.id,
+      cws.full_name,
+      cws.phone_number,
+      cws.email_address,
+      cws.address,
+      cws.amount_owing,
+      cws.price_per_cut,
+      cws.cutting_week,
+      cws.cutting_day
+    FROM clients_with_schedules cws
+  `;
+
+  if (searchTerm !== "") {
+    countQuery = sql`
+      ${countQuery}
+      WHERE 
+        cws.full_name ILIKE ${`%${searchTerm}%`} 
+        OR cws.phone_number ILIKE ${`%${searchTerm}%`} 
+        OR cws.email_address ILIKE ${`%${searchTerm}%`} 
+        OR cws.address ILIKE ${`%${searchTerm}%`}
+    `;
+
+    selectQuery = sql`
+      ${selectQuery}
+      WHERE 
+        cws.full_name ILIKE ${`%${searchTerm}%`} 
+        OR cws.phone_number ILIKE ${`%${searchTerm}%`} 
+        OR cws.email_address ILIKE ${`%${searchTerm}%`} 
+        OR cws.address ILIKE ${`%${searchTerm}%`}
+    `;
+  }
+
+  const countResult = await sql`
+    ${query}
+    ${countQuery}
+  `;
+  const totalCount = countResult[0].total_count;
+
+  query = sql`
+    ${query}
+    SELECT 
+      ${totalCount} AS total_count,
+      cws.id,
+      cws.full_name,
+      cws.phone_number,
+      cws.email_address,
+      cws.address,
+      cws.amount_owing,
+      cws.price_per_cut,
+      cws.cutting_week,
+      cws.cutting_day
+    FROM (${selectQuery}) AS cws
     ORDER BY cws.id
     LIMIT ${pageSize} OFFSET ${offset};
-`;
-    return result;
-}
+  `;
 
+  const result = await query;
+  return result;
+}
