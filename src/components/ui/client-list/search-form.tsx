@@ -9,7 +9,7 @@ export default function SearchForm() {
     const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
     const [cuttingWeek, setCuttingWeek] = useState(
-        searchParams.get('week') ? Number(searchParams.get('week')) : 0
+        searchParams.get('week') ? Number(searchParams.get('week')) : ''
     );
     const [cuttingDay, setCuttingDay] = useState(searchParams.get('day') || '');
 
@@ -17,18 +17,20 @@ export default function SearchForm() {
     useEffect(() => {
         const timeout = setTimeout(() => {
             const params = new URLSearchParams(searchParams.toString());
+            params.set('clientListPage', '1'); // Reset clientListPage to 1
             if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
             else params.delete('search');
             router.replace(`?${params.toString()}`, { scroll: false });
-        }, 500); // 300ms debounce
+        }, 500); // 500ms debounce
 
         return () => clearTimeout(timeout);
-    }, [debouncedSearchTerm]);
+    }, [debouncedSearchTerm, router, searchParams]);
 
     // Immediate update for week and day
     const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = event.target;
         const params = new URLSearchParams(searchParams.toString());
+        params.set('clientListPage', '1'); // Reset clientListPage to 1
 
         switch (name) {
             case 'search':
@@ -37,7 +39,7 @@ export default function SearchForm() {
                 break;
 
             case 'week':
-                setCuttingWeek(searchParams.get('week') ? Number(searchParams.get('week')) : 0);
+                setCuttingWeek(value);
                 value ? params.set('week', value) : params.delete('week');
                 router.replace(`?${params.toString()}`, { scroll: false });
                 break;
@@ -51,8 +53,12 @@ export default function SearchForm() {
             default:
                 break;
         }
-    };
 
+        if (name === 'search') {
+            // No need to update params for search here since it's handled by the debounce effect
+            return;
+        }
+    };
     return (
         <div className="flex gap-2">
             <input
