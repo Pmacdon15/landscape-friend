@@ -72,7 +72,7 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col md:flex-row gap-2">
       <input
         name="search"
         className="border rounded-sm p-2"
