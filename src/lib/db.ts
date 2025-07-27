@@ -192,9 +192,25 @@ export async function fetchClientsCuttingSchedules(
   `;
   const totalCount = countResult[0]?.total_count || 0;
 
+  // Include total_count in the final result set
   query = sql`
     ${query}
-    ${selectQuery}
+    SELECT
+      ${totalCount} AS total_count,
+      cws.id,
+      cws.full_name,
+      cws.phone_number,
+      cws.email_address,
+      cws.address,
+      cws.amount_owing,
+      cws.price_per_cut,
+      cws.cutting_week,
+      cws.cutting_day
+    FROM clients_with_schedules cws
+    WHERE cws.id IN (
+      SELECT id
+      FROM (${selectQuery}) AS subquery
+    )
     ORDER BY cws.id
     LIMIT ${pageSize} OFFSET ${offset};
   `;
@@ -202,7 +218,6 @@ export async function fetchClientsCuttingSchedules(
   const result = await query;
   return result;
 }
-
 //MARK: Send newsletter
 export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
   const sql = neon(process.env.DATABASE_URL!);
@@ -232,9 +247,9 @@ export async function fetchClientsWithSchedules(
   searchTermCuttingWeek: number,
   searchTermCuttingDay: string
 ) {
-  console.log("data: ", searchTerm, " ", searchTermCuttingWeek, ' ', searchTermCuttingDay)
   const sql = neon(`${process.env.DATABASE_URL}`);
-  let query = sql`
+
+  let baseQuery = sql`
     WITH clients_with_balance AS (
       SELECT 
         c.*,
@@ -253,20 +268,9 @@ export async function fetchClientsWithSchedules(
     )
   `;
 
-  let countQuery = sql`
-    SELECT COUNT(DISTINCT cws.id) AS total_count 
-    FROM clients_with_schedules cws
-  `;
-
   let selectQuery = sql`
     SELECT DISTINCT 
-      cws.id,
-      cws.full_name,
-      cws.phone_number,
-      cws.email_address,
-      cws.address,
-      cws.amount_owing,
-      cws.price_per_cut
+      cws.id
     FROM clients_with_schedules cws
   `;
 
@@ -283,29 +287,17 @@ export async function fetchClientsWithSchedules(
 
   if (searchTermCuttingWeek > 0 && searchTermCuttingDay !== "") {
     whereClauses.push(sql`
-      cws.id IN (
-        SELECT cws2.id
-        FROM clients_with_schedules cws2
-        WHERE cws2.cutting_week = ${searchTermCuttingWeek} 
-        AND cws2.cutting_day = ${searchTermCuttingDay}
-      )
+      cws.cutting_week = ${searchTermCuttingWeek} 
+      AND cws.cutting_day = ${searchTermCuttingDay}
     `);
   } else if (searchTermCuttingWeek > 0) {
     whereClauses.push(sql`
-      cws.id IN (
-        SELECT cws2.id
-        FROM clients_with_schedules cws2
-        WHERE cws2.cutting_week = ${searchTermCuttingWeek} 
-        AND cws2.cutting_day != 'No cut'
-      )
+      cws.cutting_week = ${searchTermCuttingWeek} 
+      AND cws.cutting_day != 'No cut'
     `);
   } else if (searchTermCuttingDay !== "") {
     whereClauses.push(sql`
-      cws.id IN (
-        SELECT cws2.id
-        FROM clients_with_schedules cws2
-        WHERE cws2.cutting_day = ${searchTermCuttingDay}
-      )
+      cws.cutting_day = ${searchTermCuttingDay}
     `);
   }
 
@@ -315,27 +307,51 @@ export async function fetchClientsWithSchedules(
       whereClause = sql`${whereClause} AND ${whereClauses[1]}`;
     }
 
-    countQuery = sql`
-      ${countQuery}
-      ${whereClause}
-    `;
-
     selectQuery = sql`
       ${selectQuery}
       ${whereClause}
     `;
   }
 
-  const countResult = await sql`
-    ${query}
-    ${countQuery}
+  const countQuery = sql`
+    ${baseQuery}
+    SELECT COUNT(*) AS total_count
+    FROM (${selectQuery}) AS client_ids
   `;
-  const totalCount = countResult[0].total_count;
 
-  query = sql`
-    ${query}
+  const countResult = await countQuery;
+  const totalCount = countResult[0]?.total_count || 0;
+
+  const paginatedClientIdsQuery = sql`
+    ${baseQuery}
+    SELECT id
+    FROM (${selectQuery}) AS client_ids
+    ORDER BY id
+    LIMIT ${pageSize} OFFSET ${offset}
+  `;
+
+  const paginatedClientIdsResult = await paginatedClientIdsQuery;
+  const paginatedClientIds = paginatedClientIdsResult.map(row => row.id);
+
+  const clientsQuery = sql`
+    WITH clients_with_balance AS (
+      SELECT 
+        c.*,
+        a.current_balance AS amount_owing
+      FROM clients c
+      LEFT JOIN accounts a ON c.id = a.client_id
+      WHERE c.organization_id = ${orgId}
+    ),
+    clients_with_schedules AS (
+      SELECT 
+        cwb.*,
+        COALESCE(cs.cutting_week, 0) AS cutting_week,
+        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
+      FROM clients_with_balance cwb
+      LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+      WHERE cwb.id = ANY(${paginatedClientIds})
+    )
     SELECT 
-      ${totalCount} AS total_count,
       cws.id,
       cws.full_name,
       cws.phone_number,
@@ -346,14 +362,9 @@ export async function fetchClientsWithSchedules(
       cws.cutting_week,
       cws.cutting_day
     FROM clients_with_schedules cws
-    WHERE cws.id IN (
-      SELECT id
-      FROM (${selectQuery}) AS subquery
-    )
-    ORDER BY cws.id
-    LIMIT ${pageSize} OFFSET ${offset};
   `;
 
-  const result = await query;
-  return result;
+  const clientsResult = await clientsQuery;
+
+  return { clientsResult, totalCount };
 }

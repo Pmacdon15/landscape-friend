@@ -1,10 +1,7 @@
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { CuttingWeekDropDownContainer } from "@/components/ui/cutting-week/cutting-week"
 import { Client, PaginatedClients } from "@/types/types";
-// import PricePerCutUpdateInput from "./price-per-cut-update-input";
-// import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 
 export default async function ClientListCutting({ clientsPromise, clientListPage, searchTerm, date }:
@@ -18,7 +15,7 @@ export default async function ClientListCutting({ clientsPromise, clientListPage
 
     return (
         <>
-            <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
+            <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 {clients.map((client: Client) => (
                     <ContentContainer key={client.id}>
@@ -31,9 +28,8 @@ export default async function ClientListCutting({ clientsPromise, clientListPage
                         </li>
                     </ContentContainer>
                 ))}
-            </ul >
-            hey
-            <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
+            </ul >           
+            <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
         </>
     );
 }
