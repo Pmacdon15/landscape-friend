@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function SearchForm() {
+export default function SearchForm({ isCuttingDayComponent = false }) {
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -16,7 +16,7 @@ export default function SearchForm() {
     // Debounce effect for search input
     useEffect(() => {
         const timeout = setTimeout(() => {
-            const params = new URLSearchParams(searchParams.toString());            
+            const params = new URLSearchParams(searchParams.toString());
             if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
             else params.delete('search');
             router.replace(`?${params.toString()}`, { scroll: false });
@@ -67,38 +67,44 @@ export default function SearchForm() {
                 value={searchTerm}
                 onChange={handleChange}
             />
-            <div className="flex gap-2">
-                <label className="flex items-center">Cutting Week </label>
-                <select
-                    name="week"
-                    className="w-10 border rounded-sm text-center"
-                    value={cuttingWeek}
-                    onChange={handleChange}
-                >
-                    <option value="">All</option>
-                    {[1, 2, 3, 4].map((week) => (
-                        <option key={week} value={week}>
-                            {week}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="flex gap-2">
-                <label className="flex items-center">Cutting Day </label>
-                <select
-                    name="day"
-                    className="w-28 border rounded-sm text-center"
-                    value={cuttingDay}
-                    onChange={handleChange}
-                >
-                    <option value="">All</option>
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                        <option className="text-left" key={day} value={day}>
-                            {day}
-                        </option>
-                    ))}
-                </select>
-            </div>
+            {!isCuttingDayComponent ?
+                <>
+                    <div className="flex gap-2">
+                        <label className="flex items-center">Cutting Week </label>
+                        <select
+                            name="week"
+                            className="w-10 border rounded-sm text-center"
+                            value={cuttingWeek}
+                            onChange={handleChange}
+                        >
+                            <option value="">All</option>
+                            {[1, 2, 3, 4].map((week) => (
+                                <option key={week} value={week}>
+                                    {week}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="flex gap-2">
+                        <label className="flex items-center">Cutting Day </label>
+                        <select
+                            name="day"
+                            className="w-28 border rounded-sm text-center"
+                            value={cuttingDay}
+                            onChange={handleChange}
+                        >
+                            <option value="">All</option>
+                            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
+                                <option className="text-left" key={day} value={day}>
+                                    {day}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </>
+                :
+                <input className="border rounded-sm p-2" type="date" />
+            }
         </div>
     );
 }
