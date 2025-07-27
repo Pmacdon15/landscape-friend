@@ -64,21 +64,21 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
 };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-2">
+    <div className="flex flex-col md:flex-row gap-2 justify-center ">
       <input
         name="search"
-        className="border rounded-sm p-1"
+        className="border rounded-sm p-1 sm:w-1/2 md:w-2/6"
         placeholder="Search"
         value={searchTerm}
         onChange={handleChange}
       />
       {!isCuttingDayComponent ? (
         <>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <label className="flex items-center">Cutting Week </label>
             <select
               name="week"
-              className="w-10 border rounded-sm text-center"
+              className="w-fit border rounded-sm text-center"
               value={cuttingWeek}
               onChange={handleChange}
             >
@@ -90,11 +90,11 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
               ))}
             </select>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <label className="flex items-center">Cutting Day </label>
             <select
               name="day"
-              className="w-28 border rounded-sm text-center"
+              className="w-fit border rounded-sm text-center"
               value={cuttingDay}
               onChange={handleChange}
             >

@@ -18,14 +18,14 @@ export default async function page({
     const searchTerm = String(params.search ?? '');
     const searchTermCuttingWeek = Number(params.week ?? 0);
     const searchTermCuttingDay = String(params.day ?? '');
-    
+
     const { isAdmin } = await isOrgAdmin()
     const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     return (
         <>
             <ContentContainer>
                 <HeaderWithSearch>
-                    <h1 className="text-2xl">Client List</h1>
+                    <h1 className="flex text-2xl flex-shrink-0 items-center">Client List</h1>
                     <SearchForm />
                 </HeaderWithSearch>
             </ContentContainer>
