@@ -1,7 +1,7 @@
 'use server'
 import { addClientDB, deleteClientDB, sendNewsLetterDb, updatedClientPricePerCutDb, updatedClientCutDayDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay,schemaMarkYardCut } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -26,7 +26,7 @@ export async function addClient(formData: FormData) {
 }
 
 export async function deleteClient(clientId: number) {
-    await isOrgAdmin()
+    const { orgId, userId } = await isOrgAdmin()
 
     const validatedFields = schemaDeleteClient.safeParse({
         client_id: clientId
@@ -35,7 +35,7 @@ export async function deleteClient(clientId: number) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await deleteClientDB(validatedFields.data)
+        const result = await deleteClientDB(validatedFields.data, orgId || userId)
         if (!result) throw new Error('Delete Client');
         return result;
     } catch (e: unknown) {

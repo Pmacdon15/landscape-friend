@@ -31,22 +31,24 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
 }
 
 //MARK: Delete clients
-//TODO: confirm org id on delete so auth confirms users is admin and part of the same org
-export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>): Promise<Client[]> {
+export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, organization_id: string): Promise<Client[]> {
   const sql = neon(`${process.env.DATABASE_URL}`);
+
   const result = await (sql`
-        WITH deleted_account AS (
-            DELETE FROM accounts
-            WHERE client_id = ${data.client_id}
-            RETURNING *
-        ),
-        deleted_client AS (
-            DELETE FROM clients
-            WHERE id = ${data.client_id}
-            RETURNING *
-        )
-        SELECT * FROM deleted_client;
-    `) as Client[];
+    WITH deleted_account AS (
+      DELETE FROM accounts
+      WHERE client_id = ${data.client_id} AND client_id IN (
+        SELECT id FROM clients WHERE organization_id = ${organization_id}
+      )
+      RETURNING *
+    ),
+    deleted_client AS (
+      DELETE FROM clients
+      WHERE id = ${data.client_id} AND organization_id = ${organization_id}
+      RETURNING *
+    )
+    SELECT * FROM deleted_client;
+  `) as Client[];
 
   if (result) revalidatePathAction("/client-list")
   return result;
@@ -364,12 +366,18 @@ export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, org
 
   const result = await sql`
     INSERT INTO yards_marked_cut (client_id, cutting_date)
-    VALUES (${data.clientId}, ${data.date})
+    SELECT ${data.clientId}, ${data.date}
+    FROM clients
+    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
     ON CONFLICT (client_id, cutting_date) DO NOTHING
     RETURNING *;
   `;
 
-  if (result) revalidatePathAction("/cutting-list")
+  if (!result || result.length === 0) {
+    throw new Error('Client not found, access denied, or already marked as cut');
+  }
+
+  revalidatePathAction("/cutting-list")
   return result;
 }
 

@@ -13,7 +13,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
     const result = await clientsPromise;
 
     if (!result) return <ContentContainer> <p className="text-red-500">Error Loading clients</p> </ContentContainer>
-    const { clients, totalPages, totalClients } = result;
+    const { clients, totalPages } = result;
     if (clients.length < 1) return <ContentContainer> <p>No clients scheduled for today</p> </ContentContainer>
 
     const addresses = await addressesPromise;
