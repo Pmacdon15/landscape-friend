@@ -20,7 +20,7 @@ export default async function ClientListCutting({ clientsPromise, clientListPage
             <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 <ContentContainer>
-                Total Clients Left to Cut: {totalClients}
+                    Total Clients Left to Cut: {totalClients}
                 </ContentContainer>
                 {clients.map((client: Client) => (
                     <ContentContainer key={client.id}>
