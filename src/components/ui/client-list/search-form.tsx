@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CuttingListDatePicker } from '../cutting-list/cutting-list-date-picker';
 import { CutStatusSelector } from '../selectors/cut-status-selector';
+import { days, weeks } from '@/lib/values';
+import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 
 export default function SearchForm({ isCuttingDayComponent = false }) {
   const searchParams = useSearchParams();
@@ -77,40 +79,20 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
       />
       {!isCuttingDayComponent ?
         <>
-          <div className="flex gap-1">
-            <label className="flex items-center">Cutting Week </label>
-            <select
-              name="week"
-              className="w-fit border rounded-sm text-center"
-              value={cuttingWeek}
-              onChange={handleChange}
-            >
-              <option value="">All</option>
-              {[1, 2, 3, 4].map((week) => (
-                <option key={week} value={week}>
-                  {week}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex gap-1">
-            <label className="flex items-center">Cutting Day </label>
-            <select
-              name="day"
-              className="w-fit border rounded-sm text-center"
-              value={cuttingDay}
-              onChange={handleChange}
-            >
-              <option value="">All</option>
-              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(
-                (day) => (
-                  <option className="text-left" key={day} value={day}>
-                    {day}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
+          <CuttingPeriodSelector
+            label="Cutting Week"
+            options={weeks}
+            value={cuttingWeek?.toString() || ''}
+            handleChange={handleChange}
+            name="week"
+          />
+          <CuttingPeriodSelector
+            label="Cutting Day"
+            options={days}
+            value={cuttingDay}
+            handleChange={handleChange}
+            name="day"
+          />
         </>
         :
         <>
