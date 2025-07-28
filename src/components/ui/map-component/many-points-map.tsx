@@ -22,12 +22,12 @@ export default async function ManyPointsMap({ addresses }: MapComponentProps) {
   const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center?.lat},${center?.lng}&zoom=&size=500x200&maptype=roadmap&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
 
   return (
-    <div className="flex flex-col md:flex-row w-full ">
+    <div className="flex flex-col md:flex-row bg-blue-200 justify-center">
       <img
         src={mapUrl}
         title="Map View"
         alt="Map View"
-        className="md:w-1/2 w-full h-[200px]"
+        className=" w-full h-[200px]"
       />
     </div>
   );

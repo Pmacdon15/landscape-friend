@@ -25,10 +25,12 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
 
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 <ContentContainer>
-                    Total Clients Left to Cut: {totalClients}
-                    {addresses &&
-                        <ManyPointsMap addresses={flattenedAddresses} />
-                    }
+                    <div className="flex w-full justify-center items-center align-middle border rounded-sm p-2 gap-4 ">
+                        <p className=" flex flex-shrink-0  items-center">Total Clients Left to Cut Today: {totalClients}</p>
+                        {addresses &&
+                            <ManyPointsMap addresses={flattenedAddresses} />
+                        }
+                    </div>
                 </ContentContainer>
                 <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
                 {clients.map((client: Client) => (
