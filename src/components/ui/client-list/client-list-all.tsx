@@ -4,11 +4,12 @@ import DeleteClientButton from "../buttons/delete-client-button";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import {  Client, PaginatedClients } from "@/types/types";
+import { Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
+import Link from "next/link";
 
-export default async function ClientListAll({ clientsPromise,  clientListPage, }:
+export default async function ClientListAll({ clientsPromise, clientListPage, }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
 
   const { isAdmin } = await isOrgAdmin()
@@ -32,8 +33,18 @@ export default async function ClientListAll({ clientsPromise,  clientListPage, }
                   <DeleteClientButton clientId={client.id} />
                 </div>}
               <p>Name: {client.full_name}</p>
-              <p>Phone Number: {client.phone_number}</p>
-              <p>Email: {client.email_address}</p>
+              <p>
+                Phone Number:{" "}
+                <Link href={`tel:${client.phone_number}`}>
+                  {client.phone_number}
+                </Link>
+              </p>
+              <p>
+                Email:{" "}
+                <Link href={`mailto:${client.email_address}`}>
+                  {client.email_address}
+                </Link>
+              </p>
               <p>Address: {client.address}</p>
               {isAdmin &&
                 <>

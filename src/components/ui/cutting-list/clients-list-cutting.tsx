@@ -6,6 +6,7 @@ import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Button } from "../button";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
+import Link from "next/link";
 
 export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage }:
     { clientsPromise: Promise<PaginatedClients | null>, addressesPromise: Promise<Address[] | null>, clientListPage: number }) {
@@ -33,12 +34,24 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                     </div>
                 </ContentContainer>
                 <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
+                import Link from 'next/link';
+
                 {clients.map((client: Client) => (
                     <ContentContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative">
                             <p>Name: {client.full_name}</p>
-                            <p>Phone Number: {client.phone_number}</p>
-                            <p>Email: {client.email_address}</p>
+                            <p>
+                                Phone Number:{" "}
+                                <Link href={`tel:${client.phone_number}`}>
+                                    {client.phone_number}
+                                </Link>
+                            </p>
+                            <p>
+                                Email:{" "}
+                                <Link href={`mailto:${client.email_address}`}>
+                                    {client.email_address}
+                                </Link>
+                            </p>
                             <p>Address: {client.address}</p>
                             <Suspense fallback={<div>Loading...</div>}>
                                 <MapComponent address={client.address} />
