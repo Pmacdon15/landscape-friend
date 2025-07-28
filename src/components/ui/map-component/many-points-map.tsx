@@ -17,13 +17,13 @@ export default async function ManyPointsMap({ addresses }: MapComponentProps) {
 
   const center = validResults[0].coordinates;
   const markers = validResults.map((result) => {
-  const { coordinates } = result;
-  return `markers=size:mid%7Ccolor:red%7C${coordinates?.lat},${coordinates?.lng}`;
-}).join('&');
+    const { coordinates } = result;
+    return `markers=size:mid%7Ccolor:red%7C${coordinates?.lat},${coordinates?.lng}`;
+  }).join('&');
 
   const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center?.lat},${center?.lng}&zoom=&size=500x200&maptype=roadmap&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
 
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${center?.lat},${center?.lng}&waypoints=${validResults.map(result => `${result.coordinates?.lat},${result.coordinates?.lng}`).join('|')}`;
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&waypoints=${validResults.map(result => `${result.coordinates?.lat},${result.coordinates?.lng}`).join('|')}`;
 
   return (
     <div className="relative">

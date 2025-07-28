@@ -69,7 +69,7 @@ VALUES (
         'Emily Lee',
         'emily.lee@example.com',
         'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '1234 26th Ave SW, Calgary, AB T2S 0J5',
+        '1534 26th Ave SW, Calgary, AB T2S 0J5',
         '+1-403-123-4567',
         1.00
     ),
