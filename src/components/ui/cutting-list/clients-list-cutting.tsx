@@ -33,8 +33,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                         }
                     </div>
                 </ContentContainer>
-                <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
-                import Link from 'next/link';
+                <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />                
 
                 {clients.map((client: Client) => (
                     <ContentContainer key={client.id}>

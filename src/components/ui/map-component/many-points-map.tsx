@@ -26,10 +26,9 @@ export default async function ManyPointsMap({ addresses }: MapComponentProps) {
 
   return (
     <div className="relative">
-      <img
+      <iframe
         src={mapUrl}
-        title="Map View"
-        alt="Map View"
+        title="Map View"        
         className="w-full h-[200px]"
       />
       <div className="absolute top-2 right-2">

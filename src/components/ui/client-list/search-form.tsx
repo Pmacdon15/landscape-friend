@@ -113,7 +113,6 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
         :
         <CuttingListDatePicker
           cuttingDate={cuttingDate}
-          value={cuttingDate}
           onChange={handleChange}
         />
       }

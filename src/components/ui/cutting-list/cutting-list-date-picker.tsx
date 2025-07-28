@@ -3,7 +3,7 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 
-export const CuttingListDatePicker = ({ cuttingDate, value, onChange }: { cuttingDate: string, value: string, onChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) => {
+export const CuttingListDatePicker = ({ cuttingDate, onChange }: { cuttingDate: string, onChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) => {
     // Parse cuttingDate as a local date
     const parseLocalDate = (dateStr: string) => {
         const [year, month, day] = dateStr.split('-').map(Number);
