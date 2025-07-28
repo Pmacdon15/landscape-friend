@@ -289,27 +289,27 @@ export async function fetchClientsCuttingSchedules(
   `;
 
   let countQuery = sql`
-    SELECT COUNT(DISTINCT cws.id) AS total_count
-    FROM clients_with_schedules cws
-    LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-    WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
-  `;
+  SELECT COUNT(DISTINCT cws.id) AS total_count
+  FROM clients_with_schedules cws
+  LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
+  WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
+`;
 
   let selectQuery = sql`
-    SELECT DISTINCT
-      cws.id,
-      cws.full_name,
-      cws.phone_number,
-      cws.email_address,
-      cws.address,
-      cws.amount_owing,
-      cws.price_per_cut,
-      cws.cutting_week,
-      cws.cutting_day
-    FROM clients_with_schedules cws
-    LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-    WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
-  `;
+  SELECT DISTINCT
+    cws.id,
+    cws.full_name,
+    cws.phone_number,
+    cws.email_address,
+    cws.address,
+    cws.amount_owing,
+    cws.price_per_cut,
+    cws.cutting_week,
+    cws.cutting_day
+  FROM clients_with_schedules cws
+  LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
+  WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
+`;
 
   const whereClauses = [];
 
@@ -359,7 +359,7 @@ export async function fetchClientsCuttingSchedules(
 }
 
 //MARK: Mark yard cut
-export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {  
+export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const result = await sql`

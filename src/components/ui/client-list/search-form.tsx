@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CuttingListDatePicker } from '../cutting-list/cutting-list-date-picker';
+import { CutStatusSelector } from '../selectors/cut-status-selector';
 
 export default function SearchForm({ isCuttingDayComponent = false }) {
   const searchParams = useSearchParams();
@@ -16,6 +17,7 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
   const [cuttingDate, setCuttingDate] = useState(
     searchParams.get('date') || new Date().toISOString().slice(0, 10)
   );
+  const [searchTermIsCut, setSearchTermIsCut] = useState(searchParams.get('is_cut') || '');
 
   // Set the date parameter on component mount if isCuttingDayComponent is true
   useEffect(() => {
@@ -56,14 +58,14 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
       } else {
         params.delete(name);
       }
-      setCuttingWeek(name === 'week' ? value : cuttingWeek);
-      setCuttingDay(name === 'day' ? value : cuttingDay);
-      setCuttingDate(name === 'date' ? value : cuttingDate);
+      if (name === 'week') setCuttingWeek(value);
+      if (name === 'day') setCuttingDay(value);
+      if (name === 'date') setCuttingDate(value);
+      if (name === 'is_cut') setSearchTermIsCut(value);
     }
 
     router.replace(`?${params.toString()}`, { scroll: false });
   };
-
   return (
     <div className="flex flex-col md:flex-row gap-2 justify-center ">
       <input
@@ -111,10 +113,13 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
           </div>
         </>
         :
-        <CuttingListDatePicker
-          cuttingDate={cuttingDate}
-          onChange={handleChange}
-        />
+        <>
+          <CuttingListDatePicker
+            cuttingDate={cuttingDate}
+            onChange={handleChange}
+          />
+          <CutStatusSelector value={searchTermIsCut} onChange={handleChange} />
+        </>
       }
     </div>
   );

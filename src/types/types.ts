@@ -80,3 +80,8 @@ export interface CuttingSchedule {
     cutting_week: number | null;
     cutting_day: string | null;
 }
+
+export interface CutStatusSelectorProps {
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}

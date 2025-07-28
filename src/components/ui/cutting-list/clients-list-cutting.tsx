@@ -1,9 +1,7 @@
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
-// import { isOrgAdmin } from "@/lib/webhooks";
 import { Address, Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
-import { Button } from "../button";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
@@ -20,16 +18,16 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
 
     const addresses = await addressesPromise;
     if (addresses instanceof Error) return <ContentContainer><p className="text-red-500">{addresses.message}</p></ContentContainer>
-        
+
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
-    
+
     return (
         <>
 
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 <ContentContainer>
                     <div className="flex flex-col md:flex-row w-full justify-center items-center align-middle border rounded-sm p-2 gap-4 ">
-                        <p className=" flex flex-shrink-0  items-center">Total Clients Left to Cut Today: {totalClients}</p>
+                        <p className=" flex flex-shrink-0  items-center">Total Clients Left to Cut Today: {flattenedAddresses.length}</p>
                         {addresses && <ManyPointsMap addresses={flattenedAddresses} />}
                     </div>
                 </ContentContainer>
