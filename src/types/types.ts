@@ -10,6 +10,9 @@ export interface Client {
     cutting_schedules: CuttingSchedule[];
 }
 
+export interface Address {
+    address: string
+}
 export interface Email {
     email_address: string;
 }

@@ -4,11 +4,11 @@ import DeleteClientButton from "../buttons/delete-client-button";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Client, PaginatedClients } from "@/types/types";
+import {  Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
 
-export default async function ClientListAll({ clientsPromise, clientListPage }:
+export default async function ClientListAll({ clientsPromise,  clientListPage, }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
 
   const { isAdmin } = await isOrgAdmin()
@@ -18,6 +18,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
+
 
   return (
     <>

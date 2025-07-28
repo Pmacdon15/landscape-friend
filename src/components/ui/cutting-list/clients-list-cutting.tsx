@@ -1,27 +1,34 @@
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 // import { isOrgAdmin } from "@/lib/webhooks";
-import { Client, PaginatedClients } from "@/types/types";
+import { Address, Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Button } from "../button";
 import { Suspense } from "react";
+import ManyPointsMap from "../map-component/many-points-map";
 
-export default async function ClientListCutting({ clientsPromise, clientListPage }:
-    { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
-    // const { isAdmin } = await isOrgAdmin()
+export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage }:
+    { clientsPromise: Promise<PaginatedClients | null>, addressesPromise: Promise<Address[] | null>, clientListPage: number }) {
+
     const result = await clientsPromise;
 
     if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
     const { clients, totalPages, totalClients } = result;
     if (clients.length < 1) return <ContentContainer> <p>No clients scheduled for today</p> </ContentContainer>
-    console.log("Clients: ", totalClients)
-    // console.log("totalPages: ", totalPages)
+
+    const addresses = await addressesPromise;
+    if (addresses) console.log("Addresses: ", addresses)
+    const flattenedAddresses = addresses?.map(address => address.address) ?? [];
+
     return (
         <>
 
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 <ContentContainer>
                     Total Clients Left to Cut: {totalClients}
+                    {addresses &&
+                        <ManyPointsMap addresses={flattenedAddresses} />
+                    }
                 </ContentContainer>
                 <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
                 {clients.map((client: Client) => (

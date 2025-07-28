@@ -1,4 +1,4 @@
-import { Account, Client, Email } from "@/types/types";
+import { Account, Address, Client, Email } from "@/types/types";
 import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
@@ -218,6 +218,42 @@ export async function fetchClientsWithSchedules(
   return { clientsResult, totalCount };
 }
 
+//MARK:Fetch uncut addresses
+export async function FetchAllUnCutAddressesDB(organizationId: string, searchTermCuttingDate: Date): Promise<Address[]> {
+  // Calculate the cutting week (1 to 4) and day from cuttingDate
+  const startOfYear = new Date(searchTermCuttingDate.getFullYear(), 0, 1);
+  const daysSinceStart = Math.floor(
+    (searchTermCuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1; 
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const cuttingDay = daysOfWeek[searchTermCuttingDate.getDay()];
+
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  const result = await sql`
+    SELECT c.address
+    FROM clients c
+    JOIN cutting_schedule cs ON c.id = cs.client_id
+    WHERE c.organization_id = ${organizationId}
+    AND cs.cutting_week = ${cuttingWeek}
+    AND cs.cutting_day = ${cuttingDay}
+    AND c.id NOT IN (
+      SELECT ymc.client_id
+      FROM yards_marked_cut ymc
+      WHERE ymc.cutting_week = ${cuttingWeek}
+      AND ymc.cutting_day = ${cuttingDay}
+    );
+  `;
+  return result.map(item => ({ address: item.address }));
+}
 //MARK: Fetch cutting day
 export async function fetchClientsCuttingSchedules(
   orgId: string,

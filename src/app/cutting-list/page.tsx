@@ -2,7 +2,7 @@ import SearchForm from "@/components/ui/client-list/search-form";
 import ContentContainer from "@/components/ui/containers/content-container";
 import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import ClientListCutting from "@/components/ui/cutting-list/clients-list-cutting";
-import { FetchCuttingClients } from "@/DAL/dal";
+import { FetchAllUnCutAddresses, FetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -20,6 +20,7 @@ export default async function page({
     const { isAdmin } = await isOrgAdmin();
     if (!isAdmin) redirect("/")
     const clientsPromise = FetchCuttingClients(clientListPage, searchTerm, cuttingDate);
+    const addressesPromise = FetchAllUnCutAddresses(cuttingDate);
 
     return (
         <>
@@ -30,7 +31,7 @@ export default async function page({
                 </ HeaderWithSearch>
             </ContentContainer>
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
-                <ClientListCutting clientsPromise={clientsPromise} clientListPage={clientListPage} />
+                <ClientListCutting clientsPromise={clientsPromise} addressesPromise={addressesPromise} clientListPage={clientListPage} />
             </Suspense>
         </>
     );
