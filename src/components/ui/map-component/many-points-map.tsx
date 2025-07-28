@@ -19,7 +19,7 @@ interface GeocodeResult {
   zoom?: number;
 }
 
-// Define the possible return types of fetchGeocode based on the error
+// Match the actual return type of fetchGeocode based on error messages
 type FetchGeocodeResult =
   | {
       coordinates: Location;
@@ -48,7 +48,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
           lng: position.coords.longitude,
         });
       } catch (error) {
-        console.error(error);
+        console.error('Geolocation error:', error);
       }
     };
     getUserLocation();
@@ -58,7 +58,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     const fetchGeocodes = async () => {
       try {
         const results = await Promise.all(addresses.map(fetchGeocode));
-        // Type guard to filter valid results and convert to GeocodeResult
+        // Filter valid results and convert to GeocodeResult
         const validResults = results
           .filter(
             (result): result is FetchGeocodeResult & { coordinates: Location } =>
@@ -74,7 +74,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
         setGeocodeResults(validResults);
         setLoading(false);
       } catch (error) {
-        console.error(error);
+        console.error('Geocode error:', error);
       }
     };
     fetchGeocodes();
@@ -84,11 +84,16 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     return <div>Loading...</div>;
   }
 
+  if (!process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY) {
+    return <div>Error: Google Maps API key is missing</div>;
+  }
+
   if (!userLocation || !geocodeResults || geocodeResults.length === 0) {
     return <div>Unable to get your location or geocode addresses</div>;
   }
 
-  const center = geocodeResults[0].coordinates;
+  // Center the map on the user's location
+  const center = userLocation;
   const markers = geocodeResults
     .map((result: GeocodeResult) => {
       const { coordinates } = result;
@@ -96,7 +101,9 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     })
     .join('&');
   const userMarker = `markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`;
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+  // Use a default zoom or one from geocodeResults if available
+  const zoom = geocodeResults[0].zoom || 14;
+  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
 
   const origin = `${userLocation.lat},${userLocation.lng}`;
   const destination = `${geocodeResults[geocodeResults.length - 1].coordinates.lat},${geocodeResults[geocodeResults.length - 1].coordinates.lng}`;
