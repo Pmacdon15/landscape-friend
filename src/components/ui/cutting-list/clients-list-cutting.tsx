@@ -24,7 +24,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
     return (
         <>
 
-            <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
+            <ul className="flex flex-col gap-2 md:gap-4 rounded-sm w-full items-center">
                 {addresses && addresses?.length > 0 &&
                     <ContentContainer>
                         <div className="flex flex-col md:flex-row w-full justify-center items-center align-middle border rounded-sm p-2 gap-4 ">
