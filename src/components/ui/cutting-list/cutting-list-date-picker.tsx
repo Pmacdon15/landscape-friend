@@ -4,7 +4,13 @@ import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 
 export const CuttingListDatePicker = ({ cuttingDate, value, onChange }: { cuttingDate: string, value: string, onChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) => {
-    const [date, setDate] = useState(new Date(cuttingDate));
+    // Parse cuttingDate as a local date
+    const parseLocalDate = (dateStr: string) => {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day); // month is 0-based in JS Date
+    };
+
+    const [date, setDate] = useState(parseLocalDate(cuttingDate));
 
     const getWeekNumber = (date: Date) => {
         const startOfYear = new Date(date.getFullYear(), 0, 1);
@@ -14,10 +20,12 @@ export const CuttingListDatePicker = ({ cuttingDate, value, onChange }: { cuttin
 
     const handleDateChange = (date: Date | null) => {
         if (date) {
+            // Format as local YYYY-MM-DD
+            const localDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
             const event = {
                 target: {
                     name: 'date',
-                    value: date.toISOString().slice(0, 10),
+                    value: localDateStr,
                 },
             };
             onChange(event as React.ChangeEvent<HTMLInputElement>);

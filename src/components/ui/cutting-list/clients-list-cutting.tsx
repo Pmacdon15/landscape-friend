@@ -4,6 +4,7 @@ import MapComponent from "../map-component/map-component";
 import { Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Button } from "../button";
+import { Suspense } from "react";
 
 export default async function ClientListCutting({ clientsPromise, clientListPage }:
     { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
@@ -17,11 +18,12 @@ export default async function ClientListCutting({ clientsPromise, clientListPage
     // console.log("totalPages: ", totalPages)
     return (
         <>
-            <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
+
             <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
                 <ContentContainer>
                     Total Clients Left to Cut: {totalClients}
                 </ContentContainer>
+                <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
                 {clients.map((client: Client) => (
                     <ContentContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative">
@@ -29,7 +31,9 @@ export default async function ClientListCutting({ clientsPromise, clientListPage
                             <p>Phone Number: {client.phone_number}</p>
                             <p>Email: {client.email_address}</p>
                             <p>Address: {client.address}</p>
-                            <MapComponent address={client.address} />
+                            <Suspense fallback={<div>Loading...</div>}>
+                                <MapComponent address={client.address} />
+                            </Suspense>
                         </li>
                         <Button variant="outline">Mark Grass Cut</Button>
                     </ContentContainer>

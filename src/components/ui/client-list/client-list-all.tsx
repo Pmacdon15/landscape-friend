@@ -6,6 +6,7 @@ import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
+import { Suspense } from "react";
 
 export default async function ClientListAll({ clientsPromise, clientListPage }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
@@ -17,7 +18,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
-  
+
   return (
     <>
       <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
@@ -40,7 +41,9 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
                 </>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <MapComponent address={client.address} />
+              <Suspense fallback={<div>Loading...</div>}>
+                <MapComponent address={client.address} />
+              </Suspense>
             </li>
           </ContentContainer>
         ))}
