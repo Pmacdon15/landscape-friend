@@ -1,5 +1,5 @@
 import { Account, Address, Client, Email } from "@/types/types";
-import { schemaAddClient, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
+import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendNewsLetter, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import revalidatePathAction from "@/actions/revalidatePath";
@@ -225,7 +225,7 @@ export async function FetchAllUnCutAddressesDB(organizationId: string, searchTer
   const daysSinceStart = Math.floor(
     (searchTermCuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
   );
-  const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1; 
+  const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1;
   const daysOfWeek = [
     "Sunday",
     "Monday",
@@ -261,7 +261,7 @@ export async function fetchClientsCuttingSchedules(
   offset: number,
   searchTerm: string,
   cuttingDate: Date
-) {  
+) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   // Calculate the cutting week (1 to 4) and day from cuttingDate
@@ -371,7 +371,36 @@ export async function fetchClientsCuttingSchedules(
 
   return { clientsResult, totalCount };
 }
+//MARK: Mark yard cut
+export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {
+  const sql = neon(`${process.env.DATABASE_URL}`);
 
+  const startOfYear = new Date(data.date.getFullYear(), 0, 1);
+  const daysSinceStart = Math.floor(
+    (data.date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const cuttingWeek = ((daysSinceStart % 28) / 7 + 1) | 0;
+  const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const cuttingDay = daysOfWeek[data.date.getDay()];
+
+  const result = await sql`
+    INSERT INTO yards_marked_cut (client_id, cutting_week, cutting_day)
+    VALUES (${data.clientId}, ${cuttingWeek}, ${cuttingDay})
+    ON CONFLICT (client_id, cutting_week) DO NOTHING
+    RETURNING *;
+  `;
+
+  if (result) revalidatePathAction("/cutting-list")
+  return result;
+}
 //MARK: Send newsletter
 export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
   const sql = neon(process.env.DATABASE_URL!);

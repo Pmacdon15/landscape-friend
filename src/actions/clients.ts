@@ -1,7 +1,7 @@
 'use server'
 import { addClientDB, deleteClientDB, sendNewsLetterDb, updatedClientPricePerCutDb, updatedClientCutDayDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay,schemaMarkYardCut } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();

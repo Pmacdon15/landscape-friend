@@ -26,3 +26,8 @@ export const schemaUpdateCuttingDay = z.object({
     cuttingWeek: z.number(),
     updatedDay: z.string(),
 })
+
+export const schemaMarkYardCut = z.object({
+    clientId: z.number(),
+    date: z.date()
+})

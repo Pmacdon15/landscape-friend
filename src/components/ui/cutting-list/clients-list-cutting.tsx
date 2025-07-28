@@ -7,9 +7,10 @@ import { Button } from "../button";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
+import MarkYardCut from "../buttons/mark-yard-cut";
 
-export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage }:
-    { clientsPromise: Promise<PaginatedClients | null>, addressesPromise: Promise<Address[] | null>, clientListPage: number }) {
+export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage, cuttingDate }:
+    { clientsPromise: Promise<PaginatedClients | null>, addressesPromise: Promise<Address[] | null>, clientListPage: number, cuttingDate: Date }) {
 
     const result = await clientsPromise;
 
@@ -17,7 +18,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
     const { clients, totalPages, totalClients } = result;
     if (clients.length < 1) return <ContentContainer> <p>No clients scheduled for today</p> </ContentContainer>
 
-    const addresses = await addressesPromise;    
+    const addresses = await addressesPromise;
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
 
     return (
@@ -53,7 +54,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                                 <MapComponent address={client.address} />
                             </Suspense>
                         </li>
-                        <Button variant="outline">Mark Grass Cut</Button>
+                    <MarkYardCut clientId={client.id} cuttingDate={cuttingDate}/>
                     </ContentContainer>
                 ))}
             </ul >

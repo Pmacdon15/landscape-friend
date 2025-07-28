@@ -49,7 +49,7 @@ CREATE TABLE yards_marked_cut (
     FOREIGN KEY (client_id) REFERENCES clients (id),
     UNIQUE (client_id, cutting_week)
 );
-
+SELECT * FROM yards_marked_cut;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- WHERE

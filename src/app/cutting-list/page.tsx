@@ -31,7 +31,7 @@ export default async function page({
                 </ HeaderWithSearch>
             </ContentContainer>
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
-                <ClientListCutting clientsPromise={clientsPromise} addressesPromise={addressesPromise} clientListPage={clientListPage} />
+                <ClientListCutting clientsPromise={clientsPromise} addressesPromise={addressesPromise} clientListPage={clientListPage} cuttingDate={cuttingDate} />
             </Suspense>
         </>
     );
