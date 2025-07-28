@@ -261,8 +261,7 @@ export async function fetchClientsCuttingSchedules(
   offset: number,
   searchTerm: string,
   cuttingDate: Date
-) {
-  console.log("data: ", searchTerm, " ", cuttingDate);
+) {  
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   // Calculate the cutting week (1 to 4) and day from cuttingDate

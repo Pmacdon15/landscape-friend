@@ -17,8 +17,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
     const { clients, totalPages, totalClients } = result;
     if (clients.length < 1) return <ContentContainer> <p>No clients scheduled for today</p> </ContentContainer>
 
-    const addresses = await addressesPromise;
-    if (addresses) console.log("Addresses: ", addresses)
+    const addresses = await addressesPromise;    
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
 
     return (
@@ -28,12 +27,10 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                 <ContentContainer>
                     <div className="flex flex-col md:flex-row w-full justify-center items-center align-middle border rounded-sm p-2 gap-4 ">
                         <p className=" flex flex-shrink-0  items-center">Total Clients Left to Cut Today: {totalClients}</p>
-                        {addresses &&
-                            <ManyPointsMap addresses={flattenedAddresses} />
-                        }
+                        {addresses && <ManyPointsMap addresses={flattenedAddresses} />}
                     </div>
                 </ContentContainer>
-                <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />                
+                <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
 
                 {clients.map((client: Client) => (
                     <ContentContainer key={client.id}>

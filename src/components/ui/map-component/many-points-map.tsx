@@ -1,4 +1,5 @@
 import { fetchGeocode } from "@/lib/geocode";
+import Image from "next/image";
 import Link from "next/link";
 
 interface MapComponentProps {
@@ -26,9 +27,12 @@ export default async function ManyPointsMap({ addresses }: MapComponentProps) {
 
   return (
     <div className="relative">
-      <iframe
+      <Image
         src={mapUrl}
-        title="Map View"        
+        title="Map View"
+        height={800}
+        width={800}
+        alt="Map of uncut yards"
         className="w-full h-[200px]"
       />
       <div className="absolute top-2 right-2">
