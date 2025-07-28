@@ -1,7 +1,7 @@
-'use client'
-import { fetchGeocode } from "@/lib/geocode";
-import Image from "next/image";
-import Link from "next/link";
+'use client';
+import { fetchGeocode } from '@/lib/geocode';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 interface MapComponentProps {
@@ -13,9 +13,28 @@ interface Location {
   lng: number;
 }
 
+interface GeocodeResult {
+  coordinates: Location;
+  error?: string;
+  zoom?: number;
+}
+
+// Define the possible return types of fetchGeocode based on the error
+type FetchGeocodeResult =
+  | {
+      coordinates: Location;
+      zoom: number;
+      error: boolean;
+    }
+  | {
+      error: string | boolean;
+      coordinates?: never;
+      zoom?: never;
+    };
+
 export default function ManyPointsMap({ addresses }: MapComponentProps) {
   const [userLocation, setUserLocation] = useState<Location | null>(null);
-  const [geocodeResults, setGeocodeResults] = useState<any[] | null>(null);
+  const [geocodeResults, setGeocodeResults] = useState<GeocodeResult[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,7 +58,19 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     const fetchGeocodes = async () => {
       try {
         const results = await Promise.all(addresses.map(fetchGeocode));
-        const validResults = results.filter(result => !result.error);
+        // Type guard to filter valid results and convert to GeocodeResult
+        const validResults = results
+          .filter(
+            (result): result is FetchGeocodeResult & { coordinates: Location } =>
+              !!result.coordinates && result.error === false
+          )
+          .map(
+            (result): GeocodeResult => ({
+              coordinates: result.coordinates,
+              error: typeof result.error === 'string' ? result.error : undefined,
+              zoom: result.zoom,
+            })
+          );
         setGeocodeResults(validResults);
         setLoading(false);
       } catch (error) {
@@ -53,21 +84,26 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     return <div>Loading...</div>;
   }
 
-  if (!userLocation || !geocodeResults) {
+  if (!userLocation || !geocodeResults || geocodeResults.length === 0) {
     return <div>Unable to get your location or geocode addresses</div>;
   }
 
   const center = geocodeResults[0].coordinates;
-  const markers = geocodeResults.map((result: any) => {
-    const { coordinates } = result;
-    return `markers=size:mid%7Ccolor:red%7C${coordinates?.lat},${coordinates?.lng}`;
-  }).join('&');
+  const markers = geocodeResults
+    .map((result: GeocodeResult) => {
+      const { coordinates } = result;
+      return `markers=size:mid%7Ccolor:red%7C${coordinates.lat},${coordinates.lng}`;
+    })
+    .join('&');
   const userMarker = `markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`;
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center?.lat},${center?.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
+  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
 
   const origin = `${userLocation.lat},${userLocation.lng}`;
-  const destination = `${geocodeResults[geocodeResults.length - 1].coordinates?.lat},${geocodeResults[geocodeResults.length - 1].coordinates?.lng}`;
-  const waypoints = geocodeResults.slice(0, -1).map((result: any) => `${result.coordinates?.lat},${result.coordinates?.lng}`).join('|');
+  const destination = `${geocodeResults[geocodeResults.length - 1].coordinates.lat},${geocodeResults[geocodeResults.length - 1].coordinates.lng}`;
+  const waypoints = geocodeResults
+    .slice(0, -1)
+    .map((result: GeocodeResult) => `${result.coordinates.lat},${result.coordinates.lng}`)
+    .join('|');
 
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;
 
