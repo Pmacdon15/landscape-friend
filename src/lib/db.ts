@@ -220,36 +220,16 @@ export async function fetchClientsWithSchedules(
 
 //MARK:Fetch uncut addresses
 export async function FetchAllUnCutAddressesDB(organizationId: string, searchTermCuttingDate: Date): Promise<Address[]> {
-  // Calculate the cutting week (1 to 4) and day from cuttingDate
-  const startOfYear = new Date(searchTermCuttingDate.getFullYear(), 0, 1);
-  const daysSinceStart = Math.floor(
-    (searchTermCuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1;
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const cuttingDay = daysOfWeek[searchTermCuttingDate.getDay()];
-
   const sql = neon(`${process.env.DATABASE_URL}`);
   const result = await sql`
     SELECT c.address
     FROM clients c
     JOIN cutting_schedule cs ON c.id = cs.client_id
     WHERE c.organization_id = ${organizationId}
-    AND cs.cutting_week = ${cuttingWeek}
-    AND cs.cutting_day = ${cuttingDay}
     AND c.id NOT IN (
       SELECT ymc.client_id
       FROM yards_marked_cut ymc
-      WHERE ymc.cutting_week = ${cuttingWeek}
-      AND ymc.cutting_day = ${cuttingDay}
+      WHERE ymc.cutting_date = ${searchTermCuttingDate}
     );
   `;
   return result.map(item => ({ address: item.address }));
@@ -262,14 +242,11 @@ export async function fetchClientsCuttingSchedules(
   searchTerm: string,
   cuttingDate: Date
 ) {
-  const sql = neon(`${process.env.DATABASE_URL}`);
-  console.log("Date of fetching cutting schedules  : ", cuttingDate)
-  // Calculate the cutting week (1 to 4) and day from cuttingDate
   const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1);
   const daysSinceStart = Math.floor(
     (cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
   );
-  const cuttingWeek = ((daysSinceStart % 28) / 7 + 1) | 0; // 28 days in a 4-week cycle
+  const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1;
   const daysOfWeek = [
     "Sunday",
     "Monday",
@@ -280,6 +257,8 @@ export async function fetchClientsCuttingSchedules(
     "Saturday",
   ];
   const cuttingDay = daysOfWeek[cuttingDate.getDay()];
+
+  const sql = neon(`${process.env.DATABASE_URL}`);
 
   const query = sql`
     WITH clients_with_balance AS (
@@ -293,16 +272,26 @@ export async function fetchClientsCuttingSchedules(
     clients_with_schedules AS (
       SELECT
         cwb.*,
-        COALESCE(cs.cutting_week, 0) AS cutting_week,
-        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
+        cs.cutting_week,
+        cs.cutting_day
       FROM clients_with_balance cwb
-      LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+      JOIN cutting_schedule cs ON cwb.id = cs.client_id
+      WHERE cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay}
+    ),
+    clients_marked_cut AS (
+      SELECT
+        ymc.client_id,
+        ymc.cutting_date
+      FROM yards_marked_cut ymc
+      WHERE ymc.cutting_date = ${cuttingDate}
     )
   `;
 
   let countQuery = sql`
     SELECT COUNT(DISTINCT cws.id) AS total_count
     FROM clients_with_schedules cws
+    LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
+    WHERE cmc.client_id IS NULL
   `;
 
   let selectQuery = sql`
@@ -317,6 +306,8 @@ export async function fetchClientsCuttingSchedules(
       cws.cutting_week,
       cws.cutting_day
     FROM clients_with_schedules cws
+    LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
+    WHERE cmc.client_id IS NULL
   `;
 
   const whereClauses = [];
@@ -330,14 +321,8 @@ export async function fetchClientsCuttingSchedules(
     `);
   }
 
-  // Filter by calculated cutting week and day
-  whereClauses.push(sql`
-    cws.cutting_week = ${cuttingWeek}
-    AND cws.cutting_day = ${cuttingDay}
-  `);
-
   if (whereClauses.length > 0) {
-    let whereClause = sql`WHERE ${whereClauses[0]}`;
+    let whereClause = sql`AND ${whereClauses[0]}`;
     if (whereClauses.length > 1) {
       whereClause = sql`${whereClause} AND ${whereClauses[1]}`;
     }
@@ -371,31 +356,32 @@ export async function fetchClientsCuttingSchedules(
 
   return { clientsResult, totalCount };
 }
+
 //MARK: Mark yard cut
 export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {
   console.log("Date of cutting : ", data.date)
   const sql = neon(`${process.env.DATABASE_URL}`);
 
-  const startOfYear = new Date(data.date.getFullYear(), 0, 1);
-  const daysSinceStart = Math.floor(
-    (data.date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-  );
-  const cuttingWeek = ((daysSinceStart % 28) / 7 + 1) | 0;
-  const daysOfWeek = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  const cuttingDay = daysOfWeek[data.date.getDay()];
+  // const startOfYear = new Date(data.date.getFullYear(), 0, 1);
+  // const daysSinceStart = Math.floor(
+  //   (data.date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+  // );
+  // // const cuttingWeek = ((daysSinceStart % 28) / 7 + 1) | 0;
+  // const daysOfWeek = [
+  //   "Sunday",
+  //   "Monday",
+  //   "Tuesday",
+  //   "Wednesday",
+  //   "Thursday",
+  //   "Friday",
+  //   "Saturday",
+  // ];
+  // const cuttingDay = daysOfWeek[data.date.getDay()];
 
   const result = await sql`
-    INSERT INTO yards_marked_cut (client_id, cutting_week, cutting_day)
-    VALUES (${data.clientId}, ${cuttingWeek}, ${cuttingDay})
-    ON CONFLICT (client_id, cutting_week) DO NOTHING
+    INSERT INTO yards_marked_cut (client_id, cutting_date)
+    VALUES (${data.clientId}, ${data.date})
+    ON CONFLICT (client_id, cutting_date) DO NOTHING
     RETURNING *;
   `;
 

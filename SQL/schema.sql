@@ -43,11 +43,12 @@ CREATE TABLE cutting_schedule (
 
 CREATE TABLE yards_marked_cut (
     id SERIAL PRIMARY KEY,
-    cutting_week INT NOT NULL,
-    cutting_day VARCHAR(10) NOT NULL,
+    -- cutting_week INT NOT NULL,
+    -- cutting_day VARCHAR(10) NOT NULL,
+    cutting_date DATE NOT NULL,
     client_id INT NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id),
-    UNIQUE (client_id, cutting_week)
+    UNIQUE (client_id, cutting_date)
 );
 SELECT * FROM yards_marked_cut;
 -- SELECT * FROM cutting_schedule;
