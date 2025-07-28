@@ -21,7 +21,8 @@ export async function FetchAllClients(clientPageNumber: number, searchTerm: stri
 export async function FetchCuttingClients(
   clientPageNumber: number,
   searchTerm: string,
-  cuttingDate: Date
+  cuttingDate: Date,
+  searchTermIsCut: boolean
 ): Promise<PaginatedClients | null> {
   const { orgId, userId } = await auth.protect();
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
@@ -32,7 +33,8 @@ export async function FetchCuttingClients(
     pageSize,
     offset,
     searchTerm,
-    cuttingDate
+    cuttingDate,
+    searchTermIsCut
   );
 
   if (!result.clientsResult) return null;

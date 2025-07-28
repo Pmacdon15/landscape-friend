@@ -7,7 +7,7 @@ export default function MarkYardCut({ clientId, cuttingDate }: { clientId: numbe
 
     return (
         <>
-            {isError && <p className="test-red-500">Error Marking Cut</p>}
+            {isError && <p className="text-red-500">Error Marking Cut</p>}
             <Button variant={'outline'} onClick={() => mutate({ clientId, date: cuttingDate })} disabled={isPending}>
                 Mark Yard Cut
             </Button>

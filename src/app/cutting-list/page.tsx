@@ -16,10 +16,11 @@ export default async function page({
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const cuttingDate = params.date ? new Date(String(params.date)) : new Date();
+    const searchTermIsCut = Boolean(params.cut ?? false);
 
     const { isAdmin } = await isOrgAdmin();
     if (!isAdmin) redirect("/")
-    const clientsPromise = FetchCuttingClients(clientListPage, searchTerm, cuttingDate);
+    const clientsPromise = FetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);
     const addressesPromise = FetchAllUnCutAddresses(cuttingDate);
 
     return (

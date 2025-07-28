@@ -240,7 +240,8 @@ export async function fetchClientsCuttingSchedules(
   pageSize: number,
   offset: number,
   searchTerm: string,
-  cuttingDate: Date
+  cuttingDate: Date,
+  searchTermIsCut: boolean
 ) {
   const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1);
   const daysSinceStart = Math.floor(
@@ -291,7 +292,7 @@ export async function fetchClientsCuttingSchedules(
     SELECT COUNT(DISTINCT cws.id) AS total_count
     FROM clients_with_schedules cws
     LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-    WHERE cmc.client_id IS NULL
+    WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
   `;
 
   let selectQuery = sql`
@@ -307,7 +308,7 @@ export async function fetchClientsCuttingSchedules(
       cws.cutting_day
     FROM clients_with_schedules cws
     LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-    WHERE cmc.client_id IS NULL
+    WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
   `;
 
   const whereClauses = [];
@@ -358,25 +359,8 @@ export async function fetchClientsCuttingSchedules(
 }
 
 //MARK: Mark yard cut
-export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {
-  console.log("Date of cutting : ", data.date)
+export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {  
   const sql = neon(`${process.env.DATABASE_URL}`);
-
-  // const startOfYear = new Date(data.date.getFullYear(), 0, 1);
-  // const daysSinceStart = Math.floor(
-  //   (data.date.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-  // );
-  // // const cuttingWeek = ((daysSinceStart % 28) / 7 + 1) | 0;
-  // const daysOfWeek = [
-  //   "Sunday",
-  //   "Monday",
-  //   "Tuesday",
-  //   "Wednesday",
-  //   "Thursday",
-  //   "Friday",
-  //   "Saturday",
-  // ];
-  // const cuttingDay = daysOfWeek[data.date.getDay()];
 
   const result = await sql`
     INSERT INTO yards_marked_cut (client_id, cutting_date)
@@ -388,6 +372,7 @@ export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, org
   if (result) revalidatePathAction("/cutting-list")
   return result;
 }
+
 //MARK: Send newsletter
 export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
   const sql = neon(process.env.DATABASE_URL!);
