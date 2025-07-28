@@ -7,8 +7,13 @@ import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
 import MarkYardCut from "../buttons/mark-yard-cut";
 
-export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage, cuttingDate }:
-    { clientsPromise: Promise<PaginatedClients | null>, addressesPromise: Promise<Address[] | null | Error>, clientListPage: number, cuttingDate: Date }) {
+export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsCut }:
+    {
+        clientsPromise: Promise<PaginatedClients | null>,
+        addressesPromise: Promise<Address[] | null | Error>,
+        clientListPage: number, cuttingDate: Date,
+        searchTermIsCut: boolean
+    }) {
 
     const result = await clientsPromise;
 
@@ -55,7 +60,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                                 <MapComponent address={client.address} />
                             </Suspense>
                         </li>
-                        <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />
+                        {!searchTermIsCut && <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />}
                     </ContentContainer>
                 ))}
             </ul >
