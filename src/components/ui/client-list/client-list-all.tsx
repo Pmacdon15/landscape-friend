@@ -3,24 +3,27 @@ import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { PaginationTabs } from "../pagination/pagination-tabs";
-import { CuttingWeekDropDownContainer } from "./cutting-week";
+import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
+import { Suspense } from "react";
+import Link from "next/link";
 
-export default async function ClientListAll({ clientsPromise, clientListPage }:
+export default async function ClientListAll({ clientsPromise, clientListPage, }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
 
   const { isAdmin } = await isOrgAdmin()
   const result = await clientsPromise;
 
   if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
-  const { clients, totalPages } = result;  
+  const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
 
+
   return (
     <>
-      <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <ContentContainer key={client.id}>
@@ -30,8 +33,18 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
                   <DeleteClientButton clientId={client.id} />
                 </div>}
               <p>Name: {client.full_name}</p>
-              <p>Phone Number: {client.phone_number}</p>
-              <p>Email: {client.email_address}</p>
+              <p>
+                Phone Number:{" "}
+                <Link href={`tel:${client.phone_number}`}>
+                  {client.phone_number}
+                </Link>
+              </p>
+              <p>
+                Email:{" "}
+                <Link href={`mailto:${client.email_address}`}>
+                  {client.email_address}
+                </Link>
+              </p>
               <p>Address: {client.address}</p>
               {isAdmin &&
                 <>
@@ -40,12 +53,14 @@ export default async function ClientListAll({ clientsPromise, clientListPage }:
                 </>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <MapComponent address={client.address} />
+              <Suspense fallback={<div>Loading...</div>}>
+                <MapComponent address={client.address} />
+              </Suspense>
             </li>
           </ContentContainer>
         ))}
       </ul >
-      <PaginationTabs clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
     </>
   );
 }

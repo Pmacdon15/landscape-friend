@@ -3,7 +3,8 @@ import { AddClientFormServerComponent } from "@/components/ui/client-list/add-cl
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import ContentContainer from "@/components/ui/containers/content-container";
-import { FetchAllClients } from "@/DAL/dal";
+import HeaderWithSearch from "@/components/ui/containers/header-with-search";
+import { FetchAllClients} from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
 
@@ -18,20 +19,20 @@ export default async function page({
     const searchTermCuttingWeek = Number(params.week ?? 0);
     const searchTermCuttingDay = String(params.day ?? '');
 
-    console.log("searchTerm: ", searchTerm)
     const { isAdmin } = await isOrgAdmin()
     const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    
     return (
         <>
             <ContentContainer>
-                <div className="flex justify-between">
-                    <h1 className="text-2xl">Client List</h1>
+                <HeaderWithSearch>
+                    <h1 className="flex text-2xl flex-shrink-0 items-center">Client List</h1>
                     <SearchForm />
-                </div>
+                </HeaderWithSearch>
             </ContentContainer>
             {isAdmin &&
                 <AddClientFormClientComponent>
-                    <AddClientFormServerComponent />``
+                    <AddClientFormServerComponent />
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>

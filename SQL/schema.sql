@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS yards_marked_cut CASCADE;
+
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
 
 DROP TABLE IF EXISTS payments CASCADE;
@@ -39,7 +41,18 @@ CREATE TABLE cutting_schedule (
     UNIQUE (client_id, cutting_week)
 );
 
-SELECT * FROM clients;
+CREATE TABLE yards_marked_cut (
+    id SERIAL PRIMARY KEY,
+    -- cutting_week INT NOT NULL,
+    -- cutting_day VARCHAR(10) NOT NULL,
+    cutting_date DATE NOT NULL,
+    client_id INT NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients (id),
+    UNIQUE (client_id, cutting_date)
+);
+-- SELECT * FROM yards_marked_cut;
+-- SELECT * FROM cutting_schedule;
+-- SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
@@ -53,123 +66,43 @@ INSERT INTO
         price_per_cut
     )
 VALUES (
-        'Emily Chen',
-        'emily.chen@example.com',
+        'Emily Lee',
+        'emily.lee@example.com',
         'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '1455 Market St, San Francisco, CA 94103',
-        '+1-415-555-0101',
+        '1534 26th Ave SW, Calgary, AB T2S 0J5',
+        '+1-403-123-4567',
         1.00
     ),
     (
-        'Ethan Patel',
-        'ethan.patel@example.com',
+        'Sarah Taylor',
+        'sarah.taylor@example.com',
         'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '350 5th Ave, New York, NY 10118',
-        '+1-212-555-0102',
+        '4567 Crowchild Trail NW, Calgary, AB T3B 0T4',
+        '+1-403-765-4321',
         1.00
     ),
     (
-        'Lily Tran',
-        'lily.tran@example.com',
+        'Michael Johnson',
+        'michael.johnson@example.com',
         'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '123 Main St, Austin, TX 78701',
-        '+1-512-555-0103',
+        '7890 Macleod Trail SE, Calgary, AB T2G 0B1',
+        '+1-403-901-2345',
         1.00
     ),
     (
-        'Noah Lee',
-        'noah.lee@example.com',
+        'Jessica Brown',
+        'jessica.brown@example.com',
         'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '100 University Ave, Toronto, ON M5J 2H6',
-        '+1-416-555-0104',
+        '9012 Banff Trail NW, Calgary, AB T3K 0B3',
+        '+1-403-111-2222',
         1.00
     ),
     (
-        'Ava Kim',
-        'ava.kim@example.com',
+        'William Wilson',
+        'william.wilson@example.com',
         'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '520 King St W, Toronto, ON M5V 1K4',
-        '+1-647-555-0105',
-        1.00
-    ),
-    (
-        'Oliver Garcia',
-        'oliver.garcia@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '200 S Wacker Dr, Chicago, IL 60606',
-        '+1-312-555-0106',
-        1.00
-    ),
-    (
-        'Sophia Rodriguez',
-        'sophia.rodriguez@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '777 S Figueroa St, Los Angeles, CA 90017',
-        '+1-213-555-0107',
-        1.00
-    ),
-    (
-        'William Martinez',
-        'william.martinez@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '1000 Main St, Houston, TX 77002',
-        '+1-713-555-0108',
-        1.00
-    ),
-    (
-        'Isabella Hernandez',
-        'isabella.hernandez@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '1600 Amphitheatre Pkwy, Mountain View, CA 94043',
-        '+1-650-555-0109',
-        1.00
-    ),
-    (
-        'James Wilson',
-        'james.wilson@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '1 Liberty Pl, Philadelphia, PA 19103',
-        '+1-215-555-0110',
-        1.00
-    ),
-    (
-        'Charlotte Taylor',
-        'charlotte.taylor@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '100 Queen St W, Toronto, ON M5H 2N2',
-        '+1-416-555-0111',
-        1.00
-    ),
-    (
-        'Benjamin Thomas',
-        'benjamin.thomas@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '200 King St W, Toronto, ON M5H 3T4',
-        '+1-647-555-0112',
-        1.00
-    ),
-    (
-        'Mia White',
-        'mia.white@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '500 Boylston St, Boston, MA 02116',
-        '+1-617-555-0113',
-        1.00
-    ),
-    (
-        'Lucas Harris',
-        'lucas.harris@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '10 Downing St, London, SW1A 2AA, UK',
-        '+44-20-7946-0114',
-        1.00
-    ),
-    (
-        'Amelia Clark',
-        'amelia.clark@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        '1 Infinite Loop, Cupertino, CA 95014',
-        '+1-408-555-0115',
+        '3456 14th St NW, Calgary, AB T2N 1M5',
+        '+1-403-333-4444',
         1.00
     );
 

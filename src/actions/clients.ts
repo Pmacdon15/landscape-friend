@@ -26,7 +26,7 @@ export async function addClient(formData: FormData) {
 }
 
 export async function deleteClient(clientId: number) {
-    await isOrgAdmin()
+    const { orgId, userId } = await isOrgAdmin()
 
     const validatedFields = schemaDeleteClient.safeParse({
         client_id: clientId
@@ -35,7 +35,7 @@ export async function deleteClient(clientId: number) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await deleteClientDB(validatedFields.data)
+        const result = await deleteClientDB(validatedFields.data, orgId || userId)
         if (!result) throw new Error('Delete Client');
         return result;
     } catch (e: unknown) {

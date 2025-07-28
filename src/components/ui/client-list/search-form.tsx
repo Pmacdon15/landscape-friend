@@ -1,104 +1,108 @@
-'use client'
+'use client';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { CuttingListDatePicker } from '../cutting-list/cutting-list-date-picker';
+import { CutStatusSelector } from '../selectors/cut-status-selector';
+import { days, weeks } from '@/lib/values';
+import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 
-export default function SearchForm() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
+export default function SearchForm({ isCuttingDayComponent = false }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-    const [cuttingWeek, setCuttingWeek] = useState(
-        searchParams.get('week') ? Number(searchParams.get('week')) : ''
-    );
-    const [cuttingDay, setCuttingDay] = useState(searchParams.get('day') || '');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [cuttingWeek, setCuttingWeek] = useState(
+    searchParams.get('week') ? Number(searchParams.get('week')) : ''
+  );
+  const [cuttingDay, setCuttingDay] = useState(searchParams.get('day') || '');
+  const [cuttingDate, setCuttingDate] = useState(
+    searchParams.get('date') || new Date().toISOString().slice(0, 10)
+  );
+  const [searchTermIsCut, setSearchTermIsCut] = useState(searchParams.get('is_cut') || '');
 
-    // Debounce effect for search input
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            const params = new URLSearchParams(searchParams.toString());            
-            if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
-            else params.delete('search');
-            router.replace(`?${params.toString()}`, { scroll: false });
-        }, 500); // 500ms debounce
+  // Set the date parameter on component mount if isCuttingDayComponent is true
+  useEffect(() => {
+    if (isCuttingDayComponent && !searchParams.get('date')) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('date', cuttingDate);
+      if (!params.get('page')) params.set('page', '1'); // Ensure page is set
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
+  }, [isCuttingDayComponent, searchParams, router, cuttingDate]);
 
-        return () => clearTimeout(timeout);
-    }, [debouncedSearchTerm, router, searchParams]);
+  // Debounce effect for search input
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
+      else params.delete('search');
+      if (!params.get('page')) params.set('page', '1'); // Preserve page
+      if (isCuttingDayComponent && cuttingDate) params.set('date', cuttingDate); // Preserve date
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }, 500);
 
-    // Immediate update for week and day
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = event.target;
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('page', '1'); // Reset clientListPage to 1
+    return () => clearTimeout(timeout);
+  }, [debouncedSearchTerm, router, searchParams, isCuttingDayComponent, cuttingDate]);
 
-        switch (name) {
-            case 'search':
-                setSearchTerm(value);
-                setDebouncedSearchTerm(value);
-                break;
+  // Handle input changes
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('page', '1'); // Reset page to 1 on any change
 
-            case 'week':
-                setCuttingWeek(value);
-                value ? params.set('week', value) : params.delete('week');
-                router.replace(`?${params.toString()}`, { scroll: false });
-                break;
+    if (name === 'search') {
+      setSearchTerm(value);
+      setDebouncedSearchTerm(value);
+    } else {
+      if (value) {
+        params.set(name, value);
+      } else {
+        params.delete(name);
+      }
+      if (name === 'week') setCuttingWeek(value);
+      if (name === 'day') setCuttingDay(value);
+      if (name === 'date') setCuttingDate(value);
+      if (name === 'is_cut') setSearchTermIsCut(value);
+    }
 
-            case 'day':
-                setCuttingDay(value);
-                value ? params.set('day', value) : params.delete('day');
-                router.replace(`?${params.toString()}`, { scroll: false });
-                break;
-
-            default:
-                break;
-        }
-
-        if (name === 'search') {
-            // No need to update params for search here since it's handled by the debounce effect
-            return;
-        }
-    };
-    return (
-        <div className="flex gap-2">
-            <input
-                name="search"
-                className="border rounded-sm p-2"
-                placeholder="Search"
-                value={searchTerm}
-                onChange={handleChange}
-            />
-            <div className="flex gap-2">
-                <label className="flex items-center">Cutting Week </label>
-                <select
-                    name="week"
-                    className="w-10 border rounded-sm text-center"
-                    value={cuttingWeek}
-                    onChange={handleChange}
-                >
-                    <option value="">All</option>
-                    {[1, 2, 3, 4].map((week) => (
-                        <option key={week} value={week}>
-                            {week}
-                        </option>
-                    ))}
-                </select>
-            </div>
-            <div className="flex gap-2">
-                <label className="flex items-center">Cutting Day </label>
-                <select
-                    name="day"
-                    className="w-28 border rounded-sm text-center"
-                    value={cuttingDay}
-                    onChange={handleChange}
-                >
-                    <option value="">All</option>
-                    {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                        <option className="text-left" key={day} value={day}>
-                            {day}
-                        </option>
-                    ))}
-                </select>
-            </div>
-        </div>
-    );
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+  return (
+    <div className="flex flex-col md:flex-row gap-2 justify-center ">
+      <input
+        name="search"
+        className="border rounded-sm p-1 sm:w-1/2 md:w-2/6"
+        placeholder="Search"
+        value={searchTerm}
+        onChange={handleChange}
+      />
+      {!isCuttingDayComponent ?
+        <>
+          <CuttingPeriodSelector
+            label="Cutting Week"
+            options={weeks}
+            value={cuttingWeek?.toString() || ''}
+            handleChange={handleChange}
+            name="week"
+          />
+          <CuttingPeriodSelector
+            label="Cutting Day"
+            options={days}
+            value={cuttingDay}
+            handleChange={handleChange}
+            name="day"
+          />
+        </>
+        :
+        <>
+          <CuttingListDatePicker
+            cuttingDate={cuttingDate}
+            onChange={handleChange}
+          />
+          <CutStatusSelector value={searchTermIsCut} onChange={handleChange} />
+        </>
+      }
+    </div>
+  );
 }

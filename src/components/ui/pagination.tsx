@@ -6,7 +6,7 @@ import {
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
@@ -41,10 +41,10 @@ function PaginationItem({ ...props }: React.ComponentProps<"li">) {
 type PaginationLinkProps = {
   className?: string;
   isActive?: boolean;
-  size?: "icon" | "default"; 
-  href: string; 
+  size?: "icon" | "default";
+  href: string;
   query?: { [key: string]: string | number | undefined }; // Add query prop
-} & Omit<React.ComponentProps<typeof Link>, 'href'>; 
+} & Omit<React.ComponentProps<typeof Link>, 'href'>;
 
 const PaginationLink = ({
   className,
@@ -61,7 +61,7 @@ const PaginationLink = ({
 
   return (
     <Link
-      href={linkHref} 
+      href={linkHref}
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}
