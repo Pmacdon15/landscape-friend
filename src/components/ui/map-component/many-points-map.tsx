@@ -1,35 +1,75 @@
+'use client'
 import { fetchGeocode } from "@/lib/geocode";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from 'react';
 
 interface MapComponentProps {
   addresses: string[];
 }
 
-export default async function ManyPointsMap({ addresses }: MapComponentProps) {
-  const geocodeResults = await Promise.all(addresses.map(fetchGeocode));
+interface Location {
+  lat: number;
+  lng: number;
+}
 
-  const validResults = geocodeResults.filter(result => !result.error);
+export default function ManyPointsMap({ addresses }: MapComponentProps) {
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
+  const [geocodeResults, setGeocodeResults] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (validResults.length === 0) {
-    return <div>Error: Unable to geocode addresses</div>;
+  useEffect(() => {
+    const getUserLocation = async () => {
+      try {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUserLocation();
+  }, []);
+
+  useEffect(() => {
+    const fetchGeocodes = async () => {
+      try {
+        const results = await Promise.all(addresses.map(fetchGeocode));
+        const validResults = results.filter(result => !result.error);
+        setGeocodeResults(validResults);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchGeocodes();
+  }, [addresses]);
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
+  if (!userLocation || !geocodeResults) {
+    return <div>Unable to get your location or geocode addresses</div>;
+  }
 
-
-  const center = validResults[0].coordinates;
-  const markers = validResults.map((result) => {
+  const center = geocodeResults[0].coordinates;
+  const markers = geocodeResults.map((result: any) => {
     const { coordinates } = result;
     return `markers=size:mid%7Ccolor:red%7C${coordinates?.lat},${coordinates?.lng}`;
   }).join('&');
+  const userMarker = `markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`;
+  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center?.lat},${center?.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
 
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center?.lat},${center?.lng}&zoom=&size=500x200&maptype=roadmap&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
+  const origin = `${userLocation.lat},${userLocation.lng}`;
+  const destination = `${geocodeResults[geocodeResults.length - 1].coordinates?.lat},${geocodeResults[geocodeResults.length - 1].coordinates?.lng}`;
+  const waypoints = geocodeResults.slice(0, -1).map((result: any) => `${result.coordinates?.lat},${result.coordinates?.lng}`).join('|');
 
-  const origin = validResults[0].coordinates;
-  const destination = validResults[validResults.length - 1].coordinates;
-  const waypoints = validResults.slice(1, -1).map(result => `${result.coordinates?.lat},${result.coordinates?.lng}`).join('|');
-
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin?.lat},${origin?.lng}&destination=${destination?.lat},${destination?.lng}&waypoints=${waypoints}&travelmode=driving`;
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;
 
   return (
     <div className="relative">
