@@ -263,7 +263,7 @@ export async function fetchClientsCuttingSchedules(
   cuttingDate: Date
 ) {
   const sql = neon(`${process.env.DATABASE_URL}`);
-
+  console.log("Date of fetching cutting schedules  : ", cuttingDate)
   // Calculate the cutting week (1 to 4) and day from cuttingDate
   const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1);
   const daysSinceStart = Math.floor(
@@ -373,6 +373,7 @@ export async function fetchClientsCuttingSchedules(
 }
 //MARK: Mark yard cut
 export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {
+  console.log("Date of cutting : ", data.date)
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const startOfYear = new Date(data.date.getFullYear(), 0, 1);

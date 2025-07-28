@@ -10,17 +10,19 @@ import Link from "next/link";
 import MarkYardCut from "../buttons/mark-yard-cut";
 
 export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage, cuttingDate }:
-    { clientsPromise: Promise<PaginatedClients | null>, addressesPromise: Promise<Address[] | null>, clientListPage: number, cuttingDate: Date }) {
+    { clientsPromise: Promise<PaginatedClients | null>, addressesPromise: Promise<Address[] | null | Error>, clientListPage: number, cuttingDate: Date }) {
 
     const result = await clientsPromise;
 
-    if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
+    if (!result) return <ContentContainer> <p className="text-red-500">Error Loading clients</p> </ContentContainer>
     const { clients, totalPages, totalClients } = result;
     if (clients.length < 1) return <ContentContainer> <p>No clients scheduled for today</p> </ContentContainer>
 
     const addresses = await addressesPromise;
+    if (addresses instanceof Error) return <ContentContainer><p className="text-red-500">{addresses.message}</p></ContentContainer>
+        
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
-
+    
     return (
         <>
 
@@ -54,7 +56,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                                 <MapComponent address={client.address} />
                             </Suspense>
                         </li>
-                    <MarkYardCut clientId={client.id} cuttingDate={cuttingDate}/>
+                        <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />
                     </ContentContainer>
                 ))}
             </ul >
