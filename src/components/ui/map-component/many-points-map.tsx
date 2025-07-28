@@ -15,6 +15,8 @@ export default async function ManyPointsMap({ addresses }: MapComponentProps) {
     return <div>Error: Unable to geocode addresses</div>;
   }
 
+
+
   const center = validResults[0].coordinates;
   const markers = validResults.map((result) => {
     const { coordinates } = result;
@@ -23,7 +25,11 @@ export default async function ManyPointsMap({ addresses }: MapComponentProps) {
 
   const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center?.lat},${center?.lng}&zoom=&size=500x200&maptype=roadmap&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
 
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&waypoints=${validResults.map(result => `${result.coordinates?.lat},${result.coordinates?.lng}`).join('|')}`;
+  const origin = validResults[0].coordinates;
+  const destination = validResults[validResults.length - 1].coordinates;
+  const waypoints = validResults.slice(1, -1).map(result => `${result.coordinates?.lat},${result.coordinates?.lng}`).join('|');
+
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin?.lat},${origin?.lng}&destination=${destination?.lat},${destination?.lng}&waypoints=${waypoints}&travelmode=driving`;
 
   return (
     <div className="relative">
