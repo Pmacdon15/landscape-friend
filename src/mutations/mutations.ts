@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, sendNewsLetter, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
+import { addClient, deleteClient, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
 import { markYardCut } from "@/actions/cuts";
+import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 
 export const useAddClient = () => {
     return useMutation({
@@ -54,6 +55,26 @@ export const useMarkYardCut = () => {
         onError: (error) => {
             console.error('Mutation error:', error);
         }
+    });
+};
+
+export const useSendEmailWithTemplate = ({
+    clientEmail,
+    onSuccess,
+}: {
+    clientEmail: string;
+    onSuccess?: () => void;
+}) => {
+    return useMutation({
+        mutationFn: (formData: FormData) => {
+            return sendEmailWithTemplate(formData, clientEmail);
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        },
+        onSuccess: () => {
+            onSuccess?.();
+        },
     });
 };
 

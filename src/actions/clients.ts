@@ -1,7 +1,7 @@
 'use server'
-import { addClientDB, deleteClientDB, sendNewsLetterDb, updatedClientPricePerCutDb, updatedClientCutDayDb } from "@/lib/db";
+import { addClientDB, deleteClientDB, updatedClientPricePerCutDb, updatedClientCutDayDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaSendNewsLetter, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -87,24 +87,3 @@ export async function updateCuttingDay(clientId: number, cuttingWeek: number, up
     }
 }
 
-export async function sendNewsLetter(formData: FormData) {
-    const { isAdmin, sessionClaims, userId } = await isOrgAdmin();
-
-    if (!isAdmin) throw new Error("Not Admin");
-
-    const validatedFields = schemaSendNewsLetter.safeParse({
-        title: formData.get("title"),
-        message: formData.get("message"),
-    });
-
-    if (!validatedFields.success) throw new Error("Invalid form data");
-
-    try {
-        const result = await sendNewsLetterDb(validatedFields.data, sessionClaims, userId)
-        if (!result) throw new Error('Failed to Send News Letter');
-        return result;
-    } catch (e: unknown) {
-        const errorMessage = e instanceof Error ? e.message : String(e);
-        throw new Error(errorMessage);
-    }
-}

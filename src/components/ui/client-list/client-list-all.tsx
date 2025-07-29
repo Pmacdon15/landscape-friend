@@ -8,6 +8,7 @@ import { Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
 import Link from "next/link";
+import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
 
 export default async function ClientListAll({ clientsPromise, clientListPage, }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
@@ -39,12 +40,10 @@ export default async function ClientListAll({ clientsPromise, clientListPage, }:
                   {client.phone_number}
                 </Link>
               </p>
-              <p>
+              <div>
                 Email:{" "}
-                <Link href={`mailto:${client.email_address}`}>
-                  {client.email_address}
-                </Link>
-              </p>
+                <ClientEmailPopover client={client} />
+              </div>
               <p>Address: {client.address}</p>
               {isAdmin &&
                 <>
