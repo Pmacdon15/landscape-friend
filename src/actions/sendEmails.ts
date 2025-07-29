@@ -1,6 +1,8 @@
 'use server'
+import { sendNewsLetterDb } from '@/lib/db';
 import { formatCompanyName, formatSenderEmailAddress, sendEmail } from '@/lib/resend';
-import { schemaSendNewsLetter } from '@/lib/zod/schemas';
+import { isOrgAdmin } from '@/lib/webhooks';
+import { schemaSendEmail } from '@/lib/zod/schemas';
 import { auth } from '@clerk/nextjs/server';
 
 export async function sendEmailWithTemplate(
@@ -14,7 +16,7 @@ export async function sendEmailWithTemplate(
             throw new Error('Invalid session claims');
         }
 
-        const validatedFields = schemaSendNewsLetter.safeParse({
+        const validatedFields = schemaSendEmail.safeParse({
             title: formData.get("title"),
             message: formData.get("message"),
             sender: formatSenderEmailAddress({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string }),
@@ -31,6 +33,30 @@ export async function sendEmailWithTemplate(
     } catch (error) {
         console.error('Error sending email:', error);
         return false;
+    }
+}
+
+
+export async function sendNewsLetter(formData: FormData) {
+    const { isAdmin, sessionClaims, userId } = await isOrgAdmin();
+
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const validatedFields = schemaSendEmail.safeParse({
+        title: formData.get("title"),
+        message: formData.get("message"),
+        sender: sessionClaims.userEmail
+    });
+
+    if (!validatedFields.success) throw new Error("Invalid form data");
+
+    try {
+        const result = await sendNewsLetterDb(validatedFields.data, sessionClaims, userId)
+        if (!result) throw new Error('Failed to Send News Letter');
+        return result;
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        throw new Error(errorMessage);
     }
 }
 

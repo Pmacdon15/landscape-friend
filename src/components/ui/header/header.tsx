@@ -10,7 +10,7 @@ export default function Header() {
                         <div
                             style={{
                                 backgroundImage: 'url(/lawn3.jpg)',
-                                backgroundPosition: '0% 50%', // Show the bottom half of the image
+                                backgroundPosition: '0% 20%', // Show the bottom half of the image
                             }}
                             className="p-2 border rounded-sm bg-background w-[50px] md:w-[100px]"
                         >

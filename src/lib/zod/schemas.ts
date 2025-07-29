@@ -16,12 +16,12 @@ export const schemaDeleteClient = z.object({
     client_id: z.number(),
 })
 
-export const schemaSendNewsLetter = z.object({
+export const schemaSendEmail = z.object({
     title: z.string(),
     message: z.string(),
-    sender: z.email().nullable(),
-    senderName: z.string().nullable(),
-    replyTo: z.email().nullable()
+    sender: z.email().optional(),
+    senderName: z.string().optional(),
+    replyTo: z.email().optional(),
 })
 
 export const schemaUpdateCuttingDay = z.object({

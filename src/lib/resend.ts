@@ -1,7 +1,7 @@
-import { auth } from "@clerk/nextjs/server";
+
 import { Resend } from "resend";
 import HeaderEmail from '@/components/ui/emails/header-email';
-import { schemaSendNewsLetter } from "./zod/schemas";
+import { schemaSendEmail } from "./zod/schemas";
 import z from "zod";
 
 interface SessionClaims {
@@ -29,7 +29,7 @@ export function formatCompanyName(sessionClaims: SessionClaims) {
 export async function sendEmail(
     clientsEmail: string,
     companyName: string,
-    data: z.infer<typeof schemaSendNewsLetter>
+    data: z.infer<typeof schemaSendEmail>
 ) {
     const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -58,7 +58,7 @@ export async function sendEmail(
     }
 }
 
-export async function sendGroupEmail(companyName: string, clientsEmails: string[], data: z.infer<typeof schemaSendNewsLetter>) {
+export async function sendGroupEmail(companyName: string, clientsEmails: string[], data: z.infer<typeof schemaSendEmail>) {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 

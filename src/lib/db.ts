@@ -1,5 +1,5 @@
 import { Account, Address, Client, Email } from "@/types/types";
-import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendNewsLetter, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
+import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import revalidatePathAction from "@/actions/revalidatePath";
@@ -382,7 +382,7 @@ export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, org
 }
 
 //MARK: Send newsletter
-export async function sendNewsLetterDb(data: z.infer<typeof schemaSendNewsLetter>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
+export async function sendNewsLetterDb(data: z.infer<typeof schemaSendEmail>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
   const sql = neon(process.env.DATABASE_URL!);
   const baseName = String(sessionClaims.orgName || sessionClaims.userFullName || "Your-LandScaper");
   const senderName = baseName.replace(/\s+/g, '-');

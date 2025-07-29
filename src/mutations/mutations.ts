@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, sendNewsLetter, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
+import { addClient, deleteClient, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
 import { markYardCut } from "@/actions/cuts";
-import { sendEmailWithTemplate } from "@/actions/sendEmails";
+import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 
 export const useAddClient = () => {
     return useMutation({
