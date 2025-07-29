@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
 import MarkYardCut from "../buttons/mark-yard-cut";
+import { ClientEmailPopover } from "../popovers/client-email-popover";
 
 export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsCut }:
     {
@@ -45,16 +46,14 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                             <p>Name: {client.full_name}</p>
                             <p>
                                 Phone Number:{" "}
-                                <Link href={`tel:${client.phone_number}`}>
+                                <Link className="cursor-pointer text-blue-600 hover:underline" href={`tel:${client.phone_number}`}>
                                     {client.phone_number}
                                 </Link>
                             </p>
-                            <p>
+                            <div>
                                 Email:{" "}
-                                <Link href={`send-client-email/${client.email_address}/${client.full_name}`}>
-                                    {client.email_address}
-                                </Link>
-                            </p>
+                                <ClientEmailPopover client={client} />
+                            </div>
                             <p>Address: {client.address}</p>
                             <Suspense fallback={<div>Loading...</div>}>
                                 <MapComponent address={client.address} />

@@ -36,7 +36,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, }:
               <p>Name: {client.full_name}</p>
               <p>
                 Phone Number:{" "}
-                <Link href={`tel:${client.phone_number}`}>
+                <Link className="cursor-pointer text-blue-600 hover:underline" href={`tel:${client.phone_number}`}>
                   {client.phone_number}
                 </Link>
               </p>
