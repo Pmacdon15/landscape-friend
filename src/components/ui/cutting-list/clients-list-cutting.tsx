@@ -51,7 +51,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                             </p>
                             <p>
                                 Email:{" "}
-                                <Link href={`mailto:${client.email_address}`}>
+                                <Link href={`send-client-email/${client.email_address}/${client.full_name}`}>
                                     {client.email_address}
                                 </Link>
                             </p>

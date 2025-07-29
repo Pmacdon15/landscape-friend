@@ -66,9 +66,16 @@ export async function sendGroupEmail(companyName: string, clientsEmails: string[
         resend.emails.send({
             from: `${companyName}@lawn-buddy.patmac.ca`,
             to: clientsEmails,
-            subject: data.title,
-            html: data.message,
-            replyTo: `${data.sender}`
+            subject: 'News Letter',
+            // html: data.message,
+            replyTo: `${data.sender}`,
+            react: HeaderEmail({
+                    text: data.message,
+                    title: data.title,
+                    senderName: `${data.senderName || 'Your Landscaper'}`,
+                    companyName: `${companyName || 'Your Landscaper'}`,
+                }) as React.ReactElement,
+            
         });
     } catch (e) {
         console.error(e, "Error sending email")

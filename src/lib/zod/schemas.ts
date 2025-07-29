@@ -19,8 +19,8 @@ export const schemaDeleteClient = z.object({
 export const schemaSendEmail = z.object({
     title: z.string(),
     message: z.string(),
-    sender: z.email().optional(),
-    senderName: z.string().optional(),
+    sender: z.email(),
+    senderName: z.string(),
     replyTo: z.email().optional(),
 })
 

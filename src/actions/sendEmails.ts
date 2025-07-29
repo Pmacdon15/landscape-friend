@@ -45,7 +45,8 @@ export async function sendNewsLetter(formData: FormData) {
     const validatedFields = schemaSendEmail.safeParse({
         title: formData.get("title"),
         message: formData.get("message"),
-        sender: sessionClaims.userEmail
+        sender: sessionClaims.userEmail,
+        senderName: sessionClaims.userFullName
     });
 
     if (!validatedFields.success) throw new Error("Invalid form data");

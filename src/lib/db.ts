@@ -4,7 +4,7 @@ import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { JwtPayload } from "@clerk/types";
-import {  sendGroupEmail } from "./resend";
+import { sendGroupEmail } from "./resend";
 
 //MARK: Add clients
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
@@ -385,7 +385,7 @@ export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, org
 export async function sendNewsLetterDb(data: z.infer<typeof schemaSendEmail>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
   const sql = neon(process.env.DATABASE_URL!);
   const baseName = String(sessionClaims.orgName || sessionClaims.userFullName || "Your-LandScaper");
-  const senderName = baseName.replace(/\s+/g, '-');
+  const companyName = baseName.replace(/\s+/g, '-');
 
   const emails = await sql`
         SELECT email_address FROM clients WHERE organization_id = ${sessionClaims.orgId || userId}
@@ -394,7 +394,7 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendEmail>, se
   const emailList = emails.map(email => email.email_address);
 
   try {
-    sendGroupEmail(senderName, emailList, data);
+    sendGroupEmail(companyName, emailList, data);
     return true;
   } catch (error) {
     console.error(error);
