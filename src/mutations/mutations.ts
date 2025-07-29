@@ -58,10 +58,9 @@ export const useMarkYardCut = () => {
     });
 };
 
-export const useSendEmailWithTemplate = (clientsEmail: string[]) => {
+export const useSendEmailWithTemplate = (clientsEmail: string) => {
     return useMutation({
         mutationFn: (formData: FormData) => {
-            console.log('clientsEmail:', clientsEmail);
             return sendEmailWithTemplate(formData, clientsEmail);
         },
         onError: (error) => {

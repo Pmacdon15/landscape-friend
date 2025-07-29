@@ -2,7 +2,7 @@
 import { useSendEmailWithTemplate } from "@/mutations/mutations";
 import { Button } from "../button";
 
-export default function SendClientEmailButton({ clientEmail }: { clientEmail: string[] }) {
+export default function SendClientEmailButton({ clientEmail }: { clientEmail: string }) {
     const { mutate, isPending } = useSendEmailWithTemplate(clientEmail)
 
     if (!clientEmail.length) {

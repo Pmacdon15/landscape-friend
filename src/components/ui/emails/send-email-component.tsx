@@ -4,7 +4,7 @@ import ContentContainer from "../containers/content-container";
 import { InputField } from "../inputs/input";
 
 export default function SendEmailComponent({ clientEmail, clientName }: { clientEmail?: string, clientName?: string }) {
-    console.log("ClientEmail: ", clientEmail)
+    
     return (
         <ContentContainer>
             {!clientName ? <h1 className="text-2xl">Send a group email to your clients</h1> : <h1 className="text-2xl">Send an Email to {clientName}</h1>}
@@ -12,7 +12,7 @@ export default function SendEmailComponent({ clientEmail, clientName }: { client
                 <InputField id={"title"} name={"title"} type={"text"} placeholder={"Title"} />
                 <textarea className="border rounded sm p-2 bg-white" id={"message"} name="message" placeholder="Your message" />
                 <div className="flex justify-center w-full">
-                    {clientEmail === undefined ? <h1>test</h1> : <SendClientEmailButton clientEmail={[clientEmail as string]} />}
+                    {clientEmail === undefined ? <SendNewsLetterButton /> : <SendClientEmailButton clientEmail={clientEmail} />}
                 </div>
             </form>
         </ContentContainer>

@@ -14,7 +14,7 @@ export default function Header() {
                             }}
                             className="p-2 border rounded-sm bg-background w-[50px] md:w-[100px]"
                         >
-                            <Image src='/lawn-mower.png' height={100} width={100} alt={"logo"} />
+                            <Image src='/logo.png' height={100} width={100} alt={"logo"} />
                         </div>
                     </div>
                     <div className="text-2xl md:text-4xl p-2 md:p-6">
