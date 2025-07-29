@@ -3,17 +3,22 @@ import * as Popover from '@radix-ui/react-popover';
 import SendEmailComponent from "@/components/ui/emails/send-email-component";
 import { Client } from '@/types/types';
 import { useState } from 'react';
+import ContentContainer from '../containers/content-container';
 
 export const ClientEmailPopover = ({ client }: { client: Client }) => {
     const [open, setOpen] = useState(false);
     const [emailSent, setEmailSent] = useState(false);
 
-    const handleEmailSent = () => {
-        setEmailSent(true);
-        setTimeout(() => {
+    const closePopOver = (success = true) => {
+        if (success) {
+            setEmailSent(true);
+            setTimeout(() => {
+                setOpen(false);
+                setEmailSent(false);
+            }, 1000);
+        } else {
             setOpen(false);
-            setEmailSent(false);
-        }, 2000);
+        }
     };
 
     return (
@@ -27,17 +32,22 @@ export const ClientEmailPopover = ({ client }: { client: Client }) => {
                 className="w-[90vw] md:w-5/6 max-h-[90vh] p-4 "
                 sideOffset={4}
             >
-                <SendEmailComponent
-                    popover
-                    clientEmail={client.email_address}
-                    clientName={client.full_name}
-                    onEmailSent={handleEmailSent}
-                />
-                {emailSent && (
-                    <div className="text-green-500 text-center mt-4">
-                        Email sent successfully!
-                    </div>
-                )}
+                <div className='flex flex-col gap-4'>
+                    {emailSent &&
+                        <ContentContainer popover>
+                            <div className="text-green-500 text-center mt-4">
+                                Email sent successfully!
+                            </div>
+                        </ContentContainer>
+                    }
+                    <SendEmailComponent
+                        popover
+                        clientEmail={client.email_address}
+                        clientName={client.full_name}
+                        onEmailSent={closePopOver}
+                    />
+                </div>
+
             </Popover.Content>
         </Popover.Root>
     );
