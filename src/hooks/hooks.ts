@@ -1,4 +1,4 @@
-import { FetchGeocodeResult, GeocodeResult, MutationData } from '@/types/types';
+import { FetchGeocodeResult, GeocodeResult, MutationData, Location } from '@/types/types';
 import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -53,16 +53,20 @@ export function useGetLocation(): { userLocation: Location | null } {
 
   useEffect(() => {
     const getUserLocation = async () => {
-      try {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-        });
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      } catch (error) {
-        console.error('Geolocation error:', error);
+      if (navigator.geolocation) {
+        try {
+          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        } catch (error) {
+          console.error('Geolocation error:', error);
+        }
+      } else {
+        console.error('Geolocation is not supported by this browser.');
       }
     };
     getUserLocation();
@@ -71,8 +75,8 @@ export function useGetLocation(): { userLocation: Location | null } {
   return { userLocation };
 }
 
-export function useGetLonAndLatFromAddresses(addresses: string[]): { loading: boolean; geocodeResults: GeocodeResult[] | null } {
-  const [geocodeResults, setGeocodeResults] = useState<GeocodeResult[] | null>(null);
+export function useGetLonAndLatFromAddresses(addresses: string[]): { loading: boolean; geocodeResults: GeocodeResult[] } {
+  const [geocodeResults, setGeocodeResults] = useState<GeocodeResult[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

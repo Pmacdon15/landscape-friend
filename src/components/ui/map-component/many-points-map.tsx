@@ -18,7 +18,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     return <div>Error: Google Maps API key is missing</div>;
   }
 
-  if (!userLocation || !geocodeResults || geocodeResults.length === 0) {
+  if (!userLocation || geocodeResults.length === 0) {
     return <div>Unable to get your location or geocode addresses</div>;
   }
 
