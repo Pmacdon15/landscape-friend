@@ -26,10 +26,8 @@ export default async function page({
     return (
         <>
             <FormContainer>
-                <HeaderWithSearch>
-                    <FormHeader text={"Client List"} />
-                    <SearchForm />
-                </HeaderWithSearch>
+                <FormHeader text={"Client List"} />
+                <SearchForm />
             </FormContainer>
             {isAdmin &&
                 <AddClientFormClientComponent>

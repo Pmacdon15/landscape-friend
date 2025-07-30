@@ -1,5 +1,4 @@
 import SearchForm from "@/components/ui/client-list/search-form";
-import ContentContainer from "@/components/ui/containers/content-container";
 import FormContainer from "@/components/ui/containers/form-container";
 import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import ClientListCutting from "@/components/ui/cutting-list/clients-list-cutting";
