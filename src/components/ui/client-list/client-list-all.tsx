@@ -10,6 +10,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
 import FormContainer from "../containers/form-container";
+import FormHeader from "../header/form-header";
 
 export default async function ClientListAll({ clientsPromise, clientListPage, }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
@@ -28,7 +29,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, }:
       <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
-          <FormContainer  key={client.id}>
+          <FormContainer key={client.id}>
             <li className="border p-4 rounded-sm relative bg-white/50">
               {isAdmin &&
                 <div className="absolute top-1 right-1">
@@ -53,7 +54,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, }:
                 </>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<FormContainer><FormHeader text="Loading..." /></FormContainer>}>
                 <MapComponent address={client.address} />
               </Suspense>
             </li>
