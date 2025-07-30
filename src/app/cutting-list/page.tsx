@@ -33,7 +33,7 @@ export default async function page({
                     <SearchForm isCuttingDayComponent={true} />
                 </ HeaderWithSearch>
             </FormContainer>
-            <Suspense fallback={<ContentContainer><FormHeader text={"Loading..."} /></ContentContainer>}>
+            <Suspense fallback={<FormContainer><FormHeader text="Loading..." /></FormContainer>}>
                 <ClientListCutting
                     clientsPromise={clientsPromise}
                     addressesPromise={addressesPromise}
