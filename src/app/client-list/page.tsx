@@ -2,7 +2,6 @@ import AddClientFormClientComponent from "@/components/ui/client-list/add-client
 import { AddClientFormServerComponent } from "@/components/ui/client-list/add-client-form-server-component";
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
-import ContentContainer from "@/components/ui/containers/content-container";
 import FormContainer from "@/components/ui/containers/form-container";
 import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import FormHeader from "@/components/ui/header/form-header";

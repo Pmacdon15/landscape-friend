@@ -1,4 +1,3 @@
-import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import { Address, Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
