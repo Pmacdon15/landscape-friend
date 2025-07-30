@@ -1,14 +1,15 @@
-import ContentContainer from "@/components/ui/containers/content-container";
+import FormContainer from "@/components/ui/containers/form-container";
+import FormHeader from "@/components/ui/header/form-header";
 
 export default function Loading() {
     return (
         <>
-            <ContentContainer>
-                <h1 className="text-2xl">Client List</h1>
-            </ContentContainer>
-            <ContentContainer>
-                <h1 className="text-2xl">Loading...</h1>
-            </ContentContainer>
+            <FormContainer>                
+                <FormHeader text="Client List"/>
+            </FormContainer>
+            <FormContainer>
+                <FormHeader text="Loading..."/>
+            </FormContainer>
         </>
     );
 }

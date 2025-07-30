@@ -3,8 +3,10 @@ import { AddClientFormServerComponent } from "@/components/ui/client-list/add-cl
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import ContentContainer from "@/components/ui/containers/content-container";
+import FormContainer from "@/components/ui/containers/form-container";
 import HeaderWithSearch from "@/components/ui/containers/header-with-search";
-import { FetchAllClients} from "@/DAL/dal";
+import FormHeader from "@/components/ui/header/form-header";
+import { FetchAllClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
 
@@ -21,21 +23,21 @@ export default async function page({
 
     const { isAdmin } = await isOrgAdmin()
     const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
-    
+
     return (
         <>
-            <ContentContainer>
+            <FormContainer>
                 <HeaderWithSearch>
-                    <h1 className="flex text-2xl flex-shrink-0 items-center">Client List</h1>
+                    <FormHeader text={"Client List"} />
                     <SearchForm />
                 </HeaderWithSearch>
-            </ContentContainer>
+            </FormContainer>
             {isAdmin &&
                 <AddClientFormClientComponent>
                     <AddClientFormServerComponent />
                 </AddClientFormClientComponent>
             }
-            <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
+            <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListAll clientsPromise={clientsPromise} clientListPage={clientListPage} />
             </Suspense>
         </>

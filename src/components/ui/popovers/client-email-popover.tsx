@@ -34,14 +34,14 @@ export const ClientEmailPopover = ({ client }: { client: Client }) => {
             >
                 <div className='flex flex-col gap-4'>
                     {emailSent &&
-                        <ContentContainer popover>
+                        <ContentContainer >
                             <div className="text-green-500 text-center mt-4">
                                 Email sent successfully!
                             </div>
                         </ContentContainer>
                     }
                     <SendEmailComponent
-                        popover
+                        popover={true}
                         clientEmail={client.email_address}
                         clientName={client.full_name}
                         onEmailSent={closePopOver}

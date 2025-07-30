@@ -1,7 +1,9 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import ContentContainer from "@/components/ui/containers/content-container";
+import FormContainer from "@/components/ui/containers/form-container";
 import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import ClientListCutting from "@/components/ui/cutting-list/clients-list-cutting";
+import FormHeader from "@/components/ui/header/form-header";
 import { FetchAllUnCutAddresses, FetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
@@ -25,19 +27,19 @@ export default async function page({
 
     return (
         <>
-            <ContentContainer>
+            <FormContainer>
                 <HeaderWithSearch>
-                    <h1 className="flex text-2xl flex-shrink-0 items-center">Client Cutting List</h1>
+                    <FormHeader text={"Cutting List"} />
                     <SearchForm isCuttingDayComponent={true} />
                 </ HeaderWithSearch>
-            </ContentContainer>
-            <Suspense fallback={<ContentContainer>Loading...</ContentContainer>}>
+            </FormContainer>
+            <Suspense fallback={<ContentContainer><FormHeader text={"Loading..."} /></ContentContainer>}>
                 <ClientListCutting
-                 clientsPromise={clientsPromise} 
-                 addressesPromise={addressesPromise} 
-                 clientListPage={clientListPage} 
-                 cuttingDate={cuttingDate} 
-                 searchTermIsCut={searchTermIsCut} />
+                    clientsPromise={clientsPromise}
+                    addressesPromise={addressesPromise}
+                    clientListPage={clientListPage}
+                    cuttingDate={cuttingDate}
+                    searchTermIsCut={searchTermIsCut} />
             </Suspense>
         </>
     );

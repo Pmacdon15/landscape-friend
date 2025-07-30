@@ -9,6 +9,7 @@ import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
+import FormContainer from "../containers/form-container";
 
 export default async function ClientListAll({ clientsPromise, clientListPage, }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
@@ -27,14 +28,14 @@ export default async function ClientListAll({ clientsPromise, clientListPage, }:
       <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
-          <ContentContainer key={client.id}>
-            <li className="border p-4 rounded-sm relative">
+          <FormContainer  key={client.id}>
+            <li className="border p-4 rounded-sm relative bg-white/50">
               {isAdmin &&
                 <div className="absolute top-1 right-1">
                   <DeleteClientButton clientId={client.id} />
                 </div>}
               <p>Name: {client.full_name}</p>
-              <p>
+              <p className="flex flex-col sm:flex-row">
                 Phone Number:{" "}
                 <Link className="cursor-pointer text-blue-600 hover:underline" href={`tel:${client.phone_number}`}>
                   {client.phone_number}
@@ -56,7 +57,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, }:
                 <MapComponent address={client.address} />
               </Suspense>
             </li>
-          </ContentContainer>
+          </FormContainer>
         ))}
       </ul >
       <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />

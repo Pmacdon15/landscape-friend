@@ -1,5 +1,6 @@
 import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import Image from 'next/image'
+import HeaderTitle from './header-title';
 
 export default function Header() {
     return (
@@ -17,9 +18,10 @@ export default function Header() {
                             <Image src='/logo.png' height={100} width={100} alt={"logo"} />
                         </div>
                     </div>
-                    <div className="text-2xl md:text-4xl p-2 md:p-6">
+                    {/* <div className="text-2xl md:text-4xl p-2 md:p-6">
                         <span>Lawn Buddy</span>
-                    </div>
+                    </div> */}
+                    <HeaderTitle text='Lawn Buddy' />
                     <SignedIn>
                         <div className="flex items-center gap-2">
                             <UserButton />

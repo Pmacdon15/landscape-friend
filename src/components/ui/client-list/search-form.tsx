@@ -69,7 +69,7 @@ export default function SearchForm({ isCuttingDayComponent = false }) {
     router.replace(`?${params.toString()}`, { scroll: false });
   };
   return (
-    <div className="flex flex-col md:flex-row gap-2 justify-center ">
+    <div className="flex flex-col md:flex-row gap-2 justify-center bg-white/50 p-2 rounded-sm shadow-lg">
       <input
         name="search"
         className="border rounded-sm p-1 sm:w-1/2 md:w-2/6"
