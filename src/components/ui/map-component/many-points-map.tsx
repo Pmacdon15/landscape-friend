@@ -1,87 +1,17 @@
 'use client';
-import { fetchGeocode } from '@/lib/geocode';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-
-interface MapComponentProps {
-  addresses: string[];
-}
-
-interface Location {
-  lat: number;
-  lng: number;
-}
-
-interface GeocodeResult {
-  coordinates: Location;
-  error?: string;
-  zoom?: number;
-}
-
-// Match the actual return type of fetchGeocode based on error messages
-type FetchGeocodeResult =
-  | {
-      coordinates: Location;
-      zoom: number;
-      error: boolean;
-    }
-  | {
-      error: string | boolean;
-      coordinates?: never;
-      zoom?: never;
-    };
+import FormHeader from '../header/form-header';
+import { useGetLocation, useGetLonAndLatFromAddresses } from '@/hooks/hooks';
+import { GeocodeResult, MapComponentProps } from '@/types/types';
 
 export default function ManyPointsMap({ addresses }: MapComponentProps) {
-  const [userLocation, setUserLocation] = useState<Location | null>(null);
-  const [geocodeResults, setGeocodeResults] = useState<GeocodeResult[] | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const getUserLocation = async () => {
-      try {
-        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-        });
-        setUserLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-      } catch (error) {
-        console.error('Geolocation error:', error);
-      }
-    };
-    getUserLocation();
-  }, []);
-
-  useEffect(() => {
-    const fetchGeocodes = async () => {
-      try {
-        const results = await Promise.all(addresses.map(fetchGeocode));
-        // Filter valid results and convert to GeocodeResult
-        const validResults = results
-          .filter(
-            (result): result is FetchGeocodeResult & { coordinates: Location } =>
-              !!result.coordinates && result.error === false
-          )
-          .map(
-            (result): GeocodeResult => ({
-              coordinates: result.coordinates,
-              error: typeof result.error === 'string' ? result.error : undefined,
-              zoom: result.zoom,
-            })
-          );
-        setGeocodeResults(validResults);
-        setLoading(false);
-      } catch (error) {
-        console.error('Geocode error:', error);
-      }
-    };
-    fetchGeocodes();
-  }, [addresses]);
+  const { userLocation } = useGetLocation()
+  const { loading, geocodeResults } = useGetLonAndLatFromAddresses(addresses);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <FormHeader text="Loading . . ." />;
   }
 
   if (!process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY) {
@@ -101,7 +31,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     })
     .join('&');
   const userMarker = `markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`;
-   
+
   const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
 
   const origin = `${userLocation.lat},${userLocation.lng}`;
@@ -133,3 +63,4 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     </div>
   );
 }
+

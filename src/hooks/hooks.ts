@@ -1,6 +1,6 @@
-import { MutationData } from '@/types/types';
+import { FetchGeocodeResult, GeocodeResult, MutationData } from '@/types/types';
 import { useState, useEffect } from 'react';
-
+import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export const useDebouncedMutation = (mutate: (data: MutationData) => void, delay: number = 500) => {
@@ -46,4 +46,60 @@ export function useDebouncedValue<T>(value: T, delay: number): T {
   }, [value, delay]);
 
   return debouncedValue;
+}
+
+export function useGetLocation(): { userLocation: Location | null } {
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
+
+  useEffect(() => {
+    const getUserLocation = async () => {
+      try {
+        const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      } catch (error) {
+        console.error('Geolocation error:', error);
+      }
+    };
+    getUserLocation();
+  }, []);
+
+  return { userLocation };
+}
+
+export function useGetLonAndLatFromAddresses(addresses: string[]): { loading: boolean; geocodeResults: GeocodeResult[] | null } {
+  const [geocodeResults, setGeocodeResults] = useState<GeocodeResult[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGeocodes = async () => {
+      try {
+        const results = await Promise.all(addresses.map(fetchGeocode));
+        const validResults = results
+          .filter(
+            (result): result is FetchGeocodeResult & { coordinates: Location } =>
+              !!result.coordinates && result.error === false
+          )
+          .map(
+            (result): GeocodeResult => ({
+              coordinates: result.coordinates,
+              error: typeof result.error === 'string' ? result.error : undefined,
+              zoom: result.zoom,
+            })
+          );
+        setGeocodeResults(validResults);
+        setLoading(false);
+      } catch (error) {
+        console.error('Geocode error:', error);
+        setLoading(false);
+      }
+    };
+    fetchGeocodes();
+  }, [addresses]);
+
+  return { loading, geocodeResults };
 }
