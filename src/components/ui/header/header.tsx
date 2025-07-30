@@ -1,5 +1,4 @@
 import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
-import Image from 'next/image'
 import HeaderTitle from './header-title';
 import HeaderImageIco from './header-image-ico';
 

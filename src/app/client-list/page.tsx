@@ -3,7 +3,6 @@ import { AddClientFormServerComponent } from "@/components/ui/client-list/add-cl
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
-import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import FormHeader from "@/components/ui/header/form-header";
 import { FetchAllClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
