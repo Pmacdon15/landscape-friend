@@ -12,7 +12,7 @@ export default function AddClientFormClientComponent({
     return (
 
         <FormContainer>
-            <div className="flex flex-col gap-4">
+            <div className={`flex flex-col ${showForm ? 'px-3' : 'px-0'}`}>
                 {showForm && children}
                 <ShowAddClientFormButton showForm={showForm} setShowForm={setShowForm} />
             </div>
