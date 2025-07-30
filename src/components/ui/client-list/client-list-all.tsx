@@ -54,7 +54,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, }:
                 </>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <Suspense fallback={<FormContainer><FormHeader text="Loading..." /></FormContainer>}>
+              <Suspense fallback={<FormHeader text="Loading..." />}>
                 <MapComponent address={client.address} />
               </Suspense>
             </li>
