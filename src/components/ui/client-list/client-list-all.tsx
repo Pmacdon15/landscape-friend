@@ -12,10 +12,9 @@ import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popove
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 
-export default async function ClientListAll({ clientsPromise, clientListPage, }:
-  { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number }) {
+export default async function ClientListAll({ clientsPromise, clientListPage, isAdmin }:
+  { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number, isAdmin: boolean }) {
 
-  const { isAdmin } = await isOrgAdmin()
   const result = await clientsPromise;
 
   if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>

@@ -13,13 +13,16 @@ export default async function page({
 }: {
     searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>
 }) {
-    const params = await searchParams;
+    const [{ isAdmin }, params] = await Promise.all([
+        isOrgAdmin(),
+        searchParams,
+    ]);
+
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const searchTermCuttingWeek = Number(params.week ?? 0);
     const searchTermCuttingDay = String(params.day ?? '');
 
-    const { isAdmin } = await isOrgAdmin()
     const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
 
     return (
@@ -34,7 +37,7 @@ export default async function page({
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
-                <ClientListAll clientsPromise={clientsPromise} clientListPage={clientListPage} />
+                <ClientListAll clientsPromise={clientsPromise} clientListPage={clientListPage} isAdmin={isAdmin} />
             </Suspense>
         </>
     );

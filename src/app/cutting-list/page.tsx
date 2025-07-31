@@ -13,13 +13,16 @@ export default async function page({
 }: {
     searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>;
 }) {
-    const params = await searchParams;
+    const [{ isAdmin }, params] = await Promise.all([
+        isOrgAdmin(),
+        searchParams,
+    ]);
+
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const cuttingDate = params.date ? new Date(String(params.date)) : new Date();
     const searchTermIsCut = params.is_cut === 'true';
 
-    const { isAdmin } = await isOrgAdmin();
     if (!isAdmin) redirect("/")
     const clientsPromise = FetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);
     const addressesPromise = FetchAllUnCutAddresses(cuttingDate);
