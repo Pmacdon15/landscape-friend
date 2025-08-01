@@ -1,6 +1,8 @@
 import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import HeaderTitle from './header-title';
 import HeaderImageIco from './header-image-ico';
+import Link from 'next/link';
+import { NavBar } from '../nav/nav-bar';
 
 export default function Header() {
     return (
@@ -8,13 +10,16 @@ export default function Header() {
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
                 <div className='flex  w-full justify-baseline relative'>
                     <div className="flex flex-col items-center justify-center h-full">
-                        <HeaderImageIco />
+                        <Link href='/'>
+                            <HeaderImageIco />
+                        </Link>
                     </div>
                     <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-fit'>
                         <HeaderTitle text='Lawn Buddy' />
-                    </div>
+                    </div>                    
                 </div>
-                <div className='flex justify-end border-t w-full pt-2'>
+                <div className='flex justify-between border-t w-full pt-2'>
+                    <NavBar/>
                     <SignedIn>
                         <div className="flex items-center gap-2">
                             <UserButton />
