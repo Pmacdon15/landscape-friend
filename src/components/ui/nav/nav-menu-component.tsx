@@ -44,7 +44,7 @@ export default function NavigationMenuComponent() {
                         <ul className="grid w-[300px] gap-4">
                             <li>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/send-news-letter">
+                                    <Link href="/email/news-letter">
                                         <div className="font-medium">Send News Letter</div>
                                         <div className="text-muted-foreground">
                                             Send all clients an update email.
@@ -52,7 +52,7 @@ export default function NavigationMenuComponent() {
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/invoice/individual">
+                                    <Link href="/email/individual">
                                         <div className="font-medium">Send Individual</div>
                                         <div className="text-muted-foreground">
                                             Send an email to a client.

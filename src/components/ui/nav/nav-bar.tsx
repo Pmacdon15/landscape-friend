@@ -11,7 +11,7 @@ export function NavBar() {
 
     return (
         <>
-            <div className="md:hidden flex flex-col gap-2">
+            <div className="md:hidden flex flex-col gap-2 pb-2">
                 <Button variant="outline" onClick={() => setShowNav(!showNav)} className="p-2 w-9">
                     <Menu size={24} />
                 </Button>

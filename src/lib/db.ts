@@ -1,4 +1,4 @@
-import { Account, Address, Client, Email } from "@/types/types";
+import { Account, Address, Client, Email, NamesAndEmails } from "@/types/types";
 import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
@@ -400,4 +400,17 @@ export async function sendNewsLetterDb(data: z.infer<typeof schemaSendEmail>, se
     console.error(error);
     return false;
   }
+}
+
+//MARK: Fetch names and emails
+export async function fetchClientNamesAndEmailsDb(orgId: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  const namesAndEmails = await (sql`
+    SELECT 
+      full_name,
+      email_address
+    FROM clients 
+    WHERE organization_id = ${orgId}
+  `) as NamesAndEmails[]
+  return namesAndEmails
 }
