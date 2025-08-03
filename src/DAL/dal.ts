@@ -1,6 +1,6 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
-import { Address, ClientResult, PaginatedClients } from "@/types/types";
+import { Address, ClientResult, NamesAndEmails, PaginatedClients } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
 export async function FetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
@@ -59,11 +59,25 @@ export async function FetchAllUnCutAddresses(searchTermCuttingDate: Date): Promi
     const result = await FetchAllUnCutAddressesDB(orgId || userId, searchTermCuttingDate);
 
     if (!result) return null;
-    return result; // Return the result here
+    return result;
   } catch (e) {
     if (e instanceof Error)
       return e; // Return the error directly
     else
       return new Error('An unknown error occurred'); // Return a generic error
   }
+}
+
+export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | Error> {
+  const { orgId, userId } = await auth.protect();
+  try {
+    const result = await fetchClientNamesAndEmailsDb(orgId || userId)
+    if (!result) return [];
+    return result
+  } catch (e) {
+    if (e instanceof Error)
+      return e;
+    return new Error('An unknown error occurred'); // Return a generic error
+  }
+
 }

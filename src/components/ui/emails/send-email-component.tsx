@@ -4,6 +4,7 @@ import SendNewsLetterButton from "../buttons/send-news-letter-button";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import { InputField } from "../inputs/input";
+import SendEmailInputs from "./send-email-inputs";
 
 export default function SendEmailComponent({
   clientEmail,
@@ -24,14 +25,7 @@ export default function SendEmailComponent({
         <FormHeader text={`Send an Email to ${clientName}`} />
       }      
       <form className="flex flex-col gap-4 w-full">
-        <InputField id={"title"} name={"title"} type={"text"} placeholder={"Title"} required />
-        <textarea
-          className="border rounded sm p-2 bg-white"
-          id={"message"}
-          name="message"
-          placeholder="Your message"
-          required
-        />
+      <SendEmailInputs />
         <div className="flex justify-center w-full">
           {clientEmail === undefined ?
             <SendNewsLetterButton />

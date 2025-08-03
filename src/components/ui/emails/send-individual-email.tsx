@@ -1,34 +1,45 @@
+'use client'
+import { NamesAndEmails } from "@/types/types";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import { InputField } from "../inputs/input";
-const data = [
-    { id: 1, name: "Jenny", email: "jenny@example.com" },
-    { id: 2, name: "John", email: "john@example.com" },
-    { id: 3, name: "Jane", email: "jane@example.com" },
-]
+import { use, useState } from "react";
+import SendClientEmailButton from "../buttons/send-client-email-button";
 
-export default function SendIndividualEmail() {
+export default function SendIndividualEmail({ children, namesAndEmailsPromise }: { children: React.ReactNode, namesAndEmailsPromise: Promise<NamesAndEmails[] | Error> }) {
+
+    const data = use(namesAndEmailsPromise);
+    const [clientEmail, setClientEmail] = useState("");
+
+    const handleClientChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        setClientEmail(e.target.value);
+    };
+
+    if (data instanceof Error) {
+        return (
+            <FormContainer>
+                <FormHeader text={`Error`} />
+                <p>Error: {data.message}</p>
+            </FormContainer>
+        );
+    }
+
     return (
         <FormContainer >
             <FormHeader text={`Send an Email to a client`} />
             <form className="flex flex-col gap-4 w-full">
-                <select>
-                    {data.map((item) => (
-                        <option key={item.id} value={item.email}>
-                            {item.name} ({item.email})
+                <select className="border rounded sm p-2 bg-white" onChange={handleClientChange}>
+                    <option value={" "}>
+                        {" "}
+                    </option>
+                    {data.map((client: NamesAndEmails) => (
+                        <option key={client.email_address} value={client.email_address}>
+                            {client.full_name} ({client.email_address})
                         </option>
                     ))}
                 </select>
-                <InputField id={"title"} name={"title"} type={"text"} placeholder={"Title"} required />
-                <textarea
-                    className="border rounded sm p-2 bg-white"
-                    id={"message"}
-                    name="message"
-                    placeholder="Your message"
-                    required
-                />
+                {children}
                 <div className="flex justify-center w-full">
-                    {/* button */}
+                    <SendClientEmailButton clientEmail={clientEmail} />
                 </div>
             </form>
         </FormContainer>
