@@ -18,10 +18,10 @@ export default function Header() {
                         <HeaderTitle text='Lawn Buddy' />
                     </div>
                 </div>
-                <div className='flex justify-between border-t w-full pt-2'>
+                <div className='flex flex-wrap justify-between border-t w-full pt-2'>
                     <SignedIn>
                         <NavBar />
-                        <div className="flex items-center gap-2">
+                        <div className="flex ml-auto items-center gap-2">
                             <UserButton />
                             <OrganizationSwitcher />
                         </div>
