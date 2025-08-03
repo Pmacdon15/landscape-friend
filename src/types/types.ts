@@ -38,7 +38,7 @@ export interface SubscriptionItem {
 
 export interface UserCreatedEvent {
     id: string;
-    
+    name: string;
 }
 
 export interface UserDeletedEvent {
@@ -46,6 +46,7 @@ export interface UserDeletedEvent {
 }
 export interface OrganizationCreatedEvent {
     id: string;
+    name: string;
 }
 
 export interface WebhookEvent {

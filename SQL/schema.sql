@@ -10,14 +10,29 @@ DROP TABLE IF EXISTS accounts CASCADE;
 
 DROP TABLE IF EXISTS clients CASCADE;
 
+DROP TABLE IF EXISTS organizations CASCADE;
+
+CREATE TABLE organizations (
+    id SERIAL PRIMARY KEY,
+    organization_id VARCHAR(253) NOT NULL UNIQUE,
+    organization_name VARCHAR(253) NOT NULL
+);
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
-    phone_number VARCHAR(50) NOT NULL, -- Changed from BIGINT to VARCHAR
+    phone_number VARCHAR(50) NOT NULL,
     email_address VARCHAR(75) UNIQUE NOT NULL,
-    organization_id VARCHAR(75) NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
     address VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE strip_api_keys (
+    id SERIAL PRIMARY KEY,
+    api_key VARCHAR(253) NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id)
 );
 
 CREATE TABLE accounts (
@@ -51,12 +66,16 @@ CREATE TABLE yards_marked_cut (
     UNIQUE (client_id, cutting_date)
 );
 
-CREATE TABLE strip_api_keys (
-    id SERIAL PRIMARY KEY,
-    api_key VARCHAR(253) NOT NULL,
-    organization_id VARCHAR(75) NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES clients (organization_id)
-);
+INSERT INTO
+    organizations (
+        organization_id,
+        organization_name
+    )
+VALUES (
+        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'Test Organization'
+    );
+
 INSERT INTO
     clients (
         full_name,

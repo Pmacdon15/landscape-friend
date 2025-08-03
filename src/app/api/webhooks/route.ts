@@ -14,46 +14,48 @@ export async function POST(req: NextRequest) {
         }) as WebhookEvent;
 
         console.log("Web Hook :", evt.type, " ", evt.data)
-        // switch (evt.type) {
-        //     case 'subscriptionItem.active': {
-        //         if (isSubscriptionItem(evt.data)) {
-        //             const plan = evt.data.plan.slug;
-        //             const orgId = evt.data.payer?.organization_id;
-        //             if (orgId) {
-        //                 await handleSubscriptionUpdate(orgId, plan);
-        //             }
-        //         }
-        //         break;
-        //     }
+        switch (evt.type) {
+            case 'subscriptionItem.active': {
+                if (isSubscriptionItem(evt.data)) {
+                    const plan = evt.data.plan.slug;
+                    const orgId = evt.data.payer?.organization_id;
+                    if (orgId) {
+                        await handleSubscriptionUpdate(orgId, plan);
+                    }
+                }
+                break;
+            }
 
-        //     case 'user.created': {
-        //         const userId = (evt.data as UserCreatedEvent).id;
-        //         await handleOrganizationCreated(userId evt.data);
-        //         break;
-        //     }
+            case 'user.created': {
+                const userId = (evt.data as UserCreatedEvent).id;
+                const userName = (evt.data as UserCreatedEvent).name;
+                await handleOrganizationCreated(userId, userName);
+                break;
+            }
 
-        //     case 'organization.created': {
-        //         const orgId = (evt.data as OrganizationCreatedEvent).id;
-        //         await handleOrganizationCreated(orgId);
-        //         break;
-        //     }
+            case 'organization.created': {
+                const orgId = (evt.data as OrganizationCreatedEvent).id;
+                const orgName = (evt.data as OrganizationCreatedEvent).name;
+                await handleOrganizationCreated(orgId, orgName);
+                break;
+            }
 
-        //     case 'user.deleted': {
-        //         const orgId = (evt.data as UserDeletedEvent).id;
-        //         await handleOrganizationDeleted(orgId);
-        //         break;
-        //     }
+            case 'user.deleted': {
+                const orgId = (evt.data as UserDeletedEvent).id;
+                await handleOrganizationDeleted(orgId);
+                break;
+            }
 
-        //     case 'organization.deleted': {
-        //         const orgId = (evt.data as OrganizationCreatedEvent).id;
-        //         await handleOrganizationDeleted(orgId);
-        //         break;
-        //     }
+            case 'organization.deleted': {
+                const orgId = (evt.data as OrganizationCreatedEvent).id;
+                await handleOrganizationDeleted(orgId);
+                break;
+            }
 
-        //     default:
-        //         console.log(`Unhandled event type: ${evt.type}`);
-        //         break;
-        // }
+            default:
+                console.log(`Unhandled event type: ${evt.type}`);
+                break;
+        }
 
 
         return new Response('Webhook received', { status: 200 })
