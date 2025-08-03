@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS strip_api_keys CASCADE;
+
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
 
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
@@ -43,20 +45,18 @@ CREATE TABLE cutting_schedule (
 
 CREATE TABLE yards_marked_cut (
     id SERIAL PRIMARY KEY,
-    -- cutting_week INT NOT NULL,
-    -- cutting_day VARCHAR(10) NOT NULL,
     cutting_date DATE NOT NULL,
     client_id INT NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id),
     UNIQUE (client_id, cutting_date)
 );
--- SELECT * FROM yards_marked_cut;
--- SELECT * FROM cutting_schedule;
--- SELECT * FROM clients;
--- WHERE
---     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
--- -- SELECT * from price_per_cut ;
 
+CREATE TABLE strip_api_keys (
+    id SERIAL PRIMARY KEY,
+    api_key VARCHAR(253) NOT NULL,
+    organization_id VARCHAR(75) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES clients (organization_id)
+);
 INSERT INTO
     clients (
         full_name,
@@ -232,7 +232,9 @@ INSERT INTO
 SELECT id, 1.0
 FROM clients;
 
-SELECT table_name 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
-AND table_type = 'BASE TABLE';
+-- SELECT * FROM yards_marked_cut;
+-- SELECT * FROM cutting_schedule;
+-- SELECT * FROM clients;
+-- WHERE
+--     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
+-- -- SELECT * from price_per_cut ;

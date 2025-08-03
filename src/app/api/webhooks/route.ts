@@ -27,14 +27,14 @@ export async function POST(req: NextRequest) {
             }
 
             case 'user.created': {
-                const userId = (evt.data as UserCreatedEvent).id;
-                await handleOrganizationCreated(userId);
+                const { id: userId, user_name } = evt.data as unknown as UserCreatedEvent;
+                await handleOrganizationCreated(userId, user_name);
                 break;
             }
 
             case 'organization.created': {
-                const orgId = (evt.data as OrganizationCreatedEvent).id;
-                await handleOrganizationCreated(orgId);
+                const { id: orgId, org_name } = evt.data as OrganizationCreatedEvent;
+                await handleOrganizationCreated(orgId, org_name);
                 break;
             }
 
