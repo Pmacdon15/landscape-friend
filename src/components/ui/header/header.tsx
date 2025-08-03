@@ -16,11 +16,11 @@ export default function Header() {
                     </div>
                     <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-fit'>
                         <HeaderTitle text='Lawn Buddy' />
-                    </div>                    
+                    </div>
                 </div>
                 <div className='flex justify-between border-t w-full pt-2'>
                     <SignedIn>
-                    <NavBar/>                    
+                        <NavBar />
                         <div className="flex items-center gap-2">
                             <UserButton />
                             <OrganizationSwitcher />
