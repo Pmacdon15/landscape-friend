@@ -257,3 +257,5 @@ FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
+
+SELECT * FROM organizations;

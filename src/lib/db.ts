@@ -1,10 +1,11 @@
-import { Account, Address, Client, Email, NamesAndEmails } from "@/types/types";
+import { Account, Address, APIKey, Client, Email, NamesAndEmails } from "@/types/types";
 import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { JwtPayload } from "@clerk/types";
 import { sendGroupEmail } from "./resend";
+import { auth } from "@clerk/nextjs/server";
 
 //MARK: Add clients
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
@@ -413,4 +414,16 @@ export async function fetchClientNamesAndEmailsDb(orgId: string) {
     WHERE organization_id = ${orgId}
   `) as NamesAndEmails[]
   return namesAndEmails
+}
+
+//MARK:fetch Strip API Key
+export async function fetchStripAPIKeyDb(orgId: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  const result = await (sql`
+    SELECT 
+      api_key
+    FROM strip_api_keys 
+    WHERE organization_id = ${orgId}
+  `) as { api_key: string }[];
+  return result[0];
 }
