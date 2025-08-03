@@ -51,6 +51,14 @@ export default function NavigationMenuComponent() {
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/invoice/individual">
+                                        <div className="font-medium">Send Individual</div>
+                                        <div className="text-muted-foreground">
+                                            Send an email to a client.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
                             </li>
                         </ul>
                     </NavigationMenuContent>
