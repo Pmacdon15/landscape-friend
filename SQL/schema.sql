@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS strip_api_keys CASCADE;
+
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
 
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
@@ -8,14 +10,32 @@ DROP TABLE IF EXISTS accounts CASCADE;
 
 DROP TABLE IF EXISTS clients CASCADE;
 
+DROP TABLE IF EXISTS organizations CASCADE;
+
+CREATE TABLE organizations (
+    id SERIAL PRIMARY KEY,
+    organization_id VARCHAR(253) NOT NULL UNIQUE,
+    organization_name VARCHAR(253) NOT NULL
+);
+
+
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
-    phone_number VARCHAR(50) NOT NULL, -- Changed from BIGINT to VARCHAR
+    phone_number VARCHAR(50) NOT NULL,
     email_address VARCHAR(75) UNIQUE NOT NULL,
-    organization_id VARCHAR(75) NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
     address VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE stripe_api_keys (
+    id SERIAL PRIMARY KEY,
+    api_key VARCHAR(253) NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
+    CONSTRAINT unique_organization_id UNIQUE (organization_id)
 );
 
 CREATE TABLE accounts (
@@ -43,19 +63,21 @@ CREATE TABLE cutting_schedule (
 
 CREATE TABLE yards_marked_cut (
     id SERIAL PRIMARY KEY,
-    -- cutting_week INT NOT NULL,
-    -- cutting_day VARCHAR(10) NOT NULL,
     cutting_date DATE NOT NULL,
     client_id INT NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id),
     UNIQUE (client_id, cutting_date)
 );
--- SELECT * FROM yards_marked_cut;
--- SELECT * FROM cutting_schedule;
--- SELECT * FROM clients;
--- WHERE
---     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
--- -- SELECT * from price_per_cut ;
+
+INSERT INTO
+    organizations (
+        organization_id,
+        organization_name
+    )
+VALUES (
+        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'Test Organization'
+    );
 
 INSERT INTO
     clients (
@@ -231,3 +253,12 @@ INSERT INTO
     accounts (client_id, current_balance)
 SELECT id, 1.0
 FROM clients;
+
+-- SELECT * FROM yards_marked_cut;
+-- SELECT * FROM cutting_schedule;
+-- SELECT * FROM clients;
+-- WHERE
+--     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
+-- -- SELECT * from price_per_cut ;
+
+SELECT * FROM stripe_api_keys;

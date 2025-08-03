@@ -6,12 +6,13 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-
+import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
 
 export default function NavigationMenuComponent() {
-    return (
-        <NavigationMenu >
+      const isMd = useMediaQuery("(min-width: 768px)");
+    return (        
+        <NavigationMenu viewport={!isMd}>
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>List</NavigationMenuTrigger>
@@ -92,6 +93,23 @@ export default function NavigationMenuComponent() {
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
+                            </li>
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Settings</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[300px] gap-4">
+                            <li>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/settings/stripe-api-key">
+                                        <div className="font-medium">Set Stripe API key</div>
+                                        <div className="text-muted-foreground">
+                                            Enable invoicing by managing your stripe API key.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>                                
                             </li>
                         </ul>
                     </NavigationMenuContent>

@@ -38,6 +38,7 @@ export interface SubscriptionItem {
 
 export interface UserCreatedEvent {
     id: string;
+    name: string;
 }
 
 export interface UserDeletedEvent {
@@ -45,6 +46,7 @@ export interface UserDeletedEvent {
 }
 export interface OrganizationCreatedEvent {
     id: string;
+    name: string;
 }
 
 export interface WebhookEvent {
@@ -118,4 +120,8 @@ export type FetchGeocodeResult =
 export interface NamesAndEmails {
     full_name: string;
     email_address: string;
+}
+
+export interface APIKey {
+    apk_key: string;
 }

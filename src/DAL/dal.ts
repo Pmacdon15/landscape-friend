@@ -1,6 +1,6 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
-import { Address, ClientResult, NamesAndEmails, PaginatedClients } from "@/types/types";
+import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
 export async function FetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
@@ -79,5 +79,17 @@ export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | E
       return e;
     return new Error('An unknown error occurred'); // Return a generic error
   }
+}
 
+export async function fetchStripAPIKey(): Promise<APIKey | Error> {
+  const { orgId, userId } = await auth.protect();
+  try {    
+    const result = await fetchStripAPIKeyDb(orgId || userId);
+    if (!result || !result.api_key) return new Error('API key not found');
+    return { apk_key: result.api_key };
+  } catch (e) {
+    if (e instanceof Error)
+      return e;
+    return new Error('An unknown error occurred'); 
+  }
 }

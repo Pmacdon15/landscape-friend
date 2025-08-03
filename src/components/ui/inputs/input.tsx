@@ -18,7 +18,7 @@ export function InputField({ id, name, type, placeholder, required = false, clas
             type={type}
             placeholder={placeholder}
             required={required}
-            className={`border rounded sm p-2 bg-white ${className}`}
+            className={`border rounded sm p-1 bg-white ${className}`}
             step={step || 1}
             defaultValue={defaultValue}
         />
