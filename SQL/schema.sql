@@ -231,3 +231,8 @@ INSERT INTO
     accounts (client_id, current_balance)
 SELECT id, 1.0
 FROM clients;
+
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public' 
+AND table_type = 'BASE TABLE';
