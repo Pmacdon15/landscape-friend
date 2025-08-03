@@ -19,8 +19,8 @@ export default function Header() {
                     </div>                    
                 </div>
                 <div className='flex justify-between border-t w-full pt-2'>
-                    <NavBar/>
                     <SignedIn>
+                    <NavBar/>                    
                         <div className="flex items-center gap-2">
                             <UserButton />
                             <OrganizationSwitcher />
