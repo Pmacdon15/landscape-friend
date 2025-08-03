@@ -9,13 +9,14 @@ import { fetchStripAPIKey } from "@/DAL/dal";
 export default async function Settings() {
     const apiKeyResult = await fetchStripAPIKey();
     const apiKey = apiKeyResult instanceof Error ? '' : apiKeyResult.apk_key;
+    console.log("api key : ", apiKeyResult)
     return (
         <ContentContainer>
             <h1>Settings</h1>
             <InputDiv >
                 <SettingsLabel text={"Stripe API Key"} />
-                <form className="flex gap-4">
-                    <InputField id={"stripe_api_key"} name={"stripe_api_key"} type={"text"} placeholder={"Your Stripe API Key"} defaultValue={apiKey} />
+                <form className="flex gap-4 flex-col md:flex-row">
+                    <InputField id={"api_key"} name={"api_key"} type={"text"} placeholder={"Your Stripe API Key"} defaultValue={apiKey} />
                     <UpdateStripeApiKeyButton />
                 </form>
             </InputDiv>

@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
 import { markYardCut } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
+import { updateStripeAPIKey } from "@/actions/stripe";
 
 export const useAddClient = () => {
     return useMutation({
@@ -88,3 +89,14 @@ export const useSendNewsLetter = () => {
         }
     });
 };
+
+export const useUpdateStripeAPIKey = () => {
+    return useMutation({
+        mutationFn: (formData: FormData) => {
+            return updateStripeAPIKey({ formData });
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+}

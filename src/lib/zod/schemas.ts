@@ -34,3 +34,8 @@ export const schemaMarkYardCut = z.object({
     clientId: z.number(),
     date: z.date()
 })
+
+
+export const schemaUpdateAPI = z.object({
+    APIKey: z.string()
+})

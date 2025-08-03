@@ -83,9 +83,9 @@ export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | E
 
 export async function fetchStripAPIKey(): Promise<APIKey | Error> {
   const { orgId, userId } = await auth.protect();
-  try {
+  try {    
     const result = await fetchStripAPIKeyDb(orgId || userId);
-    if (!result) return new Error('API key not found');
+    if (!result || !result.api_key) return new Error('API key not found');
     return { apk_key: result.api_key };
   } catch (e) {
     if (e instanceof Error)

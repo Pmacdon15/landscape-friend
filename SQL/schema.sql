@@ -17,6 +17,8 @@ CREATE TABLE organizations (
     organization_id VARCHAR(253) NOT NULL UNIQUE,
     organization_name VARCHAR(253) NOT NULL
 );
+
+
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
@@ -28,11 +30,12 @@ CREATE TABLE clients (
     address VARCHAR(200) NOT NULL
 );
 
-CREATE TABLE strip_api_keys (
+CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id)
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
+    CONSTRAINT unique_organization_id UNIQUE (organization_id)
 );
 
 CREATE TABLE accounts (
@@ -258,4 +261,4 @@ FROM clients;
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
 
-SELECT * FROM organizations;
+SELECT * FROM stripe_api_keys;
