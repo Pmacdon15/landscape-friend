@@ -9,13 +9,13 @@ import {
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    NavigationMenuTrigger,   
+    NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 
 
 export function NavBar() {
     return (
-        <NavigationMenu viewport={false}>
+        <NavigationMenu >
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>List</NavigationMenuTrigger>
@@ -31,13 +31,30 @@ export function NavBar() {
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href="#">
+                                    <Link href="/cutting-list">
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
                                         </div>
                                     </Link>
-                                </NavigationMenuLink>                               
+                                </NavigationMenuLink>
+                            </li>
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Email </NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[300px] gap-4">
+                            <li>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/send-news-letter">
+                                        <div className="font-medium">Send News Letter</div>
+                                        <div className="text-muted-foreground">
+                                            Send all clients an update email.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
                             </li>
                         </ul>
                     </NavigationMenuContent>
