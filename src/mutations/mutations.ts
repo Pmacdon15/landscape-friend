@@ -3,6 +3,7 @@ import { addClient, deleteClient, updateClientPricePerCut, updateCuttingDay } fr
 import { markYardCut } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { updateStripeAPIKey } from "@/actions/stripe";
+import revalidatePathAction from "@/actions/revalidatePath";
 
 export const useAddClient = () => {
     return useMutation({
@@ -94,6 +95,9 @@ export const useUpdateStripeAPIKey = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
             return updateStripeAPIKey({ formData });
+        },
+        onSuccess: () => {
+            revalidatePathAction("/settings/stripe-api-key")
         },
         onError: (error) => {
             console.error('Mutation error:', error);

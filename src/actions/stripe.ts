@@ -14,8 +14,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
     if (!validatedFields.success) throw new Error("Invalid input data");
 
-    try {
-        
+    try {        
         const result = await updatedStripeAPIKeyDb(validatedFields.data, orgId || userId)
         if (!result.success) throw new Error(result.message);
         return result;

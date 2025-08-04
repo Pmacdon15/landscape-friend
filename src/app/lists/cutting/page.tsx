@@ -29,11 +29,9 @@ export default async function page({
 
     return (
         <>
-            <FormContainer>
-                <HeaderWithSearch>
+            <FormContainer>                
                     <FormHeader text={"Cutting List"} />
-                    <SearchForm isCuttingDayComponent={true} />
-                </ HeaderWithSearch>
+                    <SearchForm isCuttingDayComponent={true} />               
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListCutting

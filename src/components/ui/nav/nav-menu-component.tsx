@@ -20,7 +20,7 @@ export default function NavigationMenuComponent() {
                         <ul className="grid w-[300px] gap-4">
                             <li>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/client-list">
+                                    <Link href="/lists/client">
                                         <div className="font-medium">Client List</div>
                                         <div className="text-muted-foreground">
                                             Add, browse and manage clients.
@@ -28,7 +28,7 @@ export default function NavigationMenuComponent() {
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/cutting-list">
+                                    <Link href="/lists/cutting">
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
