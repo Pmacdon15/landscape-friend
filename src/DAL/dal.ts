@@ -1,15 +1,15 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsServiceSchedules, fetchAllUnServicedAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
 import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
-export async function FetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
+export async function FetchAllClients(clientPageNumber: number, searchTerm: string, searchTermServiceWeek: number, searchTermServiceDay: string):
   Promise<PaginatedClients | null> {
   const { orgId, userId } = await auth.protect();
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
-  const result = await fetchClientsWithSchedules(orgId || userId, pageSize, offset, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+  const result = await fetchClientsWithSchedules(orgId || userId, pageSize, offset, searchTerm, searchTermServiceWeek, searchTermServiceDay);
 
   if (!result.clientsResult) return null;
 
@@ -18,23 +18,23 @@ export async function FetchAllClients(clientPageNumber: number, searchTerm: stri
   return { clients, totalPages };
 }
 
-export async function FetchCuttingClients(
+export async function fetchServiceClients(
   clientPageNumber: number,
   searchTerm: string,
-  cuttingDate: Date,
-  searchTermIsCut: boolean
+  serviceDate: Date,
+  searchTermIsServiced: boolean
 ): Promise<PaginatedClients | null> {
   const { orgId, userId } = await auth.protect();
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
-  const result = await fetchClientsCuttingSchedules(
+  const result = await fetchClientsServiceSchedules(
     orgId || userId,
     pageSize,
     offset,
     searchTerm,
-    cuttingDate,
-    searchTermIsCut
+    serviceDate,
+    searchTermIsServiced
   );
 
   if (!result.clientsResult) return null;
@@ -52,11 +52,11 @@ export async function FetchCuttingClients(
   };
 }
 
-export async function FetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
+export async function fetchAllUnServicedAddresses(searchTermServiceDate: Date): Promise<Address[] | null | Error> {
   const { orgId, userId } = await auth.protect();
 
   try {
-    const result = await FetchAllUnCutAddressesDB(orgId || userId, searchTermCuttingDate);
+    const result = await fetchAllUnServicedAddressesDB(orgId || userId, searchTermServiceDate);
 
     if (!result) return null;
     return result;
@@ -83,13 +83,13 @@ export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | E
 
 export async function fetchStripAPIKey(): Promise<APIKey | Error> {
   const { orgId, userId } = await auth.protect();
-  try {    
+  try {
     const result = await fetchStripAPIKeyDb(orgId || userId);
     if (!result || !result.api_key) return new Error('API key not found');
     return { apk_key: result.api_key };
   } catch (e) {
     if (e instanceof Error)
       return e;
-    return new Error('An unknown error occurred'); 
+    return new Error('An unknown error occurred');
   }
 }

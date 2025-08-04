@@ -1,7 +1,7 @@
 'use server'
-import { addClientDB, deleteClientDB, updatedClientPricePerCutDb, updatedClientCutDayDb } from "@/lib/db";
+import { addClientDB, deleteClientDB, updatedClientPricePerCutDb, updatedClientServiceDayDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateServiceDay } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -65,20 +65,20 @@ export async function updateClientPricePerCut(clientId: number, pricePerCut: num
     }
 }
 
-export async function updateCuttingDay(clientId: number, cuttingWeek: number, updatedDay: string) {
+export async function updateServiceDay(clientId: number, ServiceWeek: number, updatedDay: string) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
 
-    const validatedFields = schemaUpdateCuttingDay.safeParse({
+    const validatedFields = schemaUpdateServiceDay.safeParse({
         clientId: clientId,
-        cuttingWeek: cuttingWeek,
+        ServiceWeek: ServiceWeek,
         updatedDay: updatedDay
     });
 
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await updatedClientCutDayDb(validatedFields.data, orgId || userId)
+        const result = await updatedClientServiceDayDb(validatedFields.data, orgId || userId)
         if (!result) throw new Error('Failed to update Client cut day');
         return result;
     } catch (e: unknown) {

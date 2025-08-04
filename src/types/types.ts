@@ -7,7 +7,7 @@ export interface Client {
     address: string;
     amount_owing: number;
     price_per_cut: number;
-    cutting_schedules: CuttingSchedule[];
+    service_schedules: ServiceSchedule[];
 }
 
 export interface Address {
@@ -68,8 +68,8 @@ export interface ClientResult {
     address: string;
     amount_owing: number;
     price_per_cut: number;
-    cutting_week: number;
-    cutting_day: string;
+    service_week: number;
+    service_day: string;
     total_count: number;
 }
 
@@ -78,9 +78,9 @@ export interface MutationData {
     pricePerCut: number;
 }
 
-export interface CuttingSchedule {
-    cutting_week: number | null;
-    cutting_day: string | null;
+export interface ServiceSchedule {
+    service_week: number | null;
+    service_day: string | null;
 }
 
 export interface CutStatusSelectorProps {

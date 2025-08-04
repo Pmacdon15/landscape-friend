@@ -6,9 +6,9 @@ export function processClientsResult(clientsResult: ClientResult[], totalCount: 
   const clients = clientsResult.reduce((acc: Client[], current) => {
     const existingClient = acc.find((client: Client) => client.id === current.id);
     if (existingClient) {
-      existingClient.cutting_schedules.push({
-        cutting_week: current.cutting_week !== null ? current.cutting_week : 0,
-        cutting_day: current.cutting_day !== null ? current.cutting_day : "No cut",
+      existingClient.service_schedules.push({
+        service_week: current.service_week !== null ? current.service_week : 0,
+        service_day: current.service_day !== null ? current.service_day : "No service",
       });
     } else {
       acc.push({
@@ -19,9 +19,9 @@ export function processClientsResult(clientsResult: ClientResult[], totalCount: 
         address: current.address,
         amount_owing: current.amount_owing,
         price_per_cut: current.price_per_cut,
-        cutting_schedules: [{
-          cutting_week: current.cutting_week !== null ? current.cutting_week : 0,
-          cutting_day: current.cutting_day !== null ? current.cutting_day : "No cut",
+        service_schedules: [{
+          service_week: current.service_week !== null ? current.service_week : 0,
+          service_day: current.service_day !== null ? current.service_day : "No service",
         }],
       });
     }

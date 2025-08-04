@@ -24,9 +24,9 @@ export const schemaSendEmail = z.object({
     replyTo: z.email().optional(),
 })
 
-export const schemaUpdateCuttingDay = z.object({
+export const schemaUpdateServiceDay = z.object({
     clientId: z.number(),
-    cuttingWeek: z.number(),
+    serviceWeek: z.number(),
     updatedDay: z.string(),
 })
 

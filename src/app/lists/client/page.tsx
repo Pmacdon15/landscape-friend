@@ -20,10 +20,10 @@ export default async function page({
 
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
-    const searchTermCuttingWeek = Number(params.week ?? 0);
-    const searchTermCuttingDay = String(params.day ?? '');
+    const searchTermServiceWeek = Number(params.week ?? 0);
+    const searchTermServiceDay = String(params.day ?? '');
 
-    const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermServiceWeek, searchTermServiceDay);
 
     return (
         <>

@@ -2,7 +2,7 @@ import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
-import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
+import { ServiceWeekDropDownContainer } from "../service-week/service-week";
 import { Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
@@ -24,7 +24,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
 
   return (
     <>
-      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
@@ -51,7 +51,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
               }
-              <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
+              <ServiceWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <Suspense fallback={<FormHeader text="Loading..." />}>
                 <MapComponent address={client.address} />
               </Suspense>
@@ -59,7 +59,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
           </FormContainer>
         ))}
       </ul >
-      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
     </>
   );
 }

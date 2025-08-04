@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface CuttingPeriodSelectorProps {
+interface ServicePeriodSelectorProps {
   label: string;
   options: { value: string; label: string }[];
   value: string;
@@ -8,7 +8,7 @@ interface CuttingPeriodSelectorProps {
   name: string;
 }
 
-export const CuttingPeriodSelector: React.FC<CuttingPeriodSelectorProps> = ({
+export const ServicePeriodSelector: React.FC<ServicePeriodSelectorProps> = ({
   label,
   options,
   value,

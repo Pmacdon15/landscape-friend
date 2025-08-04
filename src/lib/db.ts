@@ -1,5 +1,5 @@
 import { Account, Address, Client, Email, NamesAndEmails } from "@/types/types";
-import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
+import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaUpdateAPI, schemaUpdateServiceDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { JwtPayload } from "@clerk/types";
@@ -68,7 +68,7 @@ export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpda
 }
 
 //MARK: Updated Client Cut Day
-export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCuttingDay>, orgId: string) {
+export async function updatedClientServiceDayDb(data: z.infer<typeof schemaUpdateServiceDay>, orgId: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
   const clientCheck = await sql`
         SELECT id FROM clients
@@ -79,7 +79,7 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
   }
   const result = await sql`
         INSERT INTO cutting_schedule (client_id, cutting_week, cutting_day)
-        VALUES (${data.clientId}, ${data.cuttingWeek}, ${data.updatedDay})
+        VALUES (${data.clientId}, ${data.serviceWeek}, ${data.updatedDay})
         ON CONFLICT (client_id, cutting_week) DO UPDATE
         SET cutting_day = EXCLUDED.cutting_day
         RETURNING *
@@ -94,8 +94,8 @@ export async function fetchClientsWithSchedules(
   pageSize: number,
   offset: number,
   searchTerm: string,
-  searchTermCuttingWeek: number,
-  searchTermCuttingDay: string
+  searchTermServiceWeek: number,
+  searchTermServiceDay: string
 ) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
@@ -135,19 +135,19 @@ export async function fetchClientsWithSchedules(
     `);
   }
 
-  if (searchTermCuttingWeek > 0 && searchTermCuttingDay !== "") {
+  if (searchTermServiceWeek > 0 && searchTermServiceDay !== "") {
     whereClauses.push(sql`
-      cws.cutting_week = ${searchTermCuttingWeek} 
-      AND cws.cutting_day = ${searchTermCuttingDay}
+      cws.cutting_week = ${searchTermServiceWeek} 
+      AND cws.cutting_day = ${searchTermServiceDay}
     `);
-  } else if (searchTermCuttingWeek > 0) {
+  } else if (searchTermServiceWeek > 0) {
     whereClauses.push(sql`
-      cws.cutting_week = ${searchTermCuttingWeek} 
+      cws.cutting_week = ${searchTermServiceWeek} 
       AND cws.cutting_day != 'No cut'
     `);
-  } else if (searchTermCuttingDay !== "") {
+  } else if (searchTermServiceDay !== "") {
     whereClauses.push(sql`
-      cws.cutting_day = ${searchTermCuttingDay}
+      cws.cutting_day = ${searchTermServiceDay}
     `);
   }
 
@@ -221,7 +221,7 @@ export async function fetchClientsWithSchedules(
 }
 
 //MARK:Fetch uncut addresses
-export async function FetchAllUnCutAddressesDB(organizationId: string, searchTermCuttingDate: Date): Promise<Address[]> {
+export async function fetchAllUnServicedAddressesDB(organizationId: string, searchTermServiceDate: Date): Promise<Address[]> {
   const sql = neon(`${process.env.DATABASE_URL}`);
   const result = await sql`
     SELECT c.address
@@ -231,25 +231,25 @@ export async function FetchAllUnCutAddressesDB(organizationId: string, searchTer
     AND c.id NOT IN (
       SELECT ymc.client_id
       FROM yards_marked_cut ymc
-      WHERE ymc.cutting_date = ${searchTermCuttingDate}
+      WHERE ymc.cutting_date = ${searchTermServiceDate}
     );
   `;
   return result.map(item => ({ address: item.address }));
 }
 //MARK: Fetch cutting day
-export async function fetchClientsCuttingSchedules(
+export async function fetchClientsServiceSchedules(
   orgId: string,
   pageSize: number,
   offset: number,
   searchTerm: string,
-  cuttingDate: Date,
-  searchTermIsCut: boolean
+  serviceDate: Date,
+  searchTermIsServiced: boolean
 ) {
-  const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1);
+  const startOfYear = new Date(serviceDate.getFullYear(), 0, 1);
   const daysSinceStart = Math.floor(
-    (cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+    (serviceDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
   );
-  const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1;
+  const serviceWeek = Math.floor((daysSinceStart % 28) / 7) + 1;
   const daysOfWeek = [
     "Sunday",
     "Monday",
@@ -259,7 +259,7 @@ export async function fetchClientsCuttingSchedules(
     "Friday",
     "Saturday",
   ];
-  const cuttingDay = daysOfWeek[cuttingDate.getDay()];
+  const serviceDay = daysOfWeek[serviceDate.getDay()];
 
   const sql = neon(`${process.env.DATABASE_URL}`);
 
@@ -279,14 +279,14 @@ export async function fetchClientsCuttingSchedules(
         cs.cutting_day
       FROM clients_with_balance cwb
       JOIN cutting_schedule cs ON cwb.id = cs.client_id
-      WHERE cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay}
+      WHERE cs.cutting_week = ${serviceWeek} AND cs.cutting_day = ${serviceDay}
     ),
     clients_marked_cut AS (
       SELECT
         ymc.client_id,
         ymc.cutting_date
       FROM yards_marked_cut ymc
-      WHERE ymc.cutting_date = ${cuttingDate}
+      WHERE ymc.cutting_date = ${serviceDate}
     )
   `;
 
@@ -294,7 +294,7 @@ export async function fetchClientsCuttingSchedules(
   SELECT COUNT(DISTINCT cws.id) AS total_count
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-  WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
+  WHERE ${searchTermIsServiced ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 
   let selectQuery = sql`
@@ -310,7 +310,7 @@ export async function fetchClientsCuttingSchedules(
     cws.cutting_day
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-  WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
+  WHERE ${searchTermIsServiced ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 
   const whereClauses = [];
@@ -377,7 +377,7 @@ export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, org
     throw new Error('Client not found, access denied, or already marked as cut');
   }
 
-  revalidatePath("/cutting-list")
+  revalidatePath("/list/cutting")
   return result;
 }
 
