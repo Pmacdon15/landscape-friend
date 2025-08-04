@@ -221,6 +221,7 @@ export async function fetchClientsWithSchedules(
       cws.address,
       cws.amount_owing,
       cws.price_per_cut,
+      cws.snow_client,
       cws.cutting_week,
       cws.cutting_day
     FROM clients_with_schedules cws
@@ -318,6 +319,7 @@ export async function fetchClientsCuttingSchedules(
     cws.address,
     cws.amount_owing,
     cws.price_per_cut,
+    cws.snow_client,
     cws.cutting_week,
     cws.cutting_day
   FROM clients_with_schedules cws

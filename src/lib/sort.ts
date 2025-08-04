@@ -18,7 +18,8 @@ export function processClientsResult(clientsResult: ClientResult[], totalCount: 
         email_address: current.email_address,
         address: current.address,
         amount_owing: current.amount_owing,
-        price_per_cut: current.price_per_cut,
+        price_per_cut: current.price_per_cut,      
+        snow_client: current.snow_client,
         cutting_schedules: [{
           cutting_week: current.cutting_week !== null ? current.cutting_week : 0,
           cutting_day: current.cutting_day !== null ? current.cutting_day : "No cut",

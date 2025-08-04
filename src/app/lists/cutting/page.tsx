@@ -1,6 +1,5 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
-import HeaderWithSearch from "@/components/ui/containers/header-with-search";
 import ClientListCutting from "@/components/ui/service-list/clients-list-service";
 import FormHeader from "@/components/ui/header/form-header";
 import { fetchAllUnCutAddresses, fetchCuttingClients } from "@/DAL/dal";
