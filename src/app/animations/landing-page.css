@@ -1,6 +1,6 @@
 /* Landing Page Animations */
 
-  /* logo slide and fade in */
+  /* logo and title slide and fade in */
   @keyframes logoSlideIn {
     from {
       transform: translateX(-10vw);
@@ -46,6 +46,9 @@
   }
   }
 
+  /* animation applicator classes */
+
+  /* Logo and Title animations */
   .logo-slide-in {
     animation: logoSlideIn 1s ease-in-out forwards;
   }
