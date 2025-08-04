@@ -9,7 +9,6 @@ import { fetchStripAPIKey } from "@/DAL/dal";
 export default async function Settings() {
     const apiKeyResult = await fetchStripAPIKey();
     const apiKey = apiKeyResult instanceof Error ? '' : apiKeyResult.apk_key;
-    console.log("api key : ", apiKeyResult)
     return (
         <ContentContainer>
             <h1>Settings</h1>
