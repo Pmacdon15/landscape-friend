@@ -23,7 +23,7 @@ export default function Header() {
                         <NavBar />
                         <div className="flex ml-auto items-center gap-2">
                             <UserButton />
-                            <OrganizationSwitcher />
+                            {/*<OrganizationSwitcher / >*/}
                         </div>
                     </SignedIn>
                     <SignedOut>

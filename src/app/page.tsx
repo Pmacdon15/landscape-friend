@@ -41,7 +41,7 @@ export default function Home() {
             />
           </div>
           <div className="w-full md:ml-4 md:mt-0 mt-4 logo-slide-in-reverse">
-            <FormContainer>
+            <FormContainer popover={true}>
               <ContentContainer>
               
               <h1 className="text-3xl font-bold mb-6">Welcome to Lawn Buddy</h1>
@@ -62,7 +62,40 @@ export default function Home() {
         </div>
       </div>
     </div>
-    
+
+
+    <div className="flex-row justify-center items-center">
+      <div className="mx-auto justify-center items-center max-w-md overflow-hidden md:max-w-6xl">
+        <div className="md:flex">
+          <div className="w-full md:mr-4 md:mt-0 mt-4 logo-slide-in sm: mb-4">
+            <FormContainer popover={true}>
+              <ContentContainer>
+                <h1 className="text-3xl font-bold mb-6">Why choose Lawn Buddy?</h1>
+                <p className="mb-4 indent-4">
+                  Lawn Buddy is your all-in-one solution for lawn care management. Whether you're a homeowner or a professional landscaper, our platform offers tools to help you schedule services, track maintenance, and manage your lawn care tasks efficiently.
+                </p>
+                <h2 className="text-2xl font-semibold mb-4">What we Provide:</h2>
+                <ul className="list-disc list-inside mb-4">
+                  <li>A secure end-to-end platform for managing clients for landscaping related work</li>
+                  <li>Easy payments and invoicing integrated through Stripe's platform</li>
+                  <li>Send out updates and newsletters to all of your clients with ease</li>
+                </ul>
+                <p className="mb-4">
+                  Join Lawn Buddy today and take the first step towards your landscaping career!
+                </p>
+              </ContentContainer>
+            </FormContainer>
+          </div>
+          <div className="md:shrink-0 logo-slide-in-reverse">
+            <img
+              className="h-64 w-full object-cover md:h-full md:w-96"
+              src="/landing-page/1.png"
+              alt="Lawn Mower Mowing a Lawn"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
     
     </>
   );
