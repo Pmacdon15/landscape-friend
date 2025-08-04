@@ -30,17 +30,17 @@ export default function Home() {
 
     </div>
 
-    <div className="flex-row justify-center items-center logo-slide-in">
+    <div className="flex-row justify-center items-center">
         <div className="mx-auto justify-center items-center max-w-md overflow-hidden md:max-w-6xl">
         <div className="md:flex">
-          <div className="md:shrink-0">
+          <div className="md:shrink-0 logo-slide-in">
             <img
               className="h-64 w-full object-cover md:h-full md:w-96"
               src="/landing-page/1.png"
               alt="Lawn Mower Mowing a Lawn"
             />
           </div>
-          <div className="w-full md:ml-4 md:mt-0 mt-4">
+          <div className="w-full md:ml-4 md:mt-0 mt-4 logo-slide-in-reverse">
             <FormContainer>
               <ContentContainer>
               
