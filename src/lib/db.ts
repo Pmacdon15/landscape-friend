@@ -1,11 +1,10 @@
-import { Account, Address, APIKey, Client, Email, NamesAndEmails } from "@/types/types";
+import { Account, Address, Client, Email, NamesAndEmails } from "@/types/types";
 import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
-import revalidatePathAction from "@/actions/revalidatePath";
 import { JwtPayload } from "@clerk/types";
 import { sendGroupEmail } from "./resend";
-import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 //MARK: Add clients
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
@@ -27,7 +26,7 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
             (SELECT row_to_json(new_account.*)::jsonb AS account FROM new_account);
     `) as { client: Client; account: Account }[];
 
-  if (result) revalidatePathAction("/client-list")
+  if (result) revalidatePath("/client-list")
   return result;
 }
 
@@ -51,7 +50,7 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
     SELECT * FROM deleted_client;
   `) as Client[];
 
-  if (result) revalidatePathAction("/client-list")
+  if (result) revalidatePath("/client-list")
   return result;
 }
 
@@ -64,7 +63,7 @@ export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpda
         WHERE id = ${data.clientId} AND organization_id = ${orgId}
     `
 
-  if (result) revalidatePathAction("/client-list")
+  if (result) revalidatePath("/client-list")
   return result;
 }
 
@@ -85,7 +84,7 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
         SET cutting_day = EXCLUDED.cutting_day
         RETURNING *
     `;
-  revalidatePathAction("/client-list")
+  revalidatePath("/client-list")
   return result;
 }
 
@@ -378,7 +377,7 @@ export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, org
     throw new Error('Client not found, access denied, or already marked as cut');
   }
 
-  revalidatePathAction("/cutting-list")
+  revalidatePath("/cutting-list")
   return result;
 }
 
@@ -436,7 +435,7 @@ export async function updatedStripeAPIKeyDb(data: z.infer<typeof schemaUpdateAPI
       INSERT INTO stripe_api_keys (organization_id, api_key)
       VALUES (${orgId}, ${data.APIKey})
       ON CONFLICT ON CONSTRAINT unique_organization_id DO UPDATE
-      SET api_key = ${data.APIKey};
+      SET api_key = ${data.APIKey}
     `);
     return { success: true, message: 'API key updated successfully' };
   } catch (e) {
