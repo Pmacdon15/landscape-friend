@@ -21,7 +21,6 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
 
-  console.log(clients)
   return (
     <>
       <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
@@ -45,6 +44,15 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
                 <ClientEmailPopover client={client} />
               </div>
               <p>Address: {client.address}</p>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id={`snow-removal-${client.id}`}
+                  name="snow-removal"
+                  defaultChecked={client.snow_client}
+                />
+                <label htmlFor={`snow-removal-${client.id}`}>Snow Removal</label>
+              </div>
               {isAdmin &&
                 <>
                   <PricePerCutUpdateInput client={client} />
