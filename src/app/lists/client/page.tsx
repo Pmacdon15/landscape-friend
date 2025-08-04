@@ -4,7 +4,7 @@ import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { FetchAllClients } from "@/DAL/dal";
+import { fetchAllClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
 
@@ -23,7 +23,7 @@ export default async function page({
     const searchTermCuttingWeek = Number(params.week ?? 0);
     const searchTermCuttingDay = String(params.day ?? '');
 
-    const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const clientsPromise = fetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
 
     return (
         <>

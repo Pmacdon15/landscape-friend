@@ -9,12 +9,14 @@ import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 
-export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsCut }:
+export default async function ClientListService({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
         addressesPromise: Promise<Address[] | null | Error>,
-        clientListPage: number, cuttingDate: Date,
-        searchTermIsCut: boolean
+        clientListPage: number,
+        cuttingDate?: Date,
+        searchTermIsServiced: boolean
+        snow?: boolean
     }) {
 
     const result = await clientsPromise;
@@ -37,7 +39,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                             <ManyPointsMap addresses={flattenedAddresses} />
                         </div>
                     </FormContainer>}
-                <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
+                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
 
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
@@ -58,11 +60,11 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                                 <MapComponent address={client.address} />
                             </Suspense>
                         </li>
-                        {!searchTermIsCut && <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />}
+                        {!searchTermIsServiced && cuttingDate && <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />}
                     </FormContainer>
                 ))}
             </ul >
-            <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
+            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
         </>
     );
 }

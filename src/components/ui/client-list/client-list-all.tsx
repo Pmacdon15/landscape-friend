@@ -21,7 +21,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
 
-
+  console.log(clients)
   return (
     <>
       <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />

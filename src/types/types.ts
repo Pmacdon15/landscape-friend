@@ -8,6 +8,7 @@ export interface Client {
     amount_owing: number;
     price_per_cut: number;
     cutting_schedules: CuttingSchedule[];
+    snow: boolean;
 }
 
 export interface Address {

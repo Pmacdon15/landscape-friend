@@ -1,9 +1,8 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
-import HeaderWithSearch from "@/components/ui/containers/header-with-search";
-import ClientListCutting from "@/components/ui/service-list/clients-list-service";
+import ClientListService from "@/components/ui/service-list/clients-list-service";
 import FormHeader from "@/components/ui/header/form-header";
-import { fetchAllUnCutAddresses, fetchCuttingClients } from "@/DAL/dal";
+// import { fetchSnowClearingClients, fetchAllUnClearedAddresses } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -20,26 +19,29 @@ export default async function page({
 
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
-    const cuttingDate = params.date ? new Date(String(params.date)) : new Date();
-    const searchTermIsCut = params.is_cut === 'true';
+    const serviceDate = params.date ? new Date(String(params.date)) : new Date();
+    const searchTermIsServiced = params.is_cut === 'true';
+    const searchTermAssignedTo = String(params.assigned_to ?? "");
+
 
     if (!isAdmin) redirect("/")
-    const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);
-    const addressesPromise = fetchAllUnCutAddresses(cuttingDate);
+    // const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, searchTermIsServiced, searchTermAssignedTo);
+    // const addressesPromise = fetchAllUnClearedAddresses(serviceDate);
 
     return (
         <>
             <FormContainer>
                 <FormHeader text={"Cutting List"} />
-                <SearchForm isCuttingDayComponent={true} />
+                <SearchForm isCuttingDayComponent={true} snow={true} />
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
-                <ClientListCutting
+                {/* <ClientListService
                     clientsPromise={clientsPromise}
                     addressesPromise={addressesPromise}
-                    clientListPage={clientListPage}
-                    cuttingDate={cuttingDate}
-                    searchTermIsServiced={searchTermIsCut} />
+                    clientListPage={clientListPage}                   
+                    searchTermIsServiced={searchTermIsServiced}
+                    snow={true}
+                /> */}
             </Suspense>
         </>
     );

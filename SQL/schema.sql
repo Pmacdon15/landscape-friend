@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS strip_api_keys CASCADE;
+DROP TABLE IF EXISTS stripe_api_keys CASCADE;
 
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
 
@@ -18,7 +18,6 @@ CREATE TABLE organizations (
     organization_name VARCHAR(253) NOT NULL
 );
 
-
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
@@ -27,7 +26,8 @@ CREATE TABLE clients (
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
-    address VARCHAR(200) NOT NULL
+    address VARCHAR(200) NOT NULL,
+    snow_client BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE stripe_api_keys (

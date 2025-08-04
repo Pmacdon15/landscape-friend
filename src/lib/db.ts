@@ -88,7 +88,19 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
   return result;
 }
 
-//MARK: Fetch clients
+
+//MARK: Fetch clients snow clearing
+export async function fetchClientsClearingGroups(
+  orgId: string,
+  pageSize: number,
+  offset: number,
+  searchTerm: string,
+  searchTermAssignedTo: string
+) {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+}
+
+//MARK: Fetch clients cutting
 export async function fetchClientsWithSchedules(
   orgId: string,
   pageSize: number,
@@ -377,7 +389,7 @@ export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, org
     throw new Error('Client not found, access denied, or already marked as cut');
   }
 
-  revalidatePath("/cutting-list")
+  revalidatePath("/lists/cutting")
   return result;
 }
 

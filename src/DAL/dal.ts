@@ -1,9 +1,9 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroups } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
 import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey } from "@/types/types";
 import { auth } from "@clerk/nextjs/server";
 
-export async function FetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
+export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
   Promise<PaginatedClients | null> {
   const { orgId, userId } = await auth.protect();
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
@@ -18,7 +18,7 @@ export async function FetchAllClients(clientPageNumber: number, searchTerm: stri
   return { clients, totalPages };
 }
 
-export async function FetchCuttingClients(
+export async function fetchCuttingClients(
   clientPageNumber: number,
   searchTerm: string,
   cuttingDate: Date,
@@ -52,7 +52,32 @@ export async function FetchCuttingClients(
   };
 }
 
-export async function FetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
+export async function fetchSnowClearingClients(
+  clientPageNumber: number,
+  searchTerm: string,
+  searchTermIsServiced: boolean,
+  searchTermAssignedTo: string
+) {
+  const { orgId, userId } = await auth.protect();
+  const pageSize = Number(process.env.PAGE_SIZE) || 10;
+  const offset = (clientPageNumber - 1) * pageSize;
+
+  const result = await fetchClientsClearingGroups(
+    orgId || userId,
+    pageSize,
+    offset,
+    searchTerm,
+    searchTermAssignedTo
+  );
+
+  // const { clients, totalPages } = result
+  // return {
+  //   clients,
+  //   totalPages,
+  // };
+}
+
+export async function fetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
   const { orgId, userId } = await auth.protect();
 
   try {
@@ -83,13 +108,13 @@ export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | E
 
 export async function fetchStripAPIKey(): Promise<APIKey | Error> {
   const { orgId, userId } = await auth.protect();
-  try {    
+  try {
     const result = await fetchStripAPIKeyDb(orgId || userId);
     if (!result || !result.api_key) return new Error('API key not found');
     return { apk_key: result.api_key };
   } catch (e) {
     if (e instanceof Error)
       return e;
-    return new Error('An unknown error occurred'); 
+    return new Error('An unknown error occurred');
   }
 }
