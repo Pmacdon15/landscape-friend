@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
         hostname: 'maps.googleapis.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'ugojuoyfyrxkjqju.public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
     ],
   },
 };
