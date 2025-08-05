@@ -10,6 +10,8 @@ import Link from "next/link";
 import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
+import SnowClient from "../inputs/snow-client-input";
+import SnowClientInput from "../inputs/snow-client-input";
 
 export default async function ClientListAll({ clientsPromise, clientListPage, isAdmin }:
   { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number, isAdmin: boolean }) {
@@ -44,15 +46,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
                 <ClientEmailPopover client={client} />
               </div>
               <p>Address: {client.address}</p>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id={`snow-removal-${client.id}`}
-                  name="snow-removal"
-                  defaultChecked={client.snow_client}
-                />
-                <label htmlFor={`snow-removal-${client.id}`}>Snow Removal</label>
-              </div>
+              <SnowClientInput clientId={client.id} snowClient={client.snow_client} />
               {isAdmin &&
                 <>
                   <PricePerCutUpdateInput client={client} />
