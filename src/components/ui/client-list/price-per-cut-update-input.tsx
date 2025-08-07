@@ -8,9 +8,10 @@ export default function PricePerCutUpdateInput({ client }: { client: Client }) {
     const debouncedMutate = useDebouncedMutation(mutate);
 
     return (
-        <p className="flex gap-1"> Price Per Cut: ${" "}
+        <div className="flex">
+            <p className=" my-auto"> Price Per Cut: ${" "} </p>
             <input
-                className="md:w-1/6 w-2/6"
+                className="md:w-2/6 border rounded-sm w-3/6 p-1 "
                 name="updated_price_per_cut"
                 type="number"
                 defaultValue={client.price_per_cut || 51.5}
@@ -18,6 +19,6 @@ export default function PricePerCutUpdateInput({ client }: { client: Client }) {
                 disabled={isPending}
             />
             {isError && <span className="text-red-500">Error Updating Price</span>}
-        </p>
+        </div>
     );
 }
