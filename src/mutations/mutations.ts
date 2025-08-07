@@ -4,6 +4,7 @@ import { markYardCut } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
+import { toggleSnowClient } from "@/actions/snow";
 
 export const useAddClient = () => {
     return useMutation({
@@ -53,6 +54,17 @@ export const useMarkYardCut = () => {
     return useMutation({
         mutationFn: ({ clientId, date }: { clientId: number, date: Date }) => {
             return markYardCut(clientId, date);
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+};
+
+export const useToggleSnowClient = () => {
+    return useMutation({
+        mutationFn: ({ clientId }: { clientId: number }) => {
+            return toggleSnowClient(clientId);
         },
         onError: (error) => {
             console.error('Mutation error:', error);
