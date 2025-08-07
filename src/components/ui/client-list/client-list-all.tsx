@@ -18,7 +18,7 @@ interface ClientListServiceProps {
   clientsPromise: Promise<PaginatedClients | null>;  
   clientListPage: number;  
   snow?: boolean;
-  orgMembersPromise?: Promise<OrgMember[] | undefined>;
+  orgMembersPromise?: Promise<OrgMember[]>;
   isAdmin:boolean
 }
 

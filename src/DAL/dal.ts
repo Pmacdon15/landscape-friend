@@ -20,12 +20,17 @@ export async function fetchAllClients(clientPageNumber: number, searchTerm: stri
 
 
 
-export async function fetchOrgMembers(): Promise<OrgMember[] | undefined> {
+export async function fetchOrgMembers(): Promise<OrgMember[]> {
   const { orgId, sessionClaims } = await auth.protect();
 
   if (!orgId) {
-    console.error("No organization ID found in session");
-    return undefined;
+    // If there's no organization, return the current user's information
+    return [
+      {
+        userId: sessionClaims.sub,
+        userName: sessionClaims.userFullName as string | null,
+      },
+    ];
   }
 
   const clerk = await clerkClient();
@@ -34,33 +39,20 @@ export async function fetchOrgMembers(): Promise<OrgMember[] | undefined> {
       organizationId: orgId,
     });
 
-    // Transform OrganizationMembership objects into plain objects, filtering out members without a userId
+    // Transform OrganizationMembership objects into the simplified OrgMember type
     const orgMembers: OrgMember[] = response.data.flatMap(member => {
       const userId = member.publicUserData?.userId;
       if (!userId) {
         return []; // Skip this member if userId is not available
       }
 
+      const userName = member.publicUserData?.firstName && member.publicUserData?.lastName
+        ? `${member.publicUserData.firstName} ${member.publicUserData.lastName}`
+        : member.publicUserData?.firstName ?? null;
+
       return [{
-        id: member.id,
-        role: member.role,
-        publicMetadata: member.publicMetadata,
-        privateMetadata: member.privateMetadata,
-        createdAt: new Date(member.createdAt).toISOString(),
-        updatedAt: new Date(member.updatedAt).toISOString(),
-        organization: {
-          id: member.organization.id,
-          name: member.organization.name,
-        },
-        publicUserData: {
-          userId: userId,
-          firstName: member.publicUserData?.firstName,
-          lastName: member.publicUserData?.lastName,
-          fullName:
-            userId === sessionClaims.sub
-              ? String(sessionClaims.userFullName)
-              : `${member.publicUserData?.firstName || ''} ${member.publicUserData?.lastName || ''}`.trim(),
-        },
+        userId: userId,
+        userName: userName,
       }];
     });
 

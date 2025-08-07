@@ -76,22 +76,8 @@ export interface ClientResult {
 }
 
 export interface OrgMember {
-    id: string;
-    role: string;
-    publicMetadata: Record<string, unknown>;
-    privateMetadata: Record<string, unknown>;
-    createdAt: string;
-    updatedAt: string;
-    organization: {
-        id: string;
-        name: string;
-    };
-    publicUserData: {
-        userId: string;
-        firstName: string | null;
-        lastName: string | null;
-        fullName?: string; // Add fullName field
-    };
+    userId: string;
+    userName: string | null;
 }
 
 export interface MutationData {

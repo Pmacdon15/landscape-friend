@@ -5,7 +5,7 @@ import { use } from "react";
 
 
 export default function SnowClientInput({ clientId, snowClient, orgMembersPromise }:
-  { clientId: number, snowClient: boolean, orgMembersPromise?: Promise<OrgMember[] | undefined> }) {
+  { clientId: number, snowClient: boolean, orgMembersPromise?: Promise<OrgMember[]> }) {
   const { mutate } = useToggleSnowClient()
 
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));

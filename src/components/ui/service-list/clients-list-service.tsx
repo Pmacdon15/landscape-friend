@@ -19,7 +19,7 @@ export default async function ClientListService({ clientsPromise, addressesPromi
         cuttingDate?: Date,
         searchTermIsServiced: boolean,
         snow?: boolean,
-        orgMembersPromise?: Promise<OrgMember[] | undefined>;
+        orgMembersPromise?: Promise<OrgMember[]>;
     }) {
 
     const result = await clientsPromise;

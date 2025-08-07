@@ -42,7 +42,7 @@ export default async function page({
                     clientsPromise={clientsPromise}
                     clientListPage={clientListPage}
                     isAdmin={isAdmin}
-                    orgMembersPromise={orgMembersPromise ?? Promise.resolve([])}                    
+                    orgMembersPromise={orgMembersPromise}                    
                 />
             </Suspense>
         </>
