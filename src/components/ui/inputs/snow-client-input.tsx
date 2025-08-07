@@ -9,17 +9,30 @@ export default function SnowClientInput({ clientId, snowClient, orgMembersPromis
   const { mutate } = useToggleSnowClient()
 
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
-  console.log("OrgMembers: ", orgMembers)
   return (
-    <div className="flex items-center gap-2">
-      <input
-        type="checkbox"
-        id={`snow-removal-${clientId}`}
-        name="snow-removal"
-        defaultChecked={snowClient}
-        onClick={() => mutate({ clientId })}
-      />
-      <label htmlFor={`snow-removal-${snowClient}`}>Snow Removal</label>
+    <div className="flex flex-col">
+      <div className="flex gap-2">
+        <input
+          type="checkbox"
+          id={`snow-removal-${clientId}`}
+          name="snow-removal"
+          defaultChecked={snowClient}
+          onClick={() => mutate({ clientId })}
+        />
+        <label htmlFor={`snow-removal-${snowClient}`}>Snow Removal</label>
+      </div>
+      {snowClient &&
+        <div className="flex gap-2 mb-2">
+          <p className="align-middle">Assigned to : </p>
+          <select className="  rounded-sm border md:w-2/6  w-3/6 p-1">
+            {orgMembers.map(member => (
+              <option key={member.userId} value={member.userId}>
+                {member.userName}
+              </option>
+            ))}
+          </select>
+        </div>
+      }
     </div>
   );
 } 
