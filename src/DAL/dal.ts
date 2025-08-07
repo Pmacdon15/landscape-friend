@@ -1,7 +1,7 @@
 import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroups } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
-import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey } from "@/types/types";
-import { auth } from "@clerk/nextjs/server";
+import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
 export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
   Promise<PaginatedClients | null> {
@@ -16,6 +16,59 @@ export async function fetchAllClients(clientPageNumber: number, searchTerm: stri
   const { clients, totalPages } = processClientsResult(result.clientsResult as ClientResult[], result.totalCount, pageSize);
 
   return { clients, totalPages };
+}
+
+
+
+export async function fetchOrgMembers(): Promise<OrgMember[] | undefined> {
+  const { orgId, sessionClaims } = await auth.protect();
+
+  if (!orgId) {
+    console.error("No organization ID found in session");
+    return undefined;
+  }
+
+  const clerk = await clerkClient();
+  try {
+    const response = await clerk.organizations.getOrganizationMembershipList({
+      organizationId: orgId,
+    });
+
+    // Transform OrganizationMembership objects into plain objects, filtering out members without a userId
+    const orgMembers: OrgMember[] = response.data.flatMap(member => {
+      const userId = member.publicUserData?.userId;
+      if (!userId) {
+        return []; // Skip this member if userId is not available
+      }
+
+      return [{
+        id: member.id,
+        role: member.role,
+        publicMetadata: member.publicMetadata,
+        privateMetadata: member.privateMetadata,
+        createdAt: new Date(member.createdAt).toISOString(),
+        updatedAt: new Date(member.updatedAt).toISOString(),
+        organization: {
+          id: member.organization.id,
+          name: member.organization.name,
+        },
+        publicUserData: {
+          userId: userId,
+          firstName: member.publicUserData?.firstName,
+          lastName: member.publicUserData?.lastName,
+          fullName:
+            userId === sessionClaims.sub
+              ? String(sessionClaims.userFullName)
+              : `${member.publicUserData?.firstName || ''} ${member.publicUserData?.lastName || ''}`.trim(),
+        },
+      }];
+    });
+
+    return orgMembers;
+  } catch (error) {
+    console.error("Error fetching org members:", error);
+    throw error;
+  }
 }
 
 export async function fetchCuttingClients(

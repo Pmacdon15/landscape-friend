@@ -1,10 +1,11 @@
-import { Account, Address, Client, Email, NamesAndEmails } from "@/types/types";
+import { Account, Address, Client, Email, NamesAndEmails, OrgMember } from "@/types/types";
 import { schemaAddClient, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { JwtPayload } from "@clerk/types";
 import { sendGroupEmail } from "./resend";
 import { revalidatePath } from "next/cache";
+import { clerkClient } from "@clerk/nextjs/server";
 
 //MARK: Add clients
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
@@ -87,6 +88,8 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
   revalidatePath("/client-list")
   return result;
 }
+
+
 
 
 //MARK: Fetch clients snow clearing
@@ -406,7 +409,7 @@ export async function toggleSnowClientDb(data: z.infer<typeof schemaToggleSnowCl
   `;
 
   if (!result || result.length === 0) {
-    throw new Error('Client not found, access denied, or already marked as cut');
+    throw new Error('Toggle Failed');
   }
 
   revalidatePath("/lists/client")

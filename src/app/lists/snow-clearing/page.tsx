@@ -6,6 +6,7 @@ import FormHeader from "@/components/ui/header/form-header";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { fetchOrgMembers } from "@/DAL/dal";
 
 export default async function page({
     searchParams,
@@ -17,6 +18,8 @@ export default async function page({
         searchParams,
     ]);
 
+    if (!isAdmin) redirect("/")
+
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const serviceDate = params.date ? new Date(String(params.date)) : new Date();
@@ -24,10 +27,10 @@ export default async function page({
     const searchTermAssignedTo = String(params.assigned_to ?? "");
 
 
-    if (!isAdmin) redirect("/")
+    
     // const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, searchTermIsServiced, searchTermAssignedTo);
     // const addressesPromise = fetchAllUnClearedAddresses(serviceDate);
-
+    const orgMembersPromise = fetchOrgMembers();
     return (
         <>
             <FormContainer>

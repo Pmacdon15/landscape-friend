@@ -9,14 +9,17 @@ import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 
-export default async function ClientListService({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false }:
+import { OrgMember } from "@/types/types";
+
+export default async function ClientListService({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false, orgMembersPromise }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
         addressesPromise: Promise<Address[] | null | Error>,
         clientListPage: number,
         cuttingDate?: Date,
-        searchTermIsServiced: boolean
-        snow?: boolean
+        searchTermIsServiced: boolean,
+        snow?: boolean,
+        orgMembersPromise?: Promise<OrgMember[] | undefined>;
     }) {
 
     const result = await clientsPromise;

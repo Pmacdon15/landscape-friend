@@ -4,7 +4,7 @@ import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { fetchAllClients } from "@/DAL/dal";
+import { fetchAllClients, fetchOrgMembers } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
 
@@ -24,6 +24,7 @@ export default async function page({
     const searchTermCuttingDay = String(params.day ?? '');
 
     const clientsPromise = fetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const orgMembersPromise = fetchOrgMembers();
 
     return (
         <>
@@ -37,7 +38,12 @@ export default async function page({
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
-                <ClientListAll clientsPromise={clientsPromise} clientListPage={clientListPage} isAdmin={isAdmin} />
+                <ClientListAll
+                    clientsPromise={clientsPromise}
+                    clientListPage={clientListPage}
+                    isAdmin={isAdmin}
+                    orgMembersPromise={orgMembersPromise ?? Promise.resolve([])}                    
+                />
             </Suspense>
         </>
     );

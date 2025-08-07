@@ -75,6 +75,25 @@ export interface ClientResult {
     total_count: number;
 }
 
+export interface OrgMember {
+    id: string;
+    role: string;
+    publicMetadata: Record<string, unknown>;
+    privateMetadata: Record<string, unknown>;
+    createdAt: string;
+    updatedAt: string;
+    organization: {
+        id: string;
+        name: string;
+    };
+    publicUserData: {
+        userId: string;
+        firstName: string | null;
+        lastName: string | null;
+        fullName?: string; // Add fullName field
+    };
+}
+
 export interface MutationData {
     clientId: number;
     pricePerCut: number;

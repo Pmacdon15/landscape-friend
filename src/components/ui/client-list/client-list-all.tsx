@@ -3,18 +3,32 @@ import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Client, PaginatedClients } from "@/types/types";
+import { Address, Client, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import SnowClient from "../inputs/snow-client-input";
 import SnowClientInput from "../inputs/snow-client-input";
+import { OrgMember } from "@/types/types";
 
-export default async function ClientListAll({ clientsPromise, clientListPage, isAdmin }:
-  { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number, isAdmin: boolean }) {
+
+interface ClientListServiceProps {
+  clientsPromise: Promise<PaginatedClients | null>;  
+  clientListPage: number;  
+  snow?: boolean;
+  orgMembersPromise?: Promise<OrgMember[] | undefined>;
+  isAdmin:boolean
+}
+
+export default async function ClientListService({
+  clientsPromise,  
+  clientListPage,  
+  snow = false,
+  orgMembersPromise,
+  isAdmin
+}: ClientListServiceProps) {
 
   const result = await clientsPromise;
 
@@ -46,7 +60,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
                 <ClientEmailPopover client={client} />
               </div>
               <p>Address: {client.address}</p>
-              <SnowClientInput clientId={client.id} snowClient={client.snow_client} />
+              <SnowClientInput clientId={client.id} snowClient={client.snow_client} orgMembersPromise={orgMembersPromise} />
               {isAdmin &&
                 <>
                   <PricePerCutUpdateInput client={client} />
