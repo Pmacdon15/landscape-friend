@@ -1,5 +1,5 @@
 'use server'
-import { addClientDB, deleteClientDB, updatedClientPricePerCutDb, updatedClientCutDayDb } from "@/lib/db";
+import { addClientDB, deleteClientDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
 
@@ -50,14 +50,14 @@ export async function updateClientPricePer(clientId: number, pricePerCut: number
 
     const validatedFields = schemaUpdatePricePerCut.safeParse({
         clientId: clientId,
-        pricePerCut: pricePerCut
+        pricePerCut: pricePerCut,
+        snow: snow
     });
 
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        let result
-        if (!snow) result = await updatedClientPricePerCutDb(validatedFields.data, orgId || userId)
+        const result = await updateClientPricePerDb(validatedFields.data, orgId || userId)
         if (!result) throw new Error('Failed to update Client price per');
         return result;
     } catch (e: unknown) {

@@ -10,6 +10,7 @@ export const schemaAddClient = z.object({
 export const schemaUpdatePricePerCut = z.object({
     clientId: z.number(),
     pricePerCut: z.number(),
+    snow: z.boolean()
 })
 
 export const schemaDeleteClient = z.object({

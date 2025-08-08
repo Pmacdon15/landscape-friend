@@ -55,11 +55,19 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
 }
 
 //MARK: Update price per cut
-export async function updatedClientPricePerCutDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
+export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
+  
+  let setClause;
+  if (data.snow) {
+    setClause = sql`price_per_month_snow = ${data.pricePerCut}`;
+  } else {
+    setClause = sql`price_per_cut = ${data.pricePerCut}`;
+  }
+
   const result = await sql`
         UPDATE clients
-        SET price_per_cut = ${data.pricePerCut}
+        SET ${setClause}
         WHERE id = ${data.clientId} AND organization_id = ${orgId}
     `
 
@@ -158,8 +166,7 @@ export async function fetchClientsWithSchedules(
     `);
   } else if (searchTermCuttingWeek > 0) {
     whereClauses.push(sql`
-      cws.cutting_week = ${searchTermCuttingWeek} 
-      AND cws.cutting_day != 'No cut'
+      cws.cutting_week = ${searchTermCuttingWeek}
     `);
   } else if (searchTermCuttingDay !== "") {
     whereClauses.push(sql`
@@ -227,6 +234,7 @@ export async function fetchClientsWithSchedules(
       cws.address,
       cws.amount_owing,
       cws.price_per_cut,
+      cws.price_per_month_snow,
       cws.snow_client,
       cws.cutting_week,
       cws.cutting_day,
@@ -334,6 +342,7 @@ export async function fetchClientsCuttingSchedules(
     cws.address,
     cws.amount_owing,
     cws.price_per_cut,
+    cws.price_per_month_snow,
     cws.snow_client,
     cws.cutting_week,
     cws.cutting_day,

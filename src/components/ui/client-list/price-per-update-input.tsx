@@ -7,7 +7,7 @@ import ReusableNumberInput from "../inputs/reusable-number-input";
 export default function PricePerUpdateInput({ client, snow = false }: { client: Client, snow?: boolean }) {
     const { mutate, isPending, isError } = useUpdateClientPricePer();
     const debouncedMutate = useDebouncedMutation(mutate);
-
+    
     return (
         <div className="flex">
 
@@ -16,8 +16,7 @@ export default function PricePerUpdateInput({ client, snow = false }: { client: 
                     <p className=" my-auto w-40"> Snow service Price: $  </p>
                     <ReusableNumberInput
                         name="updated_price_per_month_snow"
-                        // defaultValue={client.price_per_month_snow || 51.5}
-                        defaultValue={51.5}
+                        defaultValue={client.price_per_month_snow}
                         onChange={(value) => debouncedMutate({ clientId: client.id, pricePerCut: value, snow })}
                         disabled={isPending}
                     />
