@@ -11,7 +11,7 @@ import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import SnowClientInput from "../inputs/snow-client-input";
 import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
-import PricePerUpdateInput from "./price-per-cut-update-input";
+import PricePerUpdateInput from "./price-per-update-input";
 
 
 export default async function ClientListService({

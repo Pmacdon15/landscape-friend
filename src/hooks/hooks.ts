@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export const useDebouncedMutation = (
-  mutate: (data: MutationData & { snow?: boolean }) => void,
+export const useDebouncedMutation = <TData>(
+  mutate: (data: TData) => void,
   delay: number = 500
 ) => {
-  const [value, setValue] = useState<(MutationData & { snow?: boolean }) | null>(null);
+  const [value, setValue] = useState<TData | null>(null);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -17,7 +17,7 @@ export const useDebouncedMutation = (
     return () => clearTimeout(timeoutId);
   }, [value, mutate, delay]);
 
-  return setValue;
+  return setValue as (data: TData) => void;
 };
 
 export function useDebouncedSearchSync(searchTerm: string) {

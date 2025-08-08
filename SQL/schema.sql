@@ -29,7 +29,8 @@ CREATE TABLE clients (
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
     address VARCHAR(200) NOT NULL,
-    snow_client BOOLEAN NOT NULL DEFAULT false
+    snow_client BOOLEAN NOT NULL DEFAULT false,
+    price_per_month_snow FLOAT NOT NULL DEFAULT 100
 );
 
 CREATE TABLE stripe_api_keys (

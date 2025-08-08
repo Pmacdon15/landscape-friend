@@ -2,6 +2,7 @@
 import { useAssignSnowClearing, useToggleSnowClient } from "@/mutations/mutations";
 import { Client, OrgMember } from "@/types/types";
 import { use } from "react";
+import PricePerUpdateInput from "../client-list/price-per-update-input";
 
 
 export default function SnowClientInput({ client, orgMembersPromise }:
@@ -26,25 +27,29 @@ export default function SnowClientInput({ client, orgMembersPromise }:
         <label htmlFor={`snow-removal-${client.id}`}>Snow Removal</label>
       </div>
       {client.snow_client &&
-        <div className="flex gap-2 mb-2">
-          <p className="align-middle w-28">Assigned to : </p>
-          <select
-            className="  rounded-sm border md:w-2/6  w-3/6 p-1"
-            defaultValue={defaultValue}
-            onChange={(e) => {
-              const selectedUserId = e.target.value;
-              mutateAssignSnowClearing({ clientId: client.id, assignedTo: selectedUserId });
-            }}
-          >
-            <option value="not-assigned">Not Assigned</option>
-            {orgMembers && orgMembers.map(member => (
-              <option key={member.userId} value={member.userId.toString()}>
-                {member.userName}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col gap-2 mb-2">
+          < div className="flex">
+            <p className="align-middle w-40">Assigned to : </p>
+            <select
+              className="  rounded-sm border md:w-2/6  w-3/6 p-1"
+              defaultValue={defaultValue}
+              onChange={(e) => {
+                const selectedUserId = e.target.value;
+                mutateAssignSnowClearing({ clientId: client.id, assignedTo: selectedUserId });
+              }}
+            >
+              <option value="not-assigned">Not Assigned</option>
+              {orgMembers && orgMembers.map(member => (
+                <option key={member.userId} value={member.userId.toString()}>
+                  {member.userName}
+                </option>
+              ))}
+            </select>
+          </div>
+          <PricePerUpdateInput client={client} snow={true} />
         </div>
+
       }
-    </div>
+    </div >
   );
 }
