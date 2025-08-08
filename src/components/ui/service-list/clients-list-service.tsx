@@ -9,9 +9,7 @@ import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 
-import { OrgMember } from "@/types/types";
-
-export default async function ClientListService({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false, orgMembersPromise }:
+export default async function ClientListService({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
         addressesPromise: Promise<Address[] | null | Error>,
@@ -19,7 +17,6 @@ export default async function ClientListService({ clientsPromise, addressesPromi
         cuttingDate?: Date,
         searchTermIsServiced: boolean,
         snow?: boolean,
-        orgMembersPromise?: Promise<OrgMember[]>;
     }) {
 
     const result = await clientsPromise;

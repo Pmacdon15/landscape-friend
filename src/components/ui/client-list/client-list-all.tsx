@@ -4,7 +4,6 @@ import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Client, ClientListServiceProps } from "@/types/types";
-import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
@@ -12,12 +11,12 @@ import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import SnowClientInput from "../inputs/snow-client-input";
 import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
+import PricePerUpdateInput from "./price-per-cut-update-input";
 
 
 export default async function ClientListService({
   clientsPromise,
-  clientListPage,
-  snow = false,
+  clientListPage,  
   orgMembersPromise,
   isAdmin
 }: ClientListServiceProps) {
@@ -57,7 +56,7 @@ export default async function ClientListService({
                   <Suspense fallback={<SnowClientInputFallback />}>
                     <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>
-                  <PricePerCutUpdateInput client={client} />
+                  <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
               }

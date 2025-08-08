@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
+import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/actions/clients";
 import { markYardCut } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { updateStripeAPIKey } from "@/actions/stripe";
@@ -28,10 +28,10 @@ export const useDeleteClient = () => {
     });
 };
 
-export const useUpdateClientPricePerCut = () => {
+export const useUpdateClientPricePer = () => {
     return useMutation({
-        mutationFn: ({ clientId, pricePerCut }: { clientId: number, pricePerCut: number }) => {
-            return updateClientPricePerCut(clientId, pricePerCut);
+        mutationFn: ({ clientId, pricePerCut, snow = false }: { clientId: number, pricePerCut: number, snow: boolean }) => {
+            return updateClientPricePer(clientId, pricePerCut, snow);
         },
         onError: (error) => {
             console.error('Mutation error:', error);

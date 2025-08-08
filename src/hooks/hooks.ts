@@ -3,8 +3,11 @@ import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export const useDebouncedMutation = (mutate: (data: MutationData) => void, delay: number = 500) => {
-  const [value, setValue] = useState<MutationData | null>(null);
+export const useDebouncedMutation = (
+  mutate: (data: MutationData & { snow?: boolean }) => void,
+  delay: number = 500
+) => {
+  const [value, setValue] = useState<(MutationData & { snow?: boolean }) | null>(null);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -110,18 +113,18 @@ export function useGetLonAndLatFromAddresses(addresses: string[]): { loading: bo
 
 
 export function useMediaQuery(query: string) {
-    const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState(false);
 
-    useEffect(() => {
-        const mediaQuery = window.matchMedia(query);
-        const handleChange = () => setMatches(mediaQuery.matches);
-        mediaQuery.addEventListener("change", handleChange);
-        setMatches(mediaQuery.matches);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const handleChange = () => setMatches(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    setMatches(mediaQuery.matches);
 
-        return () => {
-            mediaQuery.removeEventListener("change", handleChange);
-        };
-    }, [query]);
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, [query]);
 
-    return matches;
+  return matches;
 }

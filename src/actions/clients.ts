@@ -44,7 +44,7 @@ export async function deleteClient(clientId: number) {
     }
 }
 
-export async function updateClientPricePerCut(clientId: number, pricePerCut: number) {
+export async function updateClientPricePer(clientId: number, pricePerCut: number, snow: boolean) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
 
@@ -56,8 +56,9 @@ export async function updateClientPricePerCut(clientId: number, pricePerCut: num
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await updatedClientPricePerCutDb(validatedFields.data, orgId || userId)
-        if (!result) throw new Error('Failed to update Client price per cut');
+        let result
+        if (!snow) result = await updatedClientPricePerCutDb(validatedFields.data, orgId || userId)
+        if (!result) throw new Error('Failed to update Client price per');
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);

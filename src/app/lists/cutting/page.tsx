@@ -1,11 +1,11 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
-import ClientListCutting from "@/components/ui/service-list/clients-list-service";
 import FormHeader from "@/components/ui/header/form-header";
 import { fetchAllUnCutAddresses, fetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import ClientListService from "@/components/ui/service-list/clients-list-service";
 
 export default async function page({
     searchParams,
@@ -24,8 +24,7 @@ export default async function page({
 
     if (!isAdmin) redirect("/")
     const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);
-    const addressesPromise = fetchAllUnCutAddresses(cuttingDate);
-    const orgMembersPromise = fetchOrgMembers();
+    const addressesPromise = fetchAllUnCutAddresses(cuttingDate);    
 
     return (
         <>
@@ -34,13 +33,12 @@ export default async function page({
                 <SearchForm isCuttingDayComponent={true} />
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
-                <ClientListCutting
+                <ClientListService
                     clientsPromise={clientsPromise}
                     addressesPromise={addressesPromise}
                     clientListPage={clientListPage}
                     cuttingDate={cuttingDate}
-                    searchTermIsServiced={searchTermIsCut}
-                    orgMembersPromise={orgMembersPromise} />
+                    searchTermIsServiced={searchTermIsCut} />
             </Suspense>
         </>
     );

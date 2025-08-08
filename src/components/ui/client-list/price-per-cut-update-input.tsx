@@ -1,23 +1,32 @@
 'use client'
 import { useDebouncedMutation } from "@/hooks/hooks";
-import { useUpdateClientPricePerCut } from "@/mutations/mutations";
+import { useUpdateClientPricePer } from "@/mutations/mutations";
 import { Client } from "@/types/types";
+import ReusableNumberInput from "../inputs/reusable-number-input";
 
-export default function PricePerCutUpdateInput({ client }: { client: Client }) {
-    const { mutate, isPending, isError } = useUpdateClientPricePerCut();
+export default function PricePerUpdateInput({ client, snow = false }: { client: Client, snow?: boolean }) {
+    const { mutate, isPending, isError } = useUpdateClientPricePer();
     const debouncedMutate = useDebouncedMutation(mutate);
 
     return (
         <div className="flex">
             <p className=" my-auto w-30"> Price Per Cut: ${" "} </p>
-            <input
-                className="md:w-2/6 border rounded-sm w-3/6 p-1 "
-                name="updated_price_per_cut"
-                type="number"
-                defaultValue={client.price_per_cut || 51.5}
-                onChange={(event) => debouncedMutate({ clientId: client.id, pricePerCut: Number(event.target.value) })}
-                disabled={isPending}
-            />
+            {snow ?
+
+                <ReusableNumberInput
+                    name="updated_price_per_month_snow"
+                    defaultValue={client.price_per_month_snow || 51.5}
+                    onChange={(value) => debouncedMutate({ clientId: client.id, pricePerCut: value, snow })}
+                    disabled={isPending}
+                />
+                :
+                < ReusableNumberInput
+                    name="updated_price_per_cut"
+                    defaultValue={client.price_per_cut || 51.5}
+                    onChange={(value) => debouncedMutate({ clientId: client.id, pricePerCut: value })}
+                    disabled={isPending}
+                />
+            }
             {isError && <span className="text-red-500">Error Updating Price</span>}
         </div>
     );

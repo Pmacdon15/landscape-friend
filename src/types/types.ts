@@ -30,8 +30,7 @@ export interface ClientResult {
 
 export interface ClientListServiceProps {
     clientsPromise: Promise<PaginatedClients | null>;
-    clientListPage: number;
-    snow?: boolean;
+    clientListPage: number;    
     orgMembersPromise?: Promise<OrgMember[]>;
     isAdmin: boolean
 }
@@ -112,7 +111,7 @@ export interface MutationData {
 
 
 export interface MapComponentProps {
-    address: string[];
+    addresses: string[];
 }
 
 export interface Location {
