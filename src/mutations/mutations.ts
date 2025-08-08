@@ -50,6 +50,17 @@ export const useUpdateCuttingDay = () => {
     });
 };
 
+export const useAssignSnowClearing = () => {
+    return useMutation({
+        mutationFn: ({ clientId }: { clientId: number, }) => {
+            return assignSnowClearing(clientId);
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+};
+
 export const useMarkYardCut = () => {
     return useMutation({
         mutationFn: ({ clientId, date }: { clientId: number, date: Date }) => {

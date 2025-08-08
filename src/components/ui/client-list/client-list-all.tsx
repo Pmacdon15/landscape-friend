@@ -15,16 +15,16 @@ import { OrgMember } from "@/types/types";
 
 
 interface ClientListServiceProps {
-  clientsPromise: Promise<PaginatedClients | null>;  
-  clientListPage: number;  
+  clientsPromise: Promise<PaginatedClients | null>;
+  clientListPage: number;
   snow?: boolean;
   orgMembersPromise?: Promise<OrgMember[]>;
-  isAdmin:boolean
+  isAdmin: boolean
 }
 
 export default async function ClientListService({
-  clientsPromise,  
-  clientListPage,  
+  clientsPromise,
+  clientListPage,
   snow = false,
   orgMembersPromise,
   isAdmin
@@ -60,9 +60,9 @@ export default async function ClientListService({
                 <ClientEmailPopover client={client} />
               </div>
               <p>Address: {client.address}</p>
-              <SnowClientInput clientId={client.id} snowClient={client.snow_client} orgMembersPromise={orgMembersPromise} />
               {isAdmin &&
                 <>
+                  <SnowClientInput clientId={client.id} snowClient={client.snow_client} orgMembersPromise={orgMembersPromise} />
                   <PricePerCutUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>

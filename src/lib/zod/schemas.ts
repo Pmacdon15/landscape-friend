@@ -35,6 +35,11 @@ export const schemaMarkYardCut = z.object({
     date: z.date()
 })
 
+export const schemaAssignSnowClearing = z.object({
+    clientId: z.number()
+})
+
+
 export const schemaToggleSnowClient = z.object({
     clientId: z.number()
 })
