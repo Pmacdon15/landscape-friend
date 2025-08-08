@@ -1,5 +1,6 @@
 import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroupsDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
+import { isOrgAdmin } from "@/lib/webhooks";
 import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
@@ -102,7 +103,10 @@ export async function fetchSnowClearingClients(
   searchTermIsServiced: boolean,
   searchTermAssignedTo: string
 ): Promise<PaginatedClients | null> {
-  const { orgId, userId } = await auth.protect();
+  const { orgId, userId, isAdmin } = await isOrgAdmin()
+
+  if (!isAdmin && userId !== searchTermAssignedTo) throw new Error("Not admin can not view other coworkers list")
+
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
