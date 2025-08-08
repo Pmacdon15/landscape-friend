@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS payments CASCADE;
 DROP TABLE IF EXISTS accounts CASCADE;
 
 DROP TABLE IF EXISTS clients CASCADE;
+DROP TABLE IF EXISTS images CASCADE;
 
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
@@ -54,7 +55,7 @@ CREATE TABLE yards_marked_cut (
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- WHERE
---     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
+--     organization_id = 'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D';
 -- -- SELECT * from price_per_cut ;
 
 INSERT INTO
@@ -69,7 +70,7 @@ INSERT INTO
 VALUES (
         'Emily Lee',
         'emily.lee@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '1534 26th Ave SW, Calgary, AB T2S 0Z5',
         '+1-403-123-4567',
         1.00
@@ -77,7 +78,7 @@ VALUES (
     (
         'Sarah Taylor',
         'sarah.taylor@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '4567 Crowchild Trail NW, Calgary, AB T3B 0T4',
         '+1-403-765-4321',
         1.00
@@ -85,7 +86,7 @@ VALUES (
     (
         'Michael Johnson',
         'michael.johnson@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '7890 Macleod Trail SE, Calgary, AB T2G 0B1',
         '+1-403-901-2345',
         1.00
@@ -93,7 +94,7 @@ VALUES (
     (
         'Jessica Brown',
         'jessica.brown@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '9012 Banff Trail NW, Calgary, AB T3K 0B3',
         '+1-403-111-2222',
         1.00
@@ -101,7 +102,7 @@ VALUES (
     (
         'William Wilson',
         'william.wilson@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '3456 14th St NW, Calgary, AB T2N 1M5',
         '+1-403-333-4444',
         1.00
@@ -109,7 +110,7 @@ VALUES (
     (
         'Olivia Davis',
         'olivia.davis@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '2345 17th Ave SW, Calgary, AB T2T 0E4',
         '+1-403-555-6666',
         1.00
@@ -117,7 +118,7 @@ VALUES (
     (
         'James Martin',
         'james.martin@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '6789 Deerfoot Trail SE, Calgary, AB T2J 6V4',
         '+1-403-777-8888',
         1.00
@@ -125,7 +126,7 @@ VALUES (
     (
         'Ava Thompson',
         'ava.thompson@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '1234 4th St NE, Calgary, AB T2E 3P5',
         '+1-403-999-0000',
         1.00
@@ -133,7 +134,7 @@ VALUES (
     (
         'Benjamin White',
         'benjamin.white@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '5678 11th Ave SW, Calgary, AB T3C 0M5',
         '+1-403-222-3333',
         1.00
@@ -141,7 +142,7 @@ VALUES (
     (
         'Isabella Garcia',
         'isabella.garcia@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '8901 24th St SW, Calgary, AB T3E 1P5',
         '+1-403-444-5555',
         1.00
@@ -149,7 +150,7 @@ VALUES (
     (
         'Alexander Miller',
         'alexander.miller@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '3456 8th Ave NE, Calgary, AB T2A 0P4',
         '+1-403-666-7777',
         1.00
@@ -157,7 +158,7 @@ VALUES (
     (
         'Mia Harris',
         'mia.harris@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '9012 16th Ave NW, Calgary, AB T2M 0L4',
         '+1-403-888-9999',
         1.00
@@ -165,7 +166,7 @@ VALUES (
     (
         'Ethan Walker',
         'ethan.walker@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '4567 5th St SE, Calgary, AB T2G 4P4',
         '+1-403-111-1111',
         1.00
@@ -173,7 +174,7 @@ VALUES (
     (
         'Charlotte Lewis',
         'charlotte.lewis@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '2345 19th Ave SW, Calgary, AB T2T 1Z4',
         '+1-403-222-2222',
         1.00
@@ -181,7 +182,7 @@ VALUES (
     (
         'Liam Robinson',
         'liam.robinson@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '6789 10th St NW, Calgary, AB T2N 1S4',
         '+1-403-333-3333',
         1.00
@@ -189,7 +190,7 @@ VALUES (
     (
         'Amelia Scott',
         'amelia.scott@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '1234 7th Ave SW, Calgary, AB T2P 2T4',
         '+1-403-444-4444',
         1.00
@@ -197,7 +198,7 @@ VALUES (
     (
         'Noah Young',
         'noah.young@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '5678 15th Ave SW, Calgary, AB T3C 1E5',
         '+1-403-555-5555',
         1.00
@@ -205,7 +206,7 @@ VALUES (
     (
         'Harper Allen',
         'harper.allen@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '8901 20th StW, Calgary, AB T3K 2P5',
         '+1-403-666-6666',
         1.00
@@ -213,7 +214,7 @@ VALUES (
     (
         'Elijah King',
         'elijah.king@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '3456 9th Ave SE, Calgary, AB T2G 2T4',
         '+1-403-777-7777',
         1.00
@@ -221,7 +222,7 @@ VALUES (
     (
         'Evelyn Wright',
         'evelyn.wright@example.com',
-        'user_30G0wquvxAjdXFitpjBDklG0qzF',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
         '9012 6th St SW, Calgary, AB T2P 1K4',
         '+1-403-888-8888',
         1.00
@@ -231,3 +232,11 @@ INSERT INTO
     accounts (client_id, current_balance)
 SELECT id, 1.0
 FROM clients;
+
+CREATE TABLE IF NOT EXISTS images (
+      id SERIAL PRIMARY KEY,
+      customerID VARCHAR(255) NOT NULL,
+      imageURL TEXT NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      isActive BOOLEAN
+    );

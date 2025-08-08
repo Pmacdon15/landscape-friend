@@ -20,7 +20,7 @@ export default async function MapComponent({ address }: MapComponentProps) {
             <iframe
                 title="Map View"
                 src={mapUrl}
-                className="md:w-1/2 w-full h-[200px]"
+                className="w-full h-[200px]"
             />
         </div>
     );
