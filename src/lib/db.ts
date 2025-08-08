@@ -127,9 +127,11 @@ export async function fetchClientsWithSchedules(
       SELECT 
         cwb.*,
         COALESCE(cs.cutting_week, 0) AS cutting_week,
-        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
+        COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
+        sca.assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
     )
   `;
 
@@ -211,9 +213,11 @@ export async function fetchClientsWithSchedules(
       SELECT 
         cwb.*,
         COALESCE(cs.cutting_week, 0) AS cutting_week,
-        COALESCE(cs.cutting_day, 'No cut') AS cutting_day
+        COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
+        sca.assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
       WHERE cwb.id = ANY(${paginatedClientIds})
     )
     SELECT 
@@ -226,7 +230,8 @@ export async function fetchClientsWithSchedules(
       cws.price_per_cut,
       cws.snow_client,
       cws.cutting_week,
-      cws.cutting_day
+      cws.cutting_day,
+      cws.assigned_to
     FROM clients_with_schedules cws
     ORDER BY cws.id
   `;

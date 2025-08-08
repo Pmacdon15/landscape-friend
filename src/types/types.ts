@@ -9,24 +9,7 @@ export interface Client {
     price_per_cut: number;
     snow_client: boolean;
     cutting_schedules: CuttingSchedule[];
-}
-
-
-export interface ClientListServiceProps {
-  clientsPromise: Promise<PaginatedClients | null>;
-  clientListPage: number;
-  snow?: boolean;
-  orgMembersPromise?: Promise<OrgMember[]>;
-  isAdmin: boolean
-}
-export interface CuttingSchedule {
-    cutting_week: number | null;
-    cutting_day: string | null;
-}
-
-export interface CutStatusSelectorProps {
-    value: string;
-    onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+    assigned_to: string
 }
 
 export interface ClientResult {
@@ -41,7 +24,28 @@ export interface ClientResult {
     cutting_week: number;
     cutting_day: string;
     total_count: number;
+    assigned_to: string
 }
+
+
+export interface ClientListServiceProps {
+    clientsPromise: Promise<PaginatedClients | null>;
+    clientListPage: number;
+    snow?: boolean;
+    orgMembersPromise?: Promise<OrgMember[]>;
+    isAdmin: boolean
+}
+export interface CuttingSchedule {
+    cutting_week: number | null;
+    cutting_day: string | null;
+}
+
+export interface CutStatusSelectorProps {
+    value: string;
+    onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+
 
 export interface PaginatedClients {
     clients: Client[];
@@ -145,16 +149,16 @@ export interface APIKey {
 }
 
 export interface Props {
-  showForm: boolean;
-  setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+    showForm: boolean;
+    setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 //MARL:Email
 export interface HeaderEmailProps {
-  text: string;
-  senderName: string;
-  companyName: string;
-  title: string;
+    text: string;
+    senderName: string;
+    companyName: string;
+    title: string;
 }
 
 export interface InputFieldProps {
@@ -174,9 +178,9 @@ export interface InputFieldProps {
 
 
 export interface CuttingPeriodSelectorProps {
-  label: string;
-  options: { value: string; label: string }[];
-  value: string;
-  handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  name: string;
+    label: string;
+    options: { value: string; label: string }[];
+    value: string;
+    handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+    name: string;
 }
