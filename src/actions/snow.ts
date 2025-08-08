@@ -23,14 +23,13 @@ export async function toggleSnowClient(clientId: number) {
     }
 }
 
-
-
-export async function assignSnowClearing(clientId: number) {
+export async function assignSnowClearing(clientId: number, assignedTo: string) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
 
     const validatedFields = schemaAssignSnowClearing.safeParse({
         clientId: clientId,
+        assignedTo: assignedTo
     });
 
     if (!validatedFields.success) throw new Error("Invalid input data");

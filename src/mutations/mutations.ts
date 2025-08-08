@@ -4,7 +4,7 @@ import { markYardCut } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
-import { toggleSnowClient } from "@/actions/snow";
+import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
 
 export const useAddClient = () => {
     return useMutation({
@@ -52,8 +52,8 @@ export const useUpdateCuttingDay = () => {
 
 export const useAssignSnowClearing = () => {
     return useMutation({
-        mutationFn: ({ clientId }: { clientId: number, }) => {
-            return assignSnowClearing(clientId);
+        mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
+            return assignSnowClearing({clientId, assignedTo});
         },
         onError: (error) => {
             console.error('Mutation error:', error);
