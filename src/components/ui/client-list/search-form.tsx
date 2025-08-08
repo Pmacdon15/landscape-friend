@@ -1,14 +1,14 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CuttingListDatePicker } from '../service-list/cutting-list-date-picker';
-import { CutStatusSelector } from '../selectors/cut-status-selector';
+import { CuttingListDatePicker } from '../service-list/service-list-date-picker';
+import { ServiceStatusSelector } from '../selectors/service-status-selector';
 import { days, weeks } from '@/lib/values';
 import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 
-export default function SearchForm({ 
-  isCuttingDayComponent = false, 
-  snow = false 
+export default function SearchForm({
+  isCuttingDayComponent = false,
+  snow = false
 }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -19,19 +19,19 @@ export default function SearchForm({
     searchParams.get('week') ? Number(searchParams.get('week')) : ''
   );
   const [cuttingDay, setCuttingDay] = useState(searchParams.get('day') || '');
-  const [cuttingDate, setCuttingDate] = useState(
+  const [serviceDate, setServiceDate] = useState(
     searchParams.get('date') || new Date().toISOString().slice(0, 10)
   );
-  const [searchTermIsCut, setSearchTermIsCut] = useState(searchParams.get('is_cut') || '');
+  const [searchTermIsServiced, setSearchTermIsServiced] = useState(searchParams.get('is_serviced') || '');
 
   useEffect(() => {
     if (isCuttingDayComponent && !searchParams.get('date')) {
       const params = new URLSearchParams(searchParams.toString());
-      params.set('date', cuttingDate);
+      params.set('date', serviceDate);
       if (!params.get('page')) params.set('page', '1');
       router.replace(`?${params.toString()}`, { scroll: false });
     }
-  }, [isCuttingDayComponent, searchParams, router, cuttingDate]);
+  }, [isCuttingDayComponent, searchParams, router, serviceDate]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -39,12 +39,12 @@ export default function SearchForm({
       if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
       else params.delete('search');
       if (!params.get('page')) params.set('page', '1');
-      if (isCuttingDayComponent && cuttingDate) params.set('date', cuttingDate);
+      if (isCuttingDayComponent && serviceDate) params.set('date', serviceDate);
       router.replace(`?${params.toString()}`, { scroll: false });
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [debouncedSearchTerm, router, searchParams, isCuttingDayComponent, cuttingDate]);
+  }, [debouncedSearchTerm, router, searchParams, isCuttingDayComponent, serviceDate]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -68,10 +68,10 @@ export default function SearchForm({
           setCuttingDay(value);
           break;
         case 'date':
-          setCuttingDate(value);
+          setServiceDate(value);
           break;
-        case 'is_cut':
-          setSearchTermIsCut(value);
+        case 'is_serviced':
+          setSearchTermIsServiced(value);
           break;
         default:
           break;
@@ -92,14 +92,14 @@ export default function SearchForm({
       />
       {isCuttingDayComponent ? (
         snow ? (
-          <p>test</p>
+          <ServiceStatusSelector value={searchTermIsServiced} onChange={handleChange} />
         ) : (
           <>
             <CuttingListDatePicker
-              cuttingDate={cuttingDate}
+              cuttingDate={serviceDate}
               onChange={handleChange}
             />
-            <CutStatusSelector value={searchTermIsCut} onChange={handleChange} />
+            <ServiceStatusSelector value={searchTermIsServiced} onChange={handleChange} />
           </>
         )
       ) : (

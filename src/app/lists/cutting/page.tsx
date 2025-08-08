@@ -20,10 +20,10 @@ export default async function page({
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const cuttingDate = params.date ? new Date(String(params.date)) : new Date();
-    const searchTermIsCut = params.is_cut === 'true';
+    const searchTermIsServiced = params.is_serviced === 'true';
 
     if (!isAdmin) redirect("/")
-    const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);       
+    const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsServiced);
 
     return (
         <>
@@ -33,10 +33,10 @@ export default async function page({
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService
-                    clientsPromise={clientsPromise}                    
+                    clientsPromise={clientsPromise}
                     clientListPage={clientListPage}
                     cuttingDate={cuttingDate}
-                    searchTermIsServiced={searchTermIsCut} />
+                    searchTermIsServiced={searchTermIsServiced} />
             </Suspense>
         </>
     );
