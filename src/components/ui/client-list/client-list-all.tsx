@@ -24,7 +24,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
 
   return (
     <>
-      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
@@ -59,7 +59,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
           </FormContainer>
         ))}
       </ul >
-      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
     </>
   );
 }
