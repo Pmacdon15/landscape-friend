@@ -303,6 +303,13 @@ export async function fetchClientsCuttingSchedules(
         ymc.cutting_date
       FROM yards_marked_cut ymc
       WHERE ymc.cutting_date = ${cuttingDate}
+    ),
+    snow_assignments AS (
+      SELECT
+        sca.client_id,
+        sca.assigned_to
+      FROM snow_clearing_assignments sca
+      WHERE sca.organization_id = ${orgId}
     )
   `;
 
@@ -310,6 +317,7 @@ export async function fetchClientsCuttingSchedules(
   SELECT COUNT(DISTINCT cws.id) AS total_count
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
+  LEFT JOIN snow_assignments sa ON cws.id = sa.client_id
   WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 
@@ -324,9 +332,11 @@ export async function fetchClientsCuttingSchedules(
     cws.price_per_cut,
     cws.snow_client,
     cws.cutting_week,
-    cws.cutting_day
+    cws.cutting_day,
+    sa.assigned_to
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
+  LEFT JOIN snow_assignments sa ON cws.id = sa.client_id
   WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 

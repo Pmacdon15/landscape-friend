@@ -1,3 +1,4 @@
+import { HeaderEmailProps } from "@/types/types";
 import {
   Body,
   Head,
@@ -10,12 +11,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface HeaderEmailProps {
-  text: string;
-  senderName: string;
-  companyName: string;
-  title: string;
-}
+
 
 export default function HeaderEmail({
   text,

@@ -1,12 +1,5 @@
+import { CuttingPeriodSelectorProps } from '@/types/types';
 import React from 'react';
-
-interface CuttingPeriodSelectorProps {
-  label: string;
-  options: { value: string; label: string }[];
-  value: string;
-  handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  name: string;
-}
 
 export const CuttingPeriodSelector: React.FC<CuttingPeriodSelectorProps> = ({
   label,

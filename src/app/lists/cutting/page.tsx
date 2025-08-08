@@ -25,6 +25,7 @@ export default async function page({
     if (!isAdmin) redirect("/")
     const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);
     const addressesPromise = fetchAllUnCutAddresses(cuttingDate);
+    const orgMembersPromise = fetchOrgMembers();
 
     return (
         <>
@@ -38,7 +39,8 @@ export default async function page({
                     addressesPromise={addressesPromise}
                     clientListPage={clientListPage}
                     cuttingDate={cuttingDate}
-                    searchTermIsServiced={searchTermIsCut} />
+                    searchTermIsServiced={searchTermIsCut}
+                    orgMembersPromise={orgMembersPromise} />
             </Suspense>
         </>
     );

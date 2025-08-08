@@ -3,7 +3,7 @@ import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Address, Client, PaginatedClients } from "@/types/types";
+import { Address, Client, ClientListServiceProps, PaginatedClients } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -14,13 +14,6 @@ import SnowClientInput from "../inputs/snow-client-input";
 import { OrgMember } from "@/types/types";
 
 
-interface ClientListServiceProps {
-  clientsPromise: Promise<PaginatedClients | null>;
-  clientListPage: number;
-  snow?: boolean;
-  orgMembersPromise?: Promise<OrgMember[]>;
-  isAdmin: boolean
-}
 
 export default async function ClientListService({
   clientsPromise,

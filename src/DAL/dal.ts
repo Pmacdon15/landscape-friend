@@ -14,10 +14,9 @@ export async function fetchAllClients(clientPageNumber: number, searchTerm: stri
   if (!result.clientsResult) return null;
 
   const { clients, totalPages } = processClientsResult(result.clientsResult as ClientResult[], result.totalCount, pageSize);
-
+  console.log("clients : ", clients)
   return { clients, totalPages };
 }
-
 
 
 export async function fetchOrgMembers(): Promise<OrgMember[]> {
