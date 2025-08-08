@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    ppr: "incremental"
-  },
   images: {
     remotePatterns: [
       {
@@ -16,3 +13,7 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+//  experimental: {
+//     ppr: "incremental"
+//   }

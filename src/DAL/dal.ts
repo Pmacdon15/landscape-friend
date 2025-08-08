@@ -1,4 +1,4 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroupsDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
 import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
@@ -95,30 +95,41 @@ export async function fetchCuttingClients(
   };
 }
 
-// export async function fetchSnowClearingClients(
-//   clientPageNumber: number,
-//   searchTerm: string,
-//   searchTermIsServiced: boolean,
-//   searchTermAssignedTo: string
-// ) {
-//   const { orgId, userId } = await auth.protect();
-//   const pageSize = Number(process.env.PAGE_SIZE) || 10;
-//   const offset = (clientPageNumber - 1) * pageSize;
+export async function fetchSnowClearingClients(
+  clientPageNumber: number,
+  searchTerm: string,
+  clearingDate: Date,
+  searchTermIsServiced: boolean,
+  searchTermAssignedTo: string
+): Promise<PaginatedClients | null> {
+  const { orgId, userId } = await auth.protect();
+  const pageSize = Number(process.env.PAGE_SIZE) || 10;
+  const offset = (clientPageNumber - 1) * pageSize;
 
-//   const result = await fetchClientsClearingGroups(
-//     orgId || userId,
-//     pageSize,
-//     offset,
-//     searchTerm,
-//     searchTermAssignedTo
-//   );
+  const result = await fetchClientsClearingGroupsDb(
+    orgId || userId,
+    pageSize,
+    offset,
+    searchTerm,
+    clearingDate,
+    searchTermIsServiced,
+    searchTermAssignedTo
+  );
 
-//   const { clients, totalPages } = result
-//   return {
-//     clients,
-//     totalPages,
-//   };
-// }
+  if (!result.clientsResult) return null;
+
+  const { clients, totalPages } = processClientsResult(
+    result.clientsResult as ClientResult[],
+    result.totalCount,
+    pageSize
+  );
+
+  return {
+    clients,
+    totalPages,
+    totalClients: result.totalCount
+  };
+}
 
 export async function fetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
   const { orgId, userId } = await auth.protect();

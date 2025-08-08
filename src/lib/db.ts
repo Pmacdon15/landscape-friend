@@ -96,19 +96,131 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
   return result;
 }
 
-
-
-
 //MARK: Fetch clients snow clearing
-// export async function fetchClientsClearingGroups(
-//   orgId: string,
-//   pageSize: number,
-//   offset: number,
-//   searchTerm: string,
-//   searchTermAssignedTo: string
-// ) {
-//   const sql = neon(`${process.env.DATABASE_URL}`);
-// }
+export async function fetchClientsClearingGroupsDb(
+  orgId: string,
+  pageSize: number,
+  offset: number,
+  searchTerm: string,
+  clearingDate: Date,
+  searchTermIsServiced: boolean,
+  searchTermAssignedTo: string
+) {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+
+  const baseQuery = sql`
+    WITH clients_with_balance AS (
+      SELECT 
+        c.*,
+        a.current_balance AS amount_owing
+      FROM clients c
+      LEFT JOIN accounts a ON c.id = a.client_id
+      WHERE c.organization_id = ${orgId} AND c.snow_client = true
+    ),
+    cleared_yards AS (
+      SELECT client_id
+      FROM yards_marked_clear
+      WHERE clearing_date = ${clearingDate}
+    ),
+    clients_with_assignments AS (
+      SELECT 
+        cwb.*,
+        sca.assigned_to
+      FROM clients_with_balance cwb
+      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
+    )
+  `;
+
+  let selectQuery = sql`
+    SELECT DISTINCT
+      cwa.id
+    FROM clients_with_assignments cwa
+    LEFT JOIN cleared_yards cy ON cwa.id = cy.client_id
+    WHERE ${searchTermIsServiced ? sql`cy.client_id IS NOT NULL` : sql`cy.client_id IS NULL`}
+  `;
+
+  const whereClauses = [];
+
+  if (searchTerm !== "") {
+    whereClauses.push(sql`
+      (cwa.full_name ILIKE ${`%${searchTerm}%`} 
+      OR cwa.phone_number ILIKE ${`%${searchTerm}%`} 
+      OR cwa.email_address ILIKE ${`%${searchTerm}%`} 
+      OR cwa.address ILIKE ${`%${searchTerm}%`})
+    `);
+  }
+
+  if (searchTermAssignedTo !== "") {
+    whereClauses.push(sql`
+      cwa.assigned_to = ${searchTermAssignedTo}
+    `);
+  } else {
+    whereClauses.push(sql`
+      cwa.assigned_to IS NULL
+    `);
+  }
+
+  if (whereClauses.length > 0) {
+    let whereClause = sql`AND ${whereClauses[0]}`;
+    for (let i = 1; i < whereClauses.length; i++) {
+      whereClause = sql`${whereClause} AND ${whereClauses[i]}`;
+    }
+
+    selectQuery = sql`
+      ${selectQuery}
+      ${whereClause}
+    `;
+  }
+
+  const countQuery = sql`
+    ${baseQuery}
+    SELECT COUNT(*) AS total_count
+    FROM (${selectQuery}) AS client_ids
+  `;
+
+  const countResult = await countQuery;
+  const totalCount = countResult[0]?.total_count || 0;
+
+  const paginatedClientIdsQuery = sql`
+    ${baseQuery}
+    SELECT id
+    FROM (${selectQuery}) AS client_ids
+    ORDER BY id
+    LIMIT ${pageSize} OFFSET ${offset}
+  `;
+
+  const paginatedClientIdsResult = await paginatedClientIdsQuery;
+  const paginatedClientIds = paginatedClientIdsResult.map(row => row.id);
+
+  const clientsQuery = sql`
+    WITH clients_with_balance AS (
+      SELECT 
+        c.*,
+        a.current_balance AS amount_owing
+      FROM clients c
+      LEFT JOIN accounts a ON c.id = a.client_id
+      WHERE c.organization_id = ${orgId} AND c.id = ANY(${paginatedClientIds})
+    ),
+    clients_with_assignments AS (
+      SELECT 
+        cwb.*,
+        sca.assigned_to
+      FROM clients_with_balance cwb
+      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
+    )
+    SELECT 
+      cwa.id,
+      cwa.full_name,
+      cwa.phone_number,
+      cwa.email_address
+    FROM clients_with_assignments cwa
+    ORDER BY cwa.id
+  `;
+
+  const clientsResult = await clientsQuery;
+
+  return { clientsResult, totalCount };
+}
 
 //MARK: Fetch clients cutting
 export async function fetchClientsWithSchedules(

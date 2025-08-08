@@ -2,6 +2,8 @@ DROP TABLE IF EXISTS stripe_api_keys CASCADE;
 
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
 
+DROP TABLE IF EXISTS yards_marked_clear CASCADE;
+
 DROP TABLE IF EXISTS snow_clearing_assignments CASCADE;
 
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
@@ -70,6 +72,14 @@ CREATE TABLE yards_marked_cut (
     client_id INT NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id),
     UNIQUE (client_id, cutting_date)
+);
+
+CREATE TABLE yards_marked_clear (
+    id SERIAL PRIMARY KEY,
+    clearing_date DATE NOT NULL,
+    client_id INT NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients (id),
+    UNIQUE (client_id, clearing_date)
 );
 
 CREATE TABLE snow_clearing_assignments (
@@ -269,7 +279,7 @@ FROM clients;
 
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM cutting_schedule;
-SELECT * FROM clients;
+-- SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
