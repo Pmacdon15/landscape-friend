@@ -75,7 +75,9 @@ CREATE TABLE snow_clearing_assignments (
     id SERIAL PRIMARY KEY,
     client_id INT NOT NULL,
     assigned_to VARCHAR(75) NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id),
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     UNIQUE (client_id)
 );
 

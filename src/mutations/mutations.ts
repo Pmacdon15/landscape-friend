@@ -53,7 +53,7 @@ export const useUpdateCuttingDay = () => {
 export const useAssignSnowClearing = () => {
     return useMutation({
         mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
-            return assignSnowClearing({clientId, assignedTo});
+            return assignSnowClearing(clientId, assignedTo);
         },
         onError: (error) => {
             console.error('Mutation error:', error);

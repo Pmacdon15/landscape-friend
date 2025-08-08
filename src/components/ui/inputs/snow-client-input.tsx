@@ -1,12 +1,14 @@
 'use client'
-import { useToggleSnowClient } from "@/mutations/mutations";
+import { useAssignSnowClearing, useToggleSnowClient } from "@/mutations/mutations";
 import { OrgMember } from "@/types/types";
 import { use } from "react";
 
 
 export default function SnowClientInput({ clientId, snowClient, orgMembersPromise }:
   { clientId: number, snowClient: boolean, orgMembersPromise?: Promise<OrgMember[]> }) {
-  const { mutate } = useToggleSnowClient()
+
+  const { mutate: mutateToggleSnowClient } = useToggleSnowClient()
+  const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
 
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
   return (
@@ -17,7 +19,7 @@ export default function SnowClientInput({ clientId, snowClient, orgMembersPromis
           id={`snow-removal-${clientId}`}
           name="snow-removal"
           defaultChecked={snowClient}
-          onClick={() => mutate({ clientId })}
+          onClick={() => mutateToggleSnowClient({ clientId })}
         />
         <label htmlFor={`snow-removal-${snowClient}`}>Snow Removal</label>
       </div>

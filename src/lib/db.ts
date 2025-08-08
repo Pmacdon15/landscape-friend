@@ -422,14 +422,20 @@ export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const result = await sql`
-    
+    INSERT INTO snow_clearing_assignments (client_id, assigned_to, organization_id)
+    SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}
+    FROM clients
+    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+    ON CONFLICT (client_id) DO UPDATE
+    SET assigned_to = EXCLUDED.assigned_to
+    RETURNING *;
   `;
 
   if (!result || result.length === 0) {
-    throw new Error('Toggle Failed');
+    throw new Error('Assignment Failed');
   }
 
-  revalidatePath("/lists/client")
+  revalidatePath("/lists/snow-clearing")
   return result;
 }
 
