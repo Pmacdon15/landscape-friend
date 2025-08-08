@@ -212,7 +212,8 @@ export async function fetchClientsClearingGroupsDb(
       cwa.id,
       cwa.full_name,
       cwa.phone_number,
-      cwa.email_address
+      cwa.email_address,
+      cwa.address
     FROM clients_with_assignments cwa
     ORDER BY cwa.id
   `;
