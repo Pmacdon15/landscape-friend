@@ -30,7 +30,7 @@ export default async function page({
         <>
             <FormContainer>
                 <FormHeader text={"Client List"} />
-                <SearchForm />
+                {/* <SearchForm /> */}
             </FormContainer>
             {isAdmin &&
                 <AddClientFormClientComponent>

@@ -3,7 +3,7 @@ import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Address, Client, ClientListServiceProps, PaginatedClients } from "@/types/types";
+import { Client, ClientListServiceProps } from "@/types/types";
 import PricePerCutUpdateInput from "./price-per-cut-update-input";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -11,8 +11,7 @@ import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popove
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import SnowClientInput from "../inputs/snow-client-input";
-import { OrgMember } from "@/types/types";
-
+import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 
 
 export default async function ClientListService({
@@ -55,7 +54,9 @@ export default async function ClientListService({
               <p>Address: {client.address}</p>
               {isAdmin &&
                 <>
-                  <SnowClientInput clientId={client.id} snowClient={client.snow_client} orgMembersPromise={orgMembersPromise} />
+                  <Suspense fallback={<SnowClientInputFallback />}>
+                    <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
+                  </Suspense>
                   <PricePerCutUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
