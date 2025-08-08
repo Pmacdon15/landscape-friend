@@ -28,7 +28,6 @@ export default async function page({
     const clearingDate = new Date();
 
     const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, clearingDate, searchTermIsServiced, searchTermAssignedTo);
-    // const addressesPromise = fetchAllUnClearedAddresses(serviceDate);
     const addressesPromise = Promise.resolve([]);
     // const orgMembersPromise = fetchOrgMembers();
     return (

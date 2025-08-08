@@ -25,7 +25,7 @@ export default async function ClientListService({ clientsPromise, addressesPromi
     const { clients, totalPages } = result;
     if (clients.length < 1) return <FormContainer> <FormHeader text={"No clients scheduled for today"} /> </FormContainer>
 
-    const addresses = await addressesPromise;
+    const addresses = snow ? clients.map(c => ({ address: c.address })) : await addressesPromise;
     if (addresses instanceof Error) return <FormContainer> <FormHeader text={`${addresses.message}`} /></FormContainer >
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
 
