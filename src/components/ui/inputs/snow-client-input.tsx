@@ -9,8 +9,8 @@ export default function SnowClientInput({ clientId, snowClient, orgMembersPromis
 
   const { mutate: mutateToggleSnowClient } = useToggleSnowClient()
   const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
-
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
+
   return (
     <div className="flex flex-col">
       <div className="flex gap-2">
@@ -25,9 +25,17 @@ export default function SnowClientInput({ clientId, snowClient, orgMembersPromis
       </div>
       {snowClient &&
         <div className="flex gap-2 mb-2">
-          <p className="align-middle">Assigned to : </p>
-          <select className="  rounded-sm border md:w-2/6  w-3/6 p-1">
-            {orgMembers.map(member => (
+          <p className="align-middle w-28">Assigned to : </p>
+          <select 
+            className="  rounded-sm border md:w-2/6  w-3/6 p-1"
+            defaultValue={"not-assigned"}
+            onChange={(e) => {
+              const selectedUserId = e.target.value;
+              mutateAssignSnowClearing({ clientId, assignedTo: selectedUserId });
+            }}
+          >
+            <option value="not-assigned">Not Assigned</option>
+            {orgMembers && orgMembers.map(member => (
               <option key={member.userId} value={member.userId}>
                 {member.userName}
               </option>

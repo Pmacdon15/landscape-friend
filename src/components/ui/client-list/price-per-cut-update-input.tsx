@@ -9,7 +9,7 @@ export default function PricePerCutUpdateInput({ client }: { client: Client }) {
 
     return (
         <div className="flex">
-            <p className=" my-auto"> Price Per Cut: ${" "} </p>
+            <p className=" my-auto w-30"> Price Per Cut: ${" "} </p>
             <input
                 className="md:w-2/6 border rounded-sm w-3/6 p-1 "
                 name="updated_price_per_cut"
