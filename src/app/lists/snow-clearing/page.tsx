@@ -14,22 +14,21 @@ export default async function page({
 }: {
     searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>;
 }) {
-    const [{ isAdmin }, params] = await Promise.all([
+    const [{ isAdmin, userId }, params] = await Promise.all([
         isOrgAdmin(),
         searchParams,
     ]);
-    console.log(params)
-    if (!isAdmin) redirect("/")
 
+    if (!isAdmin) redirect("/")
+       
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const searchTermIsServiced = params.is_serviced === 'true';
-    const searchTermAssignedTo = String(params.assigned_to ?? "");
+    const searchTermAssignedTo = String(params.assigned_to ?? userId);
     const clearingDate = new Date();
 
     const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, clearingDate, searchTermIsServiced, searchTermAssignedTo);
-    
-    // const orgMembersPromise = fetchOrgMembers();
+
     return (
         <>
             <FormContainer>
@@ -38,10 +37,10 @@ export default async function page({
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService
-                    clientsPromise={clientsPromise}                    
+                    clientsPromise={clientsPromise}
                     clientListPage={clientListPage}
                     searchTermIsServiced={searchTermIsServiced}
-                    snow={true}                />
+                    snow={true} />
             </Suspense>
         </>
     );

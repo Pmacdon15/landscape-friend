@@ -35,7 +35,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                 {addresses && addresses?.length > 0 &&
                     <FormContainer>
                         <div className="flex flex-col md:flex-row w-full justify-center items-center align-middle p-2 gap-4 ">
-                            <FormHeader text={`Total Clients Left to Cut Today: ${flattenedAddresses.length}`} />
+                            <FormHeader text={`Clients Left to Service Today: ${flattenedAddresses.length}`} />
                             <ManyPointsMap addresses={flattenedAddresses} />
                         </div>
                     </FormContainer>}

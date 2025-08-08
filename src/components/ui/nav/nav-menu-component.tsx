@@ -35,6 +35,14 @@ export default function NavigationMenuComponent() {
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/lists/snow-clearing">
+                                        <div className="font-medium">Clearing List</div>
+                                        <div className="text-muted-foreground">
+                                            Track clients that need to be cleared.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
                             </li>
                         </ul>
                     </NavigationMenuContent>
