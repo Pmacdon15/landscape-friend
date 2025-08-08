@@ -4,17 +4,16 @@ import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
-import MarkYardCut from "../buttons/mark-yard-cut";
+import MarkYardCut from "../buttons/mark-yard-serviced";
 import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import MarkYardCleared from "../buttons/mark-yard-cleared";
 
-export default async function ClientListService({ clientsPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false }:
+export default async function ClientListService({ clientsPromise, clientListPage, serviceDate, searchTermIsServiced, snow = false }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
         clientListPage: number,
-        cuttingDate?: Date,
+        serviceDate?: Date,
         searchTermIsServiced: boolean,
         snow?: boolean,
     }) {
@@ -59,8 +58,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                                 <MapComponent address={client.address} />
                             </Suspense>
                         </li>
-                        {!searchTermIsServiced && cuttingDate && <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />}
-                        {snow && <MarkYardCleared />}
+                        {!searchTermIsServiced && serviceDate && <MarkYardCut clientId={client.id} serviceDate={serviceDate} />}                        
                     </FormContainer>
                 ))}
             </ul >

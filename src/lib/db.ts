@@ -1,4 +1,4 @@
-import { Account, Address, Client, Email, NamesAndEmails} from "@/types/types";
+import { Account, Address, Client, Email, NamesAndEmails } from "@/types/types";
 import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
@@ -57,7 +57,7 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
 //MARK: Update price per cut
 export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
-  
+
   let setClause;
   if (data.snow) {
     setClause = sql`price_per_month_snow = ${data.pricePerCut}`;
@@ -514,23 +514,34 @@ export async function fetchClientsCuttingSchedules(
 }
 
 //MARK: Mark yard cut
-export async function markYardCutDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string) {
+export async function markYardServicedDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string, snow: boolean) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
-  const result = await sql`
-    INSERT INTO yards_marked_cut (client_id, cutting_date)
-    SELECT ${data.clientId}, ${data.date}
-    FROM clients
-    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-    ON CONFLICT (client_id, cutting_date) DO NOTHING
-    RETURNING *;
-  `;
+  const query = snow
+    ? sql`
+        INSERT INTO yards_marked_clear (client_id, clearing_date)
+        SELECT ${data.clientId}, ${data.date}
+        FROM clients
+        WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+        ON CONFLICT (client_id, clearing_date) DO NOTHING
+        RETURNING *;
+      `
+    : sql`
+        INSERT INTO yards_marked_cut (client_id, cutting_date)
+        SELECT ${data.clientId}, ${data.date}
+        FROM clients
+        WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+        ON CONFLICT (client_id, cutting_date) DO NOTHING
+        RETURNING *;
+      `;
+
+  const result = await query;
 
   if (!result || result.length === 0) {
-    throw new Error('Client not found, access denied, or already marked as cut');
+    throw new Error('Client not found, access denied, or already marked as serviced');
   }
 
-  revalidatePath("/lists/cutting")
+  revalidatePath("/lists/cutting");
   return result;
 }
 

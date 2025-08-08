@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/actions/clients";
-import { markYardCut } from "@/actions/cuts";
+import { markYardServiced } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
@@ -61,10 +61,10 @@ export const useAssignSnowClearing = () => {
     });
 };
 
-export const useMarkYardCut = () => {
+export const useMarkYardServiced = () => {
     return useMutation({
-        mutationFn: ({ clientId, date }: { clientId: number, date: Date }) => {
-            return markYardCut(clientId, date);
+        mutationFn: ({ clientId, date, snow = false }: { clientId: number, date: Date, snow?: boolean }) => {
+            return markYardServiced(clientId, date);
         },
         onError: (error) => {
             console.error('Mutation error:', error);

@@ -20,14 +20,14 @@ export default async function page({
     ]);
 
     if (!isAdmin) redirect("/")
-       
+
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const searchTermIsServiced = params.is_serviced === 'true';
     const searchTermAssignedTo = String(params.assigned_to ?? userId);
-    const clearingDate = new Date();
+    const serviceDate = params.date ? new Date(String(params.date)) : new Date();
 
-    const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, clearingDate, searchTermIsServiced, searchTermAssignedTo);
+    const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo);
 
     return (
         <>
@@ -39,6 +39,7 @@ export default async function page({
                 <ClientListService
                     clientsPromise={clientsPromise}
                     clientListPage={clientListPage}
+                    serviceDate={serviceDate}
                     searchTermIsServiced={searchTermIsServiced}
                     snow={true} />
             </Suspense>

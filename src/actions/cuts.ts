@@ -1,9 +1,9 @@
 'use server'
-import { markYardCutDb } from "@/lib/db";
+import { markYardServicedDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaMarkYardCut } from "@/lib/zod/schemas";
 
-export async function markYardCut(clientId: number, date: Date) {
+export async function markYardServiced(clientId: number, date: Date, snow = false) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
 
@@ -15,7 +15,7 @@ export async function markYardCut(clientId: number, date: Date) {
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await markYardCutDb(validatedFields.data, orgId || userId)
+        const result = await markYardServicedDb(validatedFields.data, orgId || userId, snow)
         if (!result) throw new Error('Failed to update Client cut day');
         return result;
     } catch (e: unknown) {
