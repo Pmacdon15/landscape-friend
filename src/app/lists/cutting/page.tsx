@@ -23,8 +23,7 @@ export default async function page({
     const searchTermIsCut = params.is_cut === 'true';
 
     if (!isAdmin) redirect("/")
-    const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);
-    const addressesPromise = fetchAllUnCutAddresses(cuttingDate);    
+    const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, cuttingDate, searchTermIsCut);       
 
     return (
         <>
@@ -34,8 +33,7 @@ export default async function page({
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService
-                    clientsPromise={clientsPromise}
-                    addressesPromise={addressesPromise}
+                    clientsPromise={clientsPromise}                    
                     clientListPage={clientListPage}
                     cuttingDate={cuttingDate}
                     searchTermIsServiced={searchTermIsCut} />

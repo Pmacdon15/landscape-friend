@@ -28,7 +28,7 @@ export default async function page({
     const clearingDate = new Date();
 
     const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, clearingDate, searchTermIsServiced, searchTermAssignedTo);
-    const addressesPromise = Promise.resolve([]);
+    
     // const orgMembersPromise = fetchOrgMembers();
     return (
         <>
@@ -38,12 +38,10 @@ export default async function page({
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService
-                    clientsPromise={clientsPromise}
-                    addressesPromise={addressesPromise}
+                    clientsPromise={clientsPromise}                    
                     clientListPage={clientListPage}
                     searchTermIsServiced={searchTermIsServiced}
-                    snow={true}
-                />
+                    snow={true}                />
             </Suspense>
         </>
     );

@@ -8,11 +8,11 @@ import MarkYardCut from "../buttons/mark-yard-cut";
 import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
+import MarkYardCleared from "../buttons/mark-yard-cleared";
 
-export default async function ClientListService({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false }:
+export default async function ClientListService({ clientsPromise, clientListPage, cuttingDate, searchTermIsServiced, snow = false }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
-        addressesPromise: Promise<Address[] | null | Error>,
         clientListPage: number,
         cuttingDate?: Date,
         searchTermIsServiced: boolean,
@@ -25,7 +25,7 @@ export default async function ClientListService({ clientsPromise, addressesPromi
     const { clients, totalPages } = result;
     if (clients.length < 1) return <FormContainer> <FormHeader text={"No clients scheduled for today"} /> </FormContainer>
 
-    const addresses = snow ? clients.map(c => ({ address: c.address })) : await addressesPromise;
+    const addresses = snow ? clients.map(c => ({ address: c.address })) : []
     if (addresses instanceof Error) return <FormContainer> <FormHeader text={`${addresses.message}`} /></FormContainer >
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
 
@@ -40,7 +40,6 @@ export default async function ClientListService({ clientsPromise, addressesPromi
                         </div>
                     </FormContainer>}
                 <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
-
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative bg-white/50">
@@ -61,6 +60,7 @@ export default async function ClientListService({ clientsPromise, addressesPromi
                             </Suspense>
                         </li>
                         {!searchTermIsServiced && cuttingDate && <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />}
+                        {snow && <MarkYardCleared />}
                     </FormContainer>
                 ))}
             </ul >
