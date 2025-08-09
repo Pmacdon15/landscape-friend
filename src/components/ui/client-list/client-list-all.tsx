@@ -1,7 +1,7 @@
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
-import { isOrgAdmin } from "@/lib/webhooks";
+// import { isOrgAdmin } from "@/lib/webhooks";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Client, PaginatedClients } from "@/types/types";
