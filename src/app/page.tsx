@@ -16,11 +16,10 @@ export default function Home() {
           <Image
             width={800}
             height={800}
-            src="/logo.png"
+            src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png"
             alt="Lawn Buddy Logo"
             className="w-64 h-auto mx-auto mb-4 "
           />
-
         </div>
 
         <div className="flex-columns justify-top items-left h-16 bg-green-500 text-white logo-slide-in-reverse">
