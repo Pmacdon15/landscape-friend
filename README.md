@@ -51,6 +51,8 @@ Lawn Buddy relies on external services for its core functionality. You will need
     *   Obtain an API key from the [Google Cloud Console](https://console.cloud.com/google/maps-apis/overview). Enable the necessary APIs (e.g., Geocoding API, Maps JavaScript API).
 *   **Vercel Blobs:**
     *   Vercel Blobs are typically managed within your Vercel project settings.
+*   **Inngest (Serverless Functions/Event Platform):**
+    *   Sign up for an account directly on the [Inngest website](https://www.inngest.com/). While not available on the Vercel Marketplace, Inngest integrates seamlessly with Vercel deployments.
 
 ### 2. Environment Variables
 
