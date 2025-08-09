@@ -1,19 +1,25 @@
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
-// import { isOrgAdmin } from "@/lib/webhooks";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Client, PaginatedClients } from "@/types/types";
-import PricePerCutUpdateInput from "./price-per-cut-update-input";
+import { Client, ClientListServiceProps } from "@/types/types";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
+import SnowClientInput from "../inputs/snow-client-input";
+import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
+import PricePerUpdateInput from "./price-per-update-input";
 
-export default async function ClientListAll({ clientsPromise, clientListPage, isAdmin }:
-  { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number, isAdmin: boolean }) {
+
+export default async function ClientListService({
+  clientsPromise,
+  clientListPage,  
+  orgMembersPromise,
+  isAdmin
+}: ClientListServiceProps) {
 
   const result = await clientsPromise;
 
@@ -22,14 +28,13 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
 
-
   return (
     <>
-      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
-            <li className="border p-4 rounded-sm relative bg-white/50">
+            <li className="border p-4 rounded-sm relative bg-white/70">
               {isAdmin &&
                 <div className="absolute top-1 right-1">
                   <DeleteClientButton clientId={client.id} />
@@ -48,7 +53,10 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
               <p>Address: {client.address}</p>
               {isAdmin &&
                 <>
-                  <PricePerCutUpdateInput client={client} />
+                  <Suspense fallback={<SnowClientInputFallback />}>
+                    <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
+                  </Suspense>
+                  <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
               }
@@ -60,7 +68,7 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
           </FormContainer>
         ))}
       </ul >
-      <PaginationTabs path="/client-list" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
     </>
   );
 }

@@ -1,20 +1,22 @@
 import MapComponent from "../map-component/map-component";
-import { Address, Client, PaginatedClients } from "@/types/types";
+import { Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
-import MarkYardCut from "../buttons/mark-yard-cut";
+
 import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
+import MarkYardServiced from "../buttons/mark-yard-serviced";
 
-export default async function ClientListCutting({ clientsPromise, addressesPromise, clientListPage, cuttingDate, searchTermIsCut }:
+export default async function ClientListService({ clientsPromise, clientListPage, serviceDate, searchTermIsServiced, snow = false }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
-        addressesPromise: Promise<Address[] | null | Error>,
-        clientListPage: number, cuttingDate: Date,
-        searchTermIsCut: boolean
+        clientListPage: number,
+        serviceDate?: Date,
+        searchTermIsServiced: boolean,
+        snow?: boolean,
     }) {
 
     const result = await clientsPromise;
@@ -23,7 +25,7 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
     const { clients, totalPages } = result;
     if (clients.length < 1) return <FormContainer> <FormHeader text={"No clients scheduled for today"} /> </FormContainer>
 
-    const addresses = await addressesPromise;
+    const addresses = snow ? clients.map(c => ({ address: c.address })) : []
     if (addresses instanceof Error) return <FormContainer> <FormHeader text={`${addresses.message}`} /></FormContainer >
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
 
@@ -33,12 +35,11 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                 {addresses && addresses?.length > 0 &&
                     <FormContainer>
                         <div className="flex flex-col md:flex-row w-full justify-center items-center align-middle p-2 gap-4 ">
-                            <FormHeader text={`Total Clients Left to Cut Today: ${flattenedAddresses.length}`} />
+                            <FormHeader text={`Clients Left to Service Today: ${flattenedAddresses.length}`} />
                             <ManyPointsMap addresses={flattenedAddresses} />
                         </div>
                     </FormContainer>}
-                <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
-
+                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative bg-white/50">
@@ -58,11 +59,11 @@ export default async function ClientListCutting({ clientsPromise, addressesPromi
                                 <MapComponent address={client.address} />
                             </Suspense>
                         </li>
-                        {!searchTermIsCut && <MarkYardCut clientId={client.id} cuttingDate={cuttingDate} />}
+                        {!searchTermIsServiced && serviceDate && <MarkYardServiced clientId={client.id} serviceDate={serviceDate} snow={snow} />}
                     </FormContainer>
                 ))}
             </ul >
-            <PaginationTabs path="/cutting-list" clientListPage={clientListPage} totalPages={totalPages} />
+            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
         </>
     );
 }

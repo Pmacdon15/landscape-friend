@@ -3,7 +3,6 @@ import SendClientEmailButton from "../buttons/send-client-email-button";
 import SendNewsLetterButton from "../buttons/send-news-letter-button";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-
 import SendEmailInputs from "./send-email-inputs";
 
 export default function SendEmailComponent({

@@ -3,11 +3,7 @@ import { InputDiv } from "../containers/input-dev";
 import { InputField } from "../inputs/input";
 import { SettingsLabel } from "./settings-label";
 
-interface Props {
-    pricePerCutPromise: Promise<Price | null>;
-}
-
-export default async function PricePerCutInput({ pricePerCutPromise }: Props) {
+export default async function PricePerCutInput({ pricePerCutPromise }: { pricePerCutPromise: Promise<Price | null> }) {
     const pricePerCut = (await pricePerCutPromise)?.price;
     return (
         <InputDiv >

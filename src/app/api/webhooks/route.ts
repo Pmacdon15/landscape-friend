@@ -28,13 +28,15 @@ export async function POST(req: NextRequest) {
 
             case 'user.created': {
                 const userId = (evt.data as UserCreatedEvent).id;
-                await handleOrganizationCreated(userId);
+                const userName = (evt.data as UserCreatedEvent).name;
+                await handleOrganizationCreated(userId, userName);
                 break;
             }
 
             case 'organization.created': {
                 const orgId = (evt.data as OrganizationCreatedEvent).id;
-                await handleOrganizationCreated(orgId);
+                const orgName = (evt.data as OrganizationCreatedEvent).name;
+                await handleOrganizationCreated(orgId, orgName);
                 break;
             }
 

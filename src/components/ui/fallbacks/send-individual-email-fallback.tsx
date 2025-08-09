@@ -11,7 +11,6 @@ export default function SendIndividualEmailFallback() {
                     <option value={" "}>
                         {" "}
                     </option>
-
                 </select>
                 <SendEmailInputs />
             </form>

@@ -1,9 +1,7 @@
+import { Props } from '@/types/types';
 import React from 'react';
 
-interface Props {
-  showForm: boolean;
-  setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
-}
+
 
 export default function ShowAddClientFormButton({ showForm, setShowForm }: Props) {
   return (
