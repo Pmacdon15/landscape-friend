@@ -67,6 +67,8 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="your_google_maps_api_key"
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="your_stripe_publishable_key"
 STRIPE_SECRET_KEY="your_stripe_secret_key"
 BLOB_READ_WRITE_TOKEN="your_vercel_blob_token"
+INNGEST_SIGNING_KEY="your_inngest_signing_key"
+INNGEST_EVENT_KEY="your_inngest_event_key"
 ```
 
 ### 3. Installation
