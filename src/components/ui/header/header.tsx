@@ -4,7 +4,7 @@ import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { Suspense } from 'react';
-import ClientOnly from '../../wrappers/ClientOnly';
+// import ClientOnly from '../../wrappers/ClientOnly';
 
 export default function Header() {
     return (
@@ -25,10 +25,10 @@ export default function Header() {
                         <SignedIn>
                             <NavBar />
                             <div className="flex ml-auto items-center gap-2">
-                                <ClientOnly>
+                                {/* <ClientOnly> */}
                                   <UserButton />
                                   <OrganizationSwitcher />
-                                </ClientOnly>
+                                {/* </ClientOnly> */}
                             </div>
                         </SignedIn>
                         <SignedOut>

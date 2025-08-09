@@ -6,7 +6,7 @@ import type React from 'react';
 
 export function formatSenderEmailAddress(sessionClaims: { orgName?: string; userFullName?: string; userEmail?: string }): string {
   const name = (sessionClaims.orgName || sessionClaims.userFullName || 'Your Landscaper').replace(/\s+/g, '-');
-  return `${name}@lawn-buddy.patmac.ca`;
+  return `${name}@lawn-buddy.ca`;
 }
 
 export function formatCompanyName(sessionClaims: { orgName?: string; userFullName?: string; userEmail?: string }): string {
@@ -53,7 +53,7 @@ export async function sendGroupEmail(
 
   try {
     await resend.emails.send({
-      from: `${companyName}@lawn-buddy.patmac.ca`,
+      from: `${companyName}@lawn-buddy.ca`,
       to: clientsEmails,
       subject: data.title || 'News Letter',
       replyTo: data.sender,
