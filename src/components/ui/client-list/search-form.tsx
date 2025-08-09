@@ -1,6 +1,4 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { CuttingListDatePicker } from '../service-list/service-list-date-picker';
 import { ServiceStatusSelector } from '../selectors/service-status-selector';
 import { days, weeks } from '@/lib/values';
