@@ -4,7 +4,6 @@ import FormContainer from "@/components/ui/containers/form-container";
 import Link from "next/link";
 import "@/app/animations/landing-page.css";
 import Image from "next/image";
-import { Fullscreen } from "lucide-react";
 
 
 export default function Home() {
@@ -14,7 +13,7 @@ export default function Home() {
       <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible">
 
         <div className="flex justify-right items-right logo-slide-in">
-          <img
+          <Image
             src="/logo.png"
             alt="Lawn Buddy Logo"
             className="w-64 h-auto mx-auto mb-4 "
@@ -76,12 +75,12 @@ export default function Home() {
                 <ContentContainer>
                   <h1 className="text-3xl font-bold mb-6">Why choose Lawn Buddy?</h1>
                   <p className="mb-4 indent-4">
-                    Lawn Buddy is your all-in-one solution for lawn care management. Whether you're a homeowner or a professional landscaper, our platform offers tools to help you schedule services, track maintenance, and manage your lawn care tasks efficiently.
+                    Lawn Buddy is your all-in-one solution for lawn care management. Whether you&apos;re a homeowner or a professional landscaper, our platform offers tools to help you schedule services, track maintenance, and manage your lawn care tasks efficiently.
                   </p>
                   <h2 className="text-2xl font-semibold mb-4">What we Provide:</h2>
                   <ul className="list-disc list-inside mb-4">
                     <li>A secure end-to-end platform for managing clients for landscaping related work</li>
-                    <li>Easy payments and invoicing integrated through Stripe's platform</li>
+                    <li>Easy payments and invoicing integrated through Stripe&apos;s platform</li>
                     <li>Send out updates and newsletters to all of your clients with ease</li>
                   </ul>
                   <p className="mb-4">

@@ -5,7 +5,7 @@ import Header from "../components/ui/header/header";
 import { ClerkProvider } from '@clerk/nextjs'
 import PageContainer from "../components/ui/containers/page-container";
 import Providers from "../components/Providers";
-import { NavBar } from "@/components/ui/nav/nav-bar";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
