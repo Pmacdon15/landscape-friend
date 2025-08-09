@@ -1,6 +1,7 @@
 import AddClientFormClientComponent from "@/components/ui/client-list/add-client-form-client-component";
 import { AddClientFormServerComponent } from "@/components/ui/client-list/add-client-form-server-component";
 import ClientListAll from "@/components/ui/client-list/client-list-all";
+import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { fetchAllClients, fetchOrgMembers } from "@/DAL/dal";
@@ -29,7 +30,7 @@ export default async function page({
         <>
             <FormContainer>
                 <FormHeader text={"Client List"} />
-                {/* <SearchForm /> */}
+                <SearchForm />
             </FormContainer>
             {isAdmin &&
                 <AddClientFormClientComponent>
