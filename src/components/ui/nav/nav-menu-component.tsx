@@ -10,8 +10,10 @@ import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
 
 export default function NavigationMenuComponent() {
-      const isMd = useMediaQuery("(min-width: 768px)");
-    return (        
+    const date = new Date()
+    console.log("date: ", date)
+    const isMd = useMediaQuery("(min-width: 768px)");
+    return (
         <NavigationMenu viewport={!isMd}>
             <NavigationMenuList>
                 <NavigationMenuItem>
@@ -28,7 +30,10 @@ export default function NavigationMenuComponent() {
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/lists/cutting">
+                                    <Link href={{
+                                        pathname: '/lists/cutting',
+                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
+                                    }}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
@@ -36,7 +41,10 @@ export default function NavigationMenuComponent() {
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/lists/snow-clearing">
+                                    <Link href={{
+                                        pathname: '/lists/snow-clearing',
+                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
+                                    }}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">
                                             Track clients that need to be cleared.
@@ -117,13 +125,13 @@ export default function NavigationMenuComponent() {
                                             Enable invoicing by managing your stripe API key.
                                         </div>
                                     </Link>
-                                </NavigationMenuLink>                                
+                                </NavigationMenuLink>
                             </li>
                         </ul>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
             </NavigationMenuList>
-        </NavigationMenu>
+        </NavigationMenu >
 
     );
 }
