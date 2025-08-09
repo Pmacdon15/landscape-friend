@@ -1,4 +1,4 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroupsDb } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroupsDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
@@ -135,21 +135,21 @@ export async function fetchSnowClearingClients(
   };
 }
 
-export async function fetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
-  const { orgId, userId } = await auth.protect();
+// export async function fetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
+//   const { orgId, userId } = await auth.protect();
 
-  try {
-    const result = await FetchAllUnCutAddressesDB(orgId || userId, searchTermCuttingDate);
+//   try {
+//     const result = await FetchAllUnCutAddressesDB(orgId || userId, searchTermCuttingDate);
 
-    if (!result) return null;
-    return result;
-  } catch (e) {
-    if (e instanceof Error)
-      return e; // Return the error directly
-    else
-      return new Error('An unknown error occurred'); // Return a generic error
-  }
-}
+//     if (!result) return null;
+//     return result;
+//   } catch (e) {
+//     if (e instanceof Error)
+//       return e; // Return the error directly
+//     else
+//       return new Error('An unknown error occurred'); // Return a generic error
+//   }
+// }
 
 export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | Error> {
   const { orgId, userId } = await auth.protect();

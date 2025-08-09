@@ -34,7 +34,7 @@ export default async function ClientListService({
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
-            <li className="border p-4 rounded-sm relative bg-white/50">
+            <li className="border p-4 rounded-sm relative bg-white/70">
               {isAdmin &&
                 <div className="absolute top-1 right-1">
                   <DeleteClientButton clientId={client.id} />

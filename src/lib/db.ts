@@ -361,22 +361,22 @@ export async function fetchClientsWithSchedules(
   return { clientsResult, totalCount };
 }
 
-//MARK:Fetch uncut addresses
-export async function FetchAllUnCutAddressesDB(organizationId: string, searchTermCuttingDate: Date): Promise<Address[]> {
-  const sql = neon(`${process.env.DATABASE_URL}`);
-  const result = await sql`
-    SELECT c.address
-    FROM clients c
-    JOIN cutting_schedule cs ON c.id = cs.client_id
-    WHERE c.organization_id = ${organizationId}
-    AND c.id NOT IN (
-      SELECT ymc.client_id
-      FROM yards_marked_cut ymc
-      WHERE ymc.cutting_date = ${searchTermCuttingDate}
-    );
-  `;
-  return result.map(item => ({ address: item.address }));
-}
+// //MARK:Fetch uncut addresses
+// export async function FetchAllUnCutAddressesDB(organizationId: string, searchTermCuttingDate: Date): Promise<Address[]> {
+//   const sql = neon(`${process.env.DATABASE_URL}`);
+//   const result = await sql`
+//     SELECT c.address
+//     FROM clients c
+//     JOIN cutting_schedule cs ON c.id = cs.client_id
+//     WHERE c.organization_id = ${organizationId}
+//     AND c.id NOT IN (
+//       SELECT ymc.client_id
+//       FROM yards_marked_cut ymc
+//       WHERE ymc.cutting_date = ${searchTermCuttingDate}
+//     );
+//   `;
+//   return result.map(item => ({ address: item.address }));
+// }
 //MARK: Fetch cutting day
 export async function fetchClientsCuttingSchedules(
   orgId: string,

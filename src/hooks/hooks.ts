@@ -1,4 +1,4 @@
-import { FetchGeocodeResult, GeocodeResult, MutationData, Location } from '@/types/types';
+import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/types';
 import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';

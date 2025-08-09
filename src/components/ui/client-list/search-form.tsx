@@ -82,7 +82,7 @@ export default function SearchForm({
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-2 justify-center bg-white/50 p-2 rounded-sm shadow-lg">
+    <div className="flex flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
       <input
         name="search"
         className="border rounded-sm p-1 sm:w-1/2 md:w-2/6"
