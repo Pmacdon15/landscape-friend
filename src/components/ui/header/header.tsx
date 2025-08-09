@@ -3,7 +3,7 @@ import HeaderTitle from './header-title';
 import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
-import { Suspense } from 'react';
+// import { Suspense } from 'react';
 // import ClientOnly from '../../wrappers/ClientOnly';
 
 export default function Header() {
@@ -21,7 +21,7 @@ export default function Header() {
                     </div>
                 </div>
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
-                    <Suspense>
+                    {/* <Suspense> */}
                         <SignedIn>
                             <NavBar />
                             <div className="flex ml-auto items-center gap-2">
@@ -37,7 +37,7 @@ export default function Header() {
                                 <SignUpButton />
                             </div>
                         </SignedOut>
-                    </Suspense>
+                    {/* </Suspense> */}
                 </div>
             </div>
         </>
