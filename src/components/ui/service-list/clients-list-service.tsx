@@ -1,13 +1,14 @@
 import MapComponent from "../map-component/map-component";
-import { Address, Client, PaginatedClients } from "@/types/types";
+import { Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
-import MarkYardCut from "../buttons/mark-yard-serviced";
+
 import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
+import MarkYardServiced from "../buttons/mark-yard-serviced";
 
 export default async function ClientListService({ clientsPromise, clientListPage, serviceDate, searchTermIsServiced, snow = false }:
     {
@@ -58,7 +59,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                                 <MapComponent address={client.address} />
                             </Suspense>
                         </li>
-                        {!searchTermIsServiced && serviceDate && <MarkYardCut clientId={client.id} serviceDate={serviceDate} />}                        
+                        {!searchTermIsServiced && serviceDate && <MarkYardServiced clientId={client.id} serviceDate={serviceDate} snow={snow} />}
                     </FormContainer>
                 ))}
             </ul >

@@ -278,6 +278,7 @@ SELECT id, 1.0
 FROM clients;
 
 -- SELECT * FROM yards_marked_cut;
+SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- WHERE

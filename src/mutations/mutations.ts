@@ -64,7 +64,7 @@ export const useAssignSnowClearing = () => {
 export const useMarkYardServiced = () => {
     return useMutation({
         mutationFn: ({ clientId, date, snow = false }: { clientId: number, date: Date, snow?: boolean }) => {
-            return markYardServiced(clientId, date);
+            return markYardServiced(clientId, date, snow);
         },
         onError: (error) => {
             console.error('Mutation error:', error);
