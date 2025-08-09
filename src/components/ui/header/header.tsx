@@ -32,7 +32,7 @@ export default function Header() {
                             </div>
                         </SignedIn>
                         <SignedOut>
-                            <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm">
+                            <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
                                 <SignInButton />
                                 <SignUpButton />
                             </div>
