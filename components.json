@@ -16,7 +16,8 @@
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks",
-    "inngest": "@inngest"
+    "inngest": "@inngest",
+    "animations": "@/animations"
   },
   "iconLibrary": "lucide"
 }
