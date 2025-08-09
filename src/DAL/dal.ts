@@ -1,7 +1,7 @@
 import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroupsDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
+import { ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
 export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):

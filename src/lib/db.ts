@@ -1,4 +1,4 @@
-import { Account, Address, Client, Email, NamesAndEmails } from "@/types/types";
+import { Account, Client, Email, NamesAndEmails } from "@/types/types";
 import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
