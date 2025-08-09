@@ -1,6 +1,6 @@
 # Lawn Buddy - The Learning & Laughter License
 
-Copyright (c) 2025 [Your Name/Organization Here]
+Copyright (c) 2025 Patrick MacDonald
 
 This license governs the use of "Lawn Buddy" (the "Software") for specific, delightful purposes.
 
