@@ -14,6 +14,8 @@ export default function Home() {
 
         <div className="flex justify-right items-right logo-slide-in">
           <Image
+            width={800}
+            height={800}
             src="/logo.png"
             alt="Lawn Buddy Logo"
             className="w-64 h-auto mx-auto mb-4 "
@@ -37,7 +39,7 @@ export default function Home() {
             <div className="md:shrink-0 logo-slide-in">
               <Image
                 width={800}
-                height={800}                
+                height={800}
                 className="h-64 w-full object-cover md:h-full md:w-96"
                 src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/lawnmowerstock.jpg"
                 alt="Lawn Mower Mowing a Lawn"
