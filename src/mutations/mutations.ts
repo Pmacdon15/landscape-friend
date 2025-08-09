@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePerCut, updateCuttingDay } from "@/actions/clients";
-import { markYardCut } from "@/actions/cuts";
+import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/actions/clients";
+import { markYardServiced } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
+import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
 
 export const useAddClient = () => {
     return useMutation({
@@ -27,10 +28,10 @@ export const useDeleteClient = () => {
     });
 };
 
-export const useUpdateClientPricePerCut = () => {
+export const useUpdateClientPricePer = () => {
     return useMutation({
-        mutationFn: ({ clientId, pricePerCut }: { clientId: number, pricePerCut: number }) => {
-            return updateClientPricePerCut(clientId, pricePerCut);
+        mutationFn: ({ clientId, pricePerCut, snow = false }: { clientId: number, pricePerCut: number, snow: boolean }) => {
+            return updateClientPricePer(clientId, pricePerCut, snow);
         },
         onError: (error) => {
             console.error('Mutation error:', error);
@@ -49,10 +50,32 @@ export const useUpdateCuttingDay = () => {
     });
 };
 
-export const useMarkYardCut = () => {
+export const useAssignSnowClearing = () => {
     return useMutation({
-        mutationFn: ({ clientId, date }: { clientId: number, date: Date }) => {
-            return markYardCut(clientId, date);
+        mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
+            return assignSnowClearing(clientId, assignedTo);
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+};
+
+export const useMarkYardServiced = () => {
+    return useMutation({
+        mutationFn: ({ clientId, date, snow = false }: { clientId: number, date: Date, snow?: boolean }) => {
+            return markYardServiced(clientId, date, snow);
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+};
+
+export const useToggleSnowClient = () => {
+    return useMutation({
+        mutationFn: ({ clientId }: { clientId: number }) => {
+            return toggleSnowClient(clientId);
         },
         onError: (error) => {
             console.error('Mutation error:', error);

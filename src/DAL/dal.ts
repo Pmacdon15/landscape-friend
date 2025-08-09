@@ -1,9 +1,10 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, FetchAllUnCutAddressesDB, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroupsDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
-import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey } from "@/types/types";
-import { auth } from "@clerk/nextjs/server";
+import { isOrgAdmin } from "@/lib/webhooks";
+import { Address, ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
-export async function FetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
+export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
   Promise<PaginatedClients | null> {
   const { orgId, userId } = await auth.protect();
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
@@ -14,11 +15,54 @@ export async function FetchAllClients(clientPageNumber: number, searchTerm: stri
   if (!result.clientsResult) return null;
 
   const { clients, totalPages } = processClientsResult(result.clientsResult as ClientResult[], result.totalCount, pageSize);
-
   return { clients, totalPages };
 }
 
-export async function FetchCuttingClients(
+
+export async function fetchOrgMembers(): Promise<OrgMember[]> {
+  const { orgId, sessionClaims } = await auth.protect();
+
+  if (!orgId) {
+    // If there's no organization, return the current user's information
+    return [
+      {
+        userId: sessionClaims.sub,
+        userName: sessionClaims.userFullName as string | null,
+      },
+    ];
+  }
+
+  const clerk = await clerkClient();
+  try {
+    const response = await clerk.organizations.getOrganizationMembershipList({
+      organizationId: orgId,
+    });
+
+    // Transform OrganizationMembership objects into the simplified OrgMember type
+    const orgMembers: OrgMember[] = response.data.flatMap(member => {
+      const userId = member.publicUserData?.userId;
+      if (!userId) {
+        return []; // Skip this member if userId is not available
+      }
+
+      const userName = member.publicUserData?.firstName && member.publicUserData?.lastName
+        ? `${member.publicUserData.firstName} ${member.publicUserData.lastName}`
+        : member.publicUserData?.firstName ?? null;
+
+      return [{
+        userId: userId,
+        userName: userName,
+      }];
+    });
+
+    return orgMembers;
+  } catch (error) {
+    console.error("Error fetching org members:", error);
+    throw error;
+  }
+}
+
+export async function fetchCuttingClients(
   clientPageNumber: number,
   searchTerm: string,
   cuttingDate: Date,
@@ -52,21 +96,60 @@ export async function FetchCuttingClients(
   };
 }
 
-export async function FetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
-  const { orgId, userId } = await auth.protect();
+export async function fetchSnowClearingClients(
+  clientPageNumber: number,
+  searchTerm: string,
+  clearingDate: Date,
+  searchTermIsServiced: boolean,
+  searchTermAssignedTo: string
+): Promise<PaginatedClients | null> {
+  const { orgId, userId, isAdmin } = await isOrgAdmin()
 
-  try {
-    const result = await FetchAllUnCutAddressesDB(orgId || userId, searchTermCuttingDate);
+  if (!isAdmin && userId !== searchTermAssignedTo) throw new Error("Not admin can not view other coworkers list")
 
-    if (!result) return null;
-    return result;
-  } catch (e) {
-    if (e instanceof Error)
-      return e; // Return the error directly
-    else
-      return new Error('An unknown error occurred'); // Return a generic error
-  }
+  const pageSize = Number(process.env.PAGE_SIZE) || 10;
+  const offset = (clientPageNumber - 1) * pageSize;
+
+  const result = await fetchClientsClearingGroupsDb(
+    orgId || userId,
+    pageSize,
+    offset,
+    searchTerm,
+    clearingDate,
+    searchTermIsServiced,
+    searchTermAssignedTo
+  );
+
+  if (!result.clientsResult) return null;
+
+  const { clients, totalPages } = processClientsResult(
+    result.clientsResult as ClientResult[],
+    result.totalCount,
+    pageSize
+  );
+
+  return {
+    clients,
+    totalPages,
+    totalClients: result.totalCount
+  };
 }
+
+// export async function fetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
+//   const { orgId, userId } = await auth.protect();
+
+//   try {
+//     const result = await FetchAllUnCutAddressesDB(orgId || userId, searchTermCuttingDate);
+
+//     if (!result) return null;
+//     return result;
+//   } catch (e) {
+//     if (e instanceof Error)
+//       return e; // Return the error directly
+//     else
+//       return new Error('An unknown error occurred'); // Return a generic error
+//   }
+// }
 
 export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | Error> {
   const { orgId, userId } = await auth.protect();
@@ -83,13 +166,13 @@ export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | E
 
 export async function fetchStripAPIKey(): Promise<APIKey | Error> {
   const { orgId, userId } = await auth.protect();
-  try {    
+  try {
     const result = await fetchStripAPIKeyDb(orgId || userId);
     if (!result || !result.api_key) return new Error('API key not found');
     return { apk_key: result.api_key };
   } catch (e) {
     if (e instanceof Error)
       return e;
-    return new Error('An unknown error occurred'); 
+    return new Error('An unknown error occurred');
   }
 }

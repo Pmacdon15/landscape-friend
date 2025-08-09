@@ -3,16 +3,23 @@ import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Client, PaginatedClients } from "@/types/types";
-import PricePerCutUpdateInput from "./price-per-cut-update-input";
+import { Client, ClientListServiceProps } from "@/types/types";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
+import SnowClientInput from "../inputs/snow-client-input";
+import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
+import PricePerUpdateInput from "./price-per-update-input";
 
-export default async function ClientListAll({ clientsPromise, clientListPage, isAdmin }:
-  { clientsPromise: Promise<PaginatedClients | null>, clientListPage: number, isAdmin: boolean }) {
+
+export default async function ClientListService({
+  clientsPromise,
+  clientListPage,  
+  orgMembersPromise,
+  isAdmin
+}: ClientListServiceProps) {
 
   const result = await clientsPromise;
 
@@ -20,7 +27,6 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
-
 
   return (
     <>
@@ -47,7 +53,10 @@ export default async function ClientListAll({ clientsPromise, clientListPage, is
               <p>Address: {client.address}</p>
               {isAdmin &&
                 <>
-                  <PricePerCutUpdateInput client={client} />
+                  <Suspense fallback={<SnowClientInputFallback />}>
+                    <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
+                  </Suspense>
+                  <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
               }

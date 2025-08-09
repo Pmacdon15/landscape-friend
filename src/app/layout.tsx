@@ -7,7 +7,7 @@ import PageContainer from "../components/ui/containers/page-container";
 import Providers from "../components/Providers";
 import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
-export const experimental_ppr = true;
+// export const experimental_ppr = true;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

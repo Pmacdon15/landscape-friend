@@ -3,6 +3,8 @@ import HeaderTitle from './header-title';
 import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
+import { Suspense } from 'react';
+import ClientOnly from '../../wrappers/ClientOnly';
 
 export default function Header() {
     return (
@@ -19,19 +21,23 @@ export default function Header() {
                     </div>
                 </div>
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
-                    <SignedIn>
-                        <NavBar />
-                        <div className="flex ml-auto items-center gap-2">
-                            <UserButton />
-                            <OrganizationSwitcher />
-                        </div>
-                    </SignedIn>
-                    <SignedOut>
-                        <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm">
-                            <SignInButton />
-                            <SignUpButton />
-                        </div>
-                    </SignedOut>
+                    <Suspense>
+                        <SignedIn>
+                            <NavBar />
+                            <div className="flex ml-auto items-center gap-2">
+                                <ClientOnly>
+                                  <UserButton />
+                                  <OrganizationSwitcher />
+                                </ClientOnly>
+                            </div>
+                        </SignedIn>
+                        <SignedOut>
+                            <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm">
+                                <SignInButton />
+                                <SignUpButton />
+                            </div>
+                        </SignedOut>
+                    </Suspense>
                 </div>
             </div>
         </>

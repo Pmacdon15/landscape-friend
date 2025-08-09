@@ -1,14 +1,5 @@
-interface InputFieldProps {
-    id: string;
-    name: string;
-    type: string;
-    placeholder?: string;
-    required?: boolean;
-    className?: string;
-    step?: string;
-    defaultValue?: number | string;
+import { InputFieldProps } from "@/types/types";
 
-}
 
 export function InputField({ id, name, type, placeholder, required = false, className = '', step, defaultValue }: InputFieldProps) {
     return (

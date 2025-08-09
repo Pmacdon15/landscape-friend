@@ -1,10 +1,7 @@
 import { fetchGeocode } from "@/lib/geocode";
 
-interface MapComponentProps {
-    address: string;
-}
 
-export default async function MapComponent({ address }: MapComponentProps) {
+export default async function MapComponent({ address }: { address: string }) {
     const result = await fetchGeocode(address);
 
     if (result.error) {

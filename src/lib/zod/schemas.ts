@@ -10,6 +10,7 @@ export const schemaAddClient = z.object({
 export const schemaUpdatePricePerCut = z.object({
     clientId: z.number(),
     pricePerCut: z.number(),
+    snow: z.boolean()
 })
 
 export const schemaDeleteClient = z.object({
@@ -35,6 +36,15 @@ export const schemaMarkYardCut = z.object({
     date: z.date()
 })
 
+export const schemaAssignSnowClearing = z.object({
+    clientId: z.number(),
+    assignedTo: z.string()
+})
+
+
+export const schemaToggleSnowClient = z.object({
+    clientId: z.number()
+})
 
 export const schemaUpdateAPI = z.object({
     APIKey: z.string()

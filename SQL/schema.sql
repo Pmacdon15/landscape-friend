@@ -1,6 +1,10 @@
-DROP TABLE IF EXISTS strip_api_keys CASCADE;
+DROP TABLE IF EXISTS stripe_api_keys CASCADE;
 
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
+
+DROP TABLE IF EXISTS yards_marked_clear CASCADE;
+
+DROP TABLE IF EXISTS snow_clearing_assignments CASCADE;
 
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
 
@@ -18,7 +22,6 @@ CREATE TABLE organizations (
     organization_name VARCHAR(253) NOT NULL
 );
 
-
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
@@ -27,7 +30,9 @@ CREATE TABLE clients (
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
-    address VARCHAR(200) NOT NULL
+    address VARCHAR(200) NOT NULL,
+    snow_client BOOLEAN NOT NULL DEFAULT false,
+    price_per_month_snow FLOAT NOT NULL DEFAULT 100
 );
 
 CREATE TABLE stripe_api_keys (
@@ -67,6 +72,24 @@ CREATE TABLE yards_marked_cut (
     client_id INT NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id),
     UNIQUE (client_id, cutting_date)
+);
+
+CREATE TABLE yards_marked_clear (
+    id SERIAL PRIMARY KEY,
+    clearing_date DATE NOT NULL,
+    client_id INT NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients (id),
+    UNIQUE (client_id, clearing_date)
+);
+
+CREATE TABLE snow_clearing_assignments (
+    id SERIAL PRIMARY KEY,
+    client_id INT NOT NULL,
+    assigned_to VARCHAR(75) NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients (id),
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
+    UNIQUE (client_id)
 );
 
 INSERT INTO
@@ -255,10 +278,12 @@ SELECT id, 1.0
 FROM clients;
 
 -- SELECT * FROM yards_marked_cut;
+SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
 
-SELECT * FROM stripe_api_keys;
+-- SELECT * FROM stripe_api_keys;
+-- SELECT * FROM snow_clearing_assignments;
