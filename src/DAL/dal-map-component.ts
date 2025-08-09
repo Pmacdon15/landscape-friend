@@ -10,7 +10,7 @@ export async function FetchAllImagesByCustomerId(
 
   try {
     const result = await FetchAllImagesByCustomerIdDb(customerId);
-    if (!result) return null;
+    if (!result) return [];
     console.warn(result);
     return result;
   } catch (e) {

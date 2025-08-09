@@ -11,7 +11,7 @@ import Link from "next/link";
 import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import Tabs from "../tabs-map-selector/tabs";
+import ImageList from "../image-list/image-list";
 
 export default async function ClientListAll({
   clientsPromise,
@@ -78,11 +78,11 @@ export default async function ClientListAll({
                 </>
               )}
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <div className="flex flex-col sm:flex-row ">
+              <div className="flex flex-col sm:flex-row gap-1">
                 <Suspense fallback={<FormHeader text="Loading..." />}>
                   <MapComponent address={client.address} />
                 </Suspense>
-              <Tabs client={client} />
+              <ImageList client={client} />
               </div>
             </li>
           </FormContainer>

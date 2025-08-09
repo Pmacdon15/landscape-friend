@@ -3,7 +3,7 @@ import { FetchUploadImage } from "@/DAL/dal-map-component";
 import { Client } from "@/types/types";
 import { useRef, useState } from "react";
 
-export default function ImageUploader({ client }: { client: Client }) {
+export default function ImageUploaderSmall({ client }: { client: Client }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -42,8 +42,8 @@ export default function ImageUploader({ client }: { client: Client }) {
   };
 
   return (
-    <div className="w-[45%]">
-      <label className="cursor-pointer relative flex flex-col w-full">
+    <div className="w-full overflow-hidden">
+      <label className="cursor-pointer relative flex flex-row overflow-ellipsis">
         <input
           ref={fileInputRef}
           type="file"
@@ -52,8 +52,8 @@ export default function ImageUploader({ client }: { client: Client }) {
           className="hidden"
         />
 
-        <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
-            <div className="text-6xl">📸</div>
+        <div className="flex flex-row items-center select-none w-full px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
+            <div className="text-md">📸</div>
             <div className="px-2 max-w-full truncate">
               {captionButtonImage}
               </div>

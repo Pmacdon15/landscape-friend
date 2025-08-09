@@ -1,8 +1,9 @@
 "use client";
-import { CameraIcon } from "@heroicons/react/24/solid";
+import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef, useEffect, useState } from "react";
 import { uploadDrawing } from "@/DAL/dal-map-component";
 import { Client } from "@/types/types";
+import { set } from "zod";
 
 declare global {
   interface Window {
@@ -10,7 +11,15 @@ declare global {
   }
 }
 
-export default function ImageSelectorMain({ address, client }: { address: string, client:Client }) {
+export default function ImageSelectorMain({
+  setview,
+  address,
+  client,
+}: {
+  setview: React.Dispatch<React.SetStateAction<string>>;
+  address: string;
+  client: Client;
+}) {
   const [geocodeOptions, setGeocodeOptions] = useState<
     google.maps.GeocoderResult[] | null
   >([]);
@@ -21,6 +30,10 @@ export default function ImageSelectorMain({ address, client }: { address: string
   );
   const [mapZoom, setMapZoom] = useState<number | null>(null);
   const [showGeocodeSelector, setShowGeocodeSelector] = useState(false);
+
+  const drawingManagerRef = useRef<google.maps.drawing.DrawingManager | null>(
+    null
+  );
 
   const initMap = async () => {
     if (!window.google?.maps?.Geocoder || !mapElementRef.current) return;
@@ -76,6 +89,8 @@ export default function ImageSelectorMain({ address, client }: { address: string
     });
 
     drawingManager.setMap(map);
+
+    drawingManagerRef.current = drawingManager;
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -143,46 +158,80 @@ export default function ImageSelectorMain({ address, client }: { address: string
     }
   }, [address]);
 
+  function backButton() {
+    setview("list");
+  }
 
-async function saveDrawing (){
+  async function saveDrawing() {
     const container = document.getElementById("map-container");
     if (!container) return;
 
-    const html2canvasFn = (await import("html2canvas-pro")).default;
-    const canvas = await html2canvasFn(container, {
-      useCORS: true,
-      allowTaint: false,
+    const drawingManager = drawingManagerRef.current;
+    if (!drawingManager) {
+      console.error("DrawingManager is not initialized.");
+      return;
+    }
+
+    // Hide Drawing Manager controls
+    drawingManager.setOptions({ drawingControl: false });
+
+    // ✅ Wait for DOM to update visually
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        setTimeout(resolve, 100); // 100ms delay to ensure visual update
+      });
     });
 
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        console.error("Blob creation failed.");
-        return;
-      }
-      const url = await uploadDrawing(blob, client.id);
-      alert("Upload success!");
+    try {
+      const html2canvasFn = (await import("html2canvas-pro")).default;
+      const canvas = await html2canvasFn(container, {
+        useCORS: true,
+        allowTaint: false,
+      });
 
-    }, "image/png");
-  };
+      canvas.toBlob(async (blob) => {
+        if (!blob) {
+          console.error("Blob creation failed.");
+          drawingManager.setOptions({ drawingControl: true });
+          return;
+        }
+
+        try {
+          const url = await uploadDrawing(blob, client.id);
+          alert("Upload success!");
+        } catch (uploadError) {
+          console.error("Upload failed:", uploadError);
+        } finally {
+          drawingManager.setOptions({ drawingControl: true });
+        }
+      }, "image/png");
+    } catch (err) {
+      console.error("Canvas capture failed:", err);
+      drawingManager.setOptions({ drawingControl: true });
+    }
+  }
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[500px]">
+    <div className="relative w-full max-w-md mx-auto h-[300px]">
       <div className={`flex flex-nowrap absolute top-2 right-2 z-10 px-4 py-2`}>
         <button
           onClick={saveDrawing}
-          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-sky-700 hover:bg-sky-500"
+          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
         >
           <CameraIcon className="w-5 h-5 text-white" />
         </button>
+        <button
+          onClick={backButton}
+          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
+        >
+          <ArrowLeftCircleIcon className="w-5 h-5 text-white" />
+        </button>
       </div>
 
-      <div
-        id="map-container"
-        className={`relative w-full max-w-[500px] h-[500px] `}
-      >
+      <div id="map-container" className={`relative w-full h-full `}>
         <div
           ref={mapElementRef}
-          className="w-full h-[500px] absolute top-0 left-0 z-0"
+          className="w-full h-full absolute top-0 left-0 z-0"
         />
 
         {showGeocodeSelector && (
