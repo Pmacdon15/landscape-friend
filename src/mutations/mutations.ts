@@ -114,15 +114,34 @@ export const useSendNewsLetter = () => {
     });
 };
 
-interface QuoteItem {
-    price: string; // Stripe Price ID
-    quantity: number;
-}
-
 export const useCreateStripeQuote = () => {
     return useMutation({
-        mutationFn: ({ customerId, items }: { customerId: string, items: QuoteItem[] }) => {
-            return createStripeQuote(customerId, items);
+        mutationFn: ({
+            clientName,
+            clientEmail,
+            labourCostPerUnit,
+            labourUnits,
+            materialType,
+            materialCostPerUnit,
+            materialUnits
+        }: {
+            clientName: string,
+            clientEmail: string,
+            labourCostPerUnit: number,
+            labourUnits: number,
+            materialType: string,
+            materialCostPerUnit: number,
+            materialUnits: number
+        }) => {
+            return createStripeQuote(
+                clientName,
+                clientEmail,
+                labourCostPerUnit,
+                labourUnits,
+                materialType,
+                materialCostPerUnit,
+                materialUnits
+            );
         },
         onError: (error) => {
             console.error('Mutation error:', error);
