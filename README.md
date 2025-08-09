@@ -72,7 +72,7 @@ BLOB_READ_WRITE_TOKEN="your_vercel_blob_token"
 Clone the repository and install dependencies:
 
 ```bash
-git clone [your-repo-url]
+git clone https://github.com/Pmacdon15/lawn-buddy.git
 cd lawn-buddy
 npm install # or yarn install or bun install
 ```
