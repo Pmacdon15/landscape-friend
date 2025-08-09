@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/actions/clients";
 import { markYardServiced } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
-import { updateStripeAPIKey } from "@/actions/stripe";
+import { createStripeQuote, updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
 
@@ -107,6 +107,22 @@ export const useSendNewsLetter = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
             return sendNewsLetter(formData);
+        },
+        onError: (error) => {
+            console.error('Mutation error:', error);
+        }
+    });
+};
+
+interface QuoteItem {
+    price: string; // Stripe Price ID
+    quantity: number;
+}
+
+export const useCreateStripeQuote = () => {
+    return useMutation({
+        mutationFn: ({ customerId, items }: { customerId: string, items: QuoteItem[] }) => {
+            return createStripeQuote(customerId, items);
         },
         onError: (error) => {
             console.error('Mutation error:', error);
