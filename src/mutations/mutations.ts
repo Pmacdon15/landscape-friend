@@ -116,7 +116,7 @@ export const useSendNewsLetter = () => {
 
 export const useCreateStripeQuote = () => {
     return useMutation({
-        mutationFn: ({
+        mutationFn: async ({
             clientName,
             clientEmail,
             labourCostPerUnit,
@@ -133,7 +133,7 @@ export const useCreateStripeQuote = () => {
             materialCostPerUnit: number,
             materialUnits: number
         }) => {
-            return createStripeQuote(
+            const result = await createStripeQuote(
                 clientName,
                 clientEmail,
                 labourCostPerUnit,
@@ -142,10 +142,11 @@ export const useCreateStripeQuote = () => {
                 materialCostPerUnit,
                 materialUnits
             );
+            if (!result.success) {
+                throw new Error("Failed to create Stripe quote");
+            }
+            return result;
         },
-        onError: (error) => {
-            console.error('Mutation error:', error);
-        }
     });
 };
 

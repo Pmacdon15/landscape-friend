@@ -160,7 +160,8 @@ export async function createStripeQuote(
             filename: `quote_${finalizedQuote.id}.pdf`,
             content: pdfContent,
         }];
-
+        if (!quote.id) throw new Error("Failed")
+        //TODO: Add check for if valid quote and is valid email sent
         // Construct email content
         const emailSubject = `Your Quote from ${companyName}`;
         const emailBody = `Dear ${clientName},\n\nPlease find your quote attached. Please reply to this email to confirm the quote.\n\nThank you!`;
@@ -171,7 +172,11 @@ export async function createStripeQuote(
         formData.append('message', emailBody);
 
         // Send the email with attachment
-        await sendEmailWithTemplate(formData, clientEmail, attachments);
+        const emailResult = await sendEmailWithTemplate(formData, clientEmail, attachments);
+        if (!emailResult) {
+            throw new Error("Failed");
+        }
+        
         return { success: true, quoteId: finalizedQuote.id };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
