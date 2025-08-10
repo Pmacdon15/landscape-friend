@@ -7,7 +7,6 @@ import { sendEmailWithTemplate } from '@/actions/sendEmails';
 import Stripe from 'stripe'; // Import Stripe
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
-import { z } from 'zod';
 
 // Placeholder for getting Stripe instance. In a real app, this would fetch the API key securely.
 // For now, assuming it's available via environment variable or a secure utility.

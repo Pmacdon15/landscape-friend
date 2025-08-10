@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

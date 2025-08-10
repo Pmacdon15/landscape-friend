@@ -10,7 +10,7 @@ import { schemaCreateQuote } from '@/lib/zod/schemas';
 export function CreateQuoteForm() {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm({
+    const { register, watch, formState: { errors } } = useForm({
         resolver: zodResolver(schemaCreateQuote),
     });
 
@@ -135,22 +135,18 @@ export function CreateQuoteForm() {
                 </Button>
             </form>
 
-            {
-                isSuccess && data && (
-                    <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-md">
-                        <p>Quote created successfully!</p>
-                        <p>Quote ID: {data.quoteId}</p>
-                    </div>
-                )
+            {isSuccess && data &&
+                <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-md">
+                    <p>Quote created successfully!</p>
+                    <p>Quote ID: {data.quoteId}</p>
+                </div>
             }
 
-            {
-                isError && error && (
-                    <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-md">
-                        <p>Error creating quote:</p>
-                        <p>{error.message}</p>
-                    </div>
-                )
+            {isError && error &&
+                <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-md">
+                    <p>Error creating quote:</p>
+                    <p>{error.message}</p>
+                </div>
             }
         </>
     );
