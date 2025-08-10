@@ -11,7 +11,6 @@ import Link from "next/link";
 
 export default function NavigationMenuComponent() {
     const date = new Date()
-    console.log("date: ", date)
     const isMd = useMediaQuery("(min-width: 768px)");
     return (
         <NavigationMenu viewport={!isMd}>

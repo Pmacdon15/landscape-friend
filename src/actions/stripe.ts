@@ -2,11 +2,12 @@
 
 import { updatedStripeAPIKeyDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { schemaUpdateAPI } from "@/lib/zod/schemas";
+import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/actions/sendEmails';
 import Stripe from 'stripe'; // Import Stripe
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
+import { z } from 'zod';
 
 // Placeholder for getting Stripe instance. In a real app, this would fetch the API key securely.
 // For now, assuming it's available via environment variable or a secure utility.
@@ -53,30 +54,37 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     }
 }
 
-export async function createStripeQuote(
-    clientName: string,
-    clientEmail: string,
-    labourCostPerUnit: number,
-    labourUnits: number,
-    materialType: string,
-    materialCostPerUnit: number,
-    materialUnits: number,
-) {
+export async function createStripeQuote(formData: FormData) {
     const { isAdmin, sessionClaims } = await isOrgAdmin();
     const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
+
+    console.log(formData);
+    const validatedFields = schemaCreateQuote.safeParse({
+        clientName: formData.get('clientName'),
+        clientEmail: formData.get('clientEmail'),
+        labourCostPerUnit: Number(formData.get('labourCostPerUnit')),
+        labourUnits: Number(formData.get('labourUnits')),
+        materialType: formData.get('materialType'),
+        materialCostPerUnit: Number(formData.get('materialCostPerUnit')),
+        materialUnits: Number(formData.get('materialUnits')),
+    });
+    console.log(validatedFields)
+
+    if (!validatedFields.success) throw new Error("Invalid input data");
+
     try {
         if (!isAdmin) throw new Error("Not Admin")
         const stripe = getStripeInstance();
 
         // 1. Find or Create Customer
         let customerId: string;
-        const existingCustomers = await stripe.customers.list({ email: clientEmail, limit: 1 });
+        const existingCustomers = await stripe.customers.list({ email: validatedFields.data.clientEmail, limit: 1 });
         if (existingCustomers.data.length > 0) {
             customerId = existingCustomers.data[0].id;
         } else {
             const newCustomer = await stripe.customers.create({
-                name: clientName,
-                email: clientEmail,
+                name: validatedFields.data.clientName,
+                email: validatedFields.data.clientEmail,
             });
             customerId = newCustomer.id;
         }
@@ -94,12 +102,12 @@ export async function createStripeQuote(
         const labourPrices = await stripe.prices.list({ limit: 100 });
         const labourPrice = labourPrices.data.find(
             price => price.product === labourProduct.id &&
-                price.unit_amount === Math.round(labourCostPerUnit * 100) &&
+                price.unit_amount === Math.round(validatedFields.data.labourCostPerUnit * 100) &&
                 price.currency === 'cad'
         );
         if (!labourPrice) {
             const newPrice = await stripe.prices.create({
-                unit_amount: Math.round(labourCostPerUnit * 100),
+                unit_amount: Math.round(validatedFields.data.labourCostPerUnit * 100),
                 currency: 'cad',
                 product: labourProduct.id,
             });
@@ -111,22 +119,22 @@ export async function createStripeQuote(
         // 3. Handle Material Product and Price
         let materialPriceId: string;
         const materialProducts = await stripe.products.list({ limit: 100 });
-        let materialProduct = materialProducts.data.find(product => product.name === materialType);
+        let materialProduct = materialProducts.data.find(product => product.name === validatedFields.data.materialType);
         if (!materialProduct) {
             materialProduct = await stripe.products.create({
-                name: materialType,
+                name: validatedFields.data.materialType,
             });
         }
 
         const materialPrices = await stripe.prices.list({ limit: 100 });
         const materialPrice = materialPrices.data.find(
             price => price.product === materialProduct.id &&
-                price.unit_amount === Math.round(materialCostPerUnit * 100) &&
+                price.unit_amount === Math.round(validatedFields.data.materialCostPerUnit * 100) &&
                 price.currency === 'cad'
         );
         if (!materialPrice) {
             const newPrice = await stripe.prices.create({
-                unit_amount: Math.round(materialCostPerUnit * 100),
+                unit_amount: Math.round(validatedFields.data.materialCostPerUnit * 100),
                 currency: 'cad',
                 product: materialProduct.id,
             });
@@ -137,8 +145,8 @@ export async function createStripeQuote(
 
         // 4. Create Line Items for the Quote
         const line_items = [
-            { price: labourPriceId, quantity: labourUnits },
-            { price: materialPriceId, quantity: materialUnits },
+            { price: labourPriceId, quantity: validatedFields.data.labourUnits },
+            { price: materialPriceId, quantity: validatedFields.data.materialUnits },
         ];
 
         const quote = await stripe.quotes.create({
@@ -164,19 +172,19 @@ export async function createStripeQuote(
         //TODO: Add check for if valid quote and is valid email sent
         // Construct email content
         const emailSubject = `Your Quote from ${companyName}`;
-        const emailBody = `Dear ${clientName},\n\nPlease find your quote attached. Please reply to this email to confirm the quote.\n\nThank you!`;
+        const emailBody = `Dear ${validatedFields.data.clientName},\n\nPlease find your quote attached. Please reply to this email to confirm the quote.\n\nThank you!`
 
         // Create FormData for sendEmailWithTemplate
-        const formData = new FormData();
-        formData.append('title', emailSubject);
-        formData.append('message', emailBody);
+        const formDataForEmail = new FormData();
+        formDataForEmail.append('title', emailSubject);
+        formDataForEmail.append('message', emailBody);
 
         // Send the email with attachment
-        const emailResult = await sendEmailWithTemplate(formData, clientEmail, attachments);
+        const emailResult = await sendEmailWithTemplate(formDataForEmail, validatedFields.data.clientEmail, attachments);
         if (!emailResult) {
             throw new Error("Failed");
         }
-        
+
         return { success: true, quoteId: finalizedQuote.id };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);

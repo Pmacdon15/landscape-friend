@@ -114,34 +114,46 @@ export const useSendNewsLetter = () => {
     });
 };
 
+// export const useCreateStripeQuote = () => {
+//     return useMutation({
+//         mutationFn: async ({
+//             clientName,
+//             clientEmail,
+//             labourCostPerUnit,
+//             labourUnits,
+//             materialType,
+//             materialCostPerUnit,
+//             materialUnits
+//         }: {
+//             clientName: string,
+//             clientEmail: string,
+//             labourCostPerUnit: number,
+//             labourUnits: number,
+//             materialType: string,
+//             materialCostPerUnit: number,
+//             materialUnits: number
+//         }) => {
+//             const result = await createStripeQuote(
+//                 clientName,
+//                 clientEmail,
+//                 labourCostPerUnit,
+//                 labourUnits,
+//                 materialType,
+//                 materialCostPerUnit,
+//                 materialUnits
+//             );
+//             if (!result.success) {
+//                 throw new Error("Failed to create Stripe quote");
+//             }
+//             return result;
+//         },
+//     });
+// };
+
 export const useCreateStripeQuote = () => {
     return useMutation({
-        mutationFn: async ({
-            clientName,
-            clientEmail,
-            labourCostPerUnit,
-            labourUnits,
-            materialType,
-            materialCostPerUnit,
-            materialUnits
-        }: {
-            clientName: string,
-            clientEmail: string,
-            labourCostPerUnit: number,
-            labourUnits: number,
-            materialType: string,
-            materialCostPerUnit: number,
-            materialUnits: number
-        }) => {
-            const result = await createStripeQuote(
-                clientName,
-                clientEmail,
-                labourCostPerUnit,
-                labourUnits,
-                materialType,
-                materialCostPerUnit,
-                materialUnits
-            );
+        mutationFn: async (formData: FormData) => {
+            const result = await createStripeQuote(formData);
             if (!result.success) {
                 throw new Error("Failed to create Stripe quote");
             }

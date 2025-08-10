@@ -49,3 +49,13 @@ export const schemaToggleSnowClient = z.object({
 export const schemaUpdateAPI = z.object({
     APIKey: z.string()
 })
+
+export const schemaCreateQuote = z.object({
+    clientName: z.string(),
+    clientEmail: z.string(),
+    labourCostPerUnit: z.number(),
+    labourUnits: z.number(),
+    materialType: z.string(),
+    materialCostPerUnit: z.number(),
+    materialUnits: z.number(),
+});
