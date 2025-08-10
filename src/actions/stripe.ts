@@ -161,7 +161,6 @@ export async function createStripeQuote(
             content: pdfContent,
         }];
 
-        //TODO: Fix later this needs to be company or user name
         // Construct email content
         const emailSubject = `Your Quote from ${companyName}`;
         const emailBody = `Dear ${clientName},\n\nPlease find your quote attached. Please reply to this email to confirm the quote.\n\nThank you!`;
