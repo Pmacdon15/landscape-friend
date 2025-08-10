@@ -76,8 +76,8 @@ INNGEST_EVENT_KEY="your_inngest_event_key"
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/Pmacdon15/lawn-buddy.git
-cd lawn-buddy
+git clone https://github.com/Pmacdon15/landscapefriend.git
+cd landscapefriend
 npm install # or yarn install or bun install
 ```
 

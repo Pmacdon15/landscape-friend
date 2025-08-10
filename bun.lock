@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "lawn-buddy",
+      "name": "landscapefriend",
       "dependencies": {
         "@clerk/nextjs": "^6.30.0",
         "@fortawesome/fontawesome-svg-core": "^6.7.2",
