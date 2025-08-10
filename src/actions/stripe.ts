@@ -63,7 +63,7 @@ export async function createStripeQuote(
     materialUnits: number,
 ) {
     const { isAdmin, sessionClaims } = await isOrgAdmin();
-    // const companyName = formatCompanyName({ sessionClaims.orgName, sessionClaims.userFullName, sessionClaims.userEmail })
+    const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
     try {
         if (!isAdmin) throw new Error("Not Admin")
         const stripe = getStripeInstance();
@@ -145,7 +145,7 @@ export async function createStripeQuote(
             customer: customerId,
             line_items: line_items,
         });
-
+        //TODO: maybe not finalize and do later on a page yet to be made 
         // Finalize the quote immediately
         const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
 
@@ -163,7 +163,7 @@ export async function createStripeQuote(
 
         //TODO: Fix later this needs to be company or user name
         // Construct email content
-        const emailSubject = `Your Quote from ${clientName}`;
+        const emailSubject = `Your Quote from ${companyName}`;
         const emailBody = `Dear ${clientName},\n\nPlease find your quote attached. Please reply to this email to confirm the quote.\n\nThank you!`;
 
         // Create FormData for sendEmailWithTemplate
