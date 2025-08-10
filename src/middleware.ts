@@ -29,6 +29,6 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
     '/(lists|email|invoices|settings)(.*)',
-    '/', // or '/(.*)' to match all routes including the root
+    // '/', // or '/(.*)' to match all routes including the root
   ],
 }

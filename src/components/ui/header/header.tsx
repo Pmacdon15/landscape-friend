@@ -9,7 +9,7 @@ import { Suspense } from 'react';
 // import ClientOnly from '../../wrappers/ClientOnly';
 
 export default async function Header() {
-    const { isAdmin } = await isOrgAdmin()
+    const { isAdmin } = await isOrgAdmin(false)
     return (
         <>
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">

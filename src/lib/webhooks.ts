@@ -1,30 +1,19 @@
 import { auth, clerkClient } from "@clerk/nextjs/server"
 import { neon } from "@neondatabase/serverless"
 
-export async function isOrgAdmin() {
-    const { userId, orgId, sessionClaims } = await auth.protect()
-    let isAdmin = true
-    if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false
-
-    return { userId, orgId, sessionClaims, isAdmin }
-}
-
-export async function handleSubscriptionUpdate(orgId: string, plan: string) {
-    const clerk = await clerkClient();
-
-    if (plan === 'basic_10_people_org') {
-        await clerk.organizations.updateOrganization(orgId, {
-            maxAllowedMemberships: 10
-        });
-    } else if (plan === 'pro_25_people_org') {
-        await clerk.organizations.updateOrganization(orgId, {
-            maxAllowedMemberships: 25
-        })
+export async function isOrgAdmin(protect = true) {
+    let authResult;
+    if (protect) {
+        authResult = await auth.protect();
     } else {
-        await clerk.organizations.updateOrganization(orgId, {
-            maxAllowedMemberships: 1
-        })
+        authResult = await auth();
     }
+
+    const { userId, orgId, sessionClaims } = authResult;
+    let isAdmin = true;
+    if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false;
+
+    return { userId, orgId, sessionClaims, isAdmin };
 }
 
 export async function handleOrganizationCreated(orgId: string, orgName: string) {
