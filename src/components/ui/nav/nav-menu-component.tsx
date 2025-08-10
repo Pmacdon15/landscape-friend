@@ -86,17 +86,17 @@ export default function NavigationMenuComponent() {
                             <li>
                                 <NavigationMenuLink asChild>
                                     <Link href="/invoice/all">
-                                        <div className="font-medium">Send All</div>
+                                        <div className="font-medium">Manage Quotes</div>
                                         <div className="text-muted-foreground">
-                                            Send invoices for all outstanding balances.
+                                            Manage quotes mark accepted, cancel, send as invoice .
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
                                     <Link href="/invoice/individual">
-                                        <div className="font-medium">Send Individual</div>
+                                        <div className="font-medium">Manage Invoices</div>
                                         <div className="text-muted-foreground">
-                                            Send an invoice to a client with an outstanding balance.
+                                            Manage invoices resend, mark paid, cancel.
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
