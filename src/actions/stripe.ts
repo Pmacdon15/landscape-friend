@@ -57,8 +57,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 export async function createStripeQuote(formData: FormData) {
     const { isAdmin, sessionClaims } = await isOrgAdmin();
     const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
-
-    console.log(formData);
+    
     const validatedFields = schemaCreateQuote.safeParse({
         clientName: formData.get('clientName'),
         clientEmail: formData.get('clientEmail'),
@@ -68,8 +67,7 @@ export async function createStripeQuote(formData: FormData) {
         materialCostPerUnit: Number(formData.get('materialCostPerUnit')),
         materialUnits: Number(formData.get('materialUnits')),
     });
-    console.log(validatedFields)
-
+    
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
