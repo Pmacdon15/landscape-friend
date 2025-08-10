@@ -85,7 +85,7 @@ export function CreateQuoteForm() {
                                 <input
                                     type="number"
                                     id="labourUnits"
-                                    value={labourUnits}
+                                    value={String(labourUnits)}
                                     onChange={(e) => setLabourUnits(parseInt(e.target.value))}
                                     className={inputClassName}
                                     min="1"
@@ -109,7 +109,7 @@ export function CreateQuoteForm() {
                                 <input
                                     type="number"
                                     id="materialCostPerUnit"
-                                    value={materialCostPerUnit}
+                                    value={String(materialCostPerUnit)}
                                     onChange={(e) => setMaterialCostPerUnit(parseFloat(e.target.value))}
                                     className={inputClassName}
                                     min="0"
@@ -122,7 +122,7 @@ export function CreateQuoteForm() {
                                 <input
                                     type="number"
                                     id="materialUnits"
-                                    value={materialUnits}
+                                    value={String(materialUnits)}
                                     onChange={(e) => setMaterialUnits(parseInt(e.target.value))}
                                     className={inputClassName}
                                     min="1"
@@ -147,8 +147,8 @@ export function CreateQuoteForm() {
 
                         <section>
                             <h3 className="text-md font-semibold mb-2">Estimated Totals</h3>
-                            <p>Labour Cost: ${ (labourCostPerUnit * labourUnits).toFixed(2) }</p>
-                            <p>Material Cost: ${ (materialCostPerUnit * materialUnits).toFixed(2) }</p>
+                            <p>Labour Cost: ${(labourCostPerUnit * labourUnits).toFixed(2)}</p>
+                            <p>Material Cost: ${(materialCostPerUnit * materialUnits).toFixed(2)}</p>
                             <p>Subtotal: ${subtotal.toFixed(2)}</p>
                             <p>Tax ({taxRate}%): ${calculatedTax.toFixed(2)}</p>
                             <p className="font-bold">Grand Total: ${grandTotal.toFixed(2)}</p>
