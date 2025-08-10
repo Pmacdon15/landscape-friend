@@ -8,6 +8,7 @@ import { auth } from '@clerk/nextjs/server';
 export async function sendEmailWithTemplate(
     formData: FormData,
     clientsEmails: string,
+    attachments?: { filename: string; content: Buffer | string; }[]
 ) {
     try {
         const { sessionClaims } = await auth.protect();
@@ -29,7 +30,7 @@ export async function sendEmailWithTemplate(
             throw new Error('No client emails provided');
         }
 
-        return sendEmail(clientsEmails, String(sessionClaims.orgName || sessionClaims.userFullName), validatedFields.data);
+        return sendEmail(clientsEmails, String(sessionClaims.orgName || sessionClaims.userFullName), validatedFields.data, attachments);
     } catch (error) {
         console.error('Error sending email:', error);
         return false;
