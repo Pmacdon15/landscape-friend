@@ -102,7 +102,7 @@ export default function NavigationMenuComponent() {
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
                                     <Link href="/invoices/send-quote">
-                                        <div className="font-medium">Send as Quote</div>
+                                        <div className="font-medium">Send a Quote</div>
                                         <div className="text-muted-foreground">
                                             Send an Quote as an Email.
                                         </div>
