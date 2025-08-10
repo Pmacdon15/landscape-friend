@@ -6,7 +6,7 @@ import { NavBar } from '../nav/nav-bar';
 // import { Suspense } from 'react';
 // import ClientOnly from '../../wrappers/ClientOnly';
 
-export default function Header() {
+export default function Header({ isAdmin }: { isAdmin: boolean }) {
     return (
         <>
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
@@ -22,21 +22,21 @@ export default function Header() {
                 </div>
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
                     {/* <Suspense> */}
-                        <SignedIn>
-                            <NavBar />
-                            <div className="flex ml-auto items-center gap-2">
-                                {/* <ClientOnly> */}
-                                  <UserButton />
-                                  <OrganizationSwitcher />
-                                {/* </ClientOnly> */}
-                            </div>
-                        </SignedIn>
-                        <SignedOut>
-                            <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
-                                <SignInButton />
-                                <SignUpButton />
-                            </div>
-                        </SignedOut>
+                    <SignedIn>
+                        <NavBar isAdmin={isAdmin} />
+                        <div className="flex ml-auto items-center gap-2">
+                            {/* <ClientOnly> */}
+                            <UserButton />
+                            <OrganizationSwitcher />
+                            {/* </ClientOnly> */}
+                        </div>
+                    </SignedIn>
+                    <SignedOut>
+                        <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
+                            <SignInButton />
+                            <SignUpButton />
+                        </div>
+                    </SignedOut>
                     {/* </Suspense> */}
                 </div>
             </div>

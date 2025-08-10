@@ -6,7 +6,7 @@ import { Menu } from "lucide-react"
 
 import NavigationMenuComponent from "./nav-menu-component"
 
-export function NavBar() {
+export function NavBar({ isAdmin }: { isAdmin: boolean }) {
     const [showNav, setShowNav] = useState(false)
 
     return (
@@ -15,10 +15,10 @@ export function NavBar() {
                 <Button variant="outline" onClick={() => setShowNav(!showNav)} className="p-2 w-9">
                     <Menu size={24} />
                 </Button>
-                {showNav && <NavigationMenuComponent />}
+                {showNav && <NavigationMenuComponent isAdmin={isAdmin} />}
             </div>
 
-            <div className="hidden md:block"><NavigationMenuComponent /></div>
+            <div className="hidden md:block"><NavigationMenuComponent isAdmin={isAdmin} /></div>
         </>
     )
 }

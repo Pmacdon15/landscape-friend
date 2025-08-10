@@ -9,7 +9,7 @@ import {
 import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
 
-export default function NavigationMenuComponent() {
+export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean }) {
     const date = new Date()
     const isMd = useMediaQuery("(min-width: 768px)");
     return (
@@ -79,39 +79,43 @@ export default function NavigationMenuComponent() {
                         </ul>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger>Invoices</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid w-[300px] gap-4">
-                            <li>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoice/all">
-                                        <div className="font-medium">Manage Quotes</div>
-                                        <div className="text-muted-foreground">
-                                            Manage quotes mark accepted, cancel, send as invoice .
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoice/individual">
-                                        <div className="font-medium">Manage Invoices</div>
-                                        <div className="text-muted-foreground">
-                                            Manage invoices resend, mark paid, cancel.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoices/send-quote">
-                                        <div className="font-medium">Send a Quote</div>
-                                        <div className="text-muted-foreground">
-                                            Send an Quote as an Email.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                            </li>
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
+                {isAdmin &&
+                    <>
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>Invoices</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[300px] gap-4">
+                                    <li>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/invoice/all">
+                                                <div className="font-medium">Manage Quotes</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage quotes mark accepted, cancel, send as invoice .
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/invoice/individual">
+                                                <div className="font-medium">Manage Invoices</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage invoices resend, mark paid, cancel.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/invoices/send-quote">
+                                                <div className="font-medium">Send a Quote</div>
+                                                <div className="text-muted-foreground">
+                                                    Send an Quote as an Email.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </li>
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    </>
+                }
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Settings</NavigationMenuTrigger>
                     <NavigationMenuContent>

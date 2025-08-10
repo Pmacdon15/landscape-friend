@@ -7,6 +7,7 @@ import PageContainer from "../components/ui/containers/page-container";
 import Providers from "../components/Providers";
 import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
+import { isOrgAdmin } from "@/lib/webhooks";
 // export const experimental_ppr = true;
 
 const geistSans = Geist({
@@ -25,11 +26,12 @@ export const metadata: Metadata = {
   keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { isAdmin } = await isOrgAdmin()
   return (
     <ClerkProvider>
       <Providers>
@@ -44,7 +46,7 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
             <Suspense fallback={<HeaderFallBack />}>
-              <Header />
+              <Header isAdmin={isAdmin} />
             </Suspense>
             <PageContainer>
               {children}
