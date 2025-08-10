@@ -7,7 +7,6 @@ import PageContainer from "../components/ui/containers/page-container";
 import Providers from "../components/Providers";
 import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
-import { isOrgAdmin } from "@/lib/webhooks";
 // export const experimental_ppr = true;
 
 const geistSans = Geist({
@@ -31,7 +30,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isAdmin } = await isOrgAdmin()
   return (
     <ClerkProvider>
       <Providers>
@@ -46,7 +44,7 @@ export default async function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
             <Suspense fallback={<HeaderFallBack />}>
-              <Header isAdmin={isAdmin} />
+              <Header />
             </Suspense>
             <PageContainer>
               {children}
