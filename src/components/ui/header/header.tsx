@@ -17,7 +17,7 @@ export default function Header() {
                         </Link>
                     </div>
                     <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-fit'>
-                        <HeaderTitle text='Lawn Buddy' />
+                        <HeaderTitle text='Landscape Friend' />
                     </div>
                 </div>
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>

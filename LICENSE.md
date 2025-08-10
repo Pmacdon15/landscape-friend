@@ -1,8 +1,8 @@
-# Lawn Buddy - The Learning & Laughter License
+# Landscape Friend - The Learning & Laughter License
 
 Copyright (c) 2025 Patrick MacDonald
 
-This license governs the use of "Lawn Buddy" (the "Software") for specific, delightful purposes.
+This license governs the use of "Landscape Friend" (the "Software") for specific, delightful purposes.
 
 ## 1. Permitted Uses (Serious & Scholarly)
 
@@ -24,7 +24,7 @@ Should you wish to employ the Software for purposes of jest, parody, or outright
     *   **Logos:** Replace all original logos with something undeniably silly, perhaps a dancing garden gnome or a lawnmower wearing a tiny hat.
     *   **Name:** Rename the Software to something entirely different and clearly humorous (e.g., "Grass Giggles," "Turf Tickler," "The Mowing Mirth Machine").
 
-The goal here is to ensure that no reasonable person could confuse your comical creation with the original, serious "Lawn Buddy" Software. We encourage maximum hilarity and minimal brand confusion.
+The goal here is to ensure that no reasonable person could confuse your comical creation with the original, serious "Landscape Friend" Software. We encourage maximum hilarity and minimal brand confusion.
 
 ## 3. No Warranty
 

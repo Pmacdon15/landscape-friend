@@ -1,8 +1,8 @@
-# Lawn Buddy
+# Landscape Friend
 
 ## Project Description
 
-Lawn Buddy is a comprehensive SaaS (Software as a Service) platform designed to empower landscapers and lawn care businesses. It provides a streamlined solution for managing and tracking all aspects of lawn maintenance and snow clearing operations. From scheduling services to sending professional emails and invoices, Lawn Buddy aims to simplify daily workflows and enhance client communication.
+Landscape Friend is a comprehensive SaaS (Software as a Service) platform designed to empower landscapers and lawn care businesses. It provides a streamlined solution for managing and tracking all aspects of lawn maintenance and snow clearing operations. From scheduling services to sending professional emails and invoices, Landscape Friend aims to simplify daily workflows and enhance client communication.
 
 ## Key Features
 
@@ -15,7 +15,7 @@ Lawn Buddy is a comprehensive SaaS (Software as a Service) platform designed to 
 
 ## Tech Stack
 
-Lawn Buddy is built with a modern, robust, and scalable technology stack, leveraging the power of Vercel's ecosystem:
+Landscape Friend is built with a modern, robust, and scalable technology stack, leveraging the power of Vercel's ecosystem:
 
 *   **Platform:** [Vercel](https://vercel.com/)
 *   **Database:** [Neon (Serverless PostgreSQL)](https://vercel.com/integrations/neon)
@@ -27,7 +27,7 @@ Lawn Buddy is built with a modern, robust, and scalable technology stack, levera
 
 ## Architecture Highlights
 
-Lawn Buddy is architected for performance and efficiency, prioritizing Server-Side Rendering (SSR) to deliver a fast and responsive user experience.
+Landscape Friend is architected for performance and efficiency, prioritizing Server-Side Rendering (SSR) to deliver a fast and responsive user experience.
 
 *   **Server-Side Rendering (SSR):** The application heavily utilizes SSR, ensuring that most of the page content is rendered on the server before being sent to the client. This improves initial page load times and SEO.
 *   **Server-First Data Fetching:** All critical data fetches are initiated on the server during page load. This data is then efficiently passed down to either Server Components or Client Components, minimizing client-side data fetching and improving perceived performance.
@@ -35,11 +35,11 @@ Lawn Buddy is architected for performance and efficiency, prioritizing Server-Si
 
 ## Getting Started
 
-To set up and run Lawn Buddy locally, you'll need to configure several services.
+To set up and run Landscape Friend locally, you'll need to configure several services.
 
 ### 1. Service Sign-ups & API Keys
 
-Lawn Buddy relies on external services for its core functionality. You will need to sign up for accounts and obtain API keys for the following:
+Landscape Friend relies on external services for its core functionality. You will need to sign up for accounts and obtain API keys for the following:
 
 *   **Neon (PostgreSQL Database):**
     *   Sign up via the [Vercel Marketplace](https://vercel.com/integrations/neon) for seamless integration.

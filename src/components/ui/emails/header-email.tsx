@@ -30,12 +30,12 @@ export default function HeaderEmail({
 
             <Img
               src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/Screenshot%20From%202025-07-28%2020-45-07.png"
-              alt="Lawn Buddy Logo"
+              alt="Landscape Friend Logo"
               className="w-[100px] h-[100px] rounded-md border"
             />
 
             <div className="text-2xl text-center md:text-4xl p-2 md:p-6">
-              <span>Lawn Buddy</span>
+              <span>Landscape Friend</span>
             </div>
             <div className="w-[80px] h-[80px] rounded-md border">{" "}          </div>
           </div>
