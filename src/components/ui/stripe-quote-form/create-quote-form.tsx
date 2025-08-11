@@ -14,6 +14,8 @@ export function CreateQuoteForm() {
     const { register, watch, control, reset, formState: { errors } } = useForm({
         resolver: zodResolver(schemaCreateQuote),
         defaultValues: {
+            labourCostPerUnit: 0,
+            labourUnits: 0,
             materials: [{ materialType: '', materialCostPerUnit: 0, materialUnits: 0 }]
         }
     });
