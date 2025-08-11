@@ -59,7 +59,7 @@ export async function createStripeQuote(formData: FormData) {
     if (!isAdmin) throw new Error("Not Admin")
     if (!sessionClaims) throw new Error("Session claims are missing.");
     const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
-    
+
     const materials: { materialType: string, materialCostPerUnit: number, materialUnits: number }[] = [];
     let i = 0;
     while (formData.has(`materials.${i}.materialType`)) {
@@ -70,7 +70,7 @@ export async function createStripeQuote(formData: FormData) {
         });
         i++;
     }
-    console.log("Parsed materials from FormData:", materials); // Log parsed materials
+
 
     const validatedFields = schemaCreateQuote.safeParse({
         clientName: formData.get('clientName'),
@@ -84,7 +84,7 @@ export async function createStripeQuote(formData: FormData) {
         console.error("Validation Error:", validatedFields.error);
         throw new Error("Invalid input data");
     }
-    console.log("Validated fields data:", validatedFields.data); // Log validated data
+
 
     try {
         if (!isAdmin) throw new Error("Not Admin")
@@ -133,7 +133,6 @@ export async function createStripeQuote(formData: FormData) {
         // 3. Handle Material Products and Prices
         const materialLineItems: { price: string; quantity: number; }[] = [];
         for (const material of validatedFields.data.materials) {
-            console.log("Processing material:", material); // Log each material being processed
 
             // Skip material if materialType is empty or undefined
             if (!material.materialType) {
@@ -148,9 +147,6 @@ export async function createStripeQuote(formData: FormData) {
                 materialProduct = await stripe.products.create({
                     name: material.materialType,
                 });
-                console.log("Created new material product:", materialProduct); // Log new product
-            } else {
-                console.log("Found existing material product:", materialProduct); // Log existing product
             }
 
             const materialPrices = await stripe.prices.list({ limit: 100 });
@@ -166,10 +162,8 @@ export async function createStripeQuote(formData: FormData) {
                     product: materialProduct.id,
                 });
                 materialPriceId = newPrice.id;
-                console.log("Created new material price:", newPrice); // Log new price
             } else {
-                materialPriceId = materialPrice.id;
-                console.log("Found existing material price:", materialPrice); // Log existing price
+                materialPriceId = materialPrice.id;              
             }
             materialLineItems.push({ price: materialPriceId, quantity: material.materialUnits ?? 0 });
         }
@@ -179,7 +173,6 @@ export async function createStripeQuote(formData: FormData) {
             { price: labourPriceId, quantity: validatedFields.data.labourUnits },
             ...materialLineItems,
         ];
-        console.log("Final line items for Stripe quote:", line_items); // Log final line items
 
         const quote = await stripe.quotes.create({
             customer: customerId,

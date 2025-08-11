@@ -40,11 +40,7 @@ export function CreateQuoteForm() {
 
     return (
         <>
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                mutate(formData);
-            }} className="space-y-4">
+            <form action={mutate} className="space-y-4">
                 <section>
                     <h3 className="text-md font-semibold mb-2">Client Information</h3>
                     <div>
