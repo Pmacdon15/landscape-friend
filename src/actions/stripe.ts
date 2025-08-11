@@ -36,6 +36,7 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaUpdateAPI.safeParse({
         APIKey: formData.get("api_key"),
@@ -44,7 +45,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await updatedStripeAPIKeyDb(validatedFields.data, orgId || userId)
+        const result = await updatedStripeAPIKeyDb(validatedFields.data, (orgId || userId)!)
         if (!result.success) throw new Error(result.message);
         return result;
     } catch (e: unknown) {
@@ -55,6 +56,8 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 export async function createStripeQuote(formData: FormData) {
     const { isAdmin, sessionClaims } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin")
+    if (!sessionClaims) throw new Error("Session claims are missing.");
     const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
     
     const validatedFields = schemaCreateQuote.safeParse({

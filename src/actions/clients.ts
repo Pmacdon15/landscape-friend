@@ -5,6 +5,7 @@ import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpd
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaAddClient.safeParse({
         full_name: formData.get("full_name"),
@@ -16,7 +17,7 @@ export async function addClient(formData: FormData) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await addClientDB(validatedFields.data, orgId || userId)
+        const result = await addClientDB(validatedFields.data, (orgId || userId)!)
         if (!result) throw new Error('Failed to add Client');
         return result;
     } catch (e: unknown) {
@@ -27,6 +28,7 @@ export async function addClient(formData: FormData) {
 
 export async function deleteClient(clientId: number) {
     const { orgId, userId } = await isOrgAdmin()
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaDeleteClient.safeParse({
         client_id: clientId
@@ -35,7 +37,7 @@ export async function deleteClient(clientId: number) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await deleteClientDB(validatedFields.data, orgId || userId)
+        const result = await deleteClientDB(validatedFields.data, (orgId || userId)!)
         if (!result) throw new Error('Delete Client');
         return result;
     } catch (e: unknown) {
@@ -47,6 +49,7 @@ export async function deleteClient(clientId: number) {
 export async function updateClientPricePer(clientId: number, pricePerCut: number, snow: boolean) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaUpdatePricePerCut.safeParse({
         clientId: clientId,
@@ -57,7 +60,7 @@ export async function updateClientPricePer(clientId: number, pricePerCut: number
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await updateClientPricePerDb(validatedFields.data, orgId || userId)
+        const result = await updateClientPricePerDb(validatedFields.data, (orgId || userId)!)
         if (!result) throw new Error('Failed to update Client price per');
         return result;
     } catch (e: unknown) {
@@ -69,6 +72,7 @@ export async function updateClientPricePer(clientId: number, pricePerCut: number
 export async function updateCuttingDay(clientId: number, cuttingWeek: number, updatedDay: string) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaUpdateCuttingDay.safeParse({
         clientId: clientId,
@@ -79,7 +83,7 @@ export async function updateCuttingDay(clientId: number, cuttingWeek: number, up
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await updatedClientCutDayDb(validatedFields.data, orgId || userId)
+        const result = await updatedClientCutDayDb(validatedFields.data, (orgId || userId)!)
         if (!result) throw new Error('Failed to update Client cut day');
         return result;
     } catch (e: unknown) {

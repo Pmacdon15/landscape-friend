@@ -1,4 +1,4 @@
-import { auth, clerkClient } from "@clerk/nextjs/server"
+import { auth } from "@clerk/nextjs/server"
 import { neon } from "@neondatabase/serverless"
 
 export async function isOrgAdmin(protect = true) {
@@ -30,6 +30,12 @@ export async function handleOrganizationDeleted(orgId: string) {
         DELETE FROM price_per_cut
         WHERE organization_id = ${orgId}        
     `;
+}
+
+export async function handleSubscriptionUpdate(orgId: string, plan: string) {
+    // Placeholder for subscription update logic
+    console.log(`Subscription update for organization ${orgId} with plan ${plan}`);
+    // You would typically update your database here based on the subscription plan
 }
 
 

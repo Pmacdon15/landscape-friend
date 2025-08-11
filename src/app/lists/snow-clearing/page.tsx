@@ -20,6 +20,7 @@ export default async function page({
     ]);
 
     if (!isAdmin) redirect("/")
+    if (!userId) throw new Error("User ID is missing.");
 
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
