@@ -211,3 +211,17 @@ export function useSearchFormLogic(isCuttingDayComponent: boolean) {
     handleChange,
   };
 }
+
+export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: any[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
+    useEffect(() => {
+        if (isSuccess) {
+            reset();
+        }
+    }, [isSuccess, reset]);
+
+    useEffect(() => {
+        if (fields.length === 0) {
+            append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 });
+        }
+    }, [fields.length, append]);
+}
