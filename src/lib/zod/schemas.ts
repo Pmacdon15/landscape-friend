@@ -50,12 +50,16 @@ export const schemaUpdateAPI = z.object({
     APIKey: z.string()
 })
 
+export const materialSchema = z.object({
+    materialType: z.string().optional().or(z.literal('')),
+    materialCostPerUnit: z.number().optional().default(0),
+    materialUnits: z.number().optional().default(0),
+});
+
 export const schemaCreateQuote = z.object({
     clientName: z.string(),
     clientEmail: z.string(),
     labourCostPerUnit: z.number(),
     labourUnits: z.number(),
-    materialType: z.string(),
-    materialCostPerUnit: z.number(),
-    materialUnits: z.number(),
+    materials: z.array(materialSchema),
 });
