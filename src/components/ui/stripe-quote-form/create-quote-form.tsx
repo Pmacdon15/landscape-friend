@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemaCreateQuote } from '@/lib/zod/schemas';
+import { useCreateQuoteForm } from '@/hooks/hooks';
 
 export function CreateQuoteForm() {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
@@ -22,17 +23,12 @@ export function CreateQuoteForm() {
         name: "materials",
     });
 
-    // Append an initial material field if none exist
-    React.useEffect(() => {
-        if (fields.length === 0) {
-            append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 });
-        }
-    }, [fields.length, append]);
+    useCreateQuoteForm({ isSuccess, reset, fields, append });
 
     const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
 
-    const labourCostPerUnit = watch('labourCostPerUnit');
-    const labourUnits = watch('labourUnits');
+    const labourCostPerUnit = watch('labourCostPerUnit') ?? 0;
+    const labourUnits = watch('labourUnits') ?? 0;
 
     const materials = watch('materials');
 
@@ -40,27 +36,14 @@ export function CreateQuoteForm() {
         return acc + ((material.materialCostPerUnit ?? 0) * (material.materialUnits ?? 0));
     }, 0);
 
-    // Debugging: Log materials and subtotal to console
-    React.useEffect(() => {
-        console.log("Materials:", materials);
-        console.log("Material Subtotal:", materialSubtotal);
-    }, [materials, materialSubtotal]); // Re-run when materials array changes
-
     const subtotal = (labourCostPerUnit * labourUnits) + materialSubtotal;
-
-    React.useEffect(() => {
-        if (isSuccess) {
-            reset();
-        }
-    }, [isSuccess, reset]);
 
     return (
         <>
             <form onSubmit={(e) => {
-                e.preventDefault(); // Prevent default form submission
+                e.preventDefault();
                 const formData = new FormData(e.currentTarget);
-                console.log("Frontend FormData:", Object.fromEntries(formData.entries())); // Log FormData
-                mutate(formData); // Call the mutate function with the FormData
+                mutate(formData);
             }} className="space-y-4">
                 <section>
                     <h3 className="text-md font-semibold mb-2">Client Information</h3>
@@ -96,9 +79,6 @@ export function CreateQuoteForm() {
                             type="number"
                             id="labourCostPerUnit"
                             {...register('labourCostPerUnit', {
-                                onChange: (e) => {
-                                    e.target.value = e.target.value === '' ? '0' : e.target.value;
-                                },
                                 valueAsNumber: true
                             })}
                             className={inputClassName}
@@ -114,9 +94,6 @@ export function CreateQuoteForm() {
                             type="number"
                             id="labourUnits"
                             {...register('labourUnits', {
-                                onChange: (e) => {
-                                    e.target.value = e.target.value === '' ? '0' : e.target.value;
-                                },
                                 valueAsNumber: true
                             })}
                             className={inputClassName}
@@ -147,9 +124,6 @@ export function CreateQuoteForm() {
                                     type="number"
                                     id={`materials.${index}.materialCostPerUnit`}
                                     {...register(`materials.${index}.materialCostPerUnit`, {
-                                        onChange: (e) => {
-                                            e.target.value = e.target.value === '' ? '0' : e.target.value;
-                                        },
                                         valueAsNumber: true
                                     })}
                                     className={inputClassName}
@@ -165,9 +139,6 @@ export function CreateQuoteForm() {
                                     type="number"
                                     id={`materials.${index}.materialUnits`}
                                     {...register(`materials.${index}.materialUnits`, {
-                                        onChange: (e) => {
-                                            e.target.value = e.target.value === '' ? '0' : e.target.value;
-                                        },
                                         valueAsNumber: true
                                     })}
                                     className={inputClassName}
