@@ -1,4 +1,4 @@
-import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/types';
+import { FetchGeocodeResult, GeocodeResult, Location, MaterialField } from '@/types/types';
 import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -212,7 +212,7 @@ export function useSearchFormLogic(isCuttingDayComponent: boolean) {
   };
 }
 
-export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: any[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
+export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: MaterialField[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
     useEffect(() => {
         if (isSuccess) {
             reset();

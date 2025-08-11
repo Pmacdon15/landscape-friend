@@ -129,12 +129,14 @@ export interface GeocodeResult {
 
 // Match the actual return type of fetchGeocode based on error messages
 export type FetchGeocodeResult =
-    | {
+    |
+    {
         coordinates: Location;
         zoom: number;
         error: boolean;
     }
-    | {
+    |
+    {
         error: string | boolean;
         coordinates?: never;
         zoom?: never;
@@ -184,4 +186,11 @@ export interface CuttingPeriodSelectorProps {
     value: string;
     handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
     name: string;
+}
+
+export interface MaterialField {
+    id: string;
+    materialType?: string;
+    materialCostPerUnit?: number;
+    materialUnits?: number;
 }
