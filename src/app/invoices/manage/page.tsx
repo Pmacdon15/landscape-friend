@@ -15,6 +15,7 @@ export default async function Page() {
                 <TableHead />
                 <TableBody invoices={invoices} />
             </table>
+            <MobileCardView invoices={invoices} />
         </FormContainer>
     );
 }
@@ -22,7 +23,7 @@ export default async function Page() {
 function TableHead() {
     const tableClassName = "py-2 px-4 border-b"
     return (
-        <thead>
+        <thead className="hidden md:table-header-group">
             <tr>
                 <th className={tableClassName}>Invoice Number</th>
                 <th className={tableClassName}>Customer Name</th>
@@ -38,14 +39,16 @@ function TableHead() {
 }
 
 function TableBody({ invoices }: { invoices: StripeInvoice[] }) {
-    const tableClassName = "py-2 px-4 border-b"
+    const tableClassName = "py-2 px-4 border-b";
+    const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white";
+
     return (
-        <tbody>
+        <tbody className="hidden md:table-row-group">
             {invoices.map((invoice) => (
                 <tr key={invoice.id}>
                     <td className={tableClassName}>{invoice.number}</td>
                     <td className={tableClassName}>{invoice.customer_name}</td>
-                    <td className={tableClassName}>{invoice.amount_due / 100}</td>
+                    <td className={tableClassName}>{(invoice.amount_due / 100).toFixed(2)}</td>
                     <td className={tableClassName}>{invoice.status}</td>
                     <td className={tableClassName}>{new Date(invoice.due_date * 1000).toLocaleDateString()}</td>
                     <td className={tableClassName}>
@@ -53,10 +56,34 @@ function TableBody({ invoices }: { invoices: StripeInvoice[] }) {
                             View Invoice
                         </Link>
                     </td>
-                    <td className={tableClassName}> <ManageInvoiceButton key={`${invoice.id}-resend`} variant="resend" invoiceId={invoice.id} /></td>
-                    <td className={tableClassName}> <ManageInvoiceButton key={`${invoice.id}-paid`} variant="paid" invoiceId={invoice.id} /></td>
+                    <td className={tableClassName}> <ManageInvoiceButton key={`${invoice.id}-resend-desktop`} variant="resend" invoiceId={invoice.id} /></td>
+                    <td className={tableClassName}> <ManageInvoiceButton key={`${invoice.id}-paid-desktop`} variant="paid" invoiceId={invoice.id} /></td>
                 </tr>
             ))}
         </tbody>
-    )
+    );
+}
+
+function MobileCardView({ invoices }: { invoices: StripeInvoice[] }) {
+    const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white";
+    return (
+        <div className="md:hidden">
+            {invoices.map((invoice) => (
+                <div key={invoice.id} className={cardClassName}>
+                    <div className="font-bold text-lg mb-2">Invoice #{invoice.number}</div>
+                    <div className="mb-1"><strong>Customer:</strong> {invoice.customer_name}</div>
+                    <div className="mb-1"><strong>Amount Due:</strong> ${(invoice.amount_due / 100).toFixed(2)}</div>
+                    <div className="mb-1"><strong>Status:</strong> {invoice.status}</div>
+                    <div className="mb-2"><strong>Due Date:</strong> {new Date(invoice.due_date * 1000).toLocaleDateString()}</div>
+                    <div className="flex flex-col space-y-2">
+                        <Link href={invoice.hosted_invoice_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                            View Invoice
+                        </Link>
+                        <ManageInvoiceButton key={`${invoice.id}-resend-mobile`} variant="resend" invoiceId={invoice.id} />
+                        <ManageInvoiceButton key={`${invoice.id}-paid-mobile`} variant="paid" invoiceId={invoice.id} />
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
 }
