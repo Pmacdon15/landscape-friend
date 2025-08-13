@@ -1,6 +1,6 @@
 'use server'
 
-import { updatedStripeAPIKeyDb } from "@/lib/db";
+import { updatedStripeAPIKeyDb, markPaidDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/actions/sendEmails';
@@ -273,6 +273,8 @@ export async function resendInvoice(invoiceId: string) {
 export async function markInvoicePaid(invoiceId: string) {
     const { isAdmin, orgId, userId } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
+    if (!userId) throw new Error("No user")
+
     const stripe = getStripeInstance();
     try {
         const invoice = await stripe.invoices.pay(invoiceId, {
@@ -281,6 +283,17 @@ export async function markInvoicePaid(invoiceId: string) {
 
         const customerEmail = invoice.customer_email
 
+        // Call markPaidDb to update local database
+        if (customerEmail) { // orgId is already checked above
+            const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
+            const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
+            if (!dbUpdateResult.success) {
+                console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
+                // Optionally, throw an error or handle this failure more robustly
+            }
+        } else {
+            console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
+        }
 
     } catch (error) {
         console.error(error);

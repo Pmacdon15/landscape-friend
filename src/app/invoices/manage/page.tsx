@@ -31,7 +31,7 @@ function TableHead() {
                 <th className={tableClassName}>Status</th>
                 <th className={tableClassName}>Due Date</th>
                 <th className={tableClassName}>Link</th>
-                <th className={tableClassName}>Resend</th>
+                <th className={tableClassName}>Send</th>
                 <th className={tableClassName}>Paid</th>
             </tr>
         </thead>
@@ -39,8 +39,8 @@ function TableHead() {
 }
 
 function TableBody({ invoices }: { invoices: StripeInvoice[] }) {
-    const tableClassName = "py-2 px-4 border-b";
-    const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white";
+    const tableClassName = "py-2 px-4 border-b ";
+    // const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white ";
 
     return (
         <tbody className="hidden md:table-row-group">
@@ -52,15 +52,27 @@ function TableBody({ invoices }: { invoices: StripeInvoice[] }) {
                     <td className={tableClassName}>{invoice.status}</td>
                     <td className={tableClassName}>{new Date(invoice.due_date * 1000).toLocaleDateString()}</td>
                     <td className={tableClassName}>
-                        <Link href={invoice.hosted_invoice_url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                            View Invoice
-                        </Link>
+                        {invoice.hosted_invoice_url &&
+                            <Link href={invoice.hosted_invoice_url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                                View Invoice
+                            </Link>
+                        }
                     </td>
-                    <td className={tableClassName}> <ManageInvoiceButton key={`${invoice.id}-resend-desktop`} variant="resend" invoiceId={invoice.id} /></td>
-                    <td className={tableClassName}> <ManageInvoiceButton key={`${invoice.id}-paid-desktop`} variant="paid" invoiceId={invoice.id} /></td>
+                    <td className={`${tableClassName} text-center`}>
+                        {invoice.status === 'draft' ?
+                            <ManageInvoiceButton key={`${invoice.id}-send-desktop`} variant="send" invoiceId={invoice.id} />
+                            :
+                            <ManageInvoiceButton key={`${invoice.id}-resend-desktop`} variant="resend" invoiceId={invoice.id} />
+                        }
+                    </td>
+                    <td className={`${tableClassName} text-center`}>
+                        {invoice.status !== 'paid' && invoice.status !== 'void' && <ManageInvoiceButton key={`${invoice.id}-paid-desktop`} variant="paid" invoiceId={invoice.id} />}
+                    </td>
+
                 </tr>
-            ))}
-        </tbody>
+            ))
+            }
+        </tbody >
     );
 }
 
@@ -76,14 +88,21 @@ function MobileCardView({ invoices }: { invoices: StripeInvoice[] }) {
                     <div className="mb-1"><strong>Status:</strong> {invoice.status}</div>
                     <div className="mb-2"><strong>Due Date:</strong> {new Date(invoice.due_date * 1000).toLocaleDateString()}</div>
                     <div className="flex flex-col space-y-2">
-                        <Link href={invoice.hosted_invoice_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                            View Invoice
-                        </Link>
-                        <ManageInvoiceButton key={`${invoice.id}-resend-mobile`} variant="resend" invoiceId={invoice.id} />
-                        <ManageInvoiceButton key={`${invoice.id}-paid-mobile`} variant="paid" invoiceId={invoice.id} />
+                        {invoice.hosted_invoice_url &&
+                            <Link href={invoice.hosted_invoice_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                                View Invoice
+                            </Link>
+                        }
+                        {invoice.status === 'draft' ?
+                            <ManageInvoiceButton key={`${invoice.id}-send-desktop`} variant="send" invoiceId={invoice.id} />
+                            :
+                            <ManageInvoiceButton key={`${invoice.id}-resend-desktop`} variant="resend" invoiceId={invoice.id} />
+                        }
+                        {invoice.status !== 'paid' && invoice.status !== 'void' && <ManageInvoiceButton key={`${invoice.id}-paid-desktop`} variant="paid" invoiceId={invoice.id} />}
                     </div>
                 </div>
-            ))}
-        </div>
+            ))
+            }
+        </div >
     );
 }
