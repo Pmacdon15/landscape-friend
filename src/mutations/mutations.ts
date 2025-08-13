@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/actions/clients";
 import { markYardServiced } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
-import { createStripeQuote, updateStripeAPIKey } from "@/actions/stripe";
+import { createStripeQuote, resendInvoice, updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
 
@@ -175,3 +175,14 @@ export const useUpdateStripeAPIKey = () => {
         }
     });
 }
+
+export const useResendIvoice = () => {
+    return useMutation({
+        mutationFn: async (invoiceId: string) => {
+            return resendInvoice(invoiceId);
+        },
+        onSuccess: () => {
+            revalidatePathAction("/invoices/manage")
+        },
+    });
+};

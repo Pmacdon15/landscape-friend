@@ -224,50 +224,45 @@ Thank you!`
         return { success: false, message: errorMessage };
     }
 }
-
-//MARK: Fetch invoices
-export async function fetchOpenInvoices(): Promise<StripeInvoice[]> {
-    const { isAdmin } = await isOrgAdmin()
+//MARK: Resend invoice 
+export async function resendInvoice(invoiceId: string) {
+    const { isAdmin, sessionClaims } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
     const stripe = getStripeInstance();
     try {
-        const invoices = await stripe.invoices.list({
-            status: 'open',
-        });
+        const invoice: Stripe.Invoice = await stripe.invoices.sendInvoice(invoiceId);
 
-        const validInvoices = invoices.data.filter(
-            (invoice): invoice is Stripe.Invoice & { id: string } => !!invoice.id
-        );
+        if (!invoice.id) throw new Error("Invoice ID is missing after resending.");
 
-        const strippedInvoices = validInvoices.map((invoice) => ({
-            id: invoice.id,
-            object: invoice.object,
-            amount_due: invoice.amount_due,
-            amount_paid: invoice.amount_paid,
-            amount_remaining: invoice.amount_remaining,
-            created: invoice.created,
-            currency: invoice.currency,
-            customer: invoice.customer,
-            customer_email: invoice.customer_email,
-            customer_name: invoice.customer_name,
-            due_date: invoice.due_date,
-            hosted_invoice_url: invoice.hosted_invoice_url,
-            invoice_pdf: invoice.invoice_pdf,
-            number: invoice.number,
-            status: invoice.status,
-            total: invoice.total,
-            lines: {
-                data: invoice.lines.data.map((lineItem) => ({
-                    // Assuming you have a StripeLineItem interface defined
-                    id: lineItem.id,
-                    // Add other properties you need from lineItem
-                })),
-            },
-        }));
+        const customerEmail = invoice.customer_email;
+        const customerName = invoice.customer_name || invoice.customer?.toString() || 'Valued Customer';
+        const hostedInvoiceUrl = invoice.hosted_invoice_url;
 
-        return strippedInvoices as StripeInvoice[];
+        if (!customerEmail) throw new Error("Customer email not found for invoice.");
+        if (!hostedInvoiceUrl) throw new Error("Hosted invoice URL not found for invoice.");
+
+        const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string });
+
+        const emailSubject = `Your Invoice from ${companyName}`;
+        const emailBody = `Dear ${customerName},
+
+                            Please find your invoice here: ${hostedInvoiceUrl}
+
+                            Thank you for your business!`;
+
+        const formDataForEmail = new FormData();
+        formDataForEmail.append('title', emailSubject);
+        formDataForEmail.append('message', emailBody);
+
+        const emailResult = await sendEmailWithTemplate(formDataForEmail, customerEmail);
+
+        if (!emailResult) {
+            throw new Error("Failed to send invoice email.");
+        }
+
+        console.log("Invoice re-sent and email sent successfully:", invoice.id);
     } catch (error) {
         console.error(error);
-        throw new Error('Failed to fetch invoices');
+        throw new Error(`Failed to resend invoice ${invoiceId}`);
     }
 }

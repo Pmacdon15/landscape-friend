@@ -1,8 +1,9 @@
 import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientNamesAndEmailsDb, fetchStripAPIKeyDb, fetchClientsClearingGroupsDb } from "@/lib/db";
 import { processClientsResult } from "@/lib/sort";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember } from "@/types/types";
+import { ClientResult, NamesAndEmails, PaginatedClients, APIKey, OrgMember, StripeInvoice } from "@/types/types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import Stripe from "stripe";
 
 export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
   Promise<PaginatedClients | null> {
@@ -175,5 +176,64 @@ export async function fetchStripAPIKey(): Promise<APIKey | Error> {
     if (e instanceof Error)
       return e;
     return new Error('An unknown error occurred');
+  }
+}
+let stripe: Stripe | null = null;
+
+function getStripeInstance(): Stripe {
+  if (!stripe) {
+    const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
+    if (!apiKey) {
+      throw new Error('Stripe secret key not configured.');
+    }
+    stripe = new Stripe(apiKey);
+  }
+  return stripe;
+}
+
+//MARK: Fetch invoices
+export async function fetchOpenInvoices(): Promise<StripeInvoice[]> {
+  const { isAdmin } = await isOrgAdmin()
+  if (!isAdmin) throw new Error("Not Admin")
+  const stripe = getStripeInstance();
+  try {
+    const invoices = await stripe.invoices.list({
+      status: 'open',
+    });
+
+    const validInvoices = invoices.data.filter(
+      (invoice): invoice is Stripe.Invoice & { id: string } => !!invoice.id
+    );
+
+    const strippedInvoices = validInvoices.map((invoice) => ({
+      id: invoice.id,
+      object: invoice.object,
+      amount_due: invoice.amount_due,
+      amount_paid: invoice.amount_paid,
+      amount_remaining: invoice.amount_remaining,
+      created: invoice.created,
+      currency: invoice.currency,
+      customer: invoice.customer,
+      customer_email: invoice.customer_email,
+      customer_name: invoice.customer_name,
+      due_date: invoice.due_date,
+      hosted_invoice_url: invoice.hosted_invoice_url,
+      invoice_pdf: invoice.invoice_pdf,
+      number: invoice.number,
+      status: invoice.status,
+      total: invoice.total,
+      lines: {
+        data: invoice.lines.data.map((lineItem) => ({
+          // Assuming you have a StripeLineItem interface defined
+          id: lineItem.id,
+          // Add other properties you need from lineItem
+        })),
+      },
+    }));
+
+    return strippedInvoices as StripeInvoice[];
+  } catch (error) {
+    console.error(error);
+    throw new Error('Failed to fetch invoices');
   }
 }
