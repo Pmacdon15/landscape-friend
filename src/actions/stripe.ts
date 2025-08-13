@@ -229,6 +229,8 @@ export async function resendInvoice(invoiceId: string) {
     const { isAdmin, sessionClaims } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
     const stripe = getStripeInstance();
+    //TODO: when in Prod ther eis not need for use to send the email strip will do that
+
     try {
         const invoice: Stripe.Invoice = await stripe.invoices.sendInvoice(invoiceId);
 
@@ -264,5 +266,21 @@ export async function resendInvoice(invoiceId: string) {
     } catch (error) {
         console.error(error);
         throw new Error(`Failed to resend invoice ${invoiceId}`);
+    }
+}
+
+//MARK:Mark invoice paid
+export async function markInvoicePaid(invoiceId: string) {
+    const { isAdmin } = await isOrgAdmin()
+    if (!isAdmin) throw new Error("Not Admin")
+    const stripe = getStripeInstance();
+    try {
+        const invoice = await stripe.invoices.pay(invoiceId, {
+            paid_out_of_band: true,
+        });
+       
+    } catch (error) {
+        console.error(error);
+        throw new Error(`Failed to mark invoice ${invoiceId} as paid`);
     }
 }
