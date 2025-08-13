@@ -6,7 +6,6 @@ import { QueryResultRow } from "@vercel/postgres";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import ImageUploader from "../image-uploader/image-uploader";
-import ImageUploaderSmall from "../image-uploader/image-uploader-small";
 import ImageSelectorMain from "../image-selector/image-selector-main";
 import { ImagePlusIcon } from "lucide-react";
 
@@ -37,8 +36,8 @@ export default function ImageList({ client }: { client: Client }) {
 
   if (isLoading)
     return (
-      <div className="flex flex-col gap-y-2 min-h-[300px] w-full overflow-y-auto h-[300px] bg-background rounded-md p-2 ">
-        Loading. . .
+      <div className="flex flex-col items-center justify-center gap-y-2 min-h-[300px] w-full overflow-y-auto h-[300px] bg-background rounded-md p-2 ">
+        <div className="w-[50px] h-[50px] rounded-[50%] border-[5px] border-solid border-green-50 border-t-green-700 animate-spin"></div>
       </div>
     );
 
@@ -94,9 +93,9 @@ export default function ImageList({ client }: { client: Client }) {
           <div className="w-[100%]">
             <button
               onClick={() => setView("list")}
-              className="select-none cursor-pointer px-6 py-2"
+              className="select-none cursor-pointer px-6 py-2 text-2xl"
             >
-              <button className="text-2xl">⬅️</button>
+              ⬅️
             </button>
           </div>
         </div>

@@ -11,7 +11,6 @@ export async function FetchAllImagesByCustomerId(
   try {
     const result = await FetchAllImagesByCustomerIdDb(customerId);
     if (!result) return [];
-    console.warn(result);
     return result;
   } catch (e) {
     if (e instanceof Error) return e;
@@ -31,7 +30,6 @@ export async function FetchUploadImage(
   try {
     const result = await FetchUploadImageBlob(customerId, file);
     if (!result) return null;
-    console.warn(result);
     return result;
   } catch (e) {
     if (e instanceof Error) return e;
@@ -50,7 +48,6 @@ export async function uploadDrawing(file:Blob, clientId: number)
   try {
     const result = await FetchUploadImageBlob(clientId, file);
     if (!result) return null;
-    console.warn(result);
     return result;
   } catch (e) {
     if (e instanceof Error) return e;

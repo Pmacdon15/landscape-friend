@@ -3,7 +3,6 @@ import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef, useEffect, useState } from "react";
 import { uploadDrawing } from "@/DAL/dal-map-component";
 import { Client } from "@/types/types";
-import { set } from "zod";
 
 declare global {
   interface Window {
