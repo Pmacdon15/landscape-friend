@@ -197,9 +197,7 @@ export async function fetchOpenInvoices(): Promise<StripeInvoice[]> {
   if (!isAdmin) throw new Error("Not Admin")
   const stripe = getStripeInstance();
   try {
-    const invoices = await stripe.invoices.list({
-      status: 'open',
-    });
+    const invoices = await stripe.invoices.list();
 
     const validInvoices = invoices.data.filter(
       (invoice): invoice is Stripe.Invoice & { id: string } => !!invoice.id

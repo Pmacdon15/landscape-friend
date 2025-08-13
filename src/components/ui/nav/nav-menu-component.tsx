@@ -82,15 +82,23 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                 {isAdmin &&
                     <>
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>Invoices</NavigationMenuTrigger>
+                            <NavigationMenuTrigger>Billing</NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ul className="grid w-[300px] gap-4">
                                     <li>
                                         <NavigationMenuLink asChild>
+                                            <Link href="/invoices/send-quote">
+                                                <div className="font-medium">Send a Quote</div>
+                                                <div className="text-muted-foreground">
+                                                    Send an Quote as an Email.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
                                             <Link href="/invoice/all">
                                                 <div className="font-medium">Manage Quotes</div>
                                                 <div className="text-muted-foreground">
-                                                    Manage quotes mark accepted, cancel, send as invoice .
+                                                    Manage quotes mark accepted, cancel.
                                                 </div>
                                             </Link>
                                         </NavigationMenuLink>
@@ -98,15 +106,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                             <Link href="/invoices/manage">
                                                 <div className="font-medium">Manage Invoices</div>
                                                 <div className="text-muted-foreground">
-                                                    Manage invoices resend, mark paid, cancel.
-                                                </div>
-                                            </Link>
-                                        </NavigationMenuLink>
-                                        <NavigationMenuLink asChild>
-                                            <Link href="/invoices/send-quote">
-                                                <div className="font-medium">Send a Quote</div>
-                                                <div className="text-muted-foreground">
-                                                    Send an Quote as an Email.
+                                                    Manage invoices view, send, resend, mark paid.
                                                 </div>
                                             </Link>
                                         </NavigationMenuLink>

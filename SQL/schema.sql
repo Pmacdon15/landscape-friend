@@ -289,3 +289,5 @@ SELECT * FROM yards_marked_clear;
 
 -- SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
+SELECT * FROM payments ;
+SELECT * FROM accounts;
