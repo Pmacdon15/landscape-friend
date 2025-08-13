@@ -13,7 +13,7 @@ export default async function Header() {
     return (
         <>
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
-                <div className='flex  w-full justify-baseline relative gap-2 md:gap-0'>
+                <div className='flex  w-full justify-baseline relative'>
                     <div className="flex flex-col items-center justify-center h-full">
                         <Link href='/'>
                             <HeaderImageIco />

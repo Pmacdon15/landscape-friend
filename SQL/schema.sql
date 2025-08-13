@@ -54,6 +54,8 @@ CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL,
     amount FLOAT NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
 

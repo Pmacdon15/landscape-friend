@@ -631,6 +631,10 @@ export async function fetchStripAPIKeyDb(orgId: string) {
   `) as { api_key: string }[];
   return result[0];
 }
+//MARK: Mark Payment
+export async function markPaid(orgId: string, customerEmail: string, invoiceId: string) {
+
+}
 
 //MARK: Update Strip API Key
 export async function updatedStripeAPIKeyDb(data: z.infer<typeof schemaUpdateAPI>, orgId: string) {
