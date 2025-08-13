@@ -582,7 +582,7 @@ export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow
     throw new Error('Assignment Failed');
   }
 
-  revalidatePath("/lists/snow-clearing")
+  revalidatePath("/lists/clearing")
   return result;
 }
 

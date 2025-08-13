@@ -39,7 +39,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                             <ManyPointsMap addresses={flattenedAddresses} />
                         </div>
                     </FormContainer>}
-                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
+                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative bg-white/50">
@@ -63,7 +63,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                     </FormContainer>
                 ))}
             </ul >
-            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
+            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
         </>
     );
 }

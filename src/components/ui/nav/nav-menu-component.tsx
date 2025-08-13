@@ -41,7 +41,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
                                     <Link href={{
-                                        pathname: '/lists/snow-clearing',
+                                        pathname: '/lists/clearing',
                                         query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
                                     }}>
                                         <div className="font-medium">Clearing List</div>
