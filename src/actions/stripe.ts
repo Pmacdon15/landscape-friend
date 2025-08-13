@@ -7,6 +7,7 @@ import { sendEmailWithTemplate } from '@/actions/sendEmails';
 import Stripe from 'stripe'; // Import Stripe
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
+import { StripeInvoice } from "@/types/types";
 
 // Placeholder for getting Stripe instance. In a real app, this would fetch the API key securely.
 // For now, assuming it's available via environment variable or a secure utility.
@@ -23,7 +24,7 @@ function getStripeInstance(): Stripe {
     return stripe;
 }
 
-// Helper function to convert ReadableStream to Buffer
+//MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
         const chunks: Buffer[] = [];
@@ -33,6 +34,7 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
     });
 };
 
+//MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
@@ -54,6 +56,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     }
 }
 
+//MARK: Create quote
 export async function createStripeQuote(formData: FormData) {
     const { isAdmin, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin")
@@ -163,7 +166,7 @@ export async function createStripeQuote(formData: FormData) {
                 });
                 materialPriceId = newPrice.id;
             } else {
-                materialPriceId = materialPrice.id;              
+                materialPriceId = materialPrice.id;
             }
             materialLineItems.push({ price: materialPriceId, quantity: material.materialUnits ?? 0 });
         }
@@ -194,10 +197,14 @@ export async function createStripeQuote(formData: FormData) {
             content: pdfContent,
         }];
         if (!quote.id) throw new Error("Failed")
-        //TODO: Add check for if valid quote and is valid email sent
+        //TODO: Add check for if a valid quote and is valid email sent
         // Construct email content
         const emailSubject = `Your Quote from ${companyName}`;
-        const emailBody = `Dear ${validatedFields.data.clientName},\n\nPlease find your quote attached. Please reply to this email to confirm the quote.\n\nThank you!`
+        const emailBody = `Dear ${validatedFields.data.clientName},
+
+Please find your quote attached. Please reply to this email to confirm the quote.
+
+Thank you!`
 
         // Create FormData for sendEmailWithTemplate
         const formDataForEmail = new FormData();
@@ -215,5 +222,52 @@ export async function createStripeQuote(formData: FormData) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         console.error("Error creating Stripe quote:", errorMessage);
         return { success: false, message: errorMessage };
+    }
+}
+
+//MARK: Fetch invoices
+export async function fetchOpenInvoices(): Promise<StripeInvoice[]> {
+    const { isAdmin } = await isOrgAdmin()
+    if (!isAdmin) throw new Error("Not Admin")
+    const stripe = getStripeInstance();
+    try {
+        const invoices = await stripe.invoices.list({
+            status: 'open',
+        });
+
+        const validInvoices = invoices.data.filter(
+            (invoice): invoice is Stripe.Invoice & { id: string } => !!invoice.id
+        );
+
+        const strippedInvoices = validInvoices.map((invoice) => ({
+            id: invoice.id,
+            object: invoice.object,
+            amount_due: invoice.amount_due,
+            amount_paid: invoice.amount_paid,
+            amount_remaining: invoice.amount_remaining,
+            created: invoice.created,
+            currency: invoice.currency,
+            customer: invoice.customer,
+            customer_email: invoice.customer_email,
+            customer_name: invoice.customer_name,
+            due_date: invoice.due_date,
+            hosted_invoice_url: invoice.hosted_invoice_url,
+            invoice_pdf: invoice.invoice_pdf,
+            number: invoice.number,
+            status: invoice.status,
+            total: invoice.total,
+            lines: {
+                data: invoice.lines.data.map((lineItem) => ({
+                    // Assuming you have a StripeLineItem interface defined
+                    id: lineItem.id,
+                    // Add other properties you need from lineItem
+                })),
+            },
+        }));
+
+        return strippedInvoices as StripeInvoice[];
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch invoices');
     }
 }
