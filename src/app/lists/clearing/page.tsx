@@ -34,7 +34,7 @@ export default async function page({
         <>
             <FormContainer>
                 <FormHeader text={"Clearing List"} />
-                <SearchForm isClearingDayComponent={true} />
+                <SearchForm variant="service" />
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService

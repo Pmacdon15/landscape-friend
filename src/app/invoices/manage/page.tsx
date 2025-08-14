@@ -1,5 +1,6 @@
 import { fetchOpenInvoices } from "@/DAL/dal";
 import ManageInvoiceButton from "@/components/ui/buttons/manage-invoice-button";
+import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
@@ -12,6 +13,7 @@ export default async function Page() {
     return (
         <FormContainer>
             <FormHeader text={"Manage Invoices"} />
+            <SearchForm variant="invoices" />
             <PaginationTabs path={"/invoices/manage"} clientListPage={0} totalPages={0} />
             <table className="min-w-full bg-white">
                 <TableHead />

@@ -212,6 +212,25 @@ export function useSearchFormLogic(isCuttingDayComponent: boolean) {
   };
 }
 
+export function useInvoiceStatusSearch() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentStatus = searchParams.get('status') || 'all';
+
+  const setInvoiceStatus = (status: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (status && status !== 'all') {
+      params.set('status', status);
+    } else {
+      params.delete('status');
+    }
+    params.set('page', '1'); // Reset page to 1 when status changes
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  return { currentStatus, setInvoiceStatus };
+}
+
 export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: MaterialField[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
     useEffect(() => {
         if (isSuccess) {

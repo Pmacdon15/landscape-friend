@@ -4,11 +4,14 @@ import { ServiceStatusSelector } from '../selectors/service-status-selector';
 import { days, weeks } from '@/lib/values';
 import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 import { useSearchFormLogic } from '@/hooks/hooks';
+import { InvoiceStatusSelector } from '../selectors/invoice-status-selector';
+
+type SearchFormVariant = 'service' | 'invoices' | 'default';
 
 export default function SearchForm({
-  isCuttingDayComponent = false,
-  isClearingDayComponent = false,
-  isInvoicesComponent = false
+  variant = 'default'
+}: {
+  variant?: SearchFormVariant
 }) {
   const {
     searchTerm,
@@ -17,7 +20,7 @@ export default function SearchForm({
     serviceDate,
     searchTermIsServiced,
     handleChange,
-  } = useSearchFormLogic(isCuttingDayComponent);
+  } = useSearchFormLogic(variant === 'service');
 
   return (
     <div className="flex flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
@@ -28,7 +31,7 @@ export default function SearchForm({
         value={searchTerm}
         onChange={handleChange}
       />
-      {isCuttingDayComponent &&
+      {variant === "default" &&
         <>
           <CuttingPeriodSelector
             label="Cutting Week"
@@ -46,7 +49,7 @@ export default function SearchForm({
           />
         </>
       }
-      {isClearingDayComponent &&
+      {variant === 'service' &&
         <>
           <CuttingListDatePicker
             cuttingDate={serviceDate}
@@ -55,10 +58,10 @@ export default function SearchForm({
           <ServiceStatusSelector value={searchTermIsServiced} onChange={handleChange} />
         </>
       }
-      
-      {isInvoicesComponent &&
-        <div>text</div>
-      } 
+
+      {variant === 'invoices' &&
+        <InvoiceStatusSelector />
+      }
     </div>
   );
 }
