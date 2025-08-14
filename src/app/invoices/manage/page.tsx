@@ -2,6 +2,7 @@ import { fetchOpenInvoices } from "@/DAL/dal";
 import ManageInvoiceButton from "@/components/ui/buttons/manage-invoice-button";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
+import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
 import { StripeInvoice } from "@/types/types";
 import Link from "next/link";
 
@@ -11,11 +12,13 @@ export default async function Page() {
     return (
         <FormContainer>
             <FormHeader text={"Manage Invoices"} />
+            <PaginationTabs path={"/invoices/manage"} clientListPage={0} totalPages={0} />
             <table className="min-w-full bg-white">
                 <TableHead />
                 <TableBody invoices={invoices} />
             </table>
             <MobileCardView invoices={invoices} />
+            <PaginationTabs path={"/invoices/manage"} clientListPage={0} totalPages={0} />
         </FormContainer>
     );
 }
@@ -41,7 +44,6 @@ function TableHead() {
 function TableBody({ invoices }: { invoices: StripeInvoice[] }) {
     const tableClassName = "py-2 px-4 border-b ";
     // const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white ";
-
     return (
         <tbody className="hidden md:table-row-group">
             {invoices.map((invoice) => (

@@ -7,7 +7,8 @@ import { useSearchFormLogic } from '@/hooks/hooks';
 
 export default function SearchForm({
   isCuttingDayComponent = false,
-  snow = false
+  isClearingDayComponent = false,
+  isInvoicesComponent = false
 }) {
   const {
     searchTerm,
@@ -27,19 +28,7 @@ export default function SearchForm({
         value={searchTerm}
         onChange={handleChange}
       />
-      {isCuttingDayComponent ? (
-        snow ? (
-          <ServiceStatusSelector value={searchTermIsServiced} onChange={handleChange} />
-        ) : (
-          <>
-            <CuttingListDatePicker
-              cuttingDate={serviceDate}
-              onChange={handleChange}
-            />
-            <ServiceStatusSelector value={searchTermIsServiced} onChange={handleChange} />
-          </>
-        )
-      ) : (
+      {isCuttingDayComponent &&
         <>
           <CuttingPeriodSelector
             label="Cutting Week"
@@ -56,7 +45,20 @@ export default function SearchForm({
             name="day"
           />
         </>
-      )}
+      }
+      {isClearingDayComponent &&
+        <>
+          <CuttingListDatePicker
+            cuttingDate={serviceDate}
+            onChange={handleChange}
+          />
+          <ServiceStatusSelector value={searchTermIsServiced} onChange={handleChange} />
+        </>
+      }
+      
+      {isInvoicesComponent &&
+        <div>text</div>
+      } 
     </div>
   );
 }
