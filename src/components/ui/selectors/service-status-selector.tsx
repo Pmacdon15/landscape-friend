@@ -11,7 +11,6 @@ export const ServiceStatusSelector = () => {
             value={currentServiceStatus}
             onChange={(e) => setServiceStatus(e.target.value)}
         >
-            <option value="">All</option>
             <option value="false">Un-serviced</option>
             <option value="true">Serviced</option>
         </select>

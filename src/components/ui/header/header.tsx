@@ -5,9 +5,8 @@ import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { isOrgAdmin } from '@/lib/webhooks';
 import { Suspense } from 'react';
-import ClientOnly from '@/components/wrappers/ClientOnly';
-// import { Suspense } from 'react';
-// import ClientOnly from '../../wrappers/ClientOnly';
+// import ClientOnly from '@/components/wrappers/ClientOnly';
+
 
 export default async function Header() {
     const { isAdmin } = await isOrgAdmin(false)
@@ -29,10 +28,10 @@ export default async function Header() {
                         <SignedIn>
                             <NavBar isAdmin={isAdmin} />
                             <div className="flex ml-auto items-center gap-2">                                
-                                <ClientOnly>
+                                {/* <ClientOnly> */}
                                     <UserButton />
                                     <OrganizationSwitcher />
-                                </ClientOnly>
+                                {/* </ClientOnly> */}
                             </div>
                         </SignedIn>
                         <SignedOut>

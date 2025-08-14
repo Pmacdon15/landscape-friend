@@ -280,7 +280,7 @@ SELECT id, 1.0
 FROM clients;
 
 -- SELECT * FROM yards_marked_cut;
-SELECT * FROM yards_marked_clear;
+-- SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- WHERE
@@ -289,5 +289,5 @@ SELECT * FROM yards_marked_clear;
 
 -- SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
-SELECT * FROM payments ;
-SELECT * FROM accounts;
+-- SELECT * FROM payments ;
+-- SELECT * FROM accounts;

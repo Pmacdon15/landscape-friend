@@ -6,19 +6,16 @@ import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import ClientListService from "@/components/ui/service-list/clients-list-service";
+import { parseClientListParams } from "@/lib/params";
+import { SearchParams } from "@/types/types";
 
-export default async function page({ searchParams }: {
-    searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>;
-}) {
+export default async function page({ searchParams }: { searchParams: Promise<SearchParams>; }) {
     const [{ isAdmin }, params] = await Promise.all([
         isOrgAdmin(),
         searchParams,
     ]);
 
-    const clientListPage = Number(params.page ?? 1);
-    const searchTerm = String(params.search ?? '');
-    const serviceDate = params.date ? new Date(String(params.date)) : new Date();
-    const searchTermIsServiced = params.serviced === 'true';
+    const { clientListPage, searchTerm, serviceDate, searchTermIsServiced } = parseClientListParams(params);
 
     if (!isAdmin) redirect("/")
     const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, serviceDate, searchTermIsServiced);

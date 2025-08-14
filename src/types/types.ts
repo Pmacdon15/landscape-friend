@@ -225,3 +225,5 @@ export interface StripeLineItem {
   description: string;
   quantity: number;
 }
+
+export interface SearchParams extends Record<string, string | string[] | number | undefined> {}

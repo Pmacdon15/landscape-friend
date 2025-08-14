@@ -103,7 +103,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                             </Link>
                                         </NavigationMenuLink>
                                         <NavigationMenuLink asChild>
-                                            <Link href="//billing/manage">
+                                            <Link href="/billing/manage/invoices">
                                                 <div className="font-medium">Manage Invoices</div>
                                                 <div className="text-muted-foreground">
                                                     Manage invoices view, send, resend, mark paid.

@@ -1,5 +1,4 @@
 'use server'
-
 import { updatedStripeAPIKeyDb, markPaidDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
@@ -7,7 +6,6 @@ import { sendEmailWithTemplate } from '@/actions/sendEmails';
 import Stripe from 'stripe'; // Import Stripe
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
-import { StripeInvoice } from "@/types/types";
 
 // Placeholder for getting Stripe instance. In a real app, this would fetch the API key securely.
 // For now, assuming it's available via environment variable or a secure utility.
