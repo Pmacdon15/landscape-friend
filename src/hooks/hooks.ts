@@ -250,6 +250,25 @@ export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
   return { currentPeriod, setCuttingPeriod };
 }
 
+export function useServiceDateSearch() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentServiceDate = searchParams.get('date') || new Date().toISOString().slice(0, 10);
+
+  const setServiceDate = (date: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (date) {
+      params.set('date', date);
+    } else {
+      params.delete('date');
+    }
+    params.set('page', '1'); // Reset page to 1 when date changes
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  return { currentServiceDate, setServiceDate };
+}
+
 export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: MaterialField[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
     useEffect(() => {
         if (isSuccess) {
