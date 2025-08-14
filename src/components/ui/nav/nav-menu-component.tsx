@@ -10,7 +10,8 @@ import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
 
 export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean }) {
-    const date = new Date()
+    const date = new Date();
+    const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
     const isMd = useMediaQuery("(min-width: 768px)");
     return (
         <NavigationMenu viewport={!isMd}>
@@ -31,7 +32,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                 <NavigationMenuLink asChild>
                                     <Link href={{
                                         pathname: '/lists/cutting',
-                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
+                                        query: { date: today },
                                     }}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
@@ -42,7 +43,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                 <NavigationMenuLink asChild>
                                     <Link href={{
                                         pathname: '/lists/clearing',
-                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
+                                        query: { date: today },
                                     }}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">

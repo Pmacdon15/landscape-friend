@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { isOrgAdmin } from '@/lib/webhooks';
 import { Suspense } from 'react';
-// import ClientOnly from '@/components/wrappers/ClientOnly';
+import ClientOnly from '@/components/wrappers/ClientOnly';
 
 
 export default async function Header() {
@@ -26,12 +26,13 @@ export default async function Header() {
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
                     <Suspense>
                         <SignedIn>
+
                             <NavBar isAdmin={isAdmin} />
-                            <div className="flex ml-auto items-center gap-2">                                
-                                {/* <ClientOnly> */}
+                            <div className="flex ml-auto items-center gap-2">
+                                <ClientOnly>
                                     <UserButton />
-                                    <OrganizationSwitcher />
-                                {/* </ClientOnly> */}
+                                </ClientOnly>
+                                <OrganizationSwitcher />
                             </div>
                         </SignedIn>
                         <SignedOut>
