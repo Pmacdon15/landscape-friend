@@ -9,13 +9,9 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 // import { fetchOrgMembers } from "@/DAL/dal";
 import { parseClientListParams } from "@/lib/params";
-import { SearchParams } from "@/types/search-params";
+import { SearchParams } from "@/types/types";
 
-export default async function page({
-    searchParams,
-}: {
-    searchParams: Promise<SearchParams>;
-}) {
+export default async function page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const [{ isAdmin, userId }, params] = await Promise.all([
         isOrgAdmin(),
         searchParams,
@@ -24,8 +20,8 @@ export default async function page({
     if (!isAdmin) redirect("/")
     if (!userId) throw new Error("User ID is missing.");
 
-    const { clientListPage, searchTerm, serviceDate, searchTermIsServiced } = parseClientListParams(params);
-    const searchTermAssignedTo = String(params.assigned_to ?? userId);
+    const { clientListPage, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
+    // const searchTermAssignedTo = String(params.assigned_to ?? userId);
 
     const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo);
 

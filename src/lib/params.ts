@@ -1,14 +1,6 @@
-import { SearchParams } from "@/types/types";
+import { ParsedClientListParams, SearchParams } from "@/types/types";
 
-export interface ParsedClientListParams {
-  clientListPage: number;
-  searchTerm: string;
-  serviceDate: Date;
-  searchTermIsServiced: boolean;
-  searchTermCuttingWeek: number;
-  searchTermCuttingDay: string;
-  searchTermAssignedTo: string;
-}
+
 
 export function parseClientListParams(params: SearchParams): ParsedClientListParams {
   const clientListPage = Number(params.page ?? 1);
@@ -19,6 +11,7 @@ export function parseClientListParams(params: SearchParams): ParsedClientListPar
   const searchTermCuttingWeek = Number(params.week ?? 0);
   const searchTermCuttingDay = String(params.day ?? '');
   const searchTermAssignedTo = String(params.assigned_to ?? '');
+  const searchTermStatus = String(params.status ?? '');
 
   return {
     clientListPage,
@@ -28,5 +21,6 @@ export function parseClientListParams(params: SearchParams): ParsedClientListPar
     searchTermCuttingWeek,
     searchTermCuttingDay,
     searchTermAssignedTo,
+    searchTermStatus,
   };
 }

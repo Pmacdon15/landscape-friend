@@ -227,3 +227,14 @@ export interface StripeLineItem {
 }
 
 export interface SearchParams extends Record<string, string | string[] | number | undefined> {}
+
+export interface ParsedClientListParams {
+  clientListPage: number;
+  searchTerm: string;
+  serviceDate: Date;
+  searchTermIsServiced: boolean;
+  searchTermCuttingWeek: number;
+  searchTermCuttingDay: string;
+  searchTermAssignedTo: string;
+  searchTermStatus: string;
+}

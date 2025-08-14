@@ -4,11 +4,14 @@ import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
-import { StripeInvoice } from "@/types/types";
+import { parseClientListParams } from "@/lib/params";
+import { SearchParams, StripeInvoice } from "@/types/types";
 import Link from "next/link";
 
-export default async function Page() {
-    const invoices: StripeInvoice[] = await fetchOpenInvoices()
+export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
+    const params = await searchParams
+    const { searchTermStatus } = parseClientListParams(params);
+    const invoices: StripeInvoice[] = await fetchOpenInvoices(searchTermStatus)
 
     return (
         <FormContainer>

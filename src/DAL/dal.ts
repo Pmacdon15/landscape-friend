@@ -192,12 +192,16 @@ function getStripeInstance(): Stripe {
 }
 
 //MARK: Fetch invoices
-export async function fetchOpenInvoices(): Promise<StripeInvoice[]> {
+export async function fetchOpenInvoices(typesOfInvoices: string): Promise<StripeInvoice[]> {
   const { isAdmin } = await isOrgAdmin()
   if (!isAdmin) throw new Error("Not Admin")
   const stripe = getStripeInstance();
   try {
-    const invoices = await stripe.invoices.list();
+    let invoices
+    if (typesOfInvoices === "") invoices = await stripe.invoices.list();
+    else if (typesOfInvoices === "draft") invoices = await stripe.invoices.list({ status: 'draft' });
+    else if (typesOfInvoices === "paid") invoices = await stripe.invoices.list({ status: 'paid' });
+    else invoices = await stripe.invoices.list({ status: 'open' });
 
     const validInvoices = invoices.data.filter(
       (invoice): invoice is Stripe.Invoice & { id: string } => !!invoice.id

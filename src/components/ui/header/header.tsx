@@ -31,8 +31,8 @@ export default async function Header() {
                             <div className="flex ml-auto items-center gap-2">
                                 <ClientOnly>
                                     <UserButton />
+                                    <OrganizationSwitcher />
                                 </ClientOnly>
-                                <OrganizationSwitcher />
                             </div>
                         </SignedIn>
                         <SignedOut>
