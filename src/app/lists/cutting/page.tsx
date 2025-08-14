@@ -20,7 +20,7 @@ export default async function page({
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
     const serviceDate = params.date ? new Date(String(params.date)) : new Date();
-    const searchTermIsServiced = params.is_serviced === 'true';
+    const searchTermIsServiced = params.serviced === 'true';
 
     if (!isAdmin) redirect("/")
     const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, serviceDate, searchTermIsServiced);

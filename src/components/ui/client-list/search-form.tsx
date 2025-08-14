@@ -2,7 +2,6 @@
 import { ServiceListDatePicker } from '../service-list/service-list-date-picker';
 import { ServiceStatusSelector } from '../selectors/service-status-selector';
 import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
-import { useSearchFormLogic } from '@/hooks/hooks';
 import { InvoiceStatusSelector } from '../selectors/invoice-status-selector';
 
 type SearchFormVariant = 'service' | 'invoices' | 'default';
@@ -43,7 +42,7 @@ export default function SearchForm({
       {variant === 'service' &&
         <>
           <ServiceListDatePicker />
-          {/* <ServiceStatusSelector value={searchTermIsServiced} onChange={handleChange} /> */}
+          <ServiceStatusSelector />
         </>}
 
       {variant === 'invoices' &&

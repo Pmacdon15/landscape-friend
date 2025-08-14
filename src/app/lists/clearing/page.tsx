@@ -24,7 +24,7 @@ export default async function page({
 
     const clientListPage = Number(params.page ?? 1);
     const searchTerm = String(params.search ?? '');
-    const searchTermIsServiced = params.is_serviced === 'true';
+    const searchTermIsServiced = params.serviced === 'true';
     const searchTermAssignedTo = String(params.assigned_to ?? userId);
     const serviceDate = params.date ? new Date(String(params.date)) : new Date();
 

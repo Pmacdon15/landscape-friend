@@ -1,15 +1,17 @@
 'use client'
-import { CutStatusSelectorProps } from '@/types/types';
-import React from 'react';
+import { useServiceStatusSearch } from "@/hooks/hooks";
 
-export const ServiceStatusSelector: React.FC<CutStatusSelectorProps> = ({ value, onChange }) => {
+export const ServiceStatusSelector = () => {
+    const { currentServiceStatus, setServiceStatus } = useServiceStatusSearch();
+
     return (
         <select
-            name="is_serviced"
+            name="serviced"
             className="w-fit border rounded-sm text-center"
-            value={value}
-            onChange={onChange}
+            value={currentServiceStatus}
+            onChange={(e) => setServiceStatus(e.target.value)}
         >
+            <option value="">All</option>
             <option value="false">Un-serviced</option>
             <option value="true">Serviced</option>
         </select>

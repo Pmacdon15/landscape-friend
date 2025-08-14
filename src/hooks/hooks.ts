@@ -143,7 +143,7 @@ export function useSearchFormLogic(isCuttingDayComponent: boolean) {
   const [serviceDate, setServiceDate] = useState(
     searchParams.get('date') || new Date().toISOString().slice(0, 10)
   );
-  const [searchTermIsServiced, setSearchTermIsServiced] = useState(searchParams.get('is_serviced') || '');
+  const [searchTermIsServiced, setSearchTermIsServiced] = useState(searchParams.get('serviced') || '');
 
   useEffect(() => {
     if (isCuttingDayComponent && !searchParams.get('date')) {
@@ -191,7 +191,7 @@ export function useSearchFormLogic(isCuttingDayComponent: boolean) {
         case 'date':
           setServiceDate(value);
           break;
-        case 'is_serviced':
+        case 'serviced':
           setSearchTermIsServiced(value);
           break;
         default:
@@ -267,6 +267,25 @@ export function useServiceDateSearch() {
   };
 
   return { currentServiceDate, setServiceDate };
+}
+
+export function useServiceStatusSearch() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentServiceStatus = searchParams.get('serviced') || ''; // Default to empty string for 'all'
+
+  const setServiceStatus = (status: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (status) {
+      params.set('serviced', status);
+    } else {
+      params.delete('serviced');
+    }
+    params.set('page', '1'); // Reset page to 1 when status changes
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  return { currentServiceStatus, setServiceStatus };
 }
 
 export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: MaterialField[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
