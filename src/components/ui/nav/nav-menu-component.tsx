@@ -87,7 +87,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                 <ul className="grid w-[300px] gap-4">
                                     <li>
                                         <NavigationMenuLink asChild>
-                                            <Link href="/invoices/send-quote">
+                                            <Link href="/billing/send-quote">
                                                 <div className="font-medium">Send a Quote</div>
                                                 <div className="text-muted-foreground">
                                                     Send an Quote as an Email.
@@ -103,7 +103,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                             </Link>
                                         </NavigationMenuLink>
                                         <NavigationMenuLink asChild>
-                                            <Link href="/invoices/manage">
+                                            <Link href="//billing/manage">
                                                 <div className="font-medium">Manage Invoices</div>
                                                 <div className="text-muted-foreground">
                                                     Manage invoices view, send, resend, mark paid.
