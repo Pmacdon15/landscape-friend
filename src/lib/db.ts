@@ -662,7 +662,7 @@ export async function markPaidDb(invoiceId: string, customerEmail: string, amoun
     const { new_balance, payment_id } = result[0];
     console.log(`Invoice ${invoiceId} marked paid. New balance: ${new_balance}, Payment ID: ${payment_id}`);
 
-    revalidatePath("/invoices/manage");
+    revalidatePath("/billing/manage/invoices");
     return { success: true, message: `Invoice ${invoiceId} marked as paid and database updated.`, newBalance: new_balance, paymentId: payment_id };
 
   } catch (e) {

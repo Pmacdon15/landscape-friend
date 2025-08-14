@@ -182,7 +182,7 @@ export const useResendInvoice = () => {
             return resendInvoice(invoiceId);
         },
         onSuccess: () => {
-            revalidatePathAction("/invoices/manage")
+            revalidatePathAction("/billing/manage/invoices")
         },
     });
 };
@@ -194,7 +194,7 @@ export const useMarkInvoicePaid = () => {
             return markInvoicePaid(invoiceId);
         },
         onSuccess: () => {
-            revalidatePathAction("/invoices/manage")
+            revalidatePathAction("/billing/manage/invoices")
         },
     });
 };
