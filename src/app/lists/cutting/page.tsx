@@ -1,15 +1,13 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import {  fetchCuttingClients } from "@/DAL/dal";
+import { fetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import ClientListService from "@/components/ui/service-list/clients-list-service";
 
-export default async function page({
-    searchParams,
-}: {
+export default async function page({ searchParams }: {
     searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>;
 }) {
     const [{ isAdmin }, params] = await Promise.all([

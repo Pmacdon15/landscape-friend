@@ -129,89 +129,6 @@ export function useMediaQuery(query: string) {
   return matches;
 }
 
-
-// export function useSearchFormLogic(isCuttingDayComponent: boolean) {
-//   const searchParams = useSearchParams();
-//   const router = useRouter();
-
-//   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-//   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-//   const [cuttingWeek, setCuttingWeek] = useState(
-//     searchParams.get('week') ? Number(searchParams.get('week')) : ''
-//   );
-//   const [cuttingDay, setCuttingDay] = useState(searchParams.get('day') || '');
-//   const [serviceDate, setServiceDate] = useState(
-//     searchParams.get('date') || new Date().toISOString().slice(0, 10)
-//   );
-//   const [searchTermIsServiced, setSearchTermIsServiced] = useState(searchParams.get('serviced') || '');
-
-//   useEffect(() => {
-//     if (isCuttingDayComponent && !searchParams.get('date')) {
-//       const params = new URLSearchParams(searchParams.toString());
-//       params.set('date', serviceDate);
-//       if (!params.get('page')) params.set('page', '1');
-//       router.replace(`?${params.toString()}`, { scroll: false });
-//     }
-//   }, [isCuttingDayComponent, searchParams, router, serviceDate]);
-
-//   useEffect(() => {
-//     const timeout = setTimeout(() => {
-//       const params = new URLSearchParams(searchParams.toString());
-//       if (debouncedSearchTerm) params.set('search', debouncedSearchTerm);
-//       else params.delete('search');
-//       if (!params.get('page')) params.set('page', '1');
-//       if (isCuttingDayComponent && serviceDate) params.set('date', serviceDate);
-//       router.replace(`?${params.toString()}`, { scroll: false });
-//     }, 500);
-
-//     return () => clearTimeout(timeout);
-//   }, [debouncedSearchTerm, router, searchParams, isCuttingDayComponent, serviceDate]);
-
-//   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-//     const { name, value } = event.target;
-//     const params = new URLSearchParams(searchParams.toString());
-//     params.set('page', '1');
-
-//     if (name === 'search') {
-//       setSearchTerm(value);
-//       setDebouncedSearchTerm(value);
-//     } else {
-//       if (value) {
-//         params.set(name, value);
-//       } else {
-//         params.delete(name);
-//       }
-//       switch (name) {
-//         case 'week':
-//           setCuttingWeek(value);
-//           break;
-//         case 'day':
-//           setCuttingDay(value);
-//           break;
-//         case 'date':
-//           setServiceDate(value);
-//           break;
-//         case 'serviced':
-//           setSearchTermIsServiced(value);
-//           break;
-//         default:
-//           break;
-//       }
-//     }
-
-//     router.replace(`?${params.toString()}`, { scroll: false });
-//   };
-
-//   return {
-//     searchTerm,
-//     cuttingWeek,
-//     cuttingDay,
-//     serviceDate,
-//     searchTermIsServiced,
-//     handleChange,
-//   };
-// }
-
 export function useInvoiceStatusSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -231,60 +148,38 @@ export function useInvoiceStatusSearch() {
   return { currentStatus, setInvoiceStatus };
 }
 
-export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
+export function useSearchParam(paramName: string, defaultValue: string = '') {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentPeriod = searchParams.get(paramName) || '';
+  const currentValue = searchParams.get(paramName) || defaultValue;
 
-  const setCuttingPeriod = (value: string) => {
+  const setParam = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value) {
+    if (value && value !== defaultValue) {
       params.set(paramName, value);
     } else {
       params.delete(paramName);
     }
-    params.set('page', '1'); // Reset page to 1 when cutting period changes
+    params.set('page', '1');
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
+  return { currentValue, setParam };
+}
+
+export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
+  const { currentValue: currentPeriod, setParam: setCuttingPeriod } = useSearchParam(paramName, '');
   return { currentPeriod, setCuttingPeriod };
 }
 
 export function useServiceDateSearch() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentServiceDate = searchParams.get('date') || new Date().toISOString().slice(0, 10);
-
-  const setServiceDate = (date: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (date) {
-      params.set('date', date);
-    } else {
-      params.delete('date');
-    }
-    params.set('page', '1'); // Reset page to 1 when date changes
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
-
+  const today = new Date().toISOString().slice(0, 10);
+  const { currentValue: currentServiceDate, setParam: setServiceDate } = useSearchParam('date', today);
   return { currentServiceDate, setServiceDate };
 }
 
 export function useServiceStatusSearch() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const currentServiceStatus = searchParams.get('serviced') || ''; // Default to empty string for 'all'
-
-  const setServiceStatus = (status: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (status) {
-      params.set('serviced', status);
-    } else {
-      params.delete('serviced');
-    }
-    params.set('page', '1'); // Reset page to 1 when status changes
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
-
+  const { currentValue: currentServiceStatus, setParam: setServiceStatus } = useSearchParam('serviced', '');
   return { currentServiceStatus, setServiceStatus };
 }
 
