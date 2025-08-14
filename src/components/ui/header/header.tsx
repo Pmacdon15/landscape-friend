@@ -28,8 +28,7 @@ export default async function Header() {
                     <Suspense>
                         <SignedIn>
                             <NavBar isAdmin={isAdmin} />
-                            <div className="flex ml-auto items-center gap-2">
-                                
+                            <div className="flex ml-auto items-center gap-2">                                
                                 <ClientOnly>
                                     <UserButton />
                                     <OrganizationSwitcher />

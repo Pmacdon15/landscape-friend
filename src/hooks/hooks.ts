@@ -231,6 +231,25 @@ export function useInvoiceStatusSearch() {
   return { currentStatus, setInvoiceStatus };
 }
 
+export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentPeriod = searchParams.get(paramName) || '';
+
+  const setCuttingPeriod = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set(paramName, value);
+    } else {
+      params.delete(paramName);
+    }
+    params.set('page', '1'); // Reset page to 1 when cutting period changes
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  return { currentPeriod, setCuttingPeriod };
+}
+
 export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: MaterialField[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
     useEffect(() => {
         if (isSuccess) {

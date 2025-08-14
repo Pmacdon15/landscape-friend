@@ -1,7 +1,6 @@
 'use client';
 import { CuttingListDatePicker } from '../service-list/service-list-date-picker';
 import { ServiceStatusSelector } from '../selectors/service-status-selector';
-import { days, weeks } from '@/lib/values';
 import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 import { useSearchFormLogic } from '@/hooks/hooks';
 import { InvoiceStatusSelector } from '../selectors/invoice-status-selector';
@@ -34,18 +33,10 @@ export default function SearchForm({
       {variant === "default" &&
         <>
           <CuttingPeriodSelector
-            label="Cutting Week"
-            options={weeks}
-            value={cuttingWeek?.toString() || ''}
-            handleChange={handleChange}
-            name="week"
+            variant="week"
           />
           <CuttingPeriodSelector
-            label="Cutting Day"
-            options={days}
-            value={cuttingDay}
-            handleChange={handleChange}
-            name="day"
+            variant="day"
           />
         </>
       }
