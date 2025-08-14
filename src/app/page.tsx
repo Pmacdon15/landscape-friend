@@ -2,7 +2,7 @@
 import ContentContainer from "@/components/ui/containers/content-container";
 import FormContainer from "@/components/ui/containers/form-container";
 import Link from "next/link";
-import "@/app/animations/landing-page.css";
+import "../animations/landing-page.css";
 import Image from "next/image";
 
 
@@ -16,7 +16,9 @@ export default function Home() {
           <Image
             src="/logo.png"
             alt="Lawn Buddy Logo"
-            className="w-64 h-auto mx-auto mb-4 "
+            className="w-64 h-auto mx-auto mb-4"
+            width={256}
+            height={128}
           />
 
         </div>

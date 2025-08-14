@@ -1,6 +1,7 @@
 import AddClientFormClientComponent from "@/components/ui/client-list/add-client-form-client-component";
 import { AddClientFormServerComponent } from "@/components/ui/client-list/add-client-form-server-component";
 import ClientListAll from "@/components/ui/client-list/client-list-all";
+import ClientListAllDemo from "@/components/ui/client-list/client-list-all-demo";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
@@ -22,7 +23,7 @@ export default async function page({
     const searchTerm = String(params.search ?? '');
     const searchTermCuttingWeek = Number(params.week ?? 0);
     const searchTermCuttingDay = String(params.day ?? '');
-
+    
     const clientsPromise = fetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     const orgMembersPromise = fetchOrgMembers();
 
@@ -38,12 +39,18 @@ export default async function page({
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
-                <ClientListAll
-                    clientsPromise={clientsPromise}
-                    clientListPage={clientListPage}
-                    isAdmin={isAdmin}
-                    orgMembersPromise={orgMembersPromise}                    
-                />
+                    { process.env.NO_CLERK_MODE === "true" ? (
+                        <ClientListAllDemo
+                        clientsPromise={clientsPromise}
+                        clientListPage={clientListPage}
+                        isAdmin={isAdmin}
+                        />
+                    ) : (<ClientListAll
+                        clientsPromise={clientsPromise}
+                        clientListPage={clientListPage}
+                        isAdmin={isAdmin}
+                        orgMembersPromise={orgMembersPromise}
+                        />)}
             </Suspense>
         </>
     );
