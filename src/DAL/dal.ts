@@ -179,7 +179,7 @@ interface FetchInvoicesResponse {
   totalPages: number;
 }
 
-export async function fetchInvoices(typesOfInvoices: string, page: number): Promise<FetchInvoicesResponse> {
+export async function fetchInvoices(typesOfInvoices: string, page: number, searchTerm: string): Promise<FetchInvoicesResponse> {
   const { isAdmin } = await isOrgAdmin();
   if (!isAdmin) throw new Error("Not Admin");
 
@@ -205,10 +205,19 @@ export async function fetchInvoices(typesOfInvoices: string, page: number): Prom
       }
     }
 
-    const totalInvoices = allInvoices.length;
+    let filteredInvoices = allInvoices;
+    if (searchTerm) {
+      const lowerCaseSearchTerm = searchTerm.toLowerCase();
+      filteredInvoices = allInvoices.filter(invoice => 
+        (invoice.customer_name && invoice.customer_name.toLowerCase().includes(lowerCaseSearchTerm)) ||
+        (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm))
+      );
+    }
+
+    const totalInvoices = filteredInvoices.length;
     const totalPages = Math.ceil(totalInvoices / pageSize);
     const offset = (page - 1) * pageSize;
-    const paginatedInvoices = allInvoices.slice(offset, offset + pageSize);
+    const paginatedInvoices = filteredInvoices.slice(offset, offset + pageSize);
 
     const strippedInvoices = paginatedInvoices.map((invoice) => ({
       id: invoice.id,

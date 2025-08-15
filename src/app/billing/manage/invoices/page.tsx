@@ -9,8 +9,8 @@ import { SearchParams} from "@/types/types";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams
-    const { searchTermStatus, page } = parseClientListParams(params);
-    const { invoices, totalPages } = await fetchInvoices(searchTermStatus, page)
+    const { searchTermStatus, page, searchTerm } = parseClientListParams(params);
+    const { invoices, totalPages } = await fetchInvoices(searchTermStatus, page, searchTerm)
 
     return (
         <FormContainer>
