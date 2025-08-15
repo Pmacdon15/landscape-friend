@@ -16,7 +16,7 @@ import PricePerUpdateInput from "./price-per-update-input";
 
 export default async function ClientListService({
   clientsPromise,
-  clientListPage,  
+  page,  
   orgMembersPromise,
   isAdmin
 }: ClientListServiceProps) {
@@ -30,7 +30,7 @@ export default async function ClientListService({
 
   return (
     <>
-      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
@@ -68,7 +68,7 @@ export default async function ClientListService({
           </FormContainer>
         ))}
       </ul >
-      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
     </>
   );
 }

@@ -582,7 +582,7 @@ export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow
     throw new Error('Assignment Failed');
   }
 
-  revalidatePath("/lists/snow-clearing")
+  revalidatePath("/lists/clearing")
   return result;
 }
 
@@ -630,6 +630,45 @@ export async function fetchStripAPIKeyDb(orgId: string) {
     WHERE organization_id = ${orgId}
   `) as { api_key: string }[];
   return result[0];
+}
+//MARK: Mark Payment
+export async function markPaidDb(invoiceId: string, customerEmail: string, amountPaid: number, organizationId: string) {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  try {
+    const result = await sql`
+      WITH client_info AS (
+          SELECT id AS client_id
+          FROM clients
+          WHERE email_address = ${customerEmail} AND organization_id = ${organizationId}
+      ),
+      inserted_payment AS (
+          INSERT INTO payments (account_id, amount, organization_id)
+          SELECT a.id, ${amountPaid}, ${organizationId}
+          FROM accounts a
+          JOIN client_info ci ON a.client_id = ci.client_id
+          RETURNING payments.id -- Return something to indicate success
+      )
+      UPDATE accounts
+      SET current_balance = current_balance - ${amountPaid}
+      FROM client_info ci
+      WHERE accounts.client_id = ci.client_id
+      RETURNING accounts.current_balance AS new_balance, (SELECT id FROM inserted_payment) AS payment_id;
+    `;
+
+    if (!result || result.length === 0) {
+      throw new Error(`Failed to mark invoice ${invoiceId} as paid in DB. Client not found or update failed.`);
+    }
+
+    const { new_balance, payment_id } = result[0];
+    console.log(`Invoice ${invoiceId} marked paid. New balance: ${new_balance}, Payment ID: ${payment_id}`);
+
+    revalidatePath("/billing/manage/invoices");
+    return { success: true, message: `Invoice ${invoiceId} marked as paid and database updated.`, newBalance: new_balance, paymentId: payment_id };
+
+  } catch (e) {
+    console.error('Error marking invoice paid in DB:', e);
+    return { success: false, message: e instanceof Error ? e.message : 'Failed to mark invoice paid in DB' };
+  }
 }
 
 //MARK: Update Strip API Key

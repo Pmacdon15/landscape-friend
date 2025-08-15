@@ -10,10 +10,10 @@ import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import MarkYardServiced from "../buttons/mark-yard-serviced";
 
-export default async function ClientListService({ clientsPromise, clientListPage, serviceDate, searchTermIsServiced, snow = false }:
+export default async function ClientListService({ clientsPromise, page, serviceDate, searchTermIsServiced, snow = false }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
-        clientListPage: number,
+        page: number,
         serviceDate?: Date,
         searchTermIsServiced: boolean,
         snow?: boolean,
@@ -39,7 +39,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                             <ManyPointsMap addresses={flattenedAddresses} />
                         </div>
                     </FormContainer>}
-                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
+                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} page={page} totalPages={totalPages} />
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative bg-white/50">
@@ -63,7 +63,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                     </FormContainer>
                 ))}
             </ul >
-            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
+            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} page={page} totalPages={totalPages} />
         </>
     );
 }

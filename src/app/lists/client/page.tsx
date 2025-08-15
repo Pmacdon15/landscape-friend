@@ -7,23 +7,22 @@ import FormHeader from "@/components/ui/header/form-header";
 import { fetchAllClients, fetchOrgMembers } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
+import { parseClientListParams } from "@/lib/params";
+import { SearchParams } from "@/types/types";
 
 export default async function page({
     searchParams,
 }: {
-    searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>
+    searchParams: Promise<SearchParams>;
 }) {
     const [{ isAdmin }, params] = await Promise.all([
         isOrgAdmin(),
         searchParams,
     ]);
 
-    const clientListPage = Number(params.page ?? 1);
-    const searchTerm = String(params.search ?? '');
-    const searchTermCuttingWeek = Number(params.week ?? 0);
-    const searchTermCuttingDay = String(params.day ?? '');
+    const { page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay } = parseClientListParams(params);
 
-    const clientsPromise = fetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const clientsPromise = fetchAllClients(page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     const orgMembersPromise = fetchOrgMembers();
 
     return (
@@ -40,7 +39,7 @@ export default async function page({
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListAll
                     clientsPromise={clientsPromise}
-                    clientListPage={clientListPage}
+                    page={page}
                     isAdmin={isAdmin}
                     orgMembersPromise={orgMembersPromise}                    
                 />

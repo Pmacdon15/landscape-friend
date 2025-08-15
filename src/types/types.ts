@@ -32,7 +32,7 @@ export interface ClientResult {
 
 export interface ClientListServiceProps {
     clientsPromise: Promise<PaginatedClients | null>;
-    clientListPage: number;    
+    page: number;    
     orgMembersPromise?: Promise<OrgMember[]>;
     isAdmin: boolean
 }
@@ -193,4 +193,48 @@ export interface MaterialField {
     materialType?: string;
     materialCostPerUnit?: number;
     materialUnits?: number;
+}
+
+export interface StripeInvoice {
+  id: string;
+  object: string;
+  amount_due: number;
+  amount_paid: number;
+  amount_remaining: number;
+  created: number;
+  currency: string;
+  customer: string;
+  customer_email: string;
+  customer_name: string;
+  due_date: number;
+  hosted_invoice_url: string;
+  invoice_pdf: string;
+  number: string;
+  status: string;
+  total: number;
+  lines: {
+    data: StripeLineItem[];
+  };
+}
+
+export interface StripeLineItem {
+  id: string;
+  object: string;
+  amount: number;
+  currency: string;
+  description: string;
+  quantity: number;
+}
+
+export type SearchParams = Record<string, string | string[] | number | undefined>;
+
+export interface ParsedClientListParams {
+  page: number;
+  searchTerm: string;
+  serviceDate: Date;
+  searchTermIsServiced: boolean;
+  searchTermCuttingWeek: number;
+  searchTermCuttingDay: string;
+  searchTermAssignedTo: string;
+  searchTermStatus: string;
 }

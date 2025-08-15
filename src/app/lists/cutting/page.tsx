@@ -1,40 +1,35 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import {  fetchCuttingClients } from "@/DAL/dal";
+import { fetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import ClientListService from "@/components/ui/service-list/clients-list-service";
+import { parseClientListParams } from "@/lib/params";
+import { SearchParams } from "@/types/types";
 
-export default async function page({
-    searchParams,
-}: {
-    searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>;
-}) {
+export default async function page({ searchParams }: { searchParams: Promise<SearchParams>; }) {
     const [{ isAdmin }, params] = await Promise.all([
         isOrgAdmin(),
         searchParams,
     ]);
 
-    const clientListPage = Number(params.page ?? 1);
-    const searchTerm = String(params.search ?? '');
-    const serviceDate = params.date ? new Date(String(params.date)) : new Date();
-    const searchTermIsServiced = params.is_serviced === 'true';
+    const { page, searchTerm, serviceDate, searchTermIsServiced } = parseClientListParams(params);
 
     if (!isAdmin) redirect("/")
-    const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, serviceDate, searchTermIsServiced);
+    const clientsPromise = fetchCuttingClients(page, searchTerm, serviceDate, searchTermIsServiced);
 
     return (
         <>
             <FormContainer>
                 <FormHeader text={"Cutting List"} />
-                <SearchForm isCuttingDayComponent={true} />
+                <SearchForm variant="service" />
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService
                     clientsPromise={clientsPromise}
-                    clientListPage={clientListPage}
+                    page={page}
                     serviceDate={serviceDate}
                     searchTermIsServiced={searchTermIsServiced} />
             </Suspense>

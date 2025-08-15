@@ -10,7 +10,8 @@ import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
 
 export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean }) {
-    const date = new Date()
+    const date = new Date();
+    const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
     const isMd = useMediaQuery("(min-width: 768px)");
     return (
         <NavigationMenu viewport={!isMd}>
@@ -31,7 +32,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                 <NavigationMenuLink asChild>
                                     <Link href={{
                                         pathname: '/lists/cutting',
-                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
+                                        query: { date: today },
                                     }}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
@@ -41,8 +42,8 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
                                     <Link href={{
-                                        pathname: '/lists/snow-clearing',
-                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
+                                        pathname: '/lists/clearing',
+                                        query: { date: today },
                                     }}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">
@@ -82,31 +83,31 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                 {isAdmin &&
                     <>
                         <NavigationMenuItem>
-                            <NavigationMenuTrigger>Invoices</NavigationMenuTrigger>
+                            <NavigationMenuTrigger>Billing</NavigationMenuTrigger>
                             <NavigationMenuContent>
                                 <ul className="grid w-[300px] gap-4">
                                     <li>
                                         <NavigationMenuLink asChild>
-                                            <Link href="/invoice/all">
-                                                <div className="font-medium">Manage Quotes</div>
-                                                <div className="text-muted-foreground">
-                                                    Manage quotes mark accepted, cancel, send as invoice .
-                                                </div>
-                                            </Link>
-                                        </NavigationMenuLink>
-                                        <NavigationMenuLink asChild>
-                                            <Link href="/invoice/individual">
-                                                <div className="font-medium">Manage Invoices</div>
-                                                <div className="text-muted-foreground">
-                                                    Manage invoices resend, mark paid, cancel.
-                                                </div>
-                                            </Link>
-                                        </NavigationMenuLink>
-                                        <NavigationMenuLink asChild>
-                                            <Link href="/invoices/send-quote">
+                                            <Link href="/billing/send-quote">
                                                 <div className="font-medium">Send a Quote</div>
                                                 <div className="text-muted-foreground">
                                                     Send an Quote as an Email.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/invoice/all">
+                                                <div className="font-medium">Manage Quotes</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage quotes mark accepted, cancel.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/billing/manage/invoices">
+                                                <div className="font-medium">Manage Invoices</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage invoices view, send, resend, mark paid.
                                                 </div>
                                             </Link>
                                         </NavigationMenuLink>

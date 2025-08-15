@@ -54,6 +54,8 @@ CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL,
     amount FLOAT NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
 
@@ -278,7 +280,7 @@ SELECT id, 1.0
 FROM clients;
 
 -- SELECT * FROM yards_marked_cut;
-SELECT * FROM yards_marked_clear;
+-- SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- WHERE
@@ -287,3 +289,5 @@ SELECT * FROM yards_marked_clear;
 
 -- SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
+-- SELECT * FROM payments ;
+-- SELECT * FROM accounts;
