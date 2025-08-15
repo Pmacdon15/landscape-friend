@@ -21,7 +21,7 @@ export function PaginationTabs({
 }) {
 
   return totalPages > 1 ? (
-    <div
+    <div 
       className={`rounded-sm p-2 bg-white/30 backdrop-filter backdrop-blur-sm shadow-lg 
         ${fullWidth ? 'w-full' : 'sm:w-3/6 md:w-4/6'}`}
     >
@@ -29,12 +29,12 @@ export function PaginationTabs({
         <PaginationContent>
           {page > 1 &&
             <PaginationItem>
-              <PaginationPrevious href={path} query={{ page: page - 1 }} />
+              <PaginationPrevious href={`${path}?page=${page - 1}`} />
             </PaginationItem>
           }
           {page > 2 &&
             <PaginationItem>
-              <PaginationLink href={path} query={{ page: 1 }}>
+              <PaginationLink href={`${path}?page=1`}>
                 1
               </PaginationLink>
             </PaginationItem>
@@ -44,10 +44,13 @@ export function PaginationTabs({
               <PaginationEllipsis />
             </PaginationItem>
           }
-          {Array.from({ length: Math.min(totalPages, page + 1) - Math.max(1, page - 1) + 1 }, (_, i) => Math.max(1, page - 1) + i).map((page) =>
-            <PaginationItem key={page}>
-              <PaginationLink href={path} isActive={page === page} query={{ page: page }}>
-                {page}
+          {Array.from({ length: Math.min(totalPages, page + 1) - Math.max(1, page - 1) + 1 }, (_, i) => Math.max(1, page - 1) + i).map((p) =>
+            <PaginationItem key={p}>
+              <PaginationLink 
+                href={`${path}?page=${p}`} 
+                isActive={p === page}
+              >
+                {p}
               </PaginationLink>
             </PaginationItem>
           )}
@@ -58,14 +61,14 @@ export function PaginationTabs({
           }
           {page < totalPages - 1 &&
             <PaginationItem>
-              <PaginationLink href={path} query={{ page: totalPages }}>
+              <PaginationLink href={`${path}?page=${totalPages}`}>
                 {totalPages}
               </PaginationLink>
             </PaginationItem>
           }
           {page < totalPages &&
             <PaginationItem>
-              <PaginationNext href={path} query={{ page: page + 1 }} />
+              <PaginationNext href={`${path}?page=${page + 1}`} />
             </PaginationItem>}
         </PaginationContent>
       </Pagination>

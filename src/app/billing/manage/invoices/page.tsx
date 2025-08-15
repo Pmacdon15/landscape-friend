@@ -18,15 +18,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
         <FormContainer>
             <FormHeader text={"Manage Invoices"} />
             <SearchForm variant="invoices" />
-            <div className="">
-                <PaginationTabs path={"/billing/manage/invoices"} page={0} totalPages={totalPages} fullWidth/>
-            </div>
+            <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />
             <table className="min-w-full bg-white">
                 <TableHead />
                 <TableBody invoices={invoices} />
             </table>
             <MobileCardView invoices={invoices} />
-            <PaginationTabs path={"/billing/manage/invoices"} page={0} totalPages={totalPages}  fullWidth/>
+            <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />
         </FormContainer>
     );
 }

@@ -182,19 +182,35 @@ interface FetchInvoicesResponse {
 export async function fetchInvoices(typesOfInvoices: string, page: number): Promise<FetchInvoicesResponse> {
   const { isAdmin } = await isOrgAdmin();
   if (!isAdmin) throw new Error("Not Admin");
+
   const stripe = getStripeInstance();
+  const pageSize = Number(process.env.PAGE_SIZE) || 10;
+
   try {
-    let invoices;
-    if (typesOfInvoices === "") invoices = await stripe.invoices.list();
-    else if (typesOfInvoices === "draft") invoices = await stripe.invoices.list({ status: 'draft' });
-    else if (typesOfInvoices === "paid") invoices = await stripe.invoices.list({ status: 'paid' });
-    else invoices = await stripe.invoices.list({ status: 'open' });
+    let allInvoices: Stripe.Invoice[] = [];
+    let hasMore = true;
+    let startingAfter: string | undefined = undefined;
 
-    const validInvoices = invoices.data.filter(
-      (invoice): invoice is Stripe.Invoice & { id: string } => !!invoice.id
-    );
+    const params: Stripe.InvoiceListParams = { limit: 100 };
+    if (typesOfInvoices && ['draft', 'paid', 'open'].includes(typesOfInvoices)) {
+      params.status = typesOfInvoices as 'draft' | 'paid' | 'open';
+    }
 
-    const strippedInvoices = validInvoices.map((invoice) => ({
+    while (hasMore) {
+      const invoiceBatch: Stripe.ApiList<Stripe.Invoice> = await stripe.invoices.list({ ...params, starting_after: startingAfter });
+      allInvoices = allInvoices.concat(invoiceBatch.data);
+      hasMore = invoiceBatch.has_more;
+      if (hasMore) {
+        startingAfter = invoiceBatch.data[invoiceBatch.data.length - 1].id;
+      }
+    }
+
+    const totalInvoices = allInvoices.length;
+    const totalPages = Math.ceil(totalInvoices / pageSize);
+    const offset = (page - 1) * pageSize;
+    const paginatedInvoices = allInvoices.slice(offset, offset + pageSize);
+
+    const strippedInvoices = paginatedInvoices.map((invoice) => ({
       id: invoice.id,
       object: invoice.object,
       amount_due: invoice.amount_due,
@@ -214,12 +230,10 @@ export async function fetchInvoices(typesOfInvoices: string, page: number): Prom
       lines: {
         data: invoice.lines.data.map((lineItem) => ({
           id: lineItem.id,
-          // Add other properties you need from lineItem
         })),
       },
     }));
 
-    const totalPages = 10;
     return { invoices: strippedInvoices as StripeInvoice[], totalPages };
   } catch (error) {
     console.error(error);

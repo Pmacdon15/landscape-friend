@@ -141,7 +141,7 @@ export function useInvoiceStatusSearch() {
     } else {
       params.delete('status');
     }
-    params.set('page', '1'); // Reset page to 1 when status changes
+    params.set('page', '1');
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
@@ -198,7 +198,6 @@ export function useSearchInput(delay: number = 500) {
     } else {
       params.delete('search');
     }
-    params.set('page', '1'); // Reset page to 1 when search term changes
     router.replace(`?${params.toString()}`, { scroll: false });
   }, [debouncedSearchTerm, router, searchParams]);
 
@@ -206,15 +205,15 @@ export function useSearchInput(delay: number = 500) {
 }
 
 export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: MaterialField[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
-    useEffect(() => {
-        if (isSuccess) {
-            reset();
-        }
-    }, [isSuccess, reset]);
+  useEffect(() => {
+    if (isSuccess) {
+      reset();
+    }
+  }, [isSuccess, reset]);
 
-    useEffect(() => {
-        if (fields.length === 0) {
-            append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 });
-        }
-    }, [fields.length, append]);
+  useEffect(() => {
+    if (fields.length === 0) {
+      append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 });
+    }
+  }, [fields.length, append]);
 }
