@@ -8,7 +8,7 @@ import { fetchAllClients, fetchOrgMembers } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/params";
-import { SearchParams } from "@/types/search-params";
+import { SearchParams } from "@/types/types";
 
 export default async function page({
     searchParams,
@@ -20,9 +20,9 @@ export default async function page({
         searchParams,
     ]);
 
-    const { clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay } = parseClientListParams(params);
+    const { page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay } = parseClientListParams(params);
 
-    const clientsPromise = fetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const clientsPromise = fetchAllClients(page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     const orgMembersPromise = fetchOrgMembers();
 
     return (
@@ -39,7 +39,7 @@ export default async function page({
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListAll
                     clientsPromise={clientsPromise}
-                    clientListPage={clientListPage}
+                    page={page}
                     isAdmin={isAdmin}
                     orgMembersPromise={orgMembersPromise}                    
                 />

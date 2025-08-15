@@ -20,10 +20,10 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
     if (!isAdmin) redirect("/")
     if (!userId) throw new Error("User ID is missing.");
 
-    const { clientListPage, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
+    const { page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
     // const searchTermAssignedTo = String(params.assigned_to ?? userId);
 
-    const clientsPromise = fetchSnowClearingClients(clientListPage, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo);
+    const clientsPromise = fetchSnowClearingClients(page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo);
 
     return (
         <>
@@ -34,7 +34,7 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService
                     clientsPromise={clientsPromise}
-                    clientListPage={clientListPage}
+                    page={page}
                     serviceDate={serviceDate}
                     searchTermIsServiced={searchTermIsServiced}
                     snow={true} />

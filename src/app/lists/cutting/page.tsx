@@ -15,10 +15,10 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
         searchParams,
     ]);
 
-    const { clientListPage, searchTerm, serviceDate, searchTermIsServiced } = parseClientListParams(params);
+    const { page, searchTerm, serviceDate, searchTermIsServiced } = parseClientListParams(params);
 
     if (!isAdmin) redirect("/")
-    const clientsPromise = fetchCuttingClients(clientListPage, searchTerm, serviceDate, searchTermIsServiced);
+    const clientsPromise = fetchCuttingClients(page, searchTerm, serviceDate, searchTermIsServiced);
 
     return (
         <>
@@ -29,7 +29,7 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService
                     clientsPromise={clientsPromise}
-                    clientListPage={clientListPage}
+                    page={page}
                     serviceDate={serviceDate}
                     searchTermIsServiced={searchTermIsServiced} />
             </Suspense>

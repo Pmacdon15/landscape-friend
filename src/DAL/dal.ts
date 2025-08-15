@@ -137,22 +137,6 @@ export async function fetchSnowClearingClients(
   };
 }
 
-// export async function fetchAllUnCutAddresses(searchTermCuttingDate: Date): Promise<Address[] | null | Error> {
-//   const { orgId, userId } = await auth.protect();
-
-//   try {
-//     const result = await FetchAllUnCutAddressesDB(orgId || userId, searchTermCuttingDate);
-
-//     if (!result) return null;
-//     return result;
-//   } catch (e) {
-//     if (e instanceof Error)
-//       return e; // Return the error directly
-//     else
-//       return new Error('An unknown error occurred'); // Return a generic error
-//   }
-// }
-
 export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | Error> {
   const { orgId, userId } = await auth.protect();
   try {
@@ -190,14 +174,17 @@ function getStripeInstance(): Stripe {
   }
   return stripe;
 }
+interface FetchInvoicesResponse {
+  invoices: StripeInvoice[];
+  totalPages: number;
+}
 
-//MARK: Fetch invoices
-export async function fetchOpenInvoices(typesOfInvoices: string): Promise<StripeInvoice[]> {
-  const { isAdmin } = await isOrgAdmin()
-  if (!isAdmin) throw new Error("Not Admin")
+export async function fetchInvoices(typesOfInvoices: string, page: number): Promise<FetchInvoicesResponse> {
+  const { isAdmin } = await isOrgAdmin();
+  if (!isAdmin) throw new Error("Not Admin");
   const stripe = getStripeInstance();
   try {
-    let invoices
+    let invoices;
     if (typesOfInvoices === "") invoices = await stripe.invoices.list();
     else if (typesOfInvoices === "draft") invoices = await stripe.invoices.list({ status: 'draft' });
     else if (typesOfInvoices === "paid") invoices = await stripe.invoices.list({ status: 'paid' });
@@ -226,14 +213,14 @@ export async function fetchOpenInvoices(typesOfInvoices: string): Promise<Stripe
       total: invoice.total,
       lines: {
         data: invoice.lines.data.map((lineItem) => ({
-          // Assuming you have a StripeLineItem interface defined
           id: lineItem.id,
           // Add other properties you need from lineItem
         })),
       },
     }));
 
-    return strippedInvoices as StripeInvoice[];
+    const totalPages = 10;
+    return { invoices: strippedInvoices as StripeInvoice[], totalPages };
   } catch (error) {
     console.error(error);
     throw new Error('Failed to fetch invoices');

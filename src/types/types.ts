@@ -32,7 +32,7 @@ export interface ClientResult {
 
 export interface ClientListServiceProps {
     clientsPromise: Promise<PaginatedClients | null>;
-    clientListPage: number;    
+    page: number;    
     orgMembersPromise?: Promise<OrgMember[]>;
     isAdmin: boolean
 }
@@ -226,10 +226,10 @@ export interface StripeLineItem {
   quantity: number;
 }
 
-export interface SearchParams extends Record<string, string | string[] | number | undefined> {}
+export type SearchParams = Record<string, string | string[] | number | undefined>;
 
 export interface ParsedClientListParams {
-  clientListPage: number;
+  page: number;
   searchTerm: string;
   serviceDate: Date;
   searchTermIsServiced: boolean;
