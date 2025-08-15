@@ -1,13 +1,11 @@
 import { fetchInvoices } from "@/DAL/dal";
-import ManageInvoiceButton from "@/components/ui/buttons/manage-invoice-button";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { MobileCardView, TableBody, TableHead } from "@/components/ui/manage-invoices/manage-invoices-content";
+import { CardView } from "@/components/ui/manage-invoices/manage-invoices-card-view";
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
 import { parseClientListParams } from "@/lib/params";
-import { SearchParams, StripeInvoice } from "@/types/types";
-import Link from "next/link";
+import { SearchParams} from "@/types/types";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams
@@ -18,12 +16,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
         <FormContainer>
             <FormHeader text={"Manage Invoices"} />
             <SearchForm variant="invoices" />
-            <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />
-            <table className="min-w-full bg-white">
-                <TableHead />
-                <TableBody invoices={invoices} />
-            </table>
-            <MobileCardView invoices={invoices} />
+            <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />           
+            <CardView invoices={invoices} />
             <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />
         </FormContainer>
     );

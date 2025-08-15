@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/actions/clients";
 import { markYardServiced } from "@/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
-import { createStripeQuote, markInvoicePaid, resendInvoice, updateStripeAPIKey } from "@/actions/stripe";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, resendInvoice, updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
 
@@ -114,42 +114,6 @@ export const useSendNewsLetter = () => {
     });
 };
 
-// export const useCreateStripeQuote = () => {
-//     return useMutation({
-//         mutationFn: async ({
-//             clientName,
-//             clientEmail,
-//             labourCostPerUnit,
-//             labourUnits,
-//             materialType,
-//             materialCostPerUnit,
-//             materialUnits
-//         }: {
-//             clientName: string,
-//             clientEmail: string,
-//             labourCostPerUnit: number,
-//             labourUnits: number,
-//             materialType: string,
-//             materialCostPerUnit: number,
-//             materialUnits: number
-//         }) => {
-//             const result = await createStripeQuote(
-//                 clientName,
-//                 clientEmail,
-//                 labourCostPerUnit,
-//                 labourUnits,
-//                 materialType,
-//                 materialCostPerUnit,
-//                 materialUnits
-//             );
-//             if (!result.success) {
-//                 throw new Error("Failed to create Stripe quote");
-//             }
-//             return result;
-//         },
-//     });
-// };
-
 export const useCreateStripeQuote = () => {
     return useMutation({
         mutationFn: async (formData: FormData) => {
@@ -192,6 +156,17 @@ export const useMarkInvoicePaid = () => {
     return useMutation({
         mutationFn: async (invoiceId: string) => {
             return markInvoicePaid(invoiceId);
+        },
+        onSuccess: () => {
+            revalidatePathAction("/billing/manage/invoices")
+        },
+    });
+};
+
+export const useMarkInvoiceVoid = () => {
+    return useMutation({
+        mutationFn: async (invoiceId: string) => {
+            return markInvoiceVoid(invoiceId);
         },
         onSuccess: () => {
             revalidatePathAction("/billing/manage/invoices")

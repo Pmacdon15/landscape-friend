@@ -1,5 +1,5 @@
 'use client'
-import { useResendInvoice, useMarkInvoicePaid } from "@/mutations/mutations";
+import { useResendInvoice, useMarkInvoicePaid, useMarkInvoiceVoid } from "@/mutations/mutations";
 import { Button } from "../button";
 
 export default function ManageInvoiceButton({
@@ -7,22 +7,32 @@ export default function ManageInvoiceButton({
   variant,
 }: {
   invoiceId: string;
-  variant: "send" | "resend" | "paid";
+  variant: "send" | "resend" | "paid" | "void";
 }) {
   const { mutate: resendMutate, isPending: isResendPending } = useResendInvoice();
   const { mutate: paidMutate, isPending: isPaidPending } = useMarkInvoicePaid();
+  const { mutate: voidMutate, isPending: isVoidPending } = useMarkInvoiceVoid();
 
   const handleClick = () => {
     if (variant === "resend" || variant === "send") {
       resendMutate(invoiceId);
     } else if (variant === "paid") {
       paidMutate(invoiceId);
+    } else if (variant === "void") {
+      voidMutate(invoiceId);
     }
   };
 
-  const isPending = variant === "paid" ? isPaidPending : isResendPending;
+  const isPending = 
+    variant === "paid" ? isPaidPending 
+    : variant === "void" ? isVoidPending 
+    : isResendPending;
 
-  const buttonText = variant === "paid" ? "Mark as Paid" : variant === "send" ? " Send " : "Resend";
+  const buttonText = 
+    variant === "paid" ? "Mark as Paid" 
+    : variant === "void" ? "Void" 
+    : variant === "send" ? "Send" 
+    : "Resend";
 
   return (
     <Button
