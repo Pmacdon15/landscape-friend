@@ -45,7 +45,7 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
             {invoice.status !== "paid" && invoice.status !== "void" && (
               <ManageInvoiceButton variant="paid" invoiceId={invoice.id} />
             )}
-            {invoice.status !== "paid" && (
+            {invoice.status !== "paid" && invoice.status !== "void" && invoice.status !== "draft" && (
               <ManageInvoiceButton variant="void" invoiceId={invoice.id} />
             )}
           </div>
