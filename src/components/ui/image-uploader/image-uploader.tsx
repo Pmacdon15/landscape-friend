@@ -1,29 +1,46 @@
 "use client";
-import revalidatePathAction from "@/actions/revalidatePath";
 import { useUploadImage } from "@/mutations/mutations";
 import { Client } from "@/types/types";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-export default function ImageUploader({ client, setView }: { client: Client, setView: React.Dispatch<React.SetStateAction<string>>; }) {
+export default function ImageUploader({ client, setView }: { client: Client, setView: React.Dispatch<React.SetStateAction<string>> }) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [captionButtonImage, setCaptionButtonImage] = useState("Select Image");
   const { mutate, isPending } = useUploadImage({
     onSuccess: () => {
-      setCaptionButtonImage("📸 Select Image");
-      revalidatePathAction("/lists/client")
       setView("list")
+    },
+    onError: (error) => {
+      console.error("Upload failed:", error);
     }
   });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+
+    if (selectedFile) {
+      setFile(selectedFile);
+      setCaptionButtonImage(selectedFile.name);
+    } else {
+      setCaptionButtonImage("Select Image");
+    }
+  };
+
 
   return (
-    <form action={(formData: FormData) => mutate({ clientId: client.id, formData })} className="w-[45%]">
+    <form action={(formData: FormData) => {
+      mutate({ clientId: client.id, formData });
+    }}
+      className="w-[45%]">
       <label className="cursor-pointer relative flex flex-col w-full">
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*"
           name="file"
+          onChange={handleFileChange}
           className="hidden"
-          required
         />
 
         <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
@@ -34,8 +51,8 @@ export default function ImageUploader({ client, setView }: { client: Client, set
 
           <button
             type="submit"
-            disabled={isPending}
-            className={`px-6 py-3 rounded-md shadow-md text-white font-semibold transition duration-300 ease-in-out ${isPending
+            disabled={!file || isPending}
+            className={`px-6 py-3 rounded-md shadow-md text-white font-semibold transition duration-300 ease-in-out ${!file || isPending
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-background hover:bg-green-500"
               }`}

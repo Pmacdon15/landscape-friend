@@ -35,6 +35,7 @@ export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void,
             return uploadImage(clientId, formData);
         },
         onSuccess: () => {
+            revalidatePathAction("/lists/client");
             onSuccess?.();
         },
         onError: (error) => {

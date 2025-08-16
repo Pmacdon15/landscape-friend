@@ -1,6 +1,7 @@
 "use server";
 import { uploadImageBlob } from "@/lib/upload";
 import { ImageSchema } from "@/lib/zod/schemas";
+import { revalidatePath } from "next/cache";
 
 export async function uploadImage(
   customerId: number,
@@ -12,6 +13,7 @@ export async function uploadImage(
   | Error
   | null
 > {
+  let result
   try {
     const image = formData.get("image");
     const validatedImage = ImageSchema.safeParse({ image });
@@ -19,13 +21,15 @@ export async function uploadImage(
     if (!validatedImage.success) throw new Error("invaild inputs")
 
 
-    const result = await uploadImageBlob(customerId, validatedImage.data.image);
+    result = await uploadImageBlob(customerId, validatedImage.data.image);
     if (!result) return null;
-    return result;
+
   } catch (e) {
     if (e instanceof Error) return e;
     else return new Error("An unknown error occurred");
   }
+  revalidatePath("/lists/client")
+  return result
 }
 
 
@@ -36,13 +40,15 @@ export async function uploadDrawing(file: Blob, clientId: number)
     | Error
     | null
   > {
+  let result
   try {
-    const result = await uploadImageBlob(clientId, file);
+    result = await uploadImageBlob(clientId, file);
     if (!result) return null;
-    return result;
   } catch (e) {
     if (e instanceof Error) return e;
     else return new Error("An unknown error occurred");
   }
+  revalidatePath("/lists/client")
+  return result
 }
 

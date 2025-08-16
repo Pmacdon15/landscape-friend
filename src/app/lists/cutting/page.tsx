@@ -5,7 +5,7 @@ import { fetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import ClientListService from "@/components/ui/service-list/clients-list-service";
+import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { parseClientListParams } from "@/lib/params";
 import { SearchParams } from "@/types/types";
 

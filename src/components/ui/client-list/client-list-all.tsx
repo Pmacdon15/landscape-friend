@@ -22,7 +22,7 @@ export default async function ClientListService({
 }: ClientListServiceProps) {
 
   const result = await clientsPromise;
-
+  console.log("Result: ", result)
   if (!result)
     return (
       <ContentContainer>
@@ -81,7 +81,7 @@ export default async function ClientListService({
           </FormContainer>
         ))}
       </ul >
-      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />    
+      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
     </>
   );
 }
