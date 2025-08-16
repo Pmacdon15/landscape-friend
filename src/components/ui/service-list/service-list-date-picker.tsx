@@ -1,16 +1,28 @@
 'use client'
-import { useState } from "react";
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
+import { useServiceDateSearch } from "@/hooks/hooks";
 
-export const CuttingListDatePicker = ({ cuttingDate, onChange }: { cuttingDate: string, onChange: (event: React.ChangeEvent<HTMLInputElement>) => void }) => {
-    // Parse cuttingDate as a local date
+export const ServiceListDatePicker = () => {
+    const { currentServiceDate, setServiceDate } = useServiceDateSearch();
+
+    // Parse currentServiceDate as a local date
     const parseLocalDate = (dateStr: string) => {
+        if (!dateStr) return null;
         const [year, month, day] = dateStr.split('-').map(Number);
-        return new Date(year, month - 1, day); // month is 0-based in JS Date
+        const date = new Date(year, month - 1, day);
+        return isNaN(date.getTime()) ? null : date; // Return null for invalid dates
     };
 
-    const [date, setDate] = useState(parseLocalDate(cuttingDate));
+    const handleDateChange = (date: Date | null) => {
+        if (date) {
+            // Format as local YYYY-MM-DD
+            const localDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            setServiceDate(localDateStr);
+        } else {
+            setServiceDate(''); // Clear the date if null is passed
+        }
+    };
 
     const getWeekNumber = (date: Date) => {
         const startOfYear = new Date(date.getFullYear(), 0, 1);
@@ -18,27 +30,12 @@ export const CuttingListDatePicker = ({ cuttingDate, onChange }: { cuttingDate: 
         return Math.ceil((daysSinceStart + startOfYear.getDay() + 1) / 7) % 4 || 4;
     };
 
-    const handleDateChange = (date: Date | null) => {
-        if (date) {
-            // Format as local YYYY-MM-DD
-            const localDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-            const event = {
-                target: {
-                    name: 'date',
-                    value: localDateStr,
-                },
-            };
-            onChange(event as React.ChangeEvent<HTMLInputElement>);
-            setDate(date);
-        }
-    };
-
     return (
         <DatePicker
             wrapperClassName="custom-datepicker-wrapper"
             portalId="root-portal"
             withPortal
-            selected={date}
+            selected={parseLocalDate(currentServiceDate)}
             onChange={handleDateChange}
             className="border rounded-sm p-2"
             dayClassName={(date) => {

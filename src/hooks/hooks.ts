@@ -1,10 +1,13 @@
-import { FetchGeocodeResult, GeocodeResult, MutationData, Location } from '@/types/types';
+import { FetchGeocodeResult, GeocodeResult, Location, MaterialField } from '@/types/types';
 import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export const useDebouncedMutation = (mutate: (data: MutationData) => void, delay: number = 500) => {
-  const [value, setValue] = useState<MutationData | null>(null);
+export const useDebouncedMutation = <TData>(
+  mutate: (data: TData) => void,
+  delay: number = 500
+) => {
+  const [value, setValue] = useState<TData | null>(null);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -14,7 +17,7 @@ export const useDebouncedMutation = (mutate: (data: MutationData) => void, delay
     return () => clearTimeout(timeoutId);
   }, [value, mutate, delay]);
 
-  return setValue;
+  return setValue as (data: TData) => void;
 };
 
 export function useDebouncedSearchSync(searchTerm: string) {
@@ -106,4 +109,111 @@ export function useGetLonAndLatFromAddresses(addresses: string[]): { loading: bo
   }, [addresses]);
 
   return { loading, geocodeResults };
+}
+
+
+export function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const handleChange = () => setMatches(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleChange);
+    setMatches(mediaQuery.matches);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, [query]);
+
+  return matches;
+}
+
+export function useInvoiceStatusSearch() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentStatus = searchParams.get('status') || 'all';
+
+  const setInvoiceStatus = (status: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (status && status !== 'all') {
+      params.set('status', status);
+    } else {
+      params.delete('status');
+    }
+    params.set('page', '1');
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  return { currentStatus, setInvoiceStatus };
+}
+
+export function useSearchParam(paramName: string, defaultValue: string = '') {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentValue = searchParams.get(paramName) || defaultValue;
+
+  const setParam = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && value !== defaultValue) {
+      params.set(paramName, value);
+    } else {
+      params.delete(paramName);
+    }
+    params.set('page', '1');
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
+
+  return { currentValue, setParam };
+}
+
+export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
+  const { currentValue: currentPeriod, setParam: setCuttingPeriod } = useSearchParam(paramName, '');
+  return { currentPeriod, setCuttingPeriod };
+}
+
+export function useServiceDateSearch() {
+  const today = new Date().toISOString().slice(0, 10);
+  const { currentValue: currentServiceDate, setParam: setServiceDate } = useSearchParam('date', today);
+  return { currentServiceDate, setServiceDate };
+}
+
+export function useServiceStatusSearch() {
+  const { currentValue: currentServiceStatus, setParam: setServiceStatus } = useSearchParam('serviced', '');
+  return { currentServiceStatus, setServiceStatus };
+}
+
+export function useSearchInput(delay: number = 500) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialSearchTerm = searchParams.get('search') || '';
+
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const debouncedSearchTerm = useDebouncedValue(searchTerm, delay);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedSearchTerm) {
+      params.set('search', debouncedSearchTerm);
+    } else {
+      params.delete('search');
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  }, [debouncedSearchTerm, router, searchParams]);
+
+  return { searchTerm, setSearchTerm };
+}
+
+export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuccess: boolean, reset: () => void, fields: MaterialField[], append: (material: { materialType: string; materialCostPerUnit: number; materialUnits: number; }) => void }) {
+  useEffect(() => {
+    if (isSuccess) {
+      reset();
+    }
+  }, [isSuccess, reset]);
+
+  useEffect(() => {
+    if (fields.length === 0) {
+      append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 });
+    }
+  }, [fields.length, append]);
 }

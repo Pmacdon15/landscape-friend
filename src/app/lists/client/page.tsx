@@ -4,26 +4,26 @@ import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { FetchAllClients } from "@/DAL/dal";
+import { fetchAllClients, fetchOrgMembers } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
+import { parseClientListParams } from "@/lib/params";
+import { SearchParams } from "@/types/types";
 
 export default async function page({
     searchParams,
 }: {
-    searchParams: Promise<{ [key: string]: string | string[] | number | undefined }>
+    searchParams: Promise<SearchParams>;
 }) {
     const [{ isAdmin }, params] = await Promise.all([
         isOrgAdmin(),
         searchParams,
     ]);
 
-    const clientListPage = Number(params.page ?? 1);
-    const searchTerm = String(params.search ?? '');
-    const searchTermCuttingWeek = Number(params.week ?? 0);
-    const searchTermCuttingDay = String(params.day ?? '');
+    const { page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay } = parseClientListParams(params);
 
-    const clientsPromise = FetchAllClients(clientListPage, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const clientsPromise = fetchAllClients(page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const orgMembersPromise = fetchOrgMembers();
 
     return (
         <>
@@ -37,7 +37,12 @@ export default async function page({
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
-                <ClientListAll clientsPromise={clientsPromise} clientListPage={clientListPage} isAdmin={isAdmin} />
+                <ClientListAll
+                    clientsPromise={clientsPromise}
+                    page={page}
+                    isAdmin={isAdmin}
+                    orgMembersPromise={orgMembersPromise}                    
+                />
             </Suspense>
         </>
     );

@@ -10,6 +10,7 @@ export const schemaAddClient = z.object({
 export const schemaUpdatePricePerCut = z.object({
     clientId: z.number(),
     pricePerCut: z.number(),
+    snow: z.boolean()
 })
 
 export const schemaDeleteClient = z.object({
@@ -34,3 +35,31 @@ export const schemaMarkYardCut = z.object({
     clientId: z.number(),
     date: z.date()
 })
+
+export const schemaAssignSnowClearing = z.object({
+    clientId: z.number(),
+    assignedTo: z.string()
+})
+
+
+export const schemaToggleSnowClient = z.object({
+    clientId: z.number()
+})
+
+export const schemaUpdateAPI = z.object({
+    APIKey: z.string()
+})
+
+export const materialSchema = z.object({
+    materialType: z.string().optional().or(z.literal('')),
+    materialCostPerUnit: z.number().optional().default(0),
+    materialUnits: z.number().optional().default(0),
+});
+
+export const schemaCreateQuote = z.object({
+    clientName: z.string(),
+    clientEmail: z.string(),
+    labourCostPerUnit: z.number(),
+    labourUnits: z.number(),
+    materials: z.array(materialSchema),
+});

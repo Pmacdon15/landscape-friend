@@ -8,6 +8,7 @@ import { auth } from '@clerk/nextjs/server';
 export async function sendEmailWithTemplate(
     formData: FormData,
     clientsEmails: string,
+    attachments?: { filename: string; content: Buffer | string; }[]
 ) {
     try {
         const { sessionClaims } = await auth.protect();
@@ -29,7 +30,7 @@ export async function sendEmailWithTemplate(
             throw new Error('No client emails provided');
         }
 
-        return sendEmail(clientsEmails, String(sessionClaims.orgName || sessionClaims.userFullName), validatedFields.data);
+        return sendEmail(clientsEmails, String(sessionClaims.orgName || sessionClaims.userFullName), validatedFields.data, attachments);
     } catch (error) {
         console.error('Error sending email:', error);
         return false;
@@ -41,6 +42,8 @@ export async function sendNewsLetter(formData: FormData) {
     const { isAdmin, sessionClaims, userId } = await isOrgAdmin();
 
     if (!isAdmin) throw new Error("Not Admin");
+    if (!sessionClaims) throw new Error("Session claims are missing.");
+    if (!sessionClaims.orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaSendEmail.safeParse({
         title: formData.get("title"),
@@ -52,7 +55,7 @@ export async function sendNewsLetter(formData: FormData) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await sendNewsLetterDb(validatedFields.data, sessionClaims, userId)
+        const result = await sendNewsLetterDb(validatedFields.data, sessionClaims, userId!)
         if (!result) throw new Error('Failed to Send News Letter');
         return result;
     } catch (e: unknown) {

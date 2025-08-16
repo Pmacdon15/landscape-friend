@@ -3,8 +3,13 @@ import HeaderTitle from './header-title';
 import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
+import { isOrgAdmin } from '@/lib/webhooks';
+import { Suspense } from 'react';
+import ClientOnly from '@/components/wrappers/ClientOnly';
 
-export default function Header() {
+
+export default async function Header() {
+    const { isAdmin } = await isOrgAdmin(false)
     return (
         <>
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
@@ -15,25 +20,32 @@ export default function Header() {
                         </Link>
                     </div>
                     <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-fit'>
-                        <HeaderTitle text='Lawn Buddy' />
+                        <HeaderTitle text='Landscape Friend' />
                     </div>
                 </div>
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
-                    <SignedIn>
-                        <NavBar />
-                        <div className="flex ml-auto items-center gap-2">
-                            <UserButton />
-                            <OrganizationSwitcher />
-                        </div>
-                    </SignedIn>
-                    <SignedOut>
-                        <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm">
-                            <SignInButton />
-                            <SignUpButton />
-                        </div>
-                    </SignedOut>
+                    <Suspense>
+                        <SignedIn>
+
+                            <NavBar isAdmin={isAdmin} />
+                            <div className="flex ml-auto items-center gap-2">
+                                <ClientOnly>
+                                    <UserButton />
+                                    <OrganizationSwitcher />
+                                </ClientOnly>
+                            </div>
+                        </SignedIn>
+                        <SignedOut>
+                            <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
+                                <SignInButton />
+                                <SignUpButton />
+                            </div>
+                        </SignedOut>
+                    </Suspense>
                 </div>
             </div>
         </>
     );
 }
+
+// {/* //TODO: Remore after dev */}

@@ -6,12 +6,15 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-
+import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
 
-export default function NavigationMenuComponent() {
+export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean }) {
+    const date = new Date();
+    const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
+    const isMd = useMediaQuery("(min-width: 768px)");
     return (
-        <NavigationMenu >
+        <NavigationMenu viewport={!isMd}>
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>List</NavigationMenuTrigger>
@@ -19,7 +22,7 @@ export default function NavigationMenuComponent() {
                         <ul className="grid w-[300px] gap-4">
                             <li>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/client-list">
+                                    <Link href="/lists/client">
                                         <div className="font-medium">Client List</div>
                                         <div className="text-muted-foreground">
                                             Add, browse and manage clients.
@@ -27,10 +30,24 @@ export default function NavigationMenuComponent() {
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/cutting-list">
+                                    <Link href={{
+                                        pathname: '/lists/cutting',
+                                        query: { date: today },
+                                    }}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                                <NavigationMenuLink asChild>
+                                    <Link href={{
+                                        pathname: '/lists/clearing',
+                                        query: { date: today },
+                                    }}>
+                                        <div className="font-medium">Clearing List</div>
+                                        <div className="text-muted-foreground">
+                                            Track clients that need to be cleared.
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
@@ -63,32 +80,53 @@ export default function NavigationMenuComponent() {
                         </ul>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
+                {isAdmin &&
+                    <>
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>Billing</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[300px] gap-4">
+                                    <li>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/billing/send-quote">
+                                                <div className="font-medium">Send a Quote</div>
+                                                <div className="text-muted-foreground">
+                                                    Send an Quote as an Email.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/invoice/all">
+                                                <div className="font-medium">Manage Quotes</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage quotes mark accepted, cancel.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/billing/manage/invoices">
+                                                <div className="font-medium">Manage Invoices</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage invoices view, send, resend, mark paid.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </li>
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    </>
+                }
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger>Invoices</NavigationMenuTrigger>
+                    <NavigationMenuTrigger>Settings</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         <ul className="grid w-[300px] gap-4">
                             <li>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/invoice/all">
-                                        <div className="font-medium">Send All</div>
+                                    <Link href="/settings/stripe-api-key">
+                                        <div className="font-medium">Set Stripe API key</div>
                                         <div className="text-muted-foreground">
-                                            Send invoices for all outstanding balances.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoice/individual">
-                                        <div className="font-medium">Send Individual</div>
-                                        <div className="text-muted-foreground">
-                                            Send an invoice to a client with an outstanding balance.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoice/send-estimate">
-                                        <div className="font-medium">Send as Estimate</div>
-                                        <div className="text-muted-foreground">
-                                            Send an invoice as an estimate.
+                                            Enable invoicing by managing your stripe API key.
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
@@ -97,7 +135,7 @@ export default function NavigationMenuComponent() {
                     </NavigationMenuContent>
                 </NavigationMenuItem>
             </NavigationMenuList>
-        </NavigationMenu>
+        </NavigationMenu >
 
     );
 }

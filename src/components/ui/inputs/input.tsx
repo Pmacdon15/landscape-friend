@@ -1,14 +1,5 @@
-interface InputFieldProps {
-    id: string;
-    name: string;
-    type: string;
-    placeholder?: string;
-    required?: boolean;
-    className?: string;
-    step?: string;
-    defaultValue?: number | string;
+import { InputFieldProps } from "@/types/types";
 
-}
 
 export function InputField({ id, name, type, placeholder, required = false, className = '', step, defaultValue }: InputFieldProps) {
     return (
@@ -18,7 +9,7 @@ export function InputField({ id, name, type, placeholder, required = false, clas
             type={type}
             placeholder={placeholder}
             required={required}
-            className={`border rounded sm p-2 bg-white ${className}`}
+            className={`border rounded sm p-1 bg-white ${className}`}
             step={step || 1}
             defaultValue={defaultValue}
         />

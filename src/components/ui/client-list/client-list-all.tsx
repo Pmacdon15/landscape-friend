@@ -1,27 +1,26 @@
 import ContentContainer from "../containers/content-container";
 import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
-import { isOrgAdmin } from "@/lib/webhooks";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Client, PaginatedClients } from "@/types/types";
-import PricePerCutUpdateInput from "./price-per-cut-update-input";
+import { Client, ClientListServiceProps } from "@/types/types";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
+import SnowClientInput from "../inputs/snow-client-input";
+import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
+import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
 
-export default async function ClientListAll({
+export default async function ClientListService({
   clientsPromise,
-  clientListPage,
-  isAdmin,
-}: {
-  clientsPromise: Promise<PaginatedClients | null>;
-  clientListPage: number;
-  isAdmin: boolean;
-}) {
+  page,
+  orgMembersPromise,
+  isAdmin
+}: ClientListServiceProps) {
+
   const result = await clientsPromise;
 
   if (!result)
@@ -33,30 +32,21 @@ export default async function ClientListAll({
     );
   const { clients, totalPages } = result;
 
-  if (clients.length < 1)
-    return (
-      <ContentContainer>
-        {" "}
-        <p>Please add clients</p>{" "}
-      </ContentContainer>
-    );
+  if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
+
 
   return (
     <>
-      <PaginationTabs
-        path="/client-list"
-        clientListPage={clientListPage}
-        totalPages={totalPages}
-      />
+      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
+
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
-            <li className="border p-4 rounded-sm relative bg-white/50">
-              {isAdmin && (
+            <li className="border p-4 rounded-sm relative bg-white/70">
+              {isAdmin &&
                 <div className="absolute top-1 right-1">
                   <DeleteClientButton clientId={client.id} />
-                </div>
-              )}
+                </div>}
               <p>Name: {client.full_name}</p>
               <p className="flex flex-col sm:flex-row">
                 Phone Number:{" "}
@@ -73,7 +63,10 @@ export default async function ClientListAll({
               <p>Address: {client.address}</p>
               {isAdmin && (
                 <>
-                  <PricePerCutUpdateInput client={client} />
+                  <Suspense fallback={<SnowClientInputFallback />}>
+                    <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
+                  </Suspense>
+                  <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
               )}
@@ -82,17 +75,13 @@ export default async function ClientListAll({
                 <Suspense fallback={<FormHeader text="Loading..." />}>
                   <MapComponent address={client.address} />
                 </Suspense>
-              <ImageList client={client} />
+                <ImageList client={client} />
               </div>
             </li>
           </FormContainer>
         ))}
-      </ul>
-      <PaginationTabs
-        path="/client-list"
-        clientListPage={clientListPage}
-        totalPages={totalPages}
-      />
+      </ul >
+      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />    
     </>
   );
 }

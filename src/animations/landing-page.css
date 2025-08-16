@@ -1,0 +1,57 @@
+/* Landing Page Animations */
+
+  /* logo and title slide and fade in */
+  @keyframes logoSlideIn {
+    from {
+      transform: translateX(-10vw);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  @keyframes logoSlideInReverse {
+    from {
+      transform: translateX(10vw);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* responsive adjustments */
+  @media only screen and (max-width: 800px) {
+    @keyframes logoSlideIn {
+    from {
+      transform: translateX(-1vw);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  @keyframes logoSlideInReverse {
+    from {
+      transform: translateX(1vw);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  }
+
+  /* animation applicator classes */
+
+  /* Logo and Title animations */
+  .logo-slide-in {
+    animation: logoSlideIn 1s ease-in-out forwards;
+  }
+  .logo-slide-in-reverse {
+    animation: logoSlideInReverse 1s ease-in-out forwards;
+  }

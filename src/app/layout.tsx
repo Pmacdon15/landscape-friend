@@ -5,7 +5,10 @@ import Header from "../components/ui/header/header";
 import { ClerkProvider } from '@clerk/nextjs'
 import PageContainer from "../components/ui/containers/page-container";
 import Providers from "../components/Providers";
-import { NavBar } from "@/components/ui/nav/nav-bar";
+import { Suspense } from "react";
+import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
+import Footer from "@/components/ui/footer/footer";
+// export const experimental_ppr = true;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +21,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lawn Buddy",
+  title: "Landscape Friend",
   description: "Track and Invoice your lawn clients easily",
+  keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -40,10 +44,13 @@ export default function RootLayout({
             }}
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
-            <Header />
+            <Suspense fallback={<HeaderFallBack />}>
+              <Header />
+            </Suspense>
             <PageContainer>
               {children}
             </PageContainer>
+            <Footer />
           </body>
         </html >
       </Providers>

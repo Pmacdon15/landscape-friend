@@ -1,37 +1,34 @@
-import { auth, clerkClient } from "@clerk/nextjs/server"
+import { auth } from "@clerk/nextjs/server"
 import { neon } from "@neondatabase/serverless"
 
-export async function isOrgAdmin() {
-    const { userId, orgId, sessionClaims } = await auth.protect()
-    let isAdmin = true
-    if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false
-
-    return { userId, orgId, sessionClaims, isAdmin }
-}
-
-export async function handleSubscriptionUpdate(orgId: string, plan: string) {
-    const clerk = await clerkClient();
-
-    if (plan === 'basic_10_people_org') {
-        await clerk.organizations.updateOrganization(orgId, {
-            maxAllowedMemberships: 10
-        });
-    } else if (plan === 'pro_25_people_org') {
-        await clerk.organizations.updateOrganization(orgId, {
-            maxAllowedMemberships: 25
-        })
+export async function isOrgAdmin(protect = true) {
+    let authResult;
+    if (protect) {
+        authResult = await auth.protect();
     } else {
-        await clerk.organizations.updateOrganization(orgId, {
-            maxAllowedMemberships: 1
-        })
+        authResult = await auth();
     }
+
+    const { userId, orgId, sessionClaims } = authResult;
+    let isAdmin = true;
+    if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false;
+
+    return { userId, orgId, sessionClaims, isAdmin };
 }
 
-export async function handleOrganizationCreated(orgId: string) {
+export async function handleUserCreated(userId: string, orgName: string, userEmail: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`
-        INSERT INTO price_per_cut (organization_id)
-        VALUES (${orgId})        
+        INSERT INTO users (id, name, email)
+        VALUES (${userId}, ${orgName}, ${userEmail});               
+    `;
+}
+
+export async function handleOrganizationCreated(orgId: string, orgName: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    await sql`
+        INSERT INTO organizations (organization_id, organization_name)
+        VALUES (${orgId}, ${orgName});               
     `;
 }
 
@@ -41,6 +38,12 @@ export async function handleOrganizationDeleted(orgId: string) {
         DELETE FROM price_per_cut
         WHERE organization_id = ${orgId}        
     `;
+}
+
+export async function handleSubscriptionUpdate(orgId: string, plan: string) {
+    // Placeholder for subscription update logic
+    console.log(`Subscription update for organization ${orgId} with plan ${plan}`);
+    // You would typically update your database here based on the subscription plan
 }
 
 

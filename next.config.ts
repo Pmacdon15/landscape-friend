@@ -8,14 +8,17 @@ const nextConfig: NextConfig = {
         hostname: 'maps.googleapis.com',
         pathname: '/**',
       },
-      
-    ],
-    domains: [
-      "qyhzkprb5ofmir5x.public.blob.vercel-storage.com",
+      {
+        protocol: 'https',
+        hostname: 'ugojuoyfyrxkjqju.public.blob.vercel-storage.com',
+        pathname: '/**',
+      },
     ],
   },
 };
 
 export default nextConfig;
 
-
+//  experimental: {
+//     ppr: "incremental"
+//   }
