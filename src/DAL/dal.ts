@@ -164,14 +164,22 @@ export async function fetchStripAPIKey(): Promise<APIKey | Error> {
 }
 let stripe: Stripe | null = null;
 
-function getStripeInstance(): Stripe {
-  if (!stripe) {
-    const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
-    if (!apiKey) {
-      throw new Error('Stripe secret key not configured.');
-    }
-    stripe = new Stripe(apiKey);
+async function getStripeInstance(): Promise<Stripe> {
+  if (stripe) {
+    return stripe;
   }
+
+  const apiKeyResponse = await fetchStripAPIKey();
+  if (apiKeyResponse instanceof Error) {
+    throw new Error('Stripe secret key not configured.');
+  }
+
+  const apiKey = apiKeyResponse.apk_key;
+  if (!apiKey) {
+    throw new Error('Stripe secret key not configured.');
+  }
+
+  stripe = new Stripe(apiKey);
   return stripe;
 }
 interface FetchInvoicesResponse {
@@ -183,7 +191,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
   const { isAdmin } = await isOrgAdmin();
   if (!isAdmin) throw new Error("Not Admin");
 
-  const stripe = getStripeInstance();
+  const stripe = await getStripeInstance();
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
   try {
