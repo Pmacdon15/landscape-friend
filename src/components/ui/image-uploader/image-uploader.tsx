@@ -26,6 +26,10 @@ export default function ImageUploader({ client }: { client: Client }) {
 
     try {
       const result = await FetchUploadImage(client.id, file);
+      if(!result){
+        console.log(result)
+        throw new Error("error Fetching Image image")
+      }
       // After upload, clear input and filename
       if (fileInputRef.current) {
         fileInputRef.current.value = "";

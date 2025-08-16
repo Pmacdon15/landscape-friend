@@ -121,7 +121,7 @@ export async function fetchSnowClearingClients(
     searchTermIsServiced,
     searchTermAssignedTo
   );
-console.log("clients for clearing : ", result)
+
   if (!result.clientsResult) return null;
 
   const { clients, totalPages } = processClientsResult(

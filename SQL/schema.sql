@@ -115,6 +115,14 @@ VALUES (
         'Test Organization'
     );
 
+CREATE TABLE IF NOT EXISTS images (
+    id SERIAL PRIMARY KEY,
+    customerID VARCHAR(255) NOT NULL,
+    imageURL TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    isActive BOOLEAN
+);
+
 INSERT INTO
     clients (
         full_name,
@@ -290,6 +298,7 @@ INSERT INTO
 SELECT id, 1.0
 FROM clients;
 
+SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
@@ -297,25 +306,12 @@ FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
-
-SELECT * FROM stripe_api_keys;
-SELECT * FROM snow_clearing_assignments;
+-- SELECT * FROM stripe_api_keys;
+-- SELECT * FROM snow_clearing_assignments;
 -- SELECT * FROM payments ;
 -- SELECT * FROM accounts;
 
-CREATE TABLE IF NOT EXISTS images (
-    id SERIAL PRIMARY KEY,
-    customerID VARCHAR(255) NOT NULL,
-    imageURL TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    isActive BOOLEAN
-);
-
-
-
-
-
---Wanger 
+--Wanger
 
 -- INSERT INTO
 --     clients (
