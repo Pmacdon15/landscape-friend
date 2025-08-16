@@ -1,5 +1,5 @@
 "use client";
-import {  uploadImage } from "@/DAL/dal-map-component";
+import { uploadImage } from "@/actions/blobs";
 import { Client } from "@/types/types";
 import { useRef, useState } from "react";
 
@@ -26,7 +26,7 @@ export default function ImageUploader({ client }: { client: Client }) {
 
     try {
       const result = await uploadImage(client.id, file);
-      if(!result){
+      if (!result) {
         console.log(result)
         throw new Error("error Fetching Image image")
       }
@@ -57,19 +57,18 @@ export default function ImageUploader({ client }: { client: Client }) {
         />
 
         <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
-            <div className="text-6xl">📸</div>
-            <div className="px-2 max-w-full truncate">
-              {captionButtonImage}
-              </div>
+          <div className="text-6xl">📸</div>
+          <div className="px-2 max-w-full truncate">
+            {captionButtonImage}
+          </div>
 
           <button
             onClick={handleUpload}
             disabled={!file || uploading}
-            className={`px-6 py-3 rounded-md shadow-md text-white font-semibold transition duration-300 ease-in-out ${
-              uploading || !file
+            className={`px-6 py-3 rounded-md shadow-md text-white font-semibold transition duration-300 ease-in-out ${uploading || !file
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-background hover:bg-green-500"
-            }`}
+              }`}
           >
             {uploading ? "Uploading..." : "Upload"}
           </button>

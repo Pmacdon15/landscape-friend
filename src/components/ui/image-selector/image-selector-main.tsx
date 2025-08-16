@@ -1,7 +1,7 @@
 "use client";
 import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef, useEffect, useState } from "react";
-import { uploadDrawing } from "@/DAL/dal-map-component";
+import { uploadDrawing } from "@/actions/blobs";
 import { Client } from "@/types/types";
 
 declare global {
