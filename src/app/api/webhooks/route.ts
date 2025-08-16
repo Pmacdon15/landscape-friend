@@ -1,4 +1,4 @@
-import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleuserCreated } from '@/lib/webhooks';
+import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated } from '@/lib/webhooks';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 import { SubscriptionItem, OrganizationCreatedEvent, WebhookEvent, UserCreatedEvent, UserDeletedEvent } from '@/types/types'
@@ -30,8 +30,8 @@ export async function POST(req: NextRequest) {
                 const userId = (evt.data as UserCreatedEvent).id;
                 const userName = (evt.data as UserCreatedEvent).name;
                 const userEmail = (evt.data as UserCreatedEvent).email_addresses;
-                await handleuserCreated(userId, userName,userEmail);
-                await handleOrganizationCreated(userId, userName);
+                await handleUserCreated(userId, userName || "", userEmail);
+                await handleOrganizationCreated(userId, userName || "");
                 break;
             }
 
