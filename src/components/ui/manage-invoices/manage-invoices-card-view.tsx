@@ -3,7 +3,7 @@ import ManageInvoiceButton from "../buttons/manage-invoice-button";
 import Link from "next/link";
 
 export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
-  const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white md:w-[48%] lg:w-[30%] xl:w-[30%]";
+  const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white w-full md:w-[48%] lg:w-[30%] xl:w-[30%] mx-auto";
 
   return (
     <div className="flex flex-wrap justify-between gap-4">
