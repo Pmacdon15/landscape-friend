@@ -84,6 +84,7 @@ export interface SubscriptionItem {
 export interface UserCreatedEvent {
     id: string;
     name: string;
+    email:string;
 }
 
 export interface UserDeletedEvent {
