@@ -10,7 +10,7 @@ export function parseClientListParams(params: SearchParams): ParsedClientListPar
   const searchTermIsServiced = params.serviced === 'true'; // Always return a boolean
   const searchTermCuttingWeek = Number(params.week ?? 0);
   const searchTermCuttingDay = String(params.day ?? '');
-  const searchTermAssignedTo = String(params.assigned_to ?? '');
+  const searchTermAssignedTo = String(params.assigned ?? '');
   const searchTermStatus = String(params.status ?? '');
 
   return {
