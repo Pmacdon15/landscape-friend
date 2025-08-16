@@ -23,7 +23,7 @@ export function PaginationTabs({
   return totalPages > 1 ? (
     <div 
       className={`rounded-sm p-2 bg-white/30 backdrop-filter backdrop-blur-sm shadow-lg 
-        ${fullWidth ? 'w-full' : 'sm:w-3/6 md:w-4/6'}`}
+        ${fullWidth ? 'w-full' : 'sm:w-3/6 md:w-5/6'}`}
     >
       <Pagination>
         <PaginationContent>
