@@ -83,8 +83,10 @@ export interface SubscriptionItem {
 
 export interface UserCreatedEvent {
     id: string;
-    name: string;
-    email_addresses:string;
+    first_name: string | null;
+    last_name: string | null;
+    username: string | null;
+    email_addresses: { email_address: string; }[];
 }
 
 export interface UserDeletedEvent {
@@ -97,7 +99,7 @@ export interface OrganizationCreatedEvent {
 
 export interface WebhookEvent {
     type: string;
-    data: SubscriptionItem | OrganizationCreatedEvent;
+    data: SubscriptionItem | OrganizationCreatedEvent | UserCreatedEvent | UserDeletedEvent;
 }
 
 

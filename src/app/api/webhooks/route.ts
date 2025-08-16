@@ -27,11 +27,16 @@ export async function POST(req: NextRequest) {
             }
 
             case 'user.created': {
-                const userId = (evt.data as UserCreatedEvent).id;
-                const userName = (evt.data as UserCreatedEvent).name;
-                const userEmail = (evt.data as UserCreatedEvent).email_addresses;
-                await handleUserCreated(userId, userName || "", userEmail);
-                await handleOrganizationCreated(userId, userName || "");
+                const data = evt.data as UserCreatedEvent;
+                const userId = data.id;
+                const userName = `${data.first_name || ''} ${data.last_name || ''}`.trim() || data.username || 'Personal Workspace';
+                const userEmail = data.email_addresses[0]?.email_address;
+                if (!userEmail) {
+                    console.error('User created event without email address');
+                    break;
+                }
+                await handleUserCreated(userId, userName, userEmail);
+                await handleOrganizationCreated(userId, userName);
                 break;
             }
 
