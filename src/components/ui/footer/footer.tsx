@@ -5,7 +5,7 @@ export default function Footer() {
         <footer className="bg-green-900 text-white py-8 px-4 mt-auto">
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 className="text-lg font-bold mb-4">Lawn Buddy</h3>
+                    <h3 className="text-lg font-bold mb-4">Landscape Friend</h3>
                     <p className="text-gray-400">
                         Track and Invoice your lawn clients easily.
                     </p>
@@ -35,7 +35,7 @@ export default function Footer() {
                 </div>
             </div>
             <div className="mt-8 border-t border-gray-700 pt-4 text-center text-gray-500">
-                <p>&copy; {new Date().getFullYear()} Lawn Buddy. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} Landscape Friend. All rights reserved.</p>
                 <div className="flex justify-center space-x-4 mt-2">
                     <Link href="/privacy-policy" className="hover:text-green-300">Privacy Policy</Link>
                     <Link href="/terms-of-service" className="hover:text-green-300">Terms of Service</Link>
