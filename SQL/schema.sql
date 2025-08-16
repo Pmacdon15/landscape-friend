@@ -299,7 +299,7 @@ FROM clients;
 -- -- SELECT * from price_per_cut ;
 
 SELECT * FROM stripe_api_keys;
--- SELECT * FROM snow_clearing_assignments;
+SELECT * FROM snow_clearing_assignments;
 -- SELECT * FROM payments ;
 -- SELECT * FROM accounts;
 
