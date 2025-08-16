@@ -1,5 +1,5 @@
 "use client";
-import { FetchUploadImage } from "@/DAL/dal-map-component";
+import {  uploadImage } from "@/DAL/dal-map-component";
 import { Client } from "@/types/types";
 import { useRef, useState } from "react";
 
@@ -25,7 +25,7 @@ export default function ImageUploader({ client }: { client: Client }) {
     setUploading(true);
 
     try {
-      const result = await FetchUploadImage(client.id, file);
+      const result = await uploadImage(client.id, file);
       if(!result){
         console.log(result)
         throw new Error("error Fetching Image image")

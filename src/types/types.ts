@@ -10,7 +10,8 @@ export interface Client {
     price_per_month_snow: number;
     snow_client: boolean;
     cutting_schedules: CuttingSchedule[];
-    assigned_to: string
+    assigned_to: string;
+    images: string[];
 }
 
 export interface ClientResult {
@@ -26,7 +27,8 @@ export interface ClientResult {
     cutting_week: number;
     cutting_day: string;
     total_count: number;
-    assigned_to: string
+    assigned_to: string;
+    images: string[];
 }
 
 

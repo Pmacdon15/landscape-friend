@@ -1,24 +1,11 @@
 "use server";
-import { FetchAllImagesByCustomerIdDb } from "@/lib/get-images";
-import { FetchUploadImageBlob } from "@/lib/upload";
+
+import { uploadImageBlob } from "@/lib/upload";
 
 //////////////////////////////////////////////////////////////////////////////
-export async function FetchAllImagesByCustomerId(
-  customerId: number
-){
-  
 
-  try {
-    const result = await FetchAllImagesByCustomerIdDb(customerId);
-    if (!result) return [];
-    return result;
-  } catch (e) {
-    if (e instanceof Error) return e;
-    else return new Error("An unknown error occurred");
-  }
-}
 
-export async function FetchUploadImage(
+export async function uploadImage(
   customerId: number,
   file: File
 ): Promise<
@@ -28,7 +15,7 @@ export async function FetchUploadImage(
   | null
 > {
   try {
-    const result = await FetchUploadImageBlob(customerId, file);
+    const result = await uploadImageBlob(customerId, file);
     if (!result) return null;
     return result;
   } catch (e) {
@@ -38,15 +25,15 @@ export async function FetchUploadImage(
 }
 
 
-export async function uploadDrawing(file:Blob, clientId: number)
-: Promise<
-  | { success: boolean; message: string; status: number }
-  | { error: string; status: number }
-  | Error
-  | null
-> {
+export async function uploadDrawing(file: Blob, clientId: number)
+  : Promise<
+    | { success: boolean; message: string; status: number }
+    | { error: string; status: number }
+    | Error
+    | null
+  > {
   try {
-    const result = await FetchUploadImageBlob(clientId, file);
+    const result = await uploadImageBlob(clientId, file);
     if (!result) return null;
     return result;
   } catch (e) {

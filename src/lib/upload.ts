@@ -2,7 +2,7 @@
 import { put } from "@vercel/blob";
 import { sql } from "@vercel/postgres";
 
-export async function FetchUploadImageBlob(
+export async function uploadImageBlob(
   customerId: number,
   file: File|Blob
 ): Promise<{success:boolean, message:string, status:number}|

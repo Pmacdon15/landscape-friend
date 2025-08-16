@@ -22,6 +22,7 @@ export function processClientsResult(clientsResult: ClientResult[], totalCount: 
         price_per_month_snow: current.price_per_month_snow,      
         snow_client: current.snow_client,
         assigned_to: current.assigned_to,
+        images: current.images,
         cutting_schedules: [{
           cutting_week: current.cutting_week !== null ? current.cutting_week : 0,
           cutting_day: current.cutting_day !== null ? current.cutting_day : "No cut",

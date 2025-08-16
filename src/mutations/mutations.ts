@@ -6,6 +6,7 @@ import { createStripeQuote, markInvoicePaid, markInvoiceVoid, resendInvoice, upd
 import revalidatePathAction from "@/actions/revalidatePath";
 import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
 
+
 export const useAddClient = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
