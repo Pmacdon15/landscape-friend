@@ -30,6 +30,27 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
   return result;
 }
 
+//MARK: Count clients by org id
+export async function countClientsByOrgId(organization_id: string): Promise<number> {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  const result = await sql`
+    SELECT COUNT(*) as count FROM clients WHERE organization_id = ${organization_id}
+  `;
+  return Number(result[0].count);
+}
+
+//MARK: Get organization settings
+export async function getOrganizationSettings(organization_id: string): Promise<{ max_allowed_clinents: number } | null> {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  const result = await sql`
+    SELECT max_allowed_clinents FROM organizations WHERE organization_id = ${organization_id}
+  `;
+  if (result.length > 0) {
+    return result[0] as { max_allowed_clinents: number };
+  }
+  return null;
+}
+
 //MARK: Delete clients
 export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, organization_id: string): Promise<Client[]> {
   const sql = neon(`${process.env.DATABASE_URL}`);

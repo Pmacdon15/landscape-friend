@@ -26,7 +26,8 @@ CREATE TABLE users (
 CREATE TABLE organizations (
     id SERIAL PRIMARY KEY,
     organization_id VARCHAR(253) NOT NULL UNIQUE,
-    organization_name VARCHAR(253) NOT NULL
+    organization_name VARCHAR(253) NOT NULL,
+    max_allowed_clinents INT NOT NULL DEFAULT 50
 );
 
 CREATE TABLE clients (
