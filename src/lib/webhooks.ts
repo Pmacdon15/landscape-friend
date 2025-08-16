@@ -19,7 +19,7 @@ export async function isOrgAdmin(protect = true) {
 export async function handleUserCreated(userId: string, orgName: string, userEmail: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`
-        INSERT INTO users (id, user_name, user_email)
+        INSERT INTO users (id, name, email)
         VALUES (${userId}, ${orgName}, ${userEmail});               
     `;
 }
