@@ -1,11 +1,20 @@
 'use server'
-import { addClientDB, deleteClientDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/db";
+import { addClientDB, countClientsByOrgId, deleteClientDB, getOrganizationSettings, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/db";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
-    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+    const organizationId = orgId || userId;
+    if (!organizationId) throw new Error("Organization ID or User ID is missing.");
+
+    const orgSettings = await getOrganizationSettings(organizationId);
+    if (!orgSettings) throw new Error("Organization not found.");
+
+    const clientCount = await countClientsByOrgId(organizationId);
+    if (clientCount >= orgSettings.max_allowed_clinents) {
+        throw new Error("Maximum number of clients reached for this organization.");
+    }
 
     const validatedFields = schemaAddClient.safeParse({
         full_name: formData.get("full_name"),
@@ -17,7 +26,7 @@ export async function addClient(formData: FormData) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await addClientDB(validatedFields.data, (orgId || userId)!)
+        const result = await addClientDB(validatedFields.data, organizationId)
         if (!result) throw new Error('Failed to add Client');
         return result;
     } catch (e: unknown) {
