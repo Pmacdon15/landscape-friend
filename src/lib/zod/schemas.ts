@@ -63,3 +63,29 @@ export const schemaCreateQuote = z.object({
     labourUnits: z.number(),
     materials: z.array(materialSchema),
 });
+ 
+export const AddClientSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  address: z.string().min(1, "Address is required"),
+  notes: z.string().optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+});
+export const MAX_FILE_SIZE = 500000;
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
+export const ImageSchema = z.object({
+  image: z
+    .instanceof(File)
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported.",
+    ),
+});

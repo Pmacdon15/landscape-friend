@@ -38,7 +38,7 @@ export default function ImageList({ client }: { client: Client }) {
                 <div>Capture from Maps</div>
               </button>
             </div>
-            <ImageUploader client={client} />
+            <ImageUploader setView={setView} client={client} />
           </div>
         </div>
       )}
@@ -58,7 +58,7 @@ export default function ImageList({ client }: { client: Client }) {
                 <div>Capture from Maps</div>
               </button>
             </div>
-            <ImageUploader client={client} />
+            <ImageUploader setView={setView} client={client} />
           </div>
           <div className="w-[100%]">
             <button

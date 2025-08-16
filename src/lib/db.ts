@@ -1,5 +1,5 @@
 import { Account, Client, Email, NamesAndEmails } from "@/types/types";
-import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
+import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { JwtPayload } from "@clerk/types";

@@ -1,17 +1,25 @@
 "use server";
 import { uploadImageBlob } from "@/lib/upload";
+import { ImageSchema } from "@/lib/zod/schemas";
 
 export async function uploadImage(
   customerId: number,
-  file: File
+  formData: FormData,
 ): Promise<
   | { success: boolean; message: string; status: number }
   | { error: string; status: number }
+  | { error: { image: string[] | undefined }; status: number }
   | Error
   | null
 > {
   try {
-    const result = await uploadImageBlob(customerId, file);
+    const image = formData.get("image");
+    const validatedImage = ImageSchema.safeParse({ image });
+
+    if (!validatedImage.success) throw new Error("invaild inputs")
+
+
+    const result = await uploadImageBlob(customerId, validatedImage.data.image);
     if (!result) return null;
     return result;
   } catch (e) {

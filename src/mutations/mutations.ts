@@ -5,6 +5,7 @@ import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { createStripeQuote, markInvoicePaid, markInvoiceVoid, resendInvoice, updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
+import { uploadImage } from "@/actions/blobs";
 
 
 export const useAddClient = () => {
@@ -25,6 +26,19 @@ export const useDeleteClient = () => {
         },
         onError: (error) => {
             console.error('Mutation error:', error);
+        }
+    });
+};
+export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
+    return useMutation({
+        mutationFn: ({ clientId, formData }: { clientId: number, formData: FormData }) => {
+            return uploadImage(clientId, formData);
+        },
+        onSuccess: () => {
+            onSuccess?.();
+        },
+        onError: (error) => {
+            onError?.(error);
         }
     });
 };
