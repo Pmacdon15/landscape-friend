@@ -21,9 +21,9 @@ export function PaginationTabs({
 }) {
 
   return totalPages > 1 ? (
-    <div 
+    <div
       className={`rounded-sm p-2 bg-white/30 backdrop-filter backdrop-blur-sm shadow-lg 
-        ${fullWidth ? 'w-full' : 'sm:w-3/6 md:w-5/6'}`}
+        ${fullWidth ? 'w-full' : 'max-sm:w-full sm:w-3/6 md:w-5/6'}`}
     >
       <Pagination>
         <PaginationContent>
@@ -46,8 +46,8 @@ export function PaginationTabs({
           }
           {Array.from({ length: Math.min(totalPages, page + 1) - Math.max(1, page - 1) + 1 }, (_, i) => Math.max(1, page - 1) + i).map((p) =>
             <PaginationItem key={p}>
-              <PaginationLink 
-                href={`${path}?page=${p}`} 
+              <PaginationLink
+                href={`${path}?page=${p}`}
                 isActive={p === page}
               >
                 {p}
