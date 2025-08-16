@@ -165,9 +165,9 @@ export async function fetchStripAPIKey(): Promise<APIKey | Error> {
 let stripe: Stripe | null = null;
 
 async function getStripeInstance(): Promise<Stripe> {
-  if (stripe) {
-    return stripe;
-  }
+  // if (stripe) {
+  //   return stripe;
+  // }
 
   const apiKeyResponse = await fetchStripAPIKey();
   if (apiKeyResponse instanceof Error) {

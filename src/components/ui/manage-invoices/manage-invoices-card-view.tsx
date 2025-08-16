@@ -6,7 +6,7 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
   const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white w-full md:w-[48%] lg:w-[30%] xl:w-[30%] mx-auto";
 
   return (
-    <div className="flex flex-wrap justify-between gap-4">
+    <div className="flex flex-wrap justify-between gap-2 md:gap-4">
       {invoices.map((invoice) => (
         <div key={invoice.id} className={cardClassName}>
           <div className="font-bold text-lg mb-2">Invoice #{invoice.number}</div>
