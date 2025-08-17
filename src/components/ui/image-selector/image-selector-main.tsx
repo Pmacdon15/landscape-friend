@@ -3,6 +3,7 @@ import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef } from "react";
 import { Client } from "@/types/types";
 import { useImageSelector } from "@/hooks/useImageSelector";
+import Spinner from "@/components/ui/spinner";
 
 export default function ImageSelectorMain({
   setView,
@@ -21,6 +22,7 @@ export default function ImageSelectorMain({
     handleLocationSelect,
     saveDrawing,
     backButton,
+    isLoading,
   } = useImageSelector({
     setView,
     address,
@@ -30,10 +32,16 @@ export default function ImageSelectorMain({
 
   return (
     <div className="relative w-full max-w-md mx-auto h-[300px]">
+      {isLoading && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+          <Spinner />
+        </div>
+      )}
       <div className={`flex flex-nowrap absolute top-2 right-2 z-10 px-4 py-2`}>
         <button
           onClick={saveDrawing}
           className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
+          disabled={isLoading}
         >
           <CameraIcon className="w-5 h-5 text-white" />
         </button>

@@ -30,12 +30,13 @@ export function useImageSelector({
   );
   const [mapZoom, setMapZoom] = useState<number | null>(null);
   const [showGeocodeSelector, setShowGeocodeSelector] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const drawingManagerRef = useRef<google.maps.drawing.DrawingManager | null>(
     null
   );
   const mapInitializedRef = useRef(false);
-  const uploadDrawingMutation = useUploadDrawing();
+  const { mutate, isPending } = useUploadDrawing();
 
   const initMap = useCallback(async () => {
     if (mapInitializedRef.current) return;
@@ -162,12 +163,17 @@ export function useImageSelector({
   }
 
   async function saveDrawing() {
+    setIsSaving(true);
     const container = mapContainer.current;
-    if (!container) return;
+    if (!container) {
+        setIsSaving(false);
+        return;
+    }
 
     const drawingManager = drawingManagerRef.current;
     if (!drawingManager) {
       console.error("DrawingManager is not initialized.");
+      setIsSaving(false);
       return;
     }
 
@@ -194,7 +200,7 @@ export function useImageSelector({
             reject(new Error("Blob creation failed."));
             return;
           }
-          uploadDrawingMutation.mutate({ file: blob, clientId: client.id }, {
+          mutate({ file: blob, clientId: client.id }, {
             onSuccess: () => {
               toast.success("Image uploaded successfully!", { duration: 1500 });
               resolve();
@@ -203,6 +209,9 @@ export function useImageSelector({
               console.error("Upload failed:", uploadError);
               toast.error("Image upload failed!", { duration: 1500 });
               reject(uploadError);
+            },
+            onSettled: () => {
+                setIsSaving(false);
             }
           });
         }, "image/png");
@@ -211,6 +220,7 @@ export function useImageSelector({
     } catch (err) {
       console.error("Operation failed:", err);
       toast.error("Operation failed!", { duration: 1500 });
+      setIsSaving(false);
     } finally {
       drawingManager.setOptions({ drawingControl: true });
     }
@@ -233,5 +243,6 @@ export function useImageSelector({
     handleLocationSelect,
     saveDrawing,
     backButton,
+    isLoading: isPending || isSaving,
   };
 }
