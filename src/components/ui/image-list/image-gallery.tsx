@@ -6,28 +6,30 @@ import React, { useState } from "react";
 import { ImagePlusIcon } from "lucide-react";
 
 interface ImageGalleryProps {
+  isAdmin: boolean;
   client: Client;
   setView: (view: string) => void;
 }
 
 export default function ImageGallery({
+  isAdmin,
   client,
   setView,
 }: ImageGalleryProps) {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   return (
     <div className="relative w-full max-w-md mx-auto h-[300px] overflow-y-auto bg-background rounded-md p-2">
-      <div className={`flex flex-nowrap absolute top-3 right-3 z-10 px-4 py-2`}>
+      {isAdmin && <div className={`flex flex-nowrap absolute top-3 right-3 z-10 px-4 py-2`}>
         <button
           onClick={() => setView("add")}
           className="select-none cursor-pointer px-6 py-2 bg-background rounded border shadow-lg hover:bg-green-300"
         >
           <ImagePlusIcon className="w-5 h-5 text-white" />
-        </button>        
-      </div>
+        </button>
+      </div>}
 
       <div className="flex flex-wrap justify-center align-middle items-center h-full">
-        
+
         {client.images?.map((url: string, index) => (
           <Image
             className="p-2 hover:cursor-zoom-in"

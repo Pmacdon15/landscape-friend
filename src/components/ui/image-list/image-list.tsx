@@ -36,6 +36,7 @@ export default function ImageList({ isAdmin, client }: { isAdmin: boolean, clien
       }
       {view == "list" && client.images.length > 0 &&
         <ImageGallery
+          isAdmin={isAdmin}
           client={client}
           setView={setView}
         />
