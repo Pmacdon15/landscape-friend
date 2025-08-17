@@ -30,22 +30,22 @@ export default async function Header() {
                         <div className='flex flex-wrap justify-between border-t w-full pt-2'>
                             <NavBar userId={userId} isAdmin={isAdmin} />
                             <div className="flex ml-auto items-center gap-2">
-                                <Suspense>
+                                {/* <Suspense> */}
                                     <SignedIn>
                                         <UserButton />
                                         <OrganizationSwitcher />
                                     </SignedIn>
-                                </Suspense>
+                                {/* </Suspense> */}
                             </div>
                         </div>
                         :
                         <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
-                            <Suspense>
+                            {/* <Suspense> */}
                                 <SignedOut>
                                     <SignInButton />
                                     <SignUpButton />
                                 </SignedOut>
-                            </Suspense>
+                            {/* </Suspense> */}
                         </div>
                     }
                 </div>
