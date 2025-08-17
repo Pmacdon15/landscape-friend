@@ -191,21 +191,33 @@ export default function ImageSelectorMain({
         allowTaint: false,
       });
 
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          console.error("Blob creation failed.");
-          drawingManager.setOptions({ drawingControl: true });
-          return;
-        }
+      // Wrap canvas.toBlob in a Promise to use async/await
+      await new Promise<void>((resolve, reject) => {
+        canvas.toBlob(async (blob) => {
+          if (!blob) {
+            console.error("Blob creation failed.");
+            toast.error("Blob creation failed!", { duration: 1500 });
+            reject(new Error("Blob creation failed."));
+            return;
+          }
+          // Now, upload the drawing
+          try {
+            await uploadDrawing(blob, client.id);
+            toast.success("Image uploaded successfully!", { duration: 1500 });
+            resolve();
+          } catch (uploadError) {
+            console.error("Upload failed:", uploadError);
+            toast.error("Image upload failed!", { duration: 1500 });
+            reject(uploadError);
+          }
+        }, "image/png");
+      });
 
-        await uploadDrawing(blob, client.id);
-        toast.success("Image uploaded successfully!");
-        drawingManager.setOptions({ drawingControl: true });
-
-      }, "image/png");
     } catch (err) {
-      console.error("Canvas capture failed:", err);
-      toast.error("Canvas capture failed!");
+      console.error("Operation failed:", err);
+      toast.error("Operation failed!", { duration: 1500 });
+    } finally {
+      // This finally block ensures drawingControl is reset regardless of success or failure
       drawingManager.setOptions({ drawingControl: true });
     }
     backButton()

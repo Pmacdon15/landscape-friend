@@ -1,13 +1,17 @@
 'use client'
 import { useUploadImage } from "@/mutations/mutations";
+import { toast } from "sonner";
 
 export default function UploadImageButton({ clientId, setView }: { clientId: number, setView: React.Dispatch<React.SetStateAction<string>> }) {
     const { mutate, isPending } = useUploadImage({
         onSuccess: () => {
+            toast.success("Image uploaded successfully!", { duration: 1500 });
             setView("list")
+
         },
         onError: (error) => {
             console.error("Upload failed:", error);
+            toast.error("Image upload failed!", { duration: 1500 });
         }
     });
     return (
