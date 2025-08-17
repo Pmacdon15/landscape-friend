@@ -3,7 +3,7 @@ import ContentContainer from "@/components/ui/containers/content-container";
 import { InputDiv } from "@/components/ui/containers/input-dev";
 import { InputField } from "@/components/ui/inputs/input";
 import { SettingsLabel } from "@/components/ui/settings/settings-label";
-import { fetchStripAPIKey } from "@/DAL/dal";
+import { fetchStripAPIKey } from "@/DAL/dal-stripe";
 
 
 export default async function Settings() {
@@ -15,7 +15,7 @@ export default async function Settings() {
             <InputDiv >
                 <SettingsLabel text={"Stripe API Key"} />
                 <form className="flex gap-4 flex-col md:flex-row">
-                    <InputField id={"api_key"} name={"api_key"} type={"text"} placeholder={"Your Stripe API Key"} defaultValue={apiKey} />
+                    <InputField  name={"api_key"} type={"text"} placeholder={"Your Stripe API Key"} defaultValue={apiKey} />
                     <UpdateStripeApiKeyButton />
                 </form>
             </InputDiv>

@@ -1,7 +1,5 @@
-import { Props } from '@/types/types';
+import { Props } from '@/types/types-params';
 import React from 'react';
-
-
 
 export default function ShowAddClientFormButton({ showForm, setShowForm }: Props) {
   return (

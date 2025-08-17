@@ -53,8 +53,8 @@ export const useUploadDrawing = () => {
             // revalidatePathAction("/lists/client");
             // onSuccess?.();
         },
-        onError: (error) => {
-            // onError?.(error);
+        onError: () => {
+            // onError?.();
         }
     });
 };

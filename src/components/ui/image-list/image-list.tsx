@@ -1,10 +1,10 @@
 "use client";
-import { Client } from "@/types/types";
 import React, { useState } from "react";
 import ImageSelectorMain from "../image-selector/image-selector-main";
 import AddSiteMap from "./list-view/add-site-map";
 import ImageGallery from "./image-gallery";
 import NonAdminPlaceHolder from "./list-view/non-admin-placeholder";
+import { Client } from "@/types/types-clients";
 
 export default function ImageList({ isAdmin, client }: { isAdmin: boolean, client: Client, }) {
   const [view, setView] = useState<string>("list");

@@ -1,15 +1,10 @@
 "use client";
-import { Client } from "@/types/types";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import React, { useState } from "react";
 import { ImagePlusIcon } from "lucide-react";
+import { ImageGalleryProps } from "@/types/types-components";
 
-interface ImageGalleryProps {
-  isAdmin: boolean;
-  client: Client;
-  setView: (view: string) => void;
-}
 
 export default function ImageGallery({
   isAdmin,

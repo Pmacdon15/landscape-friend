@@ -1,7 +1,8 @@
-import { FetchGeocodeResult, GeocodeResult, Location, MaterialField } from '@/types/types';
 import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { FetchGeocodeResult, GeocodeResult } from '@/types/types-google-map-iframe';
+import { MaterialField } from '@/types/types-components';
 
 export const useDebouncedMutation = <TData>(
   mutate: (data: TData) => void,

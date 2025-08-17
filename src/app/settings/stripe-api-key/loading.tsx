@@ -11,7 +11,7 @@ export default function Loading() {
             <InputDiv >
                 <SettingsLabel text={"Stripe API Key"} />
                 <form className="flex gap-4">
-                    <InputField id={"stripe_api_key"} name={"stripe_api_key"} type={"text"} placeholder={"Your Stripe API Key"} />
+                    <InputField  name={"stripe_api_key"} type={"text"} placeholder={"Your Stripe API Key"} />
                     <UpdateStripeApiKeyButton />
                 </form>
             </InputDiv>

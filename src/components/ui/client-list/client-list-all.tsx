@@ -3,7 +3,6 @@ import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Client, ClientListServiceProps } from "@/types/types";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
@@ -13,6 +12,7 @@ import SnowClientInput from "../inputs/snow-client-input";
 import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
+import { Client, ClientListServiceProps } from "@/types/types-clients";
 
 
 
@@ -29,7 +29,6 @@ export default async function ClientListService({
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
-
 
   return (
     <>

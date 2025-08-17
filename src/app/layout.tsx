@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
+import { hasStripAPIKey } from "@/DAL/dal-stripe";
 // export const experimental_ppr = true;
 
 const geistSans = Geist({
@@ -32,6 +33,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const hasStripAPIKeyPromise = hasStripAPIKey()
   return (
     <ClerkProvider>
       <Providers>
@@ -46,7 +48,7 @@ export default async function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
             <Suspense fallback={<HeaderFallBack />}>
-              <Header />
+              <Header hasStripAPIKeyPromise={hasStripAPIKeyPromise} />
             </Suspense>
             <PageContainer>
               {children}

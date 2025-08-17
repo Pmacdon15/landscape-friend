@@ -1,10 +1,10 @@
-import { Account, Client, Email, NamesAndEmails } from "@/types/types";
 import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { JwtPayload } from "@clerk/types";
 import { sendGroupEmail } from "./resend";
 import { revalidatePath } from "next/cache";
+import { Account, Client, Email, NamesAndEmails } from "@/types/types-clients";
 
 //MARK: Add clients
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {

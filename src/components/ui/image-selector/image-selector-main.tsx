@@ -1,9 +1,9 @@
 "use client";
 import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef } from "react";
-import { Client } from "@/types/types";
 import { useImageSelector } from "@/hooks/useImageSelector";
 import Spinner from "@/components/ui/spinner";
+import { Client } from "@/types/types-clients";
 
 export default function ImageSelectorMain({
   setView,

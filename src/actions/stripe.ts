@@ -179,7 +179,7 @@ export async function createStripeQuote(formData: FormData) {
             customer: customerId,
             line_items: line_items,
         });
-        //TODO: maybe not finalize and do later on a page yet to be made 
+        
         // Finalize the quote immediately
         const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
 
@@ -194,8 +194,7 @@ export async function createStripeQuote(formData: FormData) {
             filename: `quote_${finalizedQuote.id}.pdf`,
             content: pdfContent,
         }];
-        if (!quote.id) throw new Error("Failed")
-        //TODO: Add check for if a valid quote and is valid email sent
+        if (!quote.id) throw new Error("Failed")        
         // Construct email content
         const emailSubject = `Your Quote from ${companyName}`;
         const emailBody = `Dear ${validatedFields.data.clientName},

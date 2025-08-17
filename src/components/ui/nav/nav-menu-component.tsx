@@ -8,11 +8,14 @@ import {
 } from "@/components/ui/navigation-menu"
 import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
+import { use } from "react";
 
-export default function NavigationMenuComponent({ userId, isAdmin }: { userId: string, isAdmin: boolean }) {
+export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
     const date = new Date();
     const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
     const isMd = useMediaQuery("(min-width: 768px)");
+
+    const hasStripAPIKey = use(hasStripAPIKeyPromise)
     return (
         <NavigationMenu viewport={!isMd}>
             <NavigationMenuList>
@@ -60,14 +63,14 @@ export default function NavigationMenuComponent({ userId, isAdmin }: { userId: s
                     <NavigationMenuContent>
                         <ul className="grid w-[300px] gap-4">
                             <li>
-                                <NavigationMenuLink asChild>
+                                {isAdmin && <NavigationMenuLink asChild>
                                     <Link href="/email/news-letter">
                                         <div className="font-medium">Send News Letter</div>
                                         <div className="text-muted-foreground">
                                             Send all clients an update email.
                                         </div>
                                     </Link>
-                                </NavigationMenuLink>
+                                </NavigationMenuLink>}
                                 <NavigationMenuLink asChild>
                                     <Link href="/email/individual">
                                         <div className="font-medium">Send Individual</div>
@@ -80,7 +83,7 @@ export default function NavigationMenuComponent({ userId, isAdmin }: { userId: s
                         </ul>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
-                {isAdmin &&
+                {isAdmin && hasStripAPIKey &&
                     <>
                         <NavigationMenuItem>
                             <NavigationMenuTrigger>Billing</NavigationMenuTrigger>

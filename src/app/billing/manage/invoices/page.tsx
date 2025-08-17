@@ -1,11 +1,11 @@
-import { fetchInvoices } from "@/DAL/dal";
+import { fetchInvoices } from "@/DAL/dal-stripe";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { CardView } from "@/components/ui/manage-invoices/manage-invoices-card-view";
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
 import { parseClientListParams } from "@/lib/params";
-import { SearchParams} from "@/types/types";
+import { SearchParams } from "@/types/types-params";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams
