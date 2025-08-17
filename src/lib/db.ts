@@ -1,5 +1,5 @@
 import { Account, Client, Email, NamesAndEmails } from "@/types/types";
-import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "./zod/schemas";
+import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { JwtPayload } from "@clerk/types";
@@ -234,8 +234,14 @@ export async function fetchClientsClearingGroupsDb(
       cwa.full_name,
       cwa.phone_number,
       cwa.email_address,
-      cwa.address
+      cwa.address,
+      COALESCE(img.urls, ARRAY[]::TEXT[]) AS images
     FROM clients_with_assignments cwa
+    LEFT JOIN LATERAL (
+      SELECT ARRAY_AGG(i.imageURL) as urls
+      FROM images i
+      WHERE i.customerID = cwa.id::TEXT
+    ) img ON TRUE
     ORDER BY cwa.id
   `;
 
@@ -372,8 +378,14 @@ export async function fetchClientsWithSchedules(
       cws.snow_client,
       cws.cutting_week,
       cws.cutting_day,
-      cws.assigned_to
+      cws.assigned_to,
+      COALESCE(img.urls, ARRAY[]::TEXT[]) AS images
     FROM clients_with_schedules cws
+    LEFT JOIN LATERAL (
+      SELECT ARRAY_AGG(i.imageURL) as urls
+      FROM images i
+      WHERE i.customerID = cws.id::TEXT
+    ) img ON TRUE
     ORDER BY cws.id
   `;
 
@@ -480,10 +492,16 @@ export async function fetchClientsCuttingSchedules(
     cws.snow_client,
     cws.cutting_week,
     cws.cutting_day,
-    sa.assigned_to
+    sa.assigned_to,
+    COALESCE(img.urls, ARRAY[]::TEXT[]) AS images
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
   LEFT JOIN snow_assignments sa ON cws.id = sa.client_id
+  LEFT JOIN LATERAL (
+    SELECT ARRAY_AGG(i.imageURL) as urls
+    FROM images i
+    WHERE i.customerID = cws.id::TEXT
+  ) img ON TRUE
   WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 

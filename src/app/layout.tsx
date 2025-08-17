@@ -8,6 +8,7 @@ import Providers from "../components/Providers";
 import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
+import { Toaster } from '@/components/ui/sonner';
 // export const experimental_ppr = true;
 
 const geistSans = Geist({
@@ -51,6 +52,7 @@ export default async function RootLayout({
               {children}
             </PageContainer>
             <Footer />
+            <Toaster />
           </body>
         </html >
       </Providers>

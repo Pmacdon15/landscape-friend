@@ -2,7 +2,7 @@ import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 // import ClientListService from "@/components/ui/service-list/clients-list-service";
 import FormHeader from "@/components/ui/header/form-header";
-import ClientListService from "@/components/ui/service-list/clients-list-service";
+import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { fetchSnowClearingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
@@ -29,7 +29,7 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
         <>
             <FormContainer>
                 <FormHeader text={"Clearing List"} />
-                <SearchForm variant="service" />
+                <SearchForm variant="clearing" />
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService

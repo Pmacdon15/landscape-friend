@@ -9,6 +9,7 @@ import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import MarkYardServiced from "../buttons/mark-yard-serviced";
+import ImageList from "../image-list/image-list";
 
 export default async function ClientListService({ clientsPromise, page, serviceDate, searchTermIsServiced, snow = false }:
     {
@@ -55,9 +56,12 @@ export default async function ClientListService({ clientsPromise, page, serviceD
                                 <ClientEmailPopover client={client} />
                             </div>
                             <p>Address: {client.address}</p>
-                            <Suspense fallback={<FormContainer><FormHeader text="Loading..." /></FormContainer>}>
-                                <MapComponent address={client.address} />
-                            </Suspense>
+                            <div className="flex flex-col sm:flex-row gap-1">
+                                <Suspense fallback={<FormHeader text="Loading..." />}>
+                                    <MapComponent address={client.address} />
+                                </Suspense>
+                                <ImageList client={client} />
+                            </div>
                         </li>
                         {!searchTermIsServiced && serviceDate && <MarkYardServiced clientId={client.id} serviceDate={serviceDate} snow={snow} />}
                     </FormContainer>

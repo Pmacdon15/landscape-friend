@@ -5,6 +5,8 @@ import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
 import { createStripeQuote, markInvoicePaid, markInvoiceVoid, resendInvoice, updateStripeAPIKey } from "@/actions/stripe";
 import revalidatePathAction from "@/actions/revalidatePath";
 import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
+import { uploadImage } from "@/actions/blobs";
+
 
 export const useAddClient = () => {
     return useMutation({
@@ -27,7 +29,35 @@ export const useDeleteClient = () => {
         }
     });
 };
-
+export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
+    return useMutation({
+        mutationFn: ({ clientId, formData }: { clientId: number, formData: FormData }) => {
+            return uploadImage(clientId, formData);
+        },
+        onSuccess: () => {
+            // revalidatePathAction("/lists/client");
+            onSuccess?.();
+        },
+        onError: (error) => {
+            onError?.(error);
+        }
+    });
+};
+// export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
+// export const useUploadDrawing = () => {
+//     return useMutation({
+//         mutationFn: ({ file, clientId }: { file: Blob, clientId: number }) => {
+//             return uploadDrawing(file, clientId);
+//         },
+//         onSuccess: () => {
+//             // revalidatePathAction("/lists/client");
+//             // onSuccess?.();
+//         },
+//         onError: (error) => {
+//             // onError?.(error);
+//         }
+//     });
+// };
 export const useUpdateClientPricePer = () => {
     return useMutation({
         mutationFn: ({ clientId, pricePerCut, snow = false }: { clientId: number, pricePerCut: number, snow: boolean }) => {

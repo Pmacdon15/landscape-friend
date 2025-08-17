@@ -5,7 +5,7 @@ import { fetchCuttingClients } from "@/DAL/dal";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import ClientListService from "@/components/ui/service-list/clients-list-service";
+import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { parseClientListParams } from "@/lib/params";
 import { SearchParams } from "@/types/types";
 
@@ -24,7 +24,7 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
         <>
             <FormContainer>
                 <FormHeader text={"Cutting List"} />
-                <SearchForm variant="service" />
+                <SearchForm variant="cutting" />
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService

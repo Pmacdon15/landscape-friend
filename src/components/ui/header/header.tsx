@@ -9,7 +9,7 @@ import ClientOnly from '@/components/wrappers/ClientOnly';
 
 
 export default async function Header() {
-    const { isAdmin } = await isOrgAdmin(false)
+    const { isAdmin, userId } = await isOrgAdmin(false)
     return (
         <>
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
@@ -26,8 +26,7 @@ export default async function Header() {
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
                     <Suspense>
                         <SignedIn>
-
-                            <NavBar isAdmin={isAdmin} />
+                            {userId && <NavBar userId={userId} isAdmin={isAdmin} />}
                             <div className="flex ml-auto items-center gap-2">
                                 <ClientOnly>
                                     <UserButton />

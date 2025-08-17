@@ -9,7 +9,7 @@ import {
 import { useMediaQuery } from "@/hooks/hooks";
 import Link from "next/link";
 
-export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean }) {
+export default function NavigationMenuComponent({ userId, isAdmin }: { userId: string, isAdmin: boolean }) {
     const date = new Date();
     const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
     const isMd = useMediaQuery("(min-width: 768px)");
@@ -43,7 +43,7 @@ export default function NavigationMenuComponent({ isAdmin }: { isAdmin: boolean 
                                 <NavigationMenuLink asChild>
                                     <Link href={{
                                         pathname: '/lists/clearing',
-                                        query: { date: today },
+                                        query: { date: today, assigned: userId },
                                     }}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">

@@ -4,7 +4,7 @@ import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 import { InvoiceStatusSelector } from '../selectors/invoice-status-selector';
 import { SearchInput } from '../inputs/search-input';
 
-type SearchFormVariant = 'service' | 'invoices' | 'default';
+type SearchFormVariant = 'cutting' | 'clearing' | 'invoices' | 'default';
 
 export default function SearchForm({ variant = 'default' }: { variant?: SearchFormVariant }) {
   return (
@@ -19,9 +19,13 @@ export default function SearchForm({ variant = 'default' }: { variant?: SearchFo
             variant="day"
           />
         </>}
-      {variant === 'service' &&
+      {variant === 'cutting' &&
         <>
           <ServiceListDatePicker />
+          <ServiceStatusSelector />
+        </>}
+      {variant === 'clearing' &&
+        <>          
           <ServiceStatusSelector />
         </>}
 
