@@ -26,25 +26,27 @@ export default async function Header() {
                     </div>
                 </div>
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
+                    {userId && <NavBar userId={userId} isAdmin={isAdmin} />}
+
                     <Suspense>
-                        <SignedIn>
-                            {userId && <NavBar userId={userId} isAdmin={isAdmin} />}
-                            <div className="flex ml-auto items-center gap-2">
-                                <ClientOnly>
-                                    <UserButton />
-                                    <OrganizationSwitcher />
-                                </ClientOnly>
-                            </div>
-                        </SignedIn>
-                        <SignedOut>
-                            <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
-                                <SignInButton />
-                                <SignUpButton />
-                            </div>
-                        </SignedOut>
+                        <div className="flex ml-auto items-center gap-2">
+                            <SignedIn>
+                                {/* <ClientOnly> */}
+                                <UserButton />
+                                <OrganizationSwitcher />
+                                {/* </ClientOnly> */}
+                                {/* </div> */}
+                            </SignedIn>
+                            <SignedOut>
+                                <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
+                                    <SignInButton />
+                                    <SignUpButton />
+                                </div>
+                            </SignedOut>
+                        </div>
                     </Suspense>
-                </div>
-            </div>
+                </div >
+            </div >
         </>
     );
 }
