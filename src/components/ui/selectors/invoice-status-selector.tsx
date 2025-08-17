@@ -1,6 +1,6 @@
 'use client'
 
-import { useInvoiceStatusSearch } from "../../../hooks/hooks";
+import { useInvoiceStatusSearch } from "../../../lib/hooks/hooks";
 
 const statuses = ["all", "draft", "open", "paid"];
 

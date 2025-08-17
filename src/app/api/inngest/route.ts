@@ -1,5 +1,5 @@
-import { inngest } from "@/inngest/inngest"
-import { functions } from "@/inngest/functions";
+import { inngest } from "@/lib/inngest/inngest"
+import { functions } from "@/lib/inngest/functions";
 import { serve } from "inngest/next";
 
 export const { GET, POST, PUT } = serve({

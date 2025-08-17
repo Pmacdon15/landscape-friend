@@ -24,7 +24,9 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
         <>
             <FormContainer>
                 <FormHeader text={"Cutting List"} />
-                <SearchForm variant="cutting" />
+                <Suspense>
+                    <SearchForm variant="cutting" />
+                </Suspense>
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListService

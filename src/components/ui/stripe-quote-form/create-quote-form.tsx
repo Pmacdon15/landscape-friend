@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemaCreateQuote } from '@/lib/zod/schemas';
-import { useCreateQuoteForm } from '@/hooks/hooks';
+import { useCreateQuoteForm } from '@/lib/hooks/hooks';
 
 export function CreateQuoteForm() {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();

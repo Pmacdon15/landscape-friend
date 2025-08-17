@@ -6,7 +6,6 @@ import "@/animations/landing-page.css";
 import Image from "next/image";
 import FillFormContainer from "@/components/ui/containers/fill-form-container";
 
-
 export default function Home() {
   return (
     <>

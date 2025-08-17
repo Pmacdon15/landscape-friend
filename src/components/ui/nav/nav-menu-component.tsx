@@ -6,7 +6,7 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { useMediaQuery } from "@/hooks/hooks";
+import { useMediaQuery } from "@/lib/hooks/hooks";
 import Link from "next/link";
 import { use } from "react";
 

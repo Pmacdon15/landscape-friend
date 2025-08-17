@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { useCuttingPeriodSearch } from "@/hooks/hooks";
+import { useCuttingPeriodSearch } from "@/lib/hooks/hooks";
 
 import { days, weeks } from '@/lib/values';
 

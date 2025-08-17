@@ -6,6 +6,7 @@ import { CardView } from "@/components/ui/manage-invoices/manage-invoices-card-v
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
 import { parseClientListParams } from "@/lib/params";
 import { SearchParams } from "@/types/types-params";
+import { Suspense } from "react";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams
@@ -15,8 +16,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     return (
         <FormContainer>
             <FormHeader text={"Manage Invoices"} />
-            <SearchForm variant="invoices" />
-            <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />           
+            <Suspense>
+                <SearchForm variant="invoices" />
+            </Suspense>
+            <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />
             <CardView invoices={invoices} />
             <PaginationTabs path={"/billing/manage/invoices"} page={page} totalPages={totalPages} fullWidth />
         </FormContainer>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchInput } from '@/hooks/hooks';
+import { useSearchInput } from '@/lib/hooks/hooks';
 
 export function SearchInput() {
   const { searchTerm, setSearchTerm } = useSearchInput();

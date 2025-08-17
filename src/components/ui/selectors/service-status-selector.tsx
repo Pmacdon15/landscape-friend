@@ -1,5 +1,5 @@
 'use client'
-import { useServiceStatusSearch } from "@/hooks/hooks";
+import { useServiceStatusSearch } from "@/lib/hooks/hooks";
 
 export const ServiceStatusSelector = () => {
     const { currentServiceStatus, setServiceStatus } = useServiceStatusSearch();

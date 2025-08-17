@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import FormHeader from '../header/form-header';
-import { useGetLocation, useGetLonAndLatFromAddresses } from '@/hooks/hooks';
+import { useGetLocation, useGetLonAndLatFromAddresses } from '@/lib/hooks/hooks';
 import { GeocodeResult, MapComponentProps } from '@/types/types-google-map-iframe';
 
 export default function ManyPointsMap({ addresses }: MapComponentProps) {

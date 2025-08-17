@@ -1,7 +1,7 @@
 'use client'
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
-import { useServiceDateSearch } from "@/hooks/hooks";
+import { useServiceDateSearch } from "@/lib/hooks/hooks";
 
 export const ServiceListDatePicker = () => {
     const { currentServiceDate, setServiceDate } = useServiceDateSearch();
