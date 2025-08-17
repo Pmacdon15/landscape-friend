@@ -31,11 +31,11 @@ export const useDeleteClient = () => {
 };
 export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
     return useMutation({
-        mutationFn: ({ clientId, formData }: { clientId: number, formData: FormData }) => {            
+        mutationFn: ({ clientId, formData }: { clientId: number, formData: FormData }) => {
             return uploadImage(clientId, formData);
         },
         onSuccess: () => {
-            revalidatePathAction("/lists/client");
+            // revalidatePathAction("/lists/client");
             onSuccess?.();
         },
         onError: (error) => {
@@ -43,7 +43,21 @@ export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void,
         }
     });
 };
-
+// export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
+// export const useUploadDrawing = () => {
+//     return useMutation({
+//         mutationFn: ({ file, clientId }: { file: Blob, clientId: number }) => {
+//             return uploadDrawing(file, clientId);
+//         },
+//         onSuccess: () => {
+//             // revalidatePathAction("/lists/client");
+//             // onSuccess?.();
+//         },
+//         onError: (error) => {
+//             // onError?.(error);
+//         }
+//     });
+// };
 export const useUpdateClientPricePer = () => {
     return useMutation({
         mutationFn: ({ clientId, pricePerCut, snow = false }: { clientId: number, pricePerCut: number, snow: boolean }) => {

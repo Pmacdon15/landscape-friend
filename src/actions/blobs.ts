@@ -13,7 +13,7 @@ export async function uploadImage(
   | Error
   | null
 > {
- 
+
   let result
   try {
     const image = formData.get("image");
@@ -21,17 +21,18 @@ export async function uploadImage(
 
     if (!validatedImage.success) throw new Error("invaild inputs")
 
-        result = await uploadImageBlob(customerId, validatedImage.data.image);
+    result = await uploadImageBlob(customerId, validatedImage.data.image);
     if (result && 'error' in result) {
       throw new Error(result.error);
     }
-      
 
   } catch (e) {
     if (e instanceof Error) return e;
     else return new Error("An unknown error occurred");
   }
   revalidatePath("/lists/client")
+  revalidatePath("/lists/cutting")
+  revalidatePath("/lists/clearing")
   return result
 }
 
@@ -46,12 +47,16 @@ export async function uploadDrawing(file: Blob, clientId: number)
   let result
   try {
     result = await uploadImageBlob(clientId, file);
-    if (!result) return null;
+    if (result && 'error' in result) {
+      throw new Error(result.error);
+    }
   } catch (e) {
     if (e instanceof Error) return e;
     else return new Error("An unknown error occurred");
   }
   revalidatePath("/lists/client")
+  revalidatePath("/lists/cutting")
+  revalidatePath("/lists/clearing")
   return result
 }
 

@@ -20,8 +20,8 @@ export async function uploadImageBlob(
     INSERT INTO images (customerID, imageURL, isActive)
     VALUES (${customerId}, ${url}, ${true});
   `;
-  console.log("sqlResults:", sqlResults)
-  if (!sqlResults) return { error: "Failed to upload.", status: 400 };
+  if (!sqlResults || sqlResults == null || sqlResults.rowCount! <= 0 || sqlResults.command !== 'INSERT')
+    return { error: "Failed to upload.", status: 400 };
   return { success: true, message: "Upload succeeded", status: 201 };
 }
 

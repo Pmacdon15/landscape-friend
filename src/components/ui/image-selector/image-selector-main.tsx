@@ -1,6 +1,6 @@
 "use client";
 import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import { uploadDrawing } from "@/actions/blobs";
 import { Client } from "@/types/types";
 
@@ -33,8 +33,9 @@ export default function ImageSelectorMain({
   const drawingManagerRef = useRef<google.maps.drawing.DrawingManager | null>(
     null
   );
-
-  const initMap = async () => {
+  const mapInitializedRef = useRef(false);
+  const initMap = useCallback(async () => {
+    if (mapInitializedRef.current) return;
     if (!window.google?.maps?.Geocoder || !mapElementRef.current) return;
 
     const geocoder = new window.google.maps.Geocoder();
@@ -125,12 +126,13 @@ export default function ImageSelectorMain({
       }
       setMapZoom(map.getZoom() ?? 20);
     });
-  };
+    mapInitializedRef.current = true;
+  }, [address, mapCenter, mapZoom]);
 
   useEffect(() => {
     const loadGoogleScript = () => {
       if (window.google?.maps) {
-        initMap();
+        if (!mapInitializedRef.current) initMap();
         return;
       }
 
@@ -155,7 +157,7 @@ export default function ImageSelectorMain({
     if (typeof window !== "undefined") {
       loadGoogleScript();
     }
-  }, [address]);
+  }, [address, initMap]);
 
   function backButton() {
     setView("list");
@@ -194,10 +196,10 @@ export default function ImageSelectorMain({
           drawingManager.setOptions({ drawingControl: true });
           return;
         }
-
+        // const { mutate } = useUploadDrawing()
         try {
-          const url = await uploadDrawing(blob, client.id);
-          alert("Upload success!");
+          await uploadDrawing(blob, client.id);
+          // alert("Upload success!");
         } catch (uploadError) {
           console.error("Upload failed:", uploadError);
         } finally {

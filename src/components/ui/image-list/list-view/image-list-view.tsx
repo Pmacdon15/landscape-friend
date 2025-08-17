@@ -1,9 +1,10 @@
 import Image from "next/image";
-import { ImagePlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { ClientWithImages } from "@/types/types";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ImagePlusIcon } from "lucide-react";
+import { Client } from "@/types/types";
 
 interface ImageListViewProps {
-  client: ClientWithImages;
+  client: Client;
   setView: (view: string) => void;
   previewSrc: string | null;
   setPreviewSrc: (src: string | null) => void;
@@ -21,7 +22,7 @@ export default function ImageListView({ client, setView, previewSrc, setPreviewS
         </button>
       </div>
 
-      {client.images?.map((url: string, index) => (
+      {client.images?.map((url: string, index: number) => (
         <Image
           className="p-2 hover:cursor-zoom-in"
           key={index}
