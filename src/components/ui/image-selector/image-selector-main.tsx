@@ -3,6 +3,7 @@ import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import { uploadDrawing } from "@/actions/blobs";
 import { Client } from "@/types/types";
+import { toast } from "sonner";
 
 declare global {
   interface Window {
@@ -196,18 +197,15 @@ export default function ImageSelectorMain({
           drawingManager.setOptions({ drawingControl: true });
           return;
         }
-        // const { mutate } = useUploadDrawing()
-        try {
-          await uploadDrawing(blob, client.id);
-          // alert("Upload success!");
-        } catch (uploadError) {
-          console.error("Upload failed:", uploadError);
-        } finally {
-          drawingManager.setOptions({ drawingControl: true });
-        }
+
+        await uploadDrawing(blob, client.id);
+        toast.success("Image uploaded successfully!");
+        drawingManager.setOptions({ drawingControl: true });
+
       }, "image/png");
     } catch (err) {
       console.error("Canvas capture failed:", err);
+      toast.error("Canvas capture failed!");
       drawingManager.setOptions({ drawingControl: true });
     }
     backButton()
