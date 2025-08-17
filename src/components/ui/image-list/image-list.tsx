@@ -18,28 +18,24 @@ export default function ImageList({ client }: { client: Client, }) {
             setView={setView}
             client={client}
           />
-        </div>
-      }
+        </div>}
       {view == "list" && client.images.length === 0 &&
         <AddSiteMap
           clientId={client.id}
           setView={setView}
-        />
-      }
-      {view == "add" && (
+        />}
+      {view == "add" &&
         <AddSiteMap
           clientId={client.id}
           setView={setView}
-        />
-      )}
-      {view == "list" && client.images.length > 0 && (
+        />}
+      {view == "list" && client.images.length > 0 &&
         <ImageGallery
           client={client}
           setView={setView}
           previewSrc={previewSrc}
           setPreviewSrc={setPreviewSrc}
-        />
-      )}
+        />}
     </>
   );
 }
