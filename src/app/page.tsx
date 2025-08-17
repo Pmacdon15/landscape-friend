@@ -4,6 +4,7 @@ import FormContainer from "@/components/ui/containers/form-container";
 import Link from "next/link";
 import "@/animations/landing-page.css";
 import Image from "next/image";
+import FillFormContainer from "@/components/ui/containers/fill-form-container";
 
 
 export default function Home() {
@@ -43,7 +44,7 @@ export default function Home() {
             </div>
             <div className="w-full md:ml-4 md:mt-0 mt-4 logo-slide-in-reverse">
               <FormContainer popover={true}>
-                <ContentContainer>
+                <FillFormContainer>
                   <h1 className="text-3xl font-bold mb-6">Welcome to Landscape Friend</h1>
                   <p className="mb-4 indent-4">
                     Thank you for choosing Landscape Friend! To learn more about how we work and protect your data, please review our{" "}
@@ -55,7 +56,7 @@ export default function Home() {
                       Privacy Policy
                     </Link>.
                   </p>
-                </ContentContainer>
+                </FillFormContainer>
               </FormContainer>
             </div>
           </div>
