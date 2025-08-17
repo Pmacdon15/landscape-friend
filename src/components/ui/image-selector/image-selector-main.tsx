@@ -33,7 +33,7 @@ export default function ImageSelectorMain({
   return (
     <div className="relative w-full max-w-md mx-auto h-[300px]">
       {isLoading && (
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
+        <div className="absolute inset-0 bg-white/30 flex justify-center items-center z-30">
           <Spinner />
         </div>
       )}
