@@ -1,4 +1,4 @@
-import { StripeInvoice } from "@/types/types";
+import { StripeInvoice } from "@/types/types-stripe";
 import ManageInvoiceButton from "../buttons/manage-invoice-button";
 import Link from "next/link";
 

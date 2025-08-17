@@ -1,8 +1,8 @@
 'use client'
 import * as Popover from '@radix-ui/react-popover';
 import SendEmailComponent from "@/components/ui/emails/send-email-component";
-import { Client } from '@/types/types';
 import { useState } from 'react';
+import { Client } from '@/types/types-clients';
 
 export const ClientEmailPopover = ({ client }: { client: Client }) => {
     const [open, setOpen] = useState(false);

@@ -1,7 +1,7 @@
 import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated } from '@/lib/webhooks';
+import { OrganizationCreatedEvent, SubscriptionItem, UserCreatedEvent, UserDeletedEvent, WebhookEvent } from '@/types/types-clerk';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
-import { SubscriptionItem, OrganizationCreatedEvent, WebhookEvent, UserCreatedEvent, UserDeletedEvent } from '@/types/types'
 
 function isSubscriptionItem(data: WebhookEvent['data']): data is SubscriptionItem {
     return 'plan' in data && 'slug' in data.plan;

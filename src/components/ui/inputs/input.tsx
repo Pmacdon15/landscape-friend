@@ -1,10 +1,11 @@
-import { InputFieldProps } from "@/types/types";
 
 
-export function InputField({ id, name, type, placeholder, required = false, className = '', step, defaultValue }: InputFieldProps) {
+export function InputField({ name, type, placeholder, required = false, className = '', step, defaultValue }:
+    { name: string, type: string, placeholder?: string, required?: boolean | undefined, className?: string | undefined, step?: number, defaultValue?: string | number }
+) {
     return (
         <input
-            id={id}
+            id={name}
             name={name}
             type={type}
             placeholder={placeholder}

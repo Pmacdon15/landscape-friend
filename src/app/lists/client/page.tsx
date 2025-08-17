@@ -4,11 +4,12 @@ import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { fetchAllClients, fetchOrgMembers } from "@/DAL/dal";
+import { fetchOrgMembers } from "@/DAL/dal-org";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/params";
-import { SearchParams } from "@/types/types";
+import { fetchAllClients } from "@/DAL/dal-clients";
+import { SearchParams } from "@/types/types-params";
 
 export default async function page({
     searchParams,

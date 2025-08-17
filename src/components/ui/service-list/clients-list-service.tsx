@@ -1,5 +1,4 @@
 import MapComponent from "../map-component/map-component";
-import { Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
@@ -10,6 +9,7 @@ import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import MarkYardServiced from "../buttons/mark-yard-serviced";
 import ImageList from "../image-list/image-list";
+import { Client, PaginatedClients } from "@/types/types-clients";
 
 export default async function ClientListService({ clientsPromise, page, serviceDate, searchTermIsServiced, snow = false, isAdmin }:
     {

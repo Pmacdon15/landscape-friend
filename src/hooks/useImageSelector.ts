@@ -1,8 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { useUploadDrawing } from "@/mutations/mutations";
-import { Client } from "@/types/types";
 import { toast } from "sonner";
-
+import { Client } from "@/types/types-clients";
 declare global {
   interface Window {
     google: typeof google;

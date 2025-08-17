@@ -1,9 +1,9 @@
 'use client'
 import { useAssignSnowClearing, useToggleSnowClient } from "@/mutations/mutations";
-import { Client, OrgMember } from "@/types/types";
 import { use } from "react";
 import PricePerUpdateInput from "../client-list/price-per-update-input";
-
+import { Client } from "@/types/types-clients";
+import { OrgMember } from "@/types/types-clerk";
 
 export default function SnowClientInput({ client, orgMembersPromise }:
   { client: Client, orgMembersPromise?: Promise<OrgMember[]> }) {

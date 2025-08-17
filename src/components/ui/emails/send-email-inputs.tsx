@@ -3,7 +3,7 @@ import { InputField } from "../inputs/input";
 export default function SendEmailInputs() {
     return (
         <>
-            <InputField id={"title"} name={"title"} type={"text"} placeholder={"Title"} required />
+            <InputField name={"title"} type={"text"} placeholder={"Title"} required />
             <textarea
                 className="border rounded sm p-2 bg-white"
                 id={"message"}

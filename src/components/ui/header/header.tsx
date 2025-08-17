@@ -4,11 +4,8 @@ import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { isOrgAdmin } from '@/lib/webhooks';
-import { Suspense } from 'react';
-import ClientOnly from '@/components/wrappers/ClientOnly';
 
-
-export default async function Header() {
+export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
     const { isAdmin, userId } = await isOrgAdmin(false)
     return (
         <>
@@ -28,7 +25,7 @@ export default async function Header() {
                 <div className='flex flex-wrap justify-between border-t w-full pt-2'>
                     {userId ?
                         <>
-                            <NavBar userId={userId} isAdmin={isAdmin} />
+                            <NavBar hasStripAPIKeyPromise={hasStripAPIKeyPromise} userId={userId} isAdmin={isAdmin} />
                             <div className="flex ml-auto items-center gap-2">
                                 <SignedIn>
                                     <UserButton />

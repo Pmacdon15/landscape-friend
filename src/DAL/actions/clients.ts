@@ -1,5 +1,6 @@
 'use server'
-import { addClientDB, countClientsByOrgId, deleteClientDB, getOrganizationSettings, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/db";
+import { addClientDB, countClientsByOrgId, deleteClientDB,  updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/db-clients";
+import { getOrganizationSettings } from "@/lib/DB/db-org";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
 
