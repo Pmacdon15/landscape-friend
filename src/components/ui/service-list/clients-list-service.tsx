@@ -11,13 +11,14 @@ import FormHeader from "../header/form-header";
 import MarkYardServiced from "../buttons/mark-yard-serviced";
 import ImageList from "../image-list/image-list";
 
-export default async function ClientListService({ clientsPromise, page, serviceDate, searchTermIsServiced, snow = false }:
+export default async function ClientListService({ clientsPromise, page, serviceDate, searchTermIsServiced, snow = false, isAdmin }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
         page: number,
         serviceDate?: Date,
         searchTermIsServiced: boolean,
         snow?: boolean,
+        isAdmin: boolean
     }) {
 
     const result = await clientsPromise;
@@ -60,7 +61,7 @@ export default async function ClientListService({ clientsPromise, page, serviceD
                                 <Suspense fallback={<FormHeader text="Loading..." />}>
                                     <MapComponent address={client.address} />
                                 </Suspense>
-                                <ImageList client={client} />
+                                <ImageList isAdmin={isAdmin} client={client} />
                             </div>
                         </li>
                         {!searchTermIsServiced && serviceDate && <MarkYardServiced clientId={client.id} serviceDate={serviceDate} snow={snow} />}

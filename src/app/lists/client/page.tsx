@@ -23,7 +23,7 @@ export default async function page({
     const { page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay } = parseClientListParams(params);
     const clientsPromise = fetchAllClients(page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     const orgMembersPromise = fetchOrgMembers();
-
+    
     return (
         <>
             <FormContainer>
@@ -40,7 +40,7 @@ export default async function page({
                     clientsPromise={clientsPromise}
                     page={page}
                     isAdmin={isAdmin}
-                    orgMembersPromise={orgMembersPromise}                    
+                    orgMembersPromise={orgMembersPromise}
                 />
             </Suspense>
         </>

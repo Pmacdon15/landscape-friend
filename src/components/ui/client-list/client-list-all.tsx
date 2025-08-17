@@ -24,7 +24,7 @@ export default async function ClientListService({
 }: ClientListServiceProps) {
 
   const result = await clientsPromise;
-  
+
   if (!result) return <ContentContainer>{" "}<p>Error Loading clients</p>{" "}</ContentContainer>
   const { clients, totalPages } = result;
 
@@ -70,7 +70,7 @@ export default async function ClientListService({
                 <Suspense fallback={<FormHeader text="Loading..." />}>
                   <MapComponent address={client.address} />
                 </Suspense>
-                <ImageList client={client} />
+                <ImageList isAdmin={isAdmin} client={client} />
               </div>
             </li>
           </FormContainer>

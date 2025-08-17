@@ -37,7 +37,7 @@ CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
     phone_number VARCHAR(50) NOT NULL,
-    email_address VARCHAR(75) UNIQUE NOT NULL,
+    email_address VARCHAR(75) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
