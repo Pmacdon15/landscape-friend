@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { uploadDrawing } from "@/actions/blobs";
+import { useUploadDrawing } from "@/mutations/mutations";
 import { Client } from "@/types/types";
 import { toast } from "sonner";
 
@@ -35,6 +35,7 @@ export function useImageSelector({
     null
   );
   const mapInitializedRef = useRef(false);
+  const uploadDrawingMutation = useUploadDrawing();
 
   const initMap = useCallback(async () => {
     if (mapInitializedRef.current) return;
@@ -193,15 +194,17 @@ export function useImageSelector({
             reject(new Error("Blob creation failed."));
             return;
           }
-          try {
-            await uploadDrawing(blob, client.id);
-            toast.success("Image uploaded successfully!", { duration: 1500 });
-            resolve();
-          } catch (uploadError) {
-            console.error("Upload failed:", uploadError);
-            toast.error("Image upload failed!", { duration: 1500 });
-            reject(uploadError);
-          }
+          uploadDrawingMutation.mutate({ file: blob, clientId: client.id }, {
+            onSuccess: () => {
+              toast.success("Image uploaded successfully!", { duration: 1500 });
+              resolve();
+            },
+            onError: (uploadError) => {
+              console.error("Upload failed:", uploadError);
+              toast.error("Image upload failed!", { duration: 1500 });
+              reject(uploadError);
+            }
+          });
         }, "image/png");
       });
 
