@@ -4,8 +4,9 @@ import React, { useState } from "react";
 import ImageSelectorMain from "../image-selector/image-selector-main";
 import AddSiteMap from "./list-view/add-site-map";
 import ImageGallery from "./image-gallery";
+import NonAdminPlaceHolder from "./list-view/non-admin-placeholder";
 
-export default function ImageList({ client }: { client: Client, }) {  
+export default function ImageList({ isAdmin, client }: { isAdmin: boolean, client: Client, }) {
   const [view, setView] = useState<string>("list");
 
   return (
@@ -18,21 +19,27 @@ export default function ImageList({ client }: { client: Client, }) {
             client={client}
           />
         </div>}
-      {view == "list" && client.images.length === 0 &&
+      {view == "list" && client.images.length === 0 && isAdmin &&
         <AddSiteMap
           clientId={client.id}
           setView={setView}
-        />}
+        />
+      }
+      {view == "list" && client.images.length === 0 && !isAdmin &&
+        <NonAdminPlaceHolder />
+      }
       {view == "add" &&
         <AddSiteMap
           clientId={client.id}
           setView={setView}
-        />}
+        />
+      }
       {view == "list" && client.images.length > 0 &&
         <ImageGallery
           client={client}
-          setView={setView}          
-        />}
+          setView={setView}
+        />
+      }
     </>
   );
 }

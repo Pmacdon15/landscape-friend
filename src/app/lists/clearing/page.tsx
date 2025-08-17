@@ -37,7 +37,8 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
                     page={page}
                     serviceDate={serviceDate}
                     searchTermIsServiced={searchTermIsServiced}
-                    snow={true} />
+                    snow={true}
+                    isAdmin={isAdmin} />
             </Suspense>
         </>
     );
