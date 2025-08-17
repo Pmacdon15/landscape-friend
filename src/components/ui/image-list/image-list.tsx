@@ -5,8 +5,7 @@ import ImageSelectorMain from "../image-selector/image-selector-main";
 import AddSiteMap from "./list-view/add-site-map";
 import ImageGallery from "./image-gallery";
 
-export default function ImageList({ client }: { client: Client, }) {
-  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+export default function ImageList({ client }: { client: Client, }) {  
   const [view, setView] = useState<string>("list");
 
   return (
@@ -32,9 +31,7 @@ export default function ImageList({ client }: { client: Client, }) {
       {view == "list" && client.images.length > 0 &&
         <ImageGallery
           client={client}
-          setView={setView}
-          previewSrc={previewSrc}
-          setPreviewSrc={setPreviewSrc}
+          setView={setView}          
         />}
     </>
   );
