@@ -13,6 +13,7 @@ export const useAddClient = () => {
         mutationFn: (formData: FormData) => {
             return addClient(formData);
         },
+        onSuccess: () => { revalidatePathAction("/lists/client") },
         onError: (error) => {
             console.error('Mutation error:', error);
         }
@@ -24,6 +25,7 @@ export const useDeleteClient = () => {
         mutationFn: (clientId: number) => {
             return deleteClient(clientId);
         },
+        onSuccess: () => { revalidatePathAction("/lists/client") },
         onError: (error) => {
             console.error('Mutation error:', error);
         }
@@ -49,7 +51,7 @@ export const useUploadDrawing = () => {
         mutationFn: ({ file, clientId }: { file: Blob, clientId: number }) => {
             return uploadDrawing(file, clientId);
         },
-        onSuccess: () => {
+        onSuccess: () => {            
             // revalidatePathAction("/lists/client");
             // onSuccess?.();
         },
@@ -107,6 +109,7 @@ export const useToggleSnowClient = () => {
         mutationFn: ({ clientId }: { clientId: number }) => {
             return toggleSnowClient(clientId);
         },
+        onSuccess: () => { revalidatePathAction("/lists/client") },
         onError: (error) => {
             console.error('Mutation error:', error);
         }
