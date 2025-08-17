@@ -1,5 +1,6 @@
 "use server";
 import { uploadImageBlob } from "@/lib/upload";
+import { isOrgAdmin } from "@/lib/webhooks";
 import { ImageSchema } from "@/lib/zod/schemas";
 import { revalidatePath } from "next/cache";
 
@@ -13,6 +14,8 @@ export async function uploadImage(
   | Error
   | null
 > {
+  const { isAdmin, userId, orgId } = await isOrgAdmin()
+  if (!isAdmin) return new Error("Not Admin")
 
   let result
   try {
@@ -21,7 +24,7 @@ export async function uploadImage(
 
     if (!validatedImage.success) throw new Error("invaild inputs")
 
-    result = await uploadImageBlob(customerId, validatedImage.data.image);
+    result = await uploadImageBlob(orgId || userId!, customerId, validatedImage.data.image);
     if (result && 'error' in result) {
       throw new Error(result.error);
     }
@@ -36,7 +39,6 @@ export async function uploadImage(
   return result
 }
 
-
 export async function uploadDrawing(file: Blob, clientId: number)
   : Promise<
     | { success: boolean; message: string; status: number }
@@ -44,9 +46,23 @@ export async function uploadDrawing(file: Blob, clientId: number)
     | Error
     | null
   > {
+  const { isAdmin, userId, orgId } = await isOrgAdmin()
+  if (!isAdmin) return new Error("Not Admin")
+
+  // Check if the file is an image
+  if (!file.type.startsWith('image/')) {
+    return { error: "Invalid file type. Only images are allowed.", status: 400 };
+  }
+
+  // Check the file size
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    return { error: "File size exceeds the maximum allowed size of 10MB.", status: 400 };
+  }
+
   let result
   try {
-    result = await uploadImageBlob(clientId, file);
+    result = await uploadImageBlob(orgId || userId!, clientId, file);
     if (result && 'error' in result) {
       throw new Error(result.error);
     }
