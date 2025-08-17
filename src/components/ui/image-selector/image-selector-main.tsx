@@ -210,6 +210,7 @@ export default function ImageSelectorMain({
       console.error("Canvas capture failed:", err);
       drawingManager.setOptions({ drawingControl: true });
     }
+    backButton()
   }
 
   return (
