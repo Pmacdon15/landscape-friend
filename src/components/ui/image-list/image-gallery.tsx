@@ -19,7 +19,7 @@ export default function ImageGallery({
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   return (
     <div className="relative w-full max-w-md mx-auto h-[300px] overflow-y-auto bg-background rounded-md p-2">
-      {isAdmin && <div className={`flex flex-nowrap absolute top-3 md:top-1 right-3 md:right-1 z-10 px-4 py-2`}>
+      {isAdmin && <div className={`flex flex-nowrap absolute top-1 right-1 z-10 px-4 py-2`}>
         <button
           onClick={() => setView("add")}
           className="select-none cursor-pointer px-6 py-2 bg-background rounded border shadow-lg hover:bg-green-300"
