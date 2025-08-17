@@ -11,11 +11,11 @@ declare global {
 }
 
 export default function ImageSelectorMain({
-  setview,
+  setView,
   address,
   client,
 }: {
-  setview: React.Dispatch<React.SetStateAction<string>>;
+  setView: React.Dispatch<React.SetStateAction<string>>;
   address: string;
   client: Client;
 }) {
@@ -158,7 +158,7 @@ export default function ImageSelectorMain({
   }, [address]);
 
   function backButton() {
-    setview("list");
+    setView("list");
   }
 
   async function saveDrawing() {

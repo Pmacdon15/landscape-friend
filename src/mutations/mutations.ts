@@ -31,7 +31,7 @@ export const useDeleteClient = () => {
 };
 export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
     return useMutation({
-        mutationFn: ({ clientId, formData }: { clientId: number, formData: FormData }) => {
+        mutationFn: ({ clientId, formData }: { clientId: number, formData: FormData }) => {            
             return uploadImage(clientId, formData);
         },
         onSuccess: () => {

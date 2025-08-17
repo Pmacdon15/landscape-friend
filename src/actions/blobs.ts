@@ -13,6 +13,7 @@ export async function uploadImage(
   | Error
   | null
 > {
+ 
   let result
   try {
     const image = formData.get("image");
@@ -20,9 +21,11 @@ export async function uploadImage(
 
     if (!validatedImage.success) throw new Error("invaild inputs")
 
-
-    result = await uploadImageBlob(customerId, validatedImage.data.image);
-    if (!result) return null;
+        result = await uploadImageBlob(customerId, validatedImage.data.image);
+    if (result && 'error' in result) {
+      throw new Error(result.error);
+    }
+      
 
   } catch (e) {
     if (e instanceof Error) return e;

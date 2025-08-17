@@ -1,3 +1,4 @@
+'use client'
 import { useRef, useState } from "react";
 
 export default function ImageUploadInput() {
@@ -21,7 +22,7 @@ export default function ImageUploadInput() {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                name="file"
+                name="image"
                 onChange={handleFileChange}
                 className="hidden"
             />

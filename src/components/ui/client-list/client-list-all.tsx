@@ -13,6 +13,8 @@ import SnowClientInput from "../inputs/snow-client-input";
 import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
+import ListViewNoUploadsComponent from "../image-list/list-view/add-site-map";
+
 
 export default async function ClientListService({
   clientsPromise,
@@ -22,7 +24,7 @@ export default async function ClientListService({
 }: ClientListServiceProps) {
 
   const result = await clientsPromise;
-  console.log("Result: ", result)
+  // console.log("Result: ", result)
   if (!result)
     return (
       <ContentContainer>
