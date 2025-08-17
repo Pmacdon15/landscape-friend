@@ -1,10 +1,7 @@
-import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaSendEmail, schemaToggleSnowClient, schemaUpdateAPI, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaMarkYardCut, schemaToggleSnowClient, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
-import { JwtPayload } from "@clerk/types";
-import { sendGroupEmail } from "./resend";
-import { revalidatePath } from "next/cache";
-import { Account, Client, Email, NamesAndEmails } from "@/types/types-clients";
+import { Account, Client } from "@/types/types-clients";
 
 //MARK: Add clients
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
@@ -26,7 +23,6 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
             (SELECT row_to_json(new_account.*)::jsonb AS account FROM new_account);
     `) as { client: Client; account: Account }[];
 
-  if (result) revalidatePath("/client-list")
   return result;
 }
 
@@ -39,17 +35,7 @@ export async function countClientsByOrgId(organization_id: string): Promise<numb
   return Number(result[0].count);
 }
 
-//MARK: Get organization settings
-export async function getOrganizationSettings(organization_id: string): Promise<{ max_allowed_clinents: number } | null> {
-  const sql = neon(`${process.env.DATABASE_URL}`);
-  const result = await sql`
-    SELECT max_allowed_clinents FROM organizations WHERE organization_id = ${organization_id}
-  `;
-  if (result.length > 0) {
-    return result[0] as { max_allowed_clinents: number };
-  }
-  return null;
-}
+
 
 //MARK: Delete clients
 export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, organization_id: string): Promise<Client[]> {
@@ -71,7 +57,6 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
     SELECT * FROM deleted_client;
   `) as Client[];
 
-  if (result) revalidatePath("/client-list")
   return result;
 }
 
@@ -91,8 +76,6 @@ export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePr
         SET ${setClause}
         WHERE id = ${data.clientId} AND organization_id = ${orgId}
     `
-
-  if (result) revalidatePath("/client-list")
   return result;
 }
 
@@ -113,7 +96,6 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
         SET cutting_day = EXCLUDED.cutting_day
         RETURNING *
     `;
-  revalidatePath("/client-list")
   return result;
 }
 
@@ -394,23 +376,6 @@ export async function fetchClientsWithSchedules(
   return { clientsResult, totalCount };
 }
 
-// //MARK:Fetch uncut addresses
-// export async function FetchAllUnCutAddressesDB(organizationId: string, searchTermCuttingDate: Date): Promise<Address[]> {
-//   const sql = neon(`${process.env.DATABASE_URL}`);
-//   const result = await sql`
-//     SELECT c.address
-//     FROM clients c
-//     JOIN cutting_schedule cs ON c.id = cs.client_id
-//     WHERE c.organization_id = ${organizationId}
-//     AND c.id NOT IN (
-//       SELECT ymc.client_id
-//       FROM yards_marked_cut ymc
-//       WHERE ymc.cutting_date = ${searchTermCuttingDate}
-//     );
-//   `;
-//   return result.map(item => ({ address: item.address }));
-// }
-//MARK: Fetch cutting day
 export async function fetchClientsCuttingSchedules(
   orgId: string,
   pageSize: number,
@@ -580,7 +545,6 @@ export async function markYardServicedDb(data: z.infer<typeof schemaMarkYardCut>
     throw new Error('Client not found, access denied, or already marked as serviced');
   }
 
-  revalidatePath("/lists/cutting");
   return result;
 }
 
@@ -599,7 +563,6 @@ export async function toggleSnowClientDb(data: z.infer<typeof schemaToggleSnowCl
     throw new Error('Toggle Failed');
   }
 
-  revalidatePath("/lists/client")
   return result;
 }
 
@@ -621,55 +584,10 @@ export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow
     throw new Error('Assignment Failed');
   }
 
-  revalidatePath("/lists/clearing")
   return result;
 }
 
-//MARK: Send newsletter
-export async function sendNewsLetterDb(data: z.infer<typeof schemaSendEmail>, sessionClaims: JwtPayload, userId: string): Promise<boolean> {
-  const sql = neon(process.env.DATABASE_URL!);
-  const baseName = String(sessionClaims.orgName || sessionClaims.userFullName || "Your-LandScaper");
-  const companyName = baseName.replace(/\s+/g, '-');
 
-  const emails = await sql`
-        SELECT email_address FROM clients WHERE organization_id = ${sessionClaims.orgId || userId}
-    ` as Email[];
-
-  const emailList = emails.map(email => email.email_address);
-
-  try {
-    sendGroupEmail(companyName, emailList, data);
-    return true;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
-//MARK: Fetch names and emails
-export async function fetchClientNamesAndEmailsDb(orgId: string) {
-  const sql = neon(process.env.DATABASE_URL!);
-  const namesAndEmails = await (sql`
-    SELECT 
-      full_name,
-      email_address
-    FROM clients 
-    WHERE organization_id = ${orgId}
-  `) as NamesAndEmails[]
-  return namesAndEmails
-}
-
-//MARK:fetch Strip API Key
-export async function fetchStripAPIKeyDb(orgId: string) {
-  const sql = neon(process.env.DATABASE_URL!);
-  const result = await (sql`
-    SELECT 
-      api_key
-    FROM stripe_api_keys 
-    WHERE organization_id = ${orgId}
-  `) as { api_key: string }[];
-  return result[0];
-}
 //MARK: Mark Payment
 export async function markPaidDb(invoiceId: string, customerEmail: string, amountPaid: number, organizationId: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
@@ -701,7 +619,6 @@ export async function markPaidDb(invoiceId: string, customerEmail: string, amoun
     const { new_balance, payment_id } = result[0];
     console.log(`Invoice ${invoiceId} marked paid. New balance: ${new_balance}, Payment ID: ${payment_id}`);
 
-    revalidatePath("/billing/manage/invoices");
     return { success: true, message: `Invoice ${invoiceId} marked as paid and database updated.`, newBalance: new_balance, paymentId: payment_id };
 
   } catch (e) {
@@ -710,19 +627,3 @@ export async function markPaidDb(invoiceId: string, customerEmail: string, amoun
   }
 }
 
-//MARK: Update Strip API Key
-export async function updatedStripeAPIKeyDb(data: z.infer<typeof schemaUpdateAPI>, orgId: string) {
-  const sql = neon(process.env.DATABASE_URL!);
-  try {
-    await (sql`
-      INSERT INTO stripe_api_keys (organization_id, api_key)
-      VALUES (${orgId}, ${data.APIKey})
-      ON CONFLICT ON CONSTRAINT unique_organization_id DO UPDATE
-      SET api_key = ${data.APIKey}
-    `);
-    return { success: true, message: 'API key updated successfully' };
-  } catch (e) {
-    console.error('Error updating API key:', e);
-    return { success: false, message: e instanceof Error ? e.message : 'Failed to update API key' };
-  }
-}

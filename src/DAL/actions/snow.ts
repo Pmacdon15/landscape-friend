@@ -1,5 +1,5 @@
 'use server'
-import { toggleSnowClientDb, assignSnowClearingDb } from "@/lib/db";
+import { toggleSnowClientDb, assignSnowClearingDb } from "@/lib/DB/db-clients";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaToggleSnowClient, schemaAssignSnowClearing } from "@/lib/zod/schemas";
 

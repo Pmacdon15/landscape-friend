@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/actions/clients";
-import { markYardServiced } from "@/actions/cuts";
-import { sendEmailWithTemplate, sendNewsLetter } from "@/actions/sendEmails";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, resendInvoice, updateStripeAPIKey } from "@/actions/stripe";
-import revalidatePathAction from "@/actions/revalidatePath";
-import { assignSnowClearing, toggleSnowClient } from "@/actions/snow";
-import { uploadDrawing, uploadImage } from "@/actions/blobs";
+import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/DAL/actions/clients";
+import { markYardServiced } from "@/DAL/actions/cuts";
+import { sendEmailWithTemplate, sendNewsLetter } from "@/DAL/actions/sendEmails";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, resendInvoice, updateStripeAPIKey } from "@/DAL/actions/stripe";
+import revalidatePathAction from "@/DAL/actions/revalidatePath";
+import { assignSnowClearing, toggleSnowClient } from "@/DAL/actions/snow";
+import { uploadDrawing, uploadImage } from "@/DAL/actions/blobs";
 
 
 export const useAddClient = () => {

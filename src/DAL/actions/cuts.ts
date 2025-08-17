@@ -1,5 +1,5 @@
 'use server'
-import { markYardServicedDb } from "@/lib/db";
+import { markYardServicedDb } from "@/lib/DB/db-clients";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaMarkYardCut } from "@/lib/zod/schemas";
 

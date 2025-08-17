@@ -1,11 +1,12 @@
 'use server'
-import { updatedStripeAPIKeyDb, markPaidDb } from "@/lib/db";
+import { markPaidDb } from "@/lib/DB/db-clients";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
-import { sendEmailWithTemplate } from '@/actions/sendEmails';
+import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails';
 import Stripe from 'stripe'; // Import Stripe
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
+import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
 
 // Placeholder for getting Stripe instance. In a real app, this would fetch the API key securely.
 // For now, assuming it's available via environment variable or a secure utility.
@@ -179,7 +180,7 @@ export async function createStripeQuote(formData: FormData) {
             customer: customerId,
             line_items: line_items,
         });
-        
+
         // Finalize the quote immediately
         const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
 
@@ -194,7 +195,7 @@ export async function createStripeQuote(formData: FormData) {
             filename: `quote_${finalizedQuote.id}.pdf`,
             content: pdfContent,
         }];
-        if (!quote.id) throw new Error("Failed")        
+        if (!quote.id) throw new Error("Failed")
         // Construct email content
         const emailSubject = `Your Quote from ${companyName}`;
         const emailBody = `Dear ${validatedFields.data.clientName},

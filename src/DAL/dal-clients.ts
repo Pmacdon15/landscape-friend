@@ -1,4 +1,5 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientNamesAndEmailsDb, fetchClientsClearingGroupsDb } from "@/lib/db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb } from "@/lib/DB/db-clients";
+import { fetchClientNamesAndEmailsDb } from "@/lib/DB/db-resend";
 import { processClientsResult } from "@/lib/sort";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { ClientResult, NamesAndEmails, PaginatedClients } from "@/types/types-clients";
