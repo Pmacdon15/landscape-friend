@@ -21,7 +21,6 @@ export default async function page({
     ]);
 
     const { page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay } = parseClientListParams(params);
-
     const clientsPromise = fetchAllClients(page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
     const orgMembersPromise = fetchOrgMembers();
 

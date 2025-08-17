@@ -24,14 +24,8 @@ export default async function ClientListService({
 }: ClientListServiceProps) {
 
   const result = await clientsPromise;
-  // console.log("Result: ", result)
-  if (!result)
-    return (
-      <ContentContainer>
-        {" "}
-        <p>Error Loading clients</p>{" "}
-      </ContentContainer>
-    );
+  
+  if (!result) return <ContentContainer>{" "}<p>Error Loading clients</p>{" "}</ContentContainer>
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
@@ -40,7 +34,6 @@ export default async function ClientListService({
   return (
     <>
       <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
-
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
@@ -73,7 +66,7 @@ export default async function ClientListService({
                 </>
               )}
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <div className="flex flex-col sm:flex-row gap-1">
+              <div className="flex flex-col md:flex-row gap-1">
                 <Suspense fallback={<FormHeader text="Loading..." />}>
                   <MapComponent address={client.address} />
                 </Suspense>
