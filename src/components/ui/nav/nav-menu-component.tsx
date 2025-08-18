@@ -16,6 +16,8 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
     const isMd = useMediaQuery("(min-width: 768px)");
 
     const hasStripAPIKey = use(hasStripAPIKeyPromise)
+
+    const cuttingListPath = `/lists/cutting?date=${date}`
     return (
         <NavigationMenu viewport={!isMd}>
             <NavigationMenuList>
@@ -33,7 +35,7 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href={`/lists/cutting?date=${date}`}>
+                                    <Link href={cuttingListPath}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
