@@ -46,7 +46,7 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     <Link href={{
                                         pathname: '/lists/clearing',
                                         query: { date: today, assigned: userId },
-                                    }}>
+                                    }} as={`/lists/clearing?date=${today}&assigned=${userId}`}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">
                                             Track clients that need to be cleared.
