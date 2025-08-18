@@ -34,14 +34,14 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>
-                                <NavigationMenuLink asChild>
+                                {/* <NavigationMenuLink asChild>
                                     <Link href={cuttingListPath}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
                                         </div>
                                     </Link>
-                                </NavigationMenuLink>
+                                </NavigationMenuLink> */}
                                 <NavigationMenuLink asChild>
                                     <Link href={{
                                         pathname: '/lists/clearing',
