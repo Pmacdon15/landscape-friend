@@ -99,7 +99,7 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                             </Link>
                                         </NavigationMenuLink>
                                         <NavigationMenuLink asChild>
-                                            <Link href="/invoice/all">
+                                            <Link href="/billing/manage/quotes">
                                                 <div className="font-medium">Manage Quotes</div>
                                                 <div className="text-muted-foreground">
                                                     Manage quotes mark accepted, cancel.

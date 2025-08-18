@@ -1,6 +1,6 @@
 import { fetchStripAPIKeyDb } from "@/lib/DB/db-stripe";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { APIKey, FetchInvoicesResponse, StripeInvoice } from "@/types/types-stripe";
+import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/types-stripe";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 
@@ -121,7 +121,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
 }
 
 
-export async function fetchQuotes(typesOfQuotes: string, page: number, searchTerm: string): Promise<FetchQuotesResponse> {
+export async function fetchQuotes(typesOfQuotes: string, page: number): Promise<FetchQuotesResponse> {
     const { isAdmin } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
 
@@ -129,65 +129,50 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {
-        let allInvoices: Stripe.Invoice[] = [];
+        let allQuotes: Stripe.Quote[] = [];
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.InvoiceListParams = { limit: 100 };
-        if (typesOfQuotes && ['draft', 'paid', 'open'].includes(typesOfQuotes)) {
-            params.status = typesOfQuotes as 'draft' | 'paid' | 'open';
+        const params: Stripe.QuoteListParams = { limit: 100 };
+        if (typesOfQuotes && ['draft', 'open', 'accepted', 'canceled'].includes(typesOfQuotes)) {
+            params.status = typesOfQuotes as 'draft' | 'open' | 'accepted' | 'canceled';
         }
 
         while (hasMore) {
-            const invoiceBatch: Stripe.ApiList<Stripe.Invoice> = await stripe.invoices.list({ ...params, starting_after: startingAfter });
-            allInvoices = allInvoices.concat(invoiceBatch.data);
-            hasMore = invoiceBatch.has_more;
+            const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({ ...params, starting_after: startingAfter });
+            allQuotes = allQuotes.concat(quoteBatch.data);
+            hasMore = quoteBatch.has_more;
             if (hasMore) {
-                startingAfter = invoiceBatch.data[invoiceBatch.data.length - 1].id;
+                startingAfter = quoteBatch.data[quoteBatch.data.length - 1].id;
             }
         }
 
-        let filteredInvoices = allInvoices;
-        if (searchTerm) {
-            const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            filteredInvoices = allInvoices.filter(invoice =>
-                (invoice.customer_name && invoice.customer_name.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm))
-            );
-        }
-
-        const totalInvoices = filteredInvoices.length;
-        const totalPages = Math.ceil(totalInvoices / pageSize);
+        const totalQuotes = allQuotes.length;
+        const totalPages = Math.ceil(totalQuotes / pageSize);
         const offset = (page - 1) * pageSize;
-        const paginatedInvoices = filteredInvoices.slice(offset, offset + pageSize);
+        const paginatedQuotes = allQuotes.slice(offset, offset + pageSize);
 
-        const strippedInvoices = paginatedInvoices.map((invoice) => ({
-            id: invoice.id,
-            object: invoice.object,
-            amount_due: invoice.amount_due,
-            amount_paid: invoice.amount_paid,
-            amount_remaining: invoice.amount_remaining,
-            created: invoice.created,
-            currency: invoice.currency,
-            customer: invoice.customer,
-            customer_email: invoice.customer_email,
-            customer_name: invoice.customer_name,
-            due_date: invoice.due_date,
-            hosted_invoice_url: invoice.hosted_invoice_url,
-            invoice_pdf: invoice.invoice_pdf,
-            number: invoice.number,
-            status: invoice.status,
-            total: invoice.total,
-            lines: {
-                data: invoice.lines.data.map((lineItem) => ({
-                    id: lineItem.id,
-                })),
-            },
+        const strippedQuotes = paginatedQuotes.map((quote) => ({
+            id: quote.id,
+            object: quote.object,
+            amount_total: quote.amount_total,
+            customer: quote.customer,
+            status: quote.status,
+            expires_at: quote.expires_at,            
+            total_details: quote.total_details,
+            application_fee_amount: quote.application_fee_amount,
+            collection_method: quote.collection_method,
+            description: quote.description,
+            invoice: quote.invoice,
+            from_quote: quote.from_quote,
+            line_items: quote.line_items,
+            transfer_data: quote.transfer_data,
+            created: quote.created,
         }));
 
-        return { invoices: strippedInvoices as StripeInvoice[], totalPages };
+        return { quotes: strippedQuotes as StripeQuote[], totalPages };
     } catch (error) {
         console.error(error);
-        throw new Error('Failed to fetch invoices');
+        throw new Error('Failed to fetch quotes');
     }
 }

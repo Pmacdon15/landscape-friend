@@ -10,8 +10,9 @@ import { Suspense } from "react";
 export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams
     const { searchTermStatus, page, searchTerm } = parseClientListParams(params);
-    const { Quotes, totalPages } = await fetchQuotes(searchTermStatus, page, searchTerm)
+    const { quotes, totalPages } = await fetchQuotes(searchTermStatus, page,)
 
+    console.log("quotes: ", quotes)
     return (
         <FormContainer>
             <FormHeader text={"Manage Quotes"} />
