@@ -61,7 +61,7 @@ export async function createStripeQuote(formData: FormData) {
     const { isAdmin, orgId, userId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin")
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
-    const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
+    const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
 
     const materials: { materialType: string, materialCostPerUnit: number, materialUnits: number }[] = [];
     let i = 0;
