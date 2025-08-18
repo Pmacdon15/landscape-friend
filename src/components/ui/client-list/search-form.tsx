@@ -1,10 +1,10 @@
 import { ServiceListDatePicker } from '../service-list/service-list-date-picker';
 import { ServiceStatusSelector } from '../selectors/service-status-selector';
 import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
-import { InvoiceStatusSelector } from '../selectors/invoice-status-selector';
+import { BillingStatusSelector } from '../selectors/billing-status-selector';
 import { SearchInput } from '../inputs/search-input';
 
-type SearchFormVariant = 'cutting' | 'clearing' | 'invoices' | 'default';
+type SearchFormVariant = 'cutting' | 'clearing' | 'invoices' | 'default' | 'quotes';
 
 export default function SearchForm({ variant = 'default' }: { variant?: SearchFormVariant }) {
   return (
@@ -18,19 +18,23 @@ export default function SearchForm({ variant = 'default' }: { variant?: SearchFo
           <CuttingPeriodSelector
             variant="day"
           />
-        </>}
+        </>
+      }
       {variant === 'cutting' &&
         <>
           <ServiceListDatePicker />
           <ServiceStatusSelector />
-        </>}
+        </>
+      }
       {variant === 'clearing' &&
-        <>          
+        <>
           <ServiceStatusSelector />
-        </>}
+        </>
+      }
 
-      {variant === 'invoices' &&
-        <InvoiceStatusSelector />}
+      {variant === 'quotes' &&
+        <BillingStatusSelector variant='quotes' />
+      }
     </div>
   );
 }

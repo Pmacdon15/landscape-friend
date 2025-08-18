@@ -130,12 +130,12 @@ export function useMediaQuery(query: string) {
   return matches;
 }
 
-export function useInvoiceStatusSearch() {
+export function useBillingStatusSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentStatus = searchParams.get('status') || 'all';
 
-  const setInvoiceStatus = (status: string) => {
+  const setBillingStatus = (status: string) => {
     const params = new URLSearchParams(searchParams.toString());
     if (status && status !== 'all') {
       params.set('status', status);
@@ -146,7 +146,7 @@ export function useInvoiceStatusSearch() {
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
-  return { currentStatus, setInvoiceStatus };
+  return { currentStatus, setBillingStatus };
 }
 
 export function useSearchParam(paramName: string, defaultValue: string = '') {

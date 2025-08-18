@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
         <FormContainer>
             <FormHeader text={"Manage Quotes"} />
             <Suspense>
-                <SearchForm variant="invoices" />
+                <SearchForm variant="quotes" />
             </Suspense>
             <PaginationTabs path={"/billing/manage/quotes"} page={page} totalPages={totalPages} fullWidth />
             <ManageQuoteCardView quotes={quotes} />

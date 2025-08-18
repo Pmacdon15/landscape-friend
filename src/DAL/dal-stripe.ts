@@ -62,8 +62,8 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         let startingAfter: string | undefined = undefined;
 
         const params: Stripe.InvoiceListParams = { limit: 100 };
-        if (typesOfInvoices && ['draft', 'paid', 'open'].includes(typesOfInvoices)) {
-            params.status = typesOfInvoices as 'draft' | 'paid' | 'open';
+        if (typesOfInvoices && ['draft', 'paid', 'open', 'void'].includes(typesOfInvoices)) {
+            params.status = typesOfInvoices as 'draft' | 'paid' | 'open' | 'void';
         }
 
         while (hasMore) {
