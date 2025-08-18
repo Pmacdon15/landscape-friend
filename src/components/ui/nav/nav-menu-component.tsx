@@ -33,10 +33,7 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href={{
-                                        pathname: '/lists/cutting',
-                                        query: { date: today },
-                                    }}>
+                                    <Link href={`/lists/cutting?date=${date}`}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
