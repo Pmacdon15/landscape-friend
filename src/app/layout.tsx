@@ -10,7 +10,7 @@ import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
 import { hasStripAPIKey } from "@/DAL/dal-stripe";
-export const experimental_ppr = true;
+// export const experimental_ppr = true;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
