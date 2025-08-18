@@ -62,6 +62,7 @@ export const schemaCreateQuote = z.object({
     labourCostPerUnit: z.number(),
     labourUnits: z.number(),
     materials: z.array(materialSchema),
+    collectionMethod: z.enum(['charge_automatically', 'send_invoice']).default('send_invoice'),
 });
  
 export const AddClientSchema = z.object({

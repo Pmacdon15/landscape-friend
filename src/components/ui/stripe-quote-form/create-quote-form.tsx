@@ -44,6 +44,31 @@ export function CreateQuoteForm() {
         <>
             <form action={mutate} className="space-y-4">
                 <section>
+                    <h3 className="text-md font-semibold mb-2">Collection Method</h3>
+                    <div className="flex items-center space-x-4">
+                        <label className="inline-flex items-center">
+                            <input
+                                type="radio"
+                                {...register('collectionMethod')}
+                                value="send_invoice"
+                                className="form-radio"
+                            />
+                            <span className="ml-2">Send Invoice</span>
+                        </label>
+                        <label className="inline-flex items-center">
+                            <input
+                                type="radio"
+                                {...register('collectionMethod')}
+                                value="charge_automatically"
+                                className="form-radio"
+                            />
+                            <span className="ml-2">Charge Automatically</span>
+                        </label>
+                    </div>
+                    {errors.collectionMethod && <p className="text-red-500 text-sm mt-1">{errors.collectionMethod.message}</p>}
+                </section>
+
+                <section>
                     <h3 className="text-md font-semibold mb-2">Client Information</h3>
                     <div>
                         <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name:</label>

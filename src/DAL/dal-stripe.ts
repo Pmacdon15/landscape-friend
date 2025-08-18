@@ -121,7 +121,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
 }
 
 
-export async function fetchQuotes(typesOfQuotes: string, page: number): Promise<FetchQuotesResponse> {
+export async function fetchQuotes(typesOfQuotes: string, page: number, searchTerm: string): Promise<FetchQuotesResponse> {
     const { isAdmin } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
 
@@ -147,10 +147,18 @@ export async function fetchQuotes(typesOfQuotes: string, page: number): Promise<
             }
         }
 
-        const totalQuotes = allQuotes.length;
+        let filteredQuotes = allQuotes;
+        if (searchTerm) {
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            filteredQuotes = allQuotes.filter(quote =>
+                (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm))
+            );
+        }
+
+        const totalQuotes = filteredQuotes.length;
         const totalPages = Math.ceil(totalQuotes / pageSize);
         const offset = (page - 1) * pageSize;
-        const paginatedQuotes = allQuotes.slice(offset, offset + pageSize);
+        const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
 
         // const quotesWithPdf = await Promise.all(paginatedQuotes.map(async (quote) => {
         //     const retrievedQuote = await stripe.quotes.pdf(quote.id);

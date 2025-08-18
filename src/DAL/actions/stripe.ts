@@ -74,12 +74,13 @@ export async function createStripeQuote(formData: FormData) {
     }
 
 
-    const validatedFields = schemaCreateQuote.safeParse({
+            const validatedFields = schemaCreateQuote.safeParse({
         clientName: formData.get('clientName'),
         clientEmail: formData.get('clientEmail'),
         labourCostPerUnit: Number(formData.get('labourCostPerUnit')),
         labourUnits: Number(formData.get('labourUnits')),
         materials: materials,
+        collectionMethod: formData.get('collectionMethod'),
     });
 
     if (!validatedFields.success) {
@@ -179,6 +180,7 @@ export async function createStripeQuote(formData: FormData) {
         const quote = await stripe.quotes.create({
             customer: customerId,
             line_items: line_items,
+            collection_method: validatedFields.data.collectionMethod,
         });
 
         // Finalize the quote immediately

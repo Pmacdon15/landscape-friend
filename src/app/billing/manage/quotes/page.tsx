@@ -11,7 +11,7 @@ import { Suspense } from "react";
 export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams
     const { searchTermStatus, page, searchTerm } = parseClientListParams(params);
-    const { quotes, totalPages } = await fetchQuotes(searchTermStatus, page,)
+    const { quotes, totalPages } = await fetchQuotes(searchTermStatus, page, searchTerm)
 
     console.log("quotes: ", quotes)
     return (
