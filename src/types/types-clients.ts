@@ -13,6 +13,7 @@ export interface Client {
     cutting_schedules: CuttingSchedule[];
     assigned_to: string;
     images: string[];
+    stripe_customer_id?: string;
 }
 
 export interface ClientResult {

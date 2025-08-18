@@ -1,5 +1,6 @@
 'use server'
 import { markPaidDb } from "@/lib/DB/db-clients";
+import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/stripe-utils";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails';
@@ -57,9 +58,9 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 //MARK: Create quote
 export async function createStripeQuote(formData: FormData) {
-    const { isAdmin, sessionClaims } = await isOrgAdmin();
+    const { isAdmin, orgId, userId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin")
-    if (!sessionClaims) throw new Error("Session claims are missing.");
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
     const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
 
     const materials: { materialType: string, materialCostPerUnit: number, materialUnits: number }[] = [];
@@ -77,10 +78,12 @@ export async function createStripeQuote(formData: FormData) {
             const validatedFields = schemaCreateQuote.safeParse({
         clientName: formData.get('clientName'),
         clientEmail: formData.get('clientEmail'),
+        phone_number: formData.get('phone_number'),
+        address: formData.get('address'),
         labourCostPerUnit: Number(formData.get('labourCostPerUnit')),
         labourUnits: Number(formData.get('labourUnits')),
         materials: materials,
-        collectionMethod: formData.get('collectionMethod'),
+        organization_id: formData.get('organization_id'),
     });
 
     if (!validatedFields.success) {
@@ -94,17 +97,14 @@ export async function createStripeQuote(formData: FormData) {
         const stripe = getStripeInstance();
 
         // 1. Find or Create Customer
-        let customerId: string;
-        const existingCustomers = await stripe.customers.list({ email: validatedFields.data.clientEmail, limit: 1 });
-        if (existingCustomers.data.length > 0) {
-            customerId = existingCustomers.data[0].id;
-        } else {
-            const newCustomer = await stripe.customers.create({
-                name: validatedFields.data.clientName,
-                email: validatedFields.data.clientEmail,
-            });
-            customerId = newCustomer.id;
-        }
+        const customerId = await findOrCreateStripeCustomerAndLinkClient(
+            validatedFields.data.clientName,
+            validatedFields.data.clientEmail,
+            validatedFields.data.phone_number,
+            validatedFields.data.address,
+            validatedFields.data.organization_id
+        );
+        
 
         // 2. Handle Labour Product and Price
         let labourPriceId: string;
@@ -180,7 +180,8 @@ export async function createStripeQuote(formData: FormData) {
         const quote = await stripe.quotes.create({
             customer: customerId,
             line_items: line_items,
-            collection_method: validatedFields.data.collectionMethod,
+            collection_method: 'send_invoice',
+            invoice_settings: { days_until_due: 30 },
         });
 
         // Finalize the quote immediately
