@@ -1,5 +1,5 @@
 import { StripeInvoice } from "@/types/types-stripe";
-import ManageInvoiceButton from "../buttons/manage-invoice-button";
+import ManageInvoiceButton from "../../buttons/manage-invoice-button";
 import Link from "next/link";
 
 export function CardView({ invoices }: { invoices: StripeInvoice[] }) {

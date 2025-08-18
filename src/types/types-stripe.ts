@@ -51,7 +51,6 @@ export interface StripeQuote {
   customer: string | null;
   status: Stripe.Quote.Status;
   expires_at: number | null;
-  hosted_quote_url: string | null;
   pdf: string | null;
   total_details: Stripe.Quote.TotalDetails | null;
   application_fee_amount: number | null;

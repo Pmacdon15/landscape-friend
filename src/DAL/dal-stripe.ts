@@ -152,13 +152,19 @@ export async function fetchQuotes(typesOfQuotes: string, page: number): Promise<
         const offset = (page - 1) * pageSize;
         const paginatedQuotes = allQuotes.slice(offset, offset + pageSize);
 
+        // const quotesWithPdf = await Promise.all(paginatedQuotes.map(async (quote) => {
+        //     const retrievedQuote = await stripe.quotes.pdf(quote.id);
+        //     return retrievedQuote
+        // }));
+
+        // console.log("quotesWithPdf: ", quotesWithPdf)
         const strippedQuotes = paginatedQuotes.map((quote) => ({
             id: quote.id,
             object: quote.object,
             amount_total: quote.amount_total,
             customer: quote.customer,
             status: quote.status,
-            expires_at: quote.expires_at,            
+            expires_at: quote.expires_at,
             total_details: quote.total_details,
             application_fee_amount: quote.application_fee_amount,
             collection_method: quote.collection_method,
