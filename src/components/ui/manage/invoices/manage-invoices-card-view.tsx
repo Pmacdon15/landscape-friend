@@ -27,28 +27,28 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
             <span>{new Date(invoice.due_date * 1000).toLocaleDateString()}</span>
           </div>
           <div className="flex flex-wrap justify-between ">
-            {invoice.hosted_invoice_url && (
+            {invoice.hosted_invoice_url &&
               <Link
                 href={invoice.hosted_invoice_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
+                className="text-blue-500 hover:underline w-full mb-2"
               >
                 View Invoice
               </Link>
-            )}
+            }
             {invoice.status === "draft" ?
               <ManageInvoiceButton variant="send" invoiceId={invoice.id} />
               :
               //Do nto show resend if paid or void
               invoice.status !== "void" && invoice.status !== "paid" && <ManageInvoiceButton variant="resend" invoiceId={invoice.id} />
             }
-            {invoice.status !== "paid" && invoice.status !== "draft" && invoice.status !== "void" && (
+            {invoice.status !== "paid" && invoice.status !== "draft" && invoice.status !== "void" &&
               <ManageInvoiceButton variant="paid" invoiceId={invoice.id} />
-            )}
-            {invoice.status !== "paid" && invoice.status !== "void" && invoice.status !== "draft" && (
+            }
+            {invoice.status !== "paid" && invoice.status !== "void" && invoice.status !== "draft" &&
               <ManageInvoiceButton variant="void" invoiceId={invoice.id} />
-            )}
+            }
           </div>
         </div>
       ))}
