@@ -3,28 +3,28 @@ import MapComponent from "../map-component/map-component";
 import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
-import { Client, ClientListServiceProps } from "@/types/types";
 import { Suspense } from "react";
 import Link from "next/link";
-import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popover'
+import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import SnowClientInput from "../inputs/snow-client-input";
 import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
-import Image from "next/image";
+import ImageList from "../image-list/image-list";
+import { Client, ClientListServiceProps } from "@/types/types-clients";
 
 
 export default async function ClientListService({
   clientsPromise,
-  clientListPage,  
+  page,
   orgMembersPromise,
   isAdmin
 }: ClientListServiceProps) {
 
   const result = await clientsPromise;
 
-  if (!result) return <ContentContainer> <p>Error Loading clients</p> </ContentContainer>
+  if (!result) return <ContentContainer>{" "}<p>Error Loading clients</p>{" "}</ContentContainer>
   const { clients, totalPages } = result;
 
   if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
@@ -93,16 +93,19 @@ export default async function ClientListService({
                   <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
-              }
+              )}
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <Suspense fallback={<FormHeader text="Loading..." />}>
-                <MapComponent address={client.address} />
-              </Suspense>
+              <div className="flex flex-col md:flex-row gap-1">
+                <Suspense fallback={<FormHeader text="Loading..." />}>
+                  <MapComponent address={client.address} />
+                </Suspense>
+                <ImageList isAdmin={isAdmin} client={client} />
+              </div>
             </li>
           </FormContainer>
         ))}
       </ul >
-      <PaginationTabs path="/lists/client" clientListPage={clientListPage} totalPages={totalPages} />
+      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
     </>
   );
 }

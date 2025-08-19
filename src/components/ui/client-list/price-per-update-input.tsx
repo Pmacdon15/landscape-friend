@@ -1,8 +1,8 @@
 'use client'
-import { useDebouncedMutation } from "@/hooks/hooks";
+import { useDebouncedMutation } from "@/lib/hooks/hooks";
 import { useUpdateClientPricePer } from "@/mutations/mutations";
-import { Client } from "@/types/types";
 import ReusableNumberInput from "../inputs/reusable-number-input";
+import { Client } from "@/types/types-clients";
 
 export default function PricePerUpdateInput({ client, snow = false }: { client: Client, snow?: boolean }) {
     const { mutate, isPending, isError } = useUpdateClientPricePer();

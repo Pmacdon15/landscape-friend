@@ -43,7 +43,6 @@ type PaginationLinkProps = {
   isActive?: boolean;
   size?: "icon" | "default";
   href: string;
-  query?: { [key: string]: string | number | undefined }; // Add query prop
 } & Omit<React.ComponentProps<typeof Link>, 'href'>;
 
 const PaginationLink = ({
@@ -51,17 +50,11 @@ const PaginationLink = ({
   isActive,
   size = "icon",
   href,
-  query,
   ...props
 }: PaginationLinkProps) => {
-  const linkHref = {
-    pathname: href,
-    query: query,
-  };
-
   return (
     <Link
-      href={linkHref}
+      href={href}
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}

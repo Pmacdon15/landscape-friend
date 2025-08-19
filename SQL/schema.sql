@@ -16,23 +16,35 @@ DROP TABLE IF EXISTS clients CASCADE;
 
 DROP TABLE IF EXISTS organizations CASCADE;
 
+DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE users (
+    id VARCHAR(100) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE organizations (
     id SERIAL PRIMARY KEY,
     organization_id VARCHAR(253) NOT NULL UNIQUE,
-    organization_name VARCHAR(253) NOT NULL
+    organization_name VARCHAR(253) NOT NULL,
+    max_allowed_clinents INT NOT NULL DEFAULT 50
 );
+
+DROP TABLE IF EXISTS images CASCADE;
 
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
     phone_number VARCHAR(50) NOT NULL,
-    email_address VARCHAR(75) UNIQUE NOT NULL,
+    email_address VARCHAR(75) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
     address VARCHAR(200) NOT NULL,
     snow_client BOOLEAN NOT NULL DEFAULT false,
-    price_per_month_snow FLOAT NOT NULL DEFAULT 100
+    price_per_month_snow FLOAT NOT NULL DEFAULT 100,
+    stripe_customer_id VARCHAR(255) NULL
 );
 
 CREATE TABLE stripe_api_keys (
@@ -54,6 +66,8 @@ CREATE TABLE payments (
     id SERIAL PRIMARY KEY,
     account_id INT NOT NULL,
     amount FLOAT NOT NULL,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
     FOREIGN KEY (account_id) REFERENCES accounts (id)
 );
 
@@ -99,8 +113,24 @@ INSERT INTO
     )
 VALUES (
         'user_30G0wquvxAjdXFitpjBDklG0qzF',
-        'Test Organization'
+        'Patrick'
+    ),
+    (
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
+        'Wanger'
+    ),
+    (
+        'user_30LrJ0LshCsCy7JcqcoueGQXoux',
+        'Wanger'
     );
+
+CREATE TABLE IF NOT EXISTS images (
+    id SERIAL PRIMARY KEY,
+    customerID VARCHAR(255) NOT NULL,
+    imageURL TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    isActive BOOLEAN
+);
 
 INSERT INTO
     clients (
@@ -270,6 +300,46 @@ VALUES (
         '9012 6th St SW, Calgary, AB T2P 1K4',
         '+1-403-888-8888',
         1.00
+    ),
+    (
+        'Amelia Scott',
+        'amelia.scott@example.com',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
+        '1234 7th Ave SW, Calgary, AB T2P 2T4',
+        '+1-403-444-4444',
+        1.00
+    ),
+    (
+        'Noah Young',
+        'noah.young@example.com',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
+        '5678 15th Ave SW, Calgary, AB T3C 1E5',
+        '+1-403-555-5555',
+        1.00
+    ),
+    (
+        'Harper Allen',
+        'harper.allen@example.com',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
+        '8901 20th StW, Calgary, AB T3K 2P5',
+        '+1-403-666-6666',
+        1.00
+    ),
+    (
+        'Elijah King',
+        'elijah.king@example.com',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
+        '3456 9th Ave SE, Calgary, AB T2G 2T4',
+        '+1-403-777-7777',
+        1.00
+    ),
+    (
+        'Evelyn Wright',
+        'evelyn.wright@example.com',
+        'org_2zhQ4Zj9fcS7zagS6WHj3f0HM3D',
+        '9012 6th St SW, Calgary, AB T2P 1K4',
+        '+1-403-888-8888',
+        1.00
     );
 
 INSERT INTO
@@ -277,13 +347,15 @@ INSERT INTO
 SELECT id, 1.0
 FROM clients;
 
+-- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
-SELECT * FROM yards_marked_clear;
+-- SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
--- SELECT * FROM clients;
+SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
-
 -- SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
+-- SELECT * FROM payments ;
+-- SELECT * FROM accounts;

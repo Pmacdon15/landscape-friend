@@ -9,58 +9,66 @@ import {
 } from "@/components/ui/pagination"
 
 export function PaginationTabs({
+  fullWidth = false,
   path,
-  clientListPage,
+  page,
   totalPages,
 }: {
+  fullWidth?: boolean;
   path: string;
-  clientListPage: number;
+  page: number;
   totalPages: number;
 }) {
 
   return totalPages > 1 ? (
-    <div className="rounded-sm w-full sm:w-3/6 md:w-4/6 p-2  bg-white/30 backdrop-filter backdrop-blur-sm shadow-lg">
+    <div
+      className={`rounded-sm p-2 bg-white/30 shadow-lg 
+        ${fullWidth ? 'w-full' : 'max-sm:w-full sm:w-3/6 md:w-5/6'}`}
+    >
       <Pagination>
         <PaginationContent>
-          {clientListPage > 1 &&
+          {page > 1 &&
             <PaginationItem>
-              <PaginationPrevious href={path} query={{ page: clientListPage - 1 }} />
+              <PaginationPrevious href={`${path}?page=${page - 1}`} />
             </PaginationItem>
           }
-          {clientListPage > 2 &&
+          {page > 2 &&
             <PaginationItem>
-              <PaginationLink  href={path} query={{ page: 1 }}>
+              <PaginationLink href={`${path}?page=1`}>
                 1
               </PaginationLink>
             </PaginationItem>
           }
-          {clientListPage > 3 &&
+          {page > 3 &&
             <PaginationItem>
               <PaginationEllipsis />
             </PaginationItem>
           }
-          {Array.from({ length: Math.min(totalPages, clientListPage + 1) - Math.max(1, clientListPage - 1) + 1 }, (_, i) => Math.max(1, clientListPage - 1) + i).map((page) =>
-            <PaginationItem key={page}>
-              <PaginationLink  href={path} isActive={clientListPage === page} query={{ page: page }}>
-                {page}
+          {Array.from({ length: Math.min(totalPages, page + 1) - Math.max(1, page - 1) + 1 }, (_, i) => Math.max(1, page - 1) + i).map((p) =>
+            <PaginationItem key={p}>
+              <PaginationLink
+                href={`${path}?page=${p}`}
+                isActive={p === page}
+              >
+                {p}
               </PaginationLink>
             </PaginationItem>
           )}
-          {clientListPage < totalPages - 2 &&
+          {page < totalPages - 2 &&
             <PaginationItem>
               <PaginationEllipsis />
             </PaginationItem>
           }
-          {clientListPage < totalPages - 1 &&
+          {page < totalPages - 1 &&
             <PaginationItem>
-              <PaginationLink  href={path} query={{ page: totalPages }}>
+              <PaginationLink href={`${path}?page=${totalPages}`}>
                 {totalPages}
               </PaginationLink>
             </PaginationItem>
           }
-          {clientListPage < totalPages &&
+          {page < totalPages &&
             <PaginationItem>
-              <PaginationNext  href={path} query={{ page: clientListPage + 1 }} />
+              <PaginationNext href={`${path}?page=${page + 1}`} />
             </PaginationItem>}
         </PaginationContent>
       </Pagination>

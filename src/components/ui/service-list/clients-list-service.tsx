@@ -1,5 +1,4 @@
 import MapComponent from "../map-component/map-component";
-import { Client, PaginatedClients } from "@/types/types";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
@@ -9,14 +8,17 @@ import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import MarkYardServiced from "../buttons/mark-yard-serviced";
+import ImageList from "../image-list/image-list";
+import { Client, PaginatedClients } from "@/types/types-clients";
 
-export default async function ClientListService({ clientsPromise, clientListPage, serviceDate, searchTermIsServiced, snow = false }:
+export default async function ClientListService({ clientsPromise, page, serviceDate, searchTermIsServiced, snow = false, isAdmin }:
     {
         clientsPromise: Promise<PaginatedClients | null>,
-        clientListPage: number,
+        page: number,
         serviceDate?: Date,
         searchTermIsServiced: boolean,
         snow?: boolean,
+        isAdmin: boolean
     }) {
 
     const result = await clientsPromise;
@@ -39,7 +41,7 @@ export default async function ClientListService({ clientsPromise, clientListPage
                             <ManyPointsMap addresses={flattenedAddresses} />
                         </div>
                     </FormContainer>}
-                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
+                <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} page={page} totalPages={totalPages} />
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
                         <li className="border p-4 rounded-sm relative bg-white/50">
@@ -55,15 +57,18 @@ export default async function ClientListService({ clientsPromise, clientListPage
                                 <ClientEmailPopover client={client} />
                             </div>
                             <p>Address: {client.address}</p>
-                            <Suspense fallback={<FormContainer><FormHeader text="Loading..." /></FormContainer>}>
-                                <MapComponent address={client.address} />
-                            </Suspense>
+                            <div className="flex flex-col sm:flex-row gap-1">
+                                <Suspense fallback={<FormHeader text="Loading..." />}>
+                                    <MapComponent address={client.address} />
+                                </Suspense>
+                                <ImageList isAdmin={isAdmin} client={client} />
+                            </div>
                         </li>
                         {!searchTermIsServiced && serviceDate && <MarkYardServiced clientId={client.id} serviceDate={serviceDate} snow={snow} />}
                     </FormContainer>
                 ))}
             </ul >
-            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/snow-clearing"}`} clientListPage={clientListPage} totalPages={totalPages} />
+            <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} page={page} totalPages={totalPages} />
         </>
     );
 }

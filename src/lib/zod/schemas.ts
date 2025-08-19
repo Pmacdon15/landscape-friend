@@ -5,6 +5,8 @@ export const schemaAddClient = z.object({
     phone_number: z.number(),
     email_address: z.email(),
     address: z.string(),
+    stripe_customer_id: z.string().optional(),
+    organization_id: z.string(),
 })
 
 export const schemaUpdatePricePerCut = z.object({
@@ -49,3 +51,46 @@ export const schemaToggleSnowClient = z.object({
 export const schemaUpdateAPI = z.object({
     APIKey: z.string()
 })
+
+export const materialSchema = z.object({
+    materialType: z.string().optional().or(z.literal('')),
+    materialCostPerUnit: z.number().optional().default(0),
+    materialUnits: z.number().optional().default(0),
+});
+
+export const schemaCreateQuote = z.object({
+    clientName: z.string(),
+    clientEmail: z.string(),
+    phone_number: z.string(),
+    address: z.string(),
+    labourCostPerUnit: z.number(),
+    labourUnits: z.number(),
+    materials: z.array(materialSchema),
+    organization_id: z.string(),
+});
+ 
+export const AddClientSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  address: z.string().min(1, "Address is required"),
+  notes: z.string().optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+});
+export const MAX_FILE_SIZE = 500000;
+export const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
+
+export const ImageSchema = z.object({
+  image: z
+    .instanceof(File)
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported.",
+    ),
+});

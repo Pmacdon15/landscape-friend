@@ -1,12 +1,13 @@
 "use client"
 import * as React from "react"
 import { Button } from "../button"
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { Menu } from "lucide-react"
 
 import NavigationMenuComponent from "./nav-menu-component"
 
-export function NavBar() {
+export function NavBar({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
+
     const [showNav, setShowNav] = useState(false)
 
     return (
@@ -15,10 +16,10 @@ export function NavBar() {
                 <Button variant="outline" onClick={() => setShowNav(!showNav)} className="p-2 w-9">
                     <Menu size={24} />
                 </Button>
-                {showNav && <NavigationMenuComponent />}
+                {showNav && <Suspense><NavigationMenuComponent hasStripAPIKeyPromise={hasStripAPIKeyPromise} userId={userId} isAdmin={isAdmin} /></Suspense>}
             </div>
 
-            <div className="hidden md:block"><NavigationMenuComponent /></div>
+            <div className="hidden md:block"><Suspense><NavigationMenuComponent hasStripAPIKeyPromise={hasStripAPIKeyPromise} userId={userId} isAdmin={isAdmin} /></Suspense></div>
         </>
     )
 }

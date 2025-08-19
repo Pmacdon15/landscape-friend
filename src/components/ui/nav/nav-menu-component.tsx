@@ -6,13 +6,16 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { useMediaQuery } from "@/hooks/hooks";
+import { useMediaQuery } from "@/lib/hooks/hooks";
 import Link from "next/link";
+import { use } from "react";
 
-export default function NavigationMenuComponent() {
-    const date = new Date()
-    console.log("date: ", date)
+export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
+    const date = new Date();
+    const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
     const isMd = useMediaQuery("(min-width: 768px)");
+
+    const hasStripAPIKey = use(hasStripAPIKeyPromise)
     return (
         <NavigationMenu viewport={!isMd}>
             <NavigationMenuList>
@@ -32,7 +35,7 @@ export default function NavigationMenuComponent() {
                                 <NavigationMenuLink asChild>
                                     <Link href={{
                                         pathname: '/lists/cutting',
-                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
+                                        query: { date: today },
                                     }}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
@@ -42,9 +45,9 @@ export default function NavigationMenuComponent() {
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
                                     <Link href={{
-                                        pathname: '/lists/snow-clearing',
-                                        query: { date: date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }) },
-                                    }}>
+                                        pathname: '/lists/clearing',
+                                        query: { date: today, assigned: userId },
+                                    }} as={`/lists/clearing?date=${today}&assigned=${userId}`}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">
                                             Track clients that need to be cleared.
@@ -60,14 +63,14 @@ export default function NavigationMenuComponent() {
                     <NavigationMenuContent>
                         <ul className="grid w-[300px] gap-4">
                             <li>
-                                <NavigationMenuLink asChild>
+                                {isAdmin && <NavigationMenuLink asChild>
                                     <Link href="/email/news-letter">
                                         <div className="font-medium">Send News Letter</div>
                                         <div className="text-muted-foreground">
                                             Send all clients an update email.
                                         </div>
                                     </Link>
-                                </NavigationMenuLink>
+                                </NavigationMenuLink>}
                                 <NavigationMenuLink asChild>
                                     <Link href="/email/individual">
                                         <div className="font-medium">Send Individual</div>
@@ -80,39 +83,43 @@ export default function NavigationMenuComponent() {
                         </ul>
                     </NavigationMenuContent>
                 </NavigationMenuItem>
-                <NavigationMenuItem>
-                    <NavigationMenuTrigger>Invoices</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                        <ul className="grid w-[300px] gap-4">
-                            <li>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoice/all">
-                                        <div className="font-medium">Send All</div>
-                                        <div className="text-muted-foreground">
-                                            Send invoices for all outstanding balances.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoice/individual">
-                                        <div className="font-medium">Send Individual</div>
-                                        <div className="text-muted-foreground">
-                                            Send an invoice to a client with an outstanding balance.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/invoice/send-estimate">
-                                        <div className="font-medium">Send as Estimate</div>
-                                        <div className="text-muted-foreground">
-                                            Send an invoice as an estimate.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
-                            </li>
-                        </ul>
-                    </NavigationMenuContent>
-                </NavigationMenuItem>
+                {isAdmin && hasStripAPIKey &&
+                    <>
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger>Billing</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                                <ul className="grid w-[300px] gap-4">
+                                    <li>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/billing/send-quote">
+                                                <div className="font-medium">Send a Quote</div>
+                                                <div className="text-muted-foreground">
+                                                    Send an Quote as an Email.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/billing/manage/quotes">
+                                                <div className="font-medium">Manage Quotes</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage quotes mark accepted, cancel.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/billing/manage/invoices">
+                                                <div className="font-medium">Manage Invoices</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage invoices view, send, resend, mark paid.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </li>
+                                </ul>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    </>
+                }
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Settings</NavigationMenuTrigger>
                     <NavigationMenuContent>

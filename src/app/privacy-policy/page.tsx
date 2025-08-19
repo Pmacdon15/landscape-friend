@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
                 <h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
 
                 <p className="mb-4">
-                    Your privacy is important to us at <strong>LawnBuddy</strong>. This Privacy Policy explains how we collect, use, and protect your personal information when you use our services.
+                    Your privacy is important to us at <strong>Landscape Friend</strong>. This Privacy Policy explains how we collect, use, and protect your personal information when you use our services.
                 </p>
 
                 <TosSection
@@ -25,7 +25,7 @@ export default function PrivacyPolicy() {
                     title="2. How We Use Your Information"
                     text2={
                         `We use your information to:\n
-                    - Provide, maintain, and improve LawnBuddy services.\n
+                    - Provide, maintain, and improve Landscape Friend services.\n
                     - Manage customer accounts and billing.\n
                     - Communicate important updates and respond to support requests.\n
                     - Comply with legal obligations and prevent fraudulent activity.`
@@ -62,7 +62,7 @@ export default function PrivacyPolicy() {
 
                 <TosSection
                     title="7. Changes to this Privacy Policy"
-                    text2="We may update this Privacy Policy occasionally. We will notify you of significant changes and your continued use of LawnBuddy constitutes acceptance of those changes."
+                    text2="We may update this Privacy Policy occasionally. We will notify you of significant changes and your continued use of Landscape Friend constitutes acceptance of those changes."
                 />
 
                 <TosSection

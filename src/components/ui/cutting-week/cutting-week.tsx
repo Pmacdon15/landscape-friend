@@ -1,6 +1,6 @@
 'use client';
 import { useUpdateCuttingDay } from "@/mutations/mutations";
-import { Client, CuttingSchedule } from "@/types/types";
+import { Client, CuttingSchedule } from "@/types/types-clients";
 
 function CuttingWeekDropDown({
   week,

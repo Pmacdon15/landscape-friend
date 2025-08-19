@@ -7,6 +7,9 @@ import PageContainer from "../components/ui/containers/page-container";
 import Providers from "../components/Providers";
 import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
+import Footer from "@/components/ui/footer/footer";
+import { Toaster } from '@/components/ui/sonner';
+import { hasStripAPIKey } from "@/DAL/dal-stripe";
 // export const experimental_ppr = true;
 
 const geistSans = Geist({
@@ -20,15 +23,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lawn Buddy",
+  title: "Landscape Friend",
   description: "Track and Invoice your lawn clients easily",
+  keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const hasStripAPIKeyPromise = hasStripAPIKey()
   return (
     <ClerkProvider>
       <Providers>
@@ -43,11 +48,13 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
             <Suspense fallback={<HeaderFallBack />}>
-              <Header />
+              <Header hasStripAPIKeyPromise={hasStripAPIKeyPromise} />
             </Suspense>
             <PageContainer>
               {children}
             </PageContainer>
+            <Footer />
+            <Toaster />
           </body>
         </html >
       </Providers>

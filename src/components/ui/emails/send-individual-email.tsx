@@ -1,9 +1,9 @@
 'use client'
-import { NamesAndEmails } from "@/types/types";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import { use, useState } from "react";
 import SendClientEmailButton from "../buttons/send-client-email-button";
+import { NamesAndEmails } from "@/types/types-clients";
 
 export default function SendIndividualEmail({ children, namesAndEmailsPromise }: { children: React.ReactNode, namesAndEmailsPromise: Promise<NamesAndEmails[] | Error> }) {
 

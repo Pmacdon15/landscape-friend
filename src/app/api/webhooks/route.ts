@@ -1,7 +1,7 @@
-import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate } from '@/lib/webhooks';
+import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated } from '@/lib/webhooks';
+import { OrganizationCreatedEvent, SubscriptionItem, UserCreatedEvent, UserDeletedEvent, WebhookEvent } from '@/types/types-clerk';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
-import { SubscriptionItem, OrganizationCreatedEvent, WebhookEvent, UserCreatedEvent, UserDeletedEvent } from '@/types/types'
 
 function isSubscriptionItem(data: WebhookEvent['data']): data is SubscriptionItem {
     return 'plan' in data && 'slug' in data.plan;
@@ -27,8 +27,15 @@ export async function POST(req: NextRequest) {
             }
 
             case 'user.created': {
-                const userId = (evt.data as UserCreatedEvent).id;
-                const userName = (evt.data as UserCreatedEvent).name;
+                const data = evt.data as UserCreatedEvent;
+                const userId = data.id;
+                const userName = `${data.first_name || ''} ${data.last_name || ''}`.trim() || data.username || 'Personal Workspace';
+                const userEmail = data.email_addresses[0]?.email_address;
+                if (!userEmail) {
+                    console.error('User created event without email address');
+                    break;
+                }
+                await handleUserCreated(userId, userName, userEmail);
                 await handleOrganizationCreated(userId, userName);
                 break;
             }
