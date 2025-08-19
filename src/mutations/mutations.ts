@@ -85,6 +85,7 @@ export const useUpdateCuttingDay = () => {
         mutationFn: ({ clientId, cuttingWeek, cuttingDay }: { clientId: number, cuttingWeek: number, cuttingDay: string }) => {
             return updateCuttingDay(clientId, cuttingWeek, cuttingDay);
         },
+        onSuccess: () => { revalidatePathAction("/lists/client") },
         onError: (error) => {
             console.error('Mutation error:', error);
         }
@@ -97,6 +98,7 @@ export const useAssignSnowClearing = () => {
         mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
             return assignSnowClearing(clientId, assignedTo);
         },
+        onSuccess: () => { revalidatePathAction("/lists/client") },
         onError: (error) => {
             console.error('Mutation error:', error);
         }
