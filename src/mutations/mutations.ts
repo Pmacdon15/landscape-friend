@@ -110,6 +110,7 @@ export const useMarkYardServiced = () => {
         mutationFn: ({ clientId, date, snow = false }: { clientId: number, date: Date, snow?: boolean }) => {
             return markYardServiced(clientId, date, snow);
         },
+        onSuccess: () => { revalidatePathAction("/lists/clearing");revalidatePathAction("/lists/cutting") },
         onError: (error) => {
             console.error('Mutation error:', error);
         }
