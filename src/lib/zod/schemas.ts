@@ -5,6 +5,8 @@ export const schemaAddClient = z.object({
     phone_number: z.number(),
     email_address: z.email(),
     address: z.string(),
+    stripe_customer_id: z.string().optional(),
+    organization_id: z.string(),
 })
 
 export const schemaUpdatePricePerCut = z.object({
@@ -59,9 +61,12 @@ export const materialSchema = z.object({
 export const schemaCreateQuote = z.object({
     clientName: z.string(),
     clientEmail: z.string(),
+    phone_number: z.string(),
+    address: z.string(),
     labourCostPerUnit: z.number(),
     labourUnits: z.number(),
     materials: z.array(materialSchema),
+    organization_id: z.string(),
 });
  
 export const AddClientSchema = z.object({

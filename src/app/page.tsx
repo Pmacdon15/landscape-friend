@@ -68,7 +68,7 @@ export default function Home() {
           <div className="md:flex">
             <div className="w-full md:mr-4 md:mt-0 mt-4 logo-slide-in sm:mb-4 ">
               <FormContainer popover={true}>
-                <ContentContainer>
+                <FillFormContainer>
                   <h1 className="text-3xl font-bold mb-6">Why choose Landscape Friend?</h1>
                   <p className="mb-4 indent-4">
                     Landscape Friend is your all-in-one solution for lawn care management. Whether you&apos;re a homeowner or a professional landscaper, our platform offers tools to help you schedule services, track maintenance, and manage your lawn care tasks efficiently.
@@ -82,7 +82,7 @@ export default function Home() {
                   <p className="mb-4">
                     Join Landscape Friend today and take the first step towards your landscaping career!
                   </p>
-                </ContentContainer>
+                </FillFormContainer>
               </FormContainer>
             </div>
             <div className="md:shrink-0 logo-slide-in-reverse  mt-4 md:mt-0 pb-4">

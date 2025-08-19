@@ -1,12 +1,12 @@
 import { fetchStripAPIKeyDb } from "@/lib/DB/db-stripe";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { APIKey, FetchInvoicesResponse, StripeInvoice } from "@/types/types-stripe";
+import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/types-stripe";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 
 let stripe: Stripe | null = null;
 
-async function getStripeInstance(): Promise<Stripe> {
+export async function getStripeInstance(): Promise<Stripe> {
 
     const apiKeyResponse = await fetchStripAPIKey();
     if (apiKeyResponse instanceof Error) {
@@ -62,8 +62,8 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         let startingAfter: string | undefined = undefined;
 
         const params: Stripe.InvoiceListParams = { limit: 100 };
-        if (typesOfInvoices && ['draft', 'paid', 'open'].includes(typesOfInvoices)) {
-            params.status = typesOfInvoices as 'draft' | 'paid' | 'open';
+        if (typesOfInvoices && ['draft', 'paid', 'open', 'void'].includes(typesOfInvoices)) {
+            params.status = typesOfInvoices as 'draft' | 'paid' | 'open' | 'void';
         }
 
         while (hasMore) {
@@ -117,5 +117,68 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
     } catch (error) {
         console.error(error);
         throw new Error('Failed to fetch invoices');
+    }
+}
+
+
+export async function fetchQuotes(typesOfQuotes: string, page: number, searchTerm: string): Promise<FetchQuotesResponse> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const stripe = await getStripeInstance();
+    const pageSize = Number(process.env.PAGE_SIZE) || 10;
+
+    try {
+        let allQuotes: Stripe.Quote[] = [];
+        let hasMore = true;
+        let startingAfter: string | undefined = undefined;
+
+        const params: Stripe.QuoteListParams = { limit: 100 };
+        if (typesOfQuotes && ['draft', 'open', 'accepted', 'canceled'].includes(typesOfQuotes)) {
+            params.status = typesOfQuotes as 'draft' | 'open' | 'accepted' | 'canceled';
+        }
+
+        while (hasMore) {
+            const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({ ...params, starting_after: startingAfter });
+            allQuotes = allQuotes.concat(quoteBatch.data);
+            hasMore = quoteBatch.has_more;
+            if (hasMore) {
+                startingAfter = quoteBatch.data[quoteBatch.data.length - 1].id;
+            }
+        }
+
+        let filteredQuotes = allQuotes;
+        if (searchTerm) {
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            filteredQuotes = allQuotes.filter(quote =>
+                (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm))
+            );
+        }
+
+        const totalQuotes = filteredQuotes.length;
+        const totalPages = Math.ceil(totalQuotes / pageSize);
+        const offset = (page - 1) * pageSize;
+        const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
+
+        // const quotesWithPdf = await Promise.all(paginatedQuotes.map(async (quote) => {
+        //     const retrievedQuote = await stripe.quotes.pdf(quote.id);
+        //     return retrievedQuote
+        // }));
+
+        // console.log("quotesWithPdf: ", quotesWithPdf)
+        const strippedQuotes = paginatedQuotes.map((quote) => ({
+            id: quote.id,
+            object: quote.object,
+            amount_total: quote.amount_total,
+            customer: quote.customer,
+            status: quote.status as string,
+            expires_at: quote.expires_at,
+            created: quote.created,
+        }));
+
+        return { quotes: strippedQuotes as StripeQuote[], totalPages };
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch quotes');
     }
 }

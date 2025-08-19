@@ -4,12 +4,16 @@ import z from "zod";
 import { Account, Client } from "@/types/types-clients";
 
 //MARK: Add clients
+
+
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
+  console.log("addClientDB called with data:", data, "and organization_id:", organization_id);
   const sql = neon(`${process.env.DATABASE_URL}`);
-  const result = await (sql`
+  try {
+    const result = await (sql`
         WITH new_client AS (
-            INSERT INTO clients (full_name, phone_number, email_address, organization_id, address)
-            VALUES (${data.full_name}, ${data.phone_number}, ${data.email_address}, ${organization_id}, ${data.address})
+            INSERT INTO clients (full_name, phone_number, email_address, organization_id, address, stripe_customer_id)
+            VALUES (${data.full_name}, ${data.phone_number}, ${data.email_address}, ${organization_id}, ${data.address}, ${data.stripe_customer_id || null})
             RETURNING *
         ),
         new_account AS (
@@ -22,8 +26,30 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
             (SELECT row_to_json(new_client.*)::jsonb AS client FROM new_client),
             (SELECT row_to_json(new_account.*)::jsonb AS account FROM new_account);
     `) as { client: Client; account: Account }[];
+    console.log("addClientDB result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error in addClientDB SQL query:", error);
+    throw error;
+  }
+}
 
-  return result;
+export async function updateClientStripeCustomerIdDb(email_address: string, stripe_customer_id: string, organization_id: string) {
+  console.log("updateClientStripeCustomerIdDb called with:", { email_address, stripe_customer_id, organization_id });
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  try {
+    const result = await sql`
+    UPDATE clients
+    SET stripe_customer_id = ${stripe_customer_id}
+    WHERE email_address = ${email_address} AND organization_id = ${organization_id}
+    RETURNING *;
+  `;
+    console.log("updateClientStripeCustomerIdDb result:", result);
+    return result;
+  } catch (error) {
+    console.error("Error in updateClientStripeCustomerIdDb SQL query:", error);
+    throw error;
+  }
 }
 
 //MARK: Count clients by org id

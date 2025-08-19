@@ -1,27 +1,28 @@
 'use server'
 import { markPaidDb } from "@/lib/DB/db-clients";
+import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/stripe-utils";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails';
-import Stripe from 'stripe'; // Import Stripe
+import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
+import { getStripeInstance } from "../dal-stripe";
+import { MarkQuoteProps } from "@/types/types-stripe";
 
-// Placeholder for getting Stripe instance. In a real app, this would fetch the API key securely.
-// For now, assuming it's available via environment variable or a secure utility.
-let stripe: Stripe | null = null;
+// let stripe: Stripe | null = null;
 
-function getStripeInstance(): Stripe {
-    if (!stripe) {
-        const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
-        if (!apiKey) {
-            throw new Error('Stripe secret key not configured.');
-        }
-        stripe = new Stripe(apiKey);
-    }
-    return stripe;
-}
+// function getStripeInstance(): Stripe {
+//     if (!stripe) {
+//         const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
+//         if (!apiKey) {
+//             throw new Error('Stripe secret key not configured.');
+//         }
+//         stripe = new Stripe(apiKey);
+//     }
+//     return stripe;
+// }
 
 //MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
@@ -57,10 +58,10 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 //MARK: Create quote
 export async function createStripeQuote(formData: FormData) {
-    const { isAdmin, sessionClaims } = await isOrgAdmin();
+    const { isAdmin, orgId, userId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin")
-    if (!sessionClaims) throw new Error("Session claims are missing.");
-    const companyName = formatCompanyName({ orgName: sessionClaims.orgName as string, userFullName: sessionClaims.userFullName as string })
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+    const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
 
     const materials: { materialType: string, materialCostPerUnit: number, materialUnits: number }[] = [];
     let i = 0;
@@ -77,9 +78,12 @@ export async function createStripeQuote(formData: FormData) {
     const validatedFields = schemaCreateQuote.safeParse({
         clientName: formData.get('clientName'),
         clientEmail: formData.get('clientEmail'),
+        phone_number: formData.get('phone_number'),
+        address: formData.get('address'),
         labourCostPerUnit: Number(formData.get('labourCostPerUnit')),
         labourUnits: Number(formData.get('labourUnits')),
         materials: materials,
+        organization_id: formData.get('organization_id'),
     });
 
     if (!validatedFields.success) {
@@ -90,20 +94,17 @@ export async function createStripeQuote(formData: FormData) {
 
     try {
         if (!isAdmin) throw new Error("Not Admin")
-        const stripe = getStripeInstance();
+        const stripe = await getStripeInstance();
 
         // 1. Find or Create Customer
-        let customerId: string;
-        const existingCustomers = await stripe.customers.list({ email: validatedFields.data.clientEmail, limit: 1 });
-        if (existingCustomers.data.length > 0) {
-            customerId = existingCustomers.data[0].id;
-        } else {
-            const newCustomer = await stripe.customers.create({
-                name: validatedFields.data.clientName,
-                email: validatedFields.data.clientEmail,
-            });
-            customerId = newCustomer.id;
-        }
+        const customerId = await findOrCreateStripeCustomerAndLinkClient(
+            validatedFields.data.clientName,
+            validatedFields.data.clientEmail,
+            validatedFields.data.phone_number,
+            validatedFields.data.address,
+            validatedFields.data.organization_id
+        );
+
 
         // 2. Handle Labour Product and Price
         let labourPriceId: string;
@@ -179,6 +180,8 @@ export async function createStripeQuote(formData: FormData) {
         const quote = await stripe.quotes.create({
             customer: customerId,
             line_items: line_items,
+            collection_method: 'send_invoice',
+            invoice_settings: { days_until_due: 30 },
         });
 
         // Finalize the quote immediately
@@ -226,7 +229,7 @@ Thank you!`
 export async function resendInvoice(invoiceId: string) {
     const { isAdmin, sessionClaims } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
-    const stripe = getStripeInstance();
+    const stripe = await getStripeInstance();
     //TODO: when in Prod ther eis not need for use to send the email strip will do that
 
     try {
@@ -273,7 +276,7 @@ export async function markInvoicePaid(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
     if (!userId) throw new Error("No user")
 
-    const stripe = getStripeInstance();
+    const stripe = await getStripeInstance();
     try {
         const invoice = await stripe.invoices.pay(invoiceId, {
             paid_out_of_band: true,
@@ -304,7 +307,7 @@ export async function markInvoiceVoid(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
     if (!userId) throw new Error("No user")
 
-    const stripe = getStripeInstance();
+    const stripe = await getStripeInstance();
     try {
         const invoice = await stripe.invoices.voidInvoice(invoiceId);
 
@@ -325,5 +328,34 @@ export async function markInvoiceVoid(invoiceId: string) {
     } catch (error) {
         console.error(error);
         throw new Error(`Failed to mark invoice ${invoiceId} as paid`);
+    }
+}
+
+export async function markQuote({ action, quoteId }: MarkQuoteProps) {
+    const { isAdmin, userId } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+    if (!userId) throw new Error("No user");
+
+    const stripe = await getStripeInstance();
+    try {
+        let resultQuote: Stripe.Response<Stripe.Quote>;
+        if (action === "accept") {
+            resultQuote = await stripe.quotes.accept(quoteId);
+        }
+        //  else if (action === "send") {
+        //     resultQuote = await stripe.quotes.(quoteId);
+        // }
+         else if (action === "cancel") {
+            resultQuote = await stripe.quotes.cancel(quoteId);
+        } else {
+            throw new Error("Invalid action for quote operation.");
+        }
+
+        return {
+            id: resultQuote.id,
+            status: resultQuote.status,
+        };
+    } catch (e: any) {
+        throw new Error(`Error: ${e.message}`);
     }
 }

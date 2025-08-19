@@ -1,3 +1,5 @@
+import Stripe from 'stripe';
+
 export interface FetchInvoicesResponse {
     invoices: StripeInvoice[];
     totalPages: number;
@@ -35,4 +37,25 @@ export interface StripeLineItem {
 }
 export interface APIKey {
     apk_key: string;
+}
+
+export interface FetchQuotesResponse {
+    quotes: StripeQuote[];
+    totalPages: number;
+}
+
+export interface StripeQuote {
+    id: string;
+    object: 'quote';
+    amount_total: number | null;
+    customer: string | null;
+    status: string;
+    expires_at: number | null;
+    created: number;
+}
+
+
+export interface MarkQuoteProps {
+    action: "accept" | "cancel" | "send";
+    quoteId: string;
 }

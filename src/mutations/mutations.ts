@@ -2,12 +2,13 @@ import { useMutation } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/DAL/actions/clients";
 import { markYardServiced } from "@/DAL/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/DAL/actions/sendEmails";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, resendInvoice, updateStripeAPIKey } from "@/DAL/actions/stripe";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/DAL/actions/stripe";
 import revalidatePathAction from "@/DAL/actions/revalidatePath";
 import { assignSnowClearing, toggleSnowClient } from "@/DAL/actions/snow";
 import { uploadDrawing, uploadImage } from "@/DAL/actions/blobs";
+import { MarkQuoteProps } from "@/types/types-stripe";
 
-
+//MARK: Add client
 export const useAddClient = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
@@ -20,6 +21,7 @@ export const useAddClient = () => {
     });
 };
 
+//MARK: Delete client
 export const useDeleteClient = () => {
     return useMutation({
         mutationFn: (clientId: number) => {
@@ -31,6 +33,8 @@ export const useDeleteClient = () => {
         }
     });
 };
+
+//MARK:Upload Image for site map
 export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
     return useMutation({
         mutationFn: ({ clientId, formData }: { clientId: number, formData: FormData }) => {
@@ -45,13 +49,15 @@ export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void,
         }
     });
 };
+
+//MARK:Upload drawing site map
 // export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
 export const useUploadDrawing = () => {
     return useMutation({
         mutationFn: ({ file, clientId }: { file: Blob, clientId: number }) => {
             return uploadDrawing(file, clientId);
         },
-        onSuccess: () => {            
+        onSuccess: () => {
             // revalidatePathAction("/lists/client");
             // onSuccess?.();
         },
@@ -60,6 +66,8 @@ export const useUploadDrawing = () => {
         }
     });
 };
+
+//MARK:Update client price per cut
 export const useUpdateClientPricePer = () => {
     return useMutation({
         mutationFn: ({ clientId, pricePerCut, snow = false }: { clientId: number, pricePerCut: number, snow: boolean }) => {
@@ -71,6 +79,7 @@ export const useUpdateClientPricePer = () => {
     });
 };
 
+//MARK:Update cutting day
 export const useUpdateCuttingDay = () => {
     return useMutation({
         mutationFn: ({ clientId, cuttingWeek, cuttingDay }: { clientId: number, cuttingWeek: number, cuttingDay: string }) => {
@@ -82,6 +91,7 @@ export const useUpdateCuttingDay = () => {
     });
 };
 
+//MARK: Assign snow clearing
 export const useAssignSnowClearing = () => {
     return useMutation({
         mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
@@ -92,7 +102,7 @@ export const useAssignSnowClearing = () => {
         }
     });
 };
-
+//MARK:Mark yard serviced
 export const useMarkYardServiced = () => {
     return useMutation({
         mutationFn: ({ clientId, date, snow = false }: { clientId: number, date: Date, snow?: boolean }) => {
@@ -103,7 +113,7 @@ export const useMarkYardServiced = () => {
         }
     });
 };
-
+//MARK:Toggle snow client
 export const useToggleSnowClient = () => {
     return useMutation({
         mutationFn: ({ clientId }: { clientId: number }) => {
@@ -116,6 +126,7 @@ export const useToggleSnowClient = () => {
     });
 };
 
+//MARK: Send email with template
 export const useSendEmailWithTemplate = ({
     clientEmail,
     onSuccess,
@@ -136,6 +147,7 @@ export const useSendEmailWithTemplate = ({
     });
 };
 
+//MARK:Send news letter
 export const useSendNewsLetter = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
@@ -147,6 +159,7 @@ export const useSendNewsLetter = () => {
     });
 };
 
+//MARK:Create stripe quote
 export const useCreateStripeQuote = () => {
     return useMutation({
         mutationFn: async (formData: FormData) => {
@@ -159,6 +172,7 @@ export const useCreateStripeQuote = () => {
     });
 };
 
+//MARK:Update stripe api key
 export const useUpdateStripeAPIKey = () => {
     return useMutation({
         mutationFn: (formData: FormData) => {
@@ -173,6 +187,7 @@ export const useUpdateStripeAPIKey = () => {
     });
 }
 
+//MARK: Resend invoice
 export const useResendInvoice = () => {
     return useMutation({
         mutationFn: async (invoiceId: string) => {
@@ -195,11 +210,23 @@ export const useMarkInvoicePaid = () => {
         },
     });
 };
-
+//MARK: Mark invoice void
 export const useMarkInvoiceVoid = () => {
     return useMutation({
         mutationFn: async (invoiceId: string) => {
             return markInvoiceVoid(invoiceId);
+        },
+        onSuccess: () => {
+            revalidatePathAction("/billing/manage/invoices")
+        },
+    });
+};
+
+//MARK: Accecpt quote
+export const useMarkQuote = () => {
+    return useMutation({
+        mutationFn: async ({ action, quoteId }: MarkQuoteProps) => {
+            return markQuote({ action, quoteId });
         },
         onSuccess: () => {
             revalidatePathAction("/billing/manage/invoices")

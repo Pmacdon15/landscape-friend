@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { schemaCreateQuote } from '@/lib/zod/schemas';
 import { useCreateQuoteForm } from '@/lib/hooks/hooks';
 
-export function CreateQuoteForm() {
+export function CreateQuoteForm({ organizationId }: { organizationId: string }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
 
     const { register, watch, control, reset, formState: { errors } } = useForm({
@@ -16,7 +16,8 @@ export function CreateQuoteForm() {
         defaultValues: {
             labourCostPerUnit: 0,
             labourUnits: 0,
-            materials: [{ materialType: '', materialCostPerUnit: 0, materialUnits: 0 }]
+            materials: [{ materialType: '', materialCostPerUnit: 0, materialUnits: 0 }],
+            organization_id: organizationId,
         }
     });
 
@@ -43,6 +44,7 @@ export function CreateQuoteForm() {
     return (
         <>
             <form action={mutate} className="space-y-4">
+                <input type="hidden" {...register('organization_id')} value={organizationId} />
                 <section>
                     <h3 className="text-md font-semibold mb-2">Client Information</h3>
                     <div>
@@ -66,6 +68,28 @@ export function CreateQuoteForm() {
                             aria-invalid={errors.clientEmail ? "true" : "false"}
                         />
                         {errors.clientEmail && <p className="text-red-500 text-sm mt-1">{errors.clientEmail.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700">Phone Number:</label>
+                        <input
+                            type="text"
+                            id="phone_number"
+                            {...register('phone_number')}
+                            className={inputClassName}
+                            aria-invalid={errors.phone_number ? "true" : "false"}
+                        />
+                        {errors.phone_number && <p className="text-red-500 text-sm mt-1">{errors.phone_number.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="address" className="block text-sm font-medium text-gray-700">Address:</label>
+                        <input
+                            type="text"
+                            id="address"
+                            {...register('address')}
+                            className={inputClassName}
+                            aria-invalid={errors.address ? "true" : "false"}
+                        />
+                        {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
                     </div>
                 </section>
 

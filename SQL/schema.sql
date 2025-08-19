@@ -43,7 +43,8 @@ CREATE TABLE clients (
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
     address VARCHAR(200) NOT NULL,
     snow_client BOOLEAN NOT NULL DEFAULT false,
-    price_per_month_snow FLOAT NOT NULL DEFAULT 100
+    price_per_month_snow FLOAT NOT NULL DEFAULT 100,
+    stripe_customer_id VARCHAR(255) NULL
 );
 
 CREATE TABLE stripe_api_keys (
@@ -350,7 +351,7 @@ FROM clients;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
--- SELECT * FROM clients;
+SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
