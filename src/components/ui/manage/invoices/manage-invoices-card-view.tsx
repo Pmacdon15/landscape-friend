@@ -37,18 +37,19 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
                 View Invoice
               </Link>
             }
-            {invoice.status === "draft" ?
-              <ManageInvoiceButton variant="send" invoiceId={invoice.id} />
-              :
-              //Do nto show resend if paid or void
-              invoice.status !== "void" && invoice.status !== "paid" && <ManageInvoiceButton variant="resend" invoiceId={invoice.id} />
-            }
-            {invoice.status !== "paid" && invoice.status !== "draft" && invoice.status !== "void" &&
-              <ManageInvoiceButton variant="paid" invoiceId={invoice.id} />
-            }
-            {invoice.status !== "paid" && invoice.status !== "void" && invoice.status !== "draft" &&
-              <ManageInvoiceButton variant="void" invoiceId={invoice.id} />
-            }
+            <div className="flex flex-wrap justify-center w-full gap-4 ">
+              {invoice.status === "draft" ?
+                <ManageInvoiceButton variant="send" invoiceId={invoice.id} />
+                :                
+                invoice.status !== "void" && invoice.status !== "paid" && <ManageInvoiceButton variant="resend" invoiceId={invoice.id} />
+              }
+              {invoice.status !== "paid" && invoice.status !== "draft" && invoice.status !== "void" &&
+                <>
+                  <ManageInvoiceButton variant="paid" invoiceId={invoice.id} />
+                  <ManageInvoiceButton variant="void" invoiceId={invoice.id} />
+                </>
+              }              
+            </div>
           </div>
         </div>
       ))}
