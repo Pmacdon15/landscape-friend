@@ -2,11 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
-import { Client } from "@/types/types-clients";
+import { Client, ClientListItemProps } from "@/types/types-clients";
 
-interface ClientListItemProps {
-  client: Client;
-}
 
 const ClientListItemHeader = ({ client }: ClientListItemProps) => {
   return (
@@ -46,22 +43,5 @@ const ClientListItemEmail = ({ client }: ClientListItemProps) => {
   );
 };
 
-const ClientListItemAddress = ({ client }: ClientListItemProps) => {
-  return (
-    <div className="flex flex-row gap-2 items-start">
-      <Image
-        src="/client-list/address.png"
-        alt="Address Icon"
-        className="w-12 h-12"
-        width={512}
-        height={512}
-      />
-      <div className="flex flex-col">
-        <p className="text-sm">Address:</p>
-        <p>{client.address}</p>
-      </div>
-    </div>
-  );
-};
 
-export { ClientListItemHeader, ClientListItemEmail, ClientListItemAddress };
+export { ClientListItemHeader, ClientListItemEmail };

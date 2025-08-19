@@ -11,7 +11,8 @@ import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
 import { ClientListServiceProps } from "@/types/types-clients";
-import { ClientListItemAddress, ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
+import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
+import ClientListItemAddress from "./clienit-list-item-address";
 
 export default async function ClientListService({
   clientsPromise,
@@ -37,27 +38,26 @@ export default async function ClientListService({
                 <DeleteClientButton clientId={client.id} />
               }
               <FormHeader text={client.full_name} />
-              <div className="flex flex-col flex-wrap gap-4 items-center justify-center mt-8 mb-8  sm:flex-col lg:flex-row">
+              <div className="flex flex-col flex-wrap gap-4 items-center justify-center mt-8 mb-8  sm:flex-col lg:flex-row w-full">
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
-                <ClientListItemAddress client={client} />
+                <ClientListItemAddress client={client} >
+                  <Suspense fallback={<FormHeader text="Loading..." />}>
+                    <MapComponent address={client.address} />
+                  </Suspense>
+                </ClientListItemAddress>
               </div>
               {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
+                  <PricePerUpdateInput client={client} />
+                  <p>Amount owing: ${client.amount_owing} </p>
                   <Suspense fallback={<SnowClientInputFallback />}>
                     <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>
-                  <PricePerUpdateInput client={client} />
-                  <p>Amount owing: ${client.amount_owing} </p>
                 </div>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <div className="flex flex-col md:flex-row gap-1">
-                <Suspense fallback={<FormHeader text="Loading..." />}>
-                  <MapComponent address={client.address} />
-                </Suspense>
-                <ImageList isAdmin={isAdmin} client={client} />
-              </div>
+              <ImageList isAdmin={isAdmin} client={client} />
             </li>
           </FormContainer>
         ))}

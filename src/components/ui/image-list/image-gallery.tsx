@@ -13,7 +13,7 @@ export default function ImageGallery({
 }: ImageGalleryProps) {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   return (
-    <div className="relative w-full max-w-md mx-auto h-[300px] overflow-y-auto bg-background rounded-md p-2">
+    <div className="relative w-full lg:w-4/6  mx-auto h-[300px] overflow-y-auto bg-background rounded-md p-2">
       {isAdmin && <div className={`flex flex-nowrap absolute top-1 right-1 z-10 px-4 py-2`}>
         <button
           onClick={() => setView("add")}
@@ -32,8 +32,8 @@ export default function ImageGallery({
             onClick={() => { setPreviewSrc(url) }}
             src={url}
             alt={`Image ${index + 1}`}
-            width={400}
-            height={400}
+            width={300}
+            height={300}
           />
         ))}
       </div>

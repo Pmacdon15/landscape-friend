@@ -15,6 +15,11 @@ export interface Client {
     images: string[];
     stripe_customer_id?: string;
 }
+export interface ClientListItemProps {
+  client: Client;
+  children?: React.ReactNode;
+}
+
 
 export interface ClientResult {
     id: number;
