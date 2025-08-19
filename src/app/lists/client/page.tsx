@@ -27,7 +27,6 @@ export default async function page({
 
     return (
         <>
-
             <FormContainer>
                 <FormHeader text={"Client List"} />
                 <Suspense>
