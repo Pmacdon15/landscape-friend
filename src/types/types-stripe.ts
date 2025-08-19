@@ -45,17 +45,17 @@ export interface FetchQuotesResponse {
 }
 
 export interface StripeQuote {
-  id: string;
-  object: 'quote';
-  amount_total: number | null;
-  customer: string | null;
-  status: string;
-  expires_at: number | null;
-  created: number;
+    id: string;
+    object: 'quote';
+    amount_total: number | null;
+    customer: string | null;
+    status: string;
+    expires_at: number | null;
+    created: number;
 }
 
 
 export interface MarkQuoteProps {
-    action: "accept" | "cancel";
+    action: "accept" | "cancel" | "send";
     quoteId: string;
 }

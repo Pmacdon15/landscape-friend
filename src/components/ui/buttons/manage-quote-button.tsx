@@ -9,7 +9,7 @@ export default function ManageQuoteButton({
 }: MarkQuoteProps) {
   const { mutate, isPending } = useMarkQuote();
 
-  const buttonText = action === "accept" ? "Mark as Accepted" : "Cancel"
+  const buttonText = action === "accept" ? "Mark as Accepted" : action === "send" ? "Send" : 'Cancel'
 
   return (
     <Button

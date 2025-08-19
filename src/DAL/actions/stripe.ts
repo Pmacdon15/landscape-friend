@@ -341,7 +341,11 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         let resultQuote: Stripe.Response<Stripe.Quote>;
         if (action === "accept") {
             resultQuote = await stripe.quotes.accept(quoteId);
-        } else if (action === "cancel") {
+        }
+        //  else if (action === "send") {
+        //     resultQuote = await stripe.quotes.(quoteId);
+        // }
+         else if (action === "cancel") {
             resultQuote = await stripe.quotes.cancel(quoteId);
         } else {
             throw new Error("Invalid action for quote operation.");
