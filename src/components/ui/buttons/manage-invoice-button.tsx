@@ -29,8 +29,8 @@ export default function ManageInvoiceButton({
     : isResendPending;
 
   const buttonText = 
-    variant === "paid" ? "Mark as Paid" 
-    : variant === "void" ? "Void" 
+    variant === "paid" ? "Mark Paid" 
+    : variant === "void" ? "Mark Void" 
     : variant === "send" ? "Send" 
     : "Resend";
 

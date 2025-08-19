@@ -133,7 +133,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.QuoteListParams = { limit: 100 };
+        const params: Stripe.QuoteListParams = { limit: 200 };
         if (typesOfQuotes && ['draft', 'open', 'accepted', 'canceled'].includes(typesOfQuotes)) {
             params.status = typesOfQuotes as 'draft' | 'open' | 'accepted' | 'canceled';
         }
