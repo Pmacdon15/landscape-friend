@@ -27,7 +27,7 @@ export default async function page({
 
     return (
         <>
-        
+
             <FormContainer>
                 <FormHeader text={"Client List"} />
                 <Suspense>
@@ -40,7 +40,6 @@ export default async function page({
                 </AddClientFormClientComponent>
             }
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
-        />
                 <ClientListAll
                     clientsPromise={clientsPromise}
                     page={page}

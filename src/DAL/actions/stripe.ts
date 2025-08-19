@@ -351,7 +351,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
             id: resultQuote.id,
             status: resultQuote.status,
         };
-    } catch (e: any) {
-        throw new Error(`Error: ${e.message}`);
+    } catch (e) {
+        throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
 }
