@@ -27,9 +27,7 @@ export default function SearchForm({ variant = 'default' }: { variant?: SearchFo
         </>
       }
       {variant === 'clearing' &&
-        <>
-          <ServiceStatusSelector />
-        </>
+        <ServiceStatusSelector />
       }
       {variant === 'invoices' &&
         <BillingStatusSelector variant='invoices' />
