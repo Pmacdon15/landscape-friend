@@ -171,16 +171,8 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             object: quote.object,
             amount_total: quote.amount_total,
             customer: quote.customer,
-            status: quote.status,
+            status: quote.status as string,
             expires_at: quote.expires_at,
-            total_details: quote.total_details,
-            application_fee_amount: quote.application_fee_amount,
-            collection_method: quote.collection_method,
-            description: quote.description,
-            invoice: quote.invoice,
-            from_quote: quote.from_quote,
-            line_items: quote.line_items,
-            transfer_data: quote.transfer_data,
             created: quote.created,
         }));
 

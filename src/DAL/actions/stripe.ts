@@ -337,14 +337,20 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     if (!userId) throw new Error("No user");
 
     const stripe = await getStripeInstance();
-    let quote;
     try {
+        let resultQuote: Stripe.Response<Stripe.Quote>;
         if (action === "accept") {
-            quote = await stripe.quotes.accept(quoteId);
+            resultQuote = await stripe.quotes.accept(quoteId);
         } else if (action === "cancel") {
-            quote = await stripe.quotes.cancel(quoteId);
+            resultQuote = await stripe.quotes.cancel(quoteId);
+        } else {
+            throw new Error("Invalid action for quote operation.");
         }
-        return quote;
+
+        return {
+            id: resultQuote.id,
+            status: resultQuote.status,
+        };
     } catch (e: any) {
         throw new Error(`Error: ${e.message}`);
     }

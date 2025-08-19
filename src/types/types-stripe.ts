@@ -49,18 +49,9 @@ export interface StripeQuote {
   object: 'quote';
   amount_total: number | null;
   customer: string | null;
-  status: Stripe.Quote.Status;
+  status: string;
   expires_at: number | null;
-  pdf: string | null;
-  total_details: Stripe.Quote.TotalDetails | null;
-  application_fee_amount: number | null;
-  collection_method: Stripe.Quote.CollectionMethod | null;
   created: number;
-  description: string | null;
-  invoice: string | null;
-  from_quote: Stripe.Quote.FromQuote | null;
-  line_items?: any; // We'll address the type issue below
-  transfer_data: Stripe.Quote.TransferData | null;
 }
 
 
