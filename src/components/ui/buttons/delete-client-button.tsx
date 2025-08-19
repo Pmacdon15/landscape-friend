@@ -4,7 +4,9 @@ import { useDeleteClient } from '@/mutations/mutations';
 export default function DeleteClientButton({ clientId }: { clientId: number }) {
   const { mutate } = useDeleteClient();
   return (
-    <Alert text={"X"} functionAction={() => mutate(clientId)} />
+    <div className="absolute top-1 right-1">
+      <Alert text={"X"} functionAction={() => mutate(clientId)} />
+    </div>
   );
 }
 

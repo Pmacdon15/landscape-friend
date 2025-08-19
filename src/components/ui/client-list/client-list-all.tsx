@@ -4,17 +4,14 @@ import DeleteClientButton from "../buttons/delete-client-button";
 import { PaginationTabs } from "../pagination/pagination-tabs";
 import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Suspense } from "react";
-import Link from "next/link";
-import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
 import SnowClientInput from "../inputs/snow-client-input";
 import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
-import { Client, ClientListServiceProps } from "@/types/types-clients";
-import Image from "next/image";
-
+import { ClientListServiceProps } from "@/types/types-clients";
+import { ClientListItemAddress, ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
 
 export default async function ClientListService({
   clientsPromise,
@@ -22,7 +19,6 @@ export default async function ClientListService({
   orgMembersPromise,
   isAdmin
 }: ClientListServiceProps) {
-
   const result = await clientsPromise;
 
   if (!result) return <ContentContainer>{" "}<p>Error Loading clients</p>{" "}</ContentContainer>
@@ -34,64 +30,26 @@ export default async function ClientListService({
     <>
       <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center justify-center">
-        {clients.map((client: Client) => (
+        {clients.map((client) => (
           <FormContainer key={client.id}>
             <li className="border p-4 rounded-sm relative bg-white/70">
               {isAdmin &&
-                <div className="absolute top-1 right-1">
-                  <DeleteClientButton clientId={client.id} />
-                </div>}
-
+                <DeleteClientButton clientId={client.id} />
+              }
               <FormHeader text={client.full_name} />
-              <div className="flex flex-col gap-4 items-center justify-center mt-8 mb-8 md:flex-row sm:flex-col lg:flex-row">
-
-                <div className="flex flex-row gap-2 items-center md:text-xl md:flex-col sm:text-sm">
-                  <Image
-                    src="/client-list/telephone.png"
-                    alt="Phone Icon"
-                    className="w-12 h-12 mb-4 md:w-24 md:h-24 sm:w-12 sm:h-12"
-                    width={512}
-                    height={512}
-                  />
-                  <p className="flex flex-col md:text-xl sm:flex-row text-sm">
-                    <Link className="cursor-pointer text-blue-600 hover:underline md:text-xl sm:text-sm" href={`tel:${client.phone_number}`}>
-                      {client.phone_number}
-                    </Link>
-                  </p>
-                </div>
-
-                <div className="flex flex-row gap-2 items-center md:text-xl md:flex-col sm:text-sm">
-                  <Image
-                    src="/client-list/email.png"
-                    alt="Email Icon"
-                    className="w-12 h-12 mb-4 md:w-24 md:h-24 sm:w-12 sm:h-12"
-                    width={512}
-                    height={512}
-                  />
-                  <div className="md:text-xl sm:text-sm">
-                    <ClientEmailPopover client={client} />
-                  </div>
-                </div>
-
-                <div className="flex flex-row gap-2 items-center md:text-xl md:flex-col sm:text-sm">
-                  <Image
-                    src="/client-list/address.png"
-                    alt="Email Icon"
-                    className="w-12 h-12 mb-4 md:w-24 md:h-24 sm:w-12 sm:h-12"
-                    width={512}
-                    height={512}
-                  />
-                  <p className="md:text-xl sm:text-sm">{client.address}</p>
-                </div>
+              <div className="flex flex-col flex-wrap gap-4 items-center justify-center mt-8 mb-8  sm:flex-col lg:flex-row">
+                <ClientListItemHeader client={client} />
+                <ClientListItemEmail client={client} />
+                <ClientListItemAddress client={client} />
               </div>
               {isAdmin &&
-                <>
+                <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
                   <Suspense fallback={<SnowClientInputFallback />}>
                     <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>
                   <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
-                </>
+                </div>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <div className="flex flex-col md:flex-row gap-1">
