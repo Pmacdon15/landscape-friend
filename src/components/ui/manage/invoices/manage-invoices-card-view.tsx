@@ -9,7 +9,7 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
     <div className="flex flex-wrap justify-between ">
       {invoices.map((invoice) => (
         <div key={invoice.id} className={cardClassName}>
-          <div className="font-bold text-lg mb-2">Invoice #{invoice.number}</div>
+          {<div className="font-bold text-lg mb-2">Invoice: {invoice.id}</div>}
           <div className="flex justify-between mb-1">
             <span className="font-bold">Customer:</span>
             <span>{invoice.customer_name}</span>
