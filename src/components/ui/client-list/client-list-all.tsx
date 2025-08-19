@@ -13,7 +13,7 @@ import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
 import { Client, ClientListServiceProps } from "@/types/types-clients";
-
+import Image from "next/image";
 
 
 export default async function ClientListService({
@@ -33,7 +33,7 @@ export default async function ClientListService({
   return (
     <>
       <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
-      <ul className="flex flex-col gap-4 rounded-sm w-full items-center">
+      <ul className="flex flex-col gap-4 rounded-sm w-full items-center justify-center">
         {clients.map((client: Client) => (
           <FormContainer key={client.id}>
             <li className="border p-4 rounded-sm relative bg-white/70">
@@ -41,21 +41,50 @@ export default async function ClientListService({
                 <div className="absolute top-1 right-1">
                   <DeleteClientButton clientId={client.id} />
                 </div>}
-              <p>Name: {client.full_name}</p>
-              <p className="flex flex-col sm:flex-row">
-                Phone Number:{" "}
-                <Link
-                  className="cursor-pointer text-blue-600 hover:underline"
-                  href={`tel:${client.phone_number}`}
-                >
-                  {client.phone_number}
-                </Link>
-              </p>
-              <div>
-                Email: <ClientEmailPopover client={client} />
+
+              <FormHeader text={client.full_name} />
+              <div className="flex flex-col gap-4 items-center justify-center mt-8 mb-8 md:flex-row sm:flex-col lg:flex-row">
+
+                <div className="flex flex-row gap-2 items-center md:text-xl md:flex-col sm:text-sm">
+                  <Image
+                    src="/client-list/telephone.png"
+                    alt="Phone Icon"
+                    className="w-12 h-12 mb-4 md:w-24 md:h-24 sm:w-12 sm:h-12"
+                    width={512}
+                    height={512}
+                  />
+                  <p className="flex flex-col md:text-xl sm:flex-row text-sm">
+                    <Link className="cursor-pointer text-blue-600 hover:underline md:text-xl sm:text-sm" href={`tel:${client.phone_number}`}>
+                      {client.phone_number}
+                    </Link>
+                  </p>
+                </div>
+
+                <div className="flex flex-row gap-2 items-center md:text-xl md:flex-col sm:text-sm">
+                  <Image
+                    src="/client-list/email.png"
+                    alt="Email Icon"
+                    className="w-12 h-12 mb-4 md:w-24 md:h-24 sm:w-12 sm:h-12"
+                    width={512}
+                    height={512}
+                  />
+                  <div className="md:text-xl sm:text-sm">
+                    <ClientEmailPopover client={client} />
+                  </div>
+                </div>
+
+                <div className="flex flex-row gap-2 items-center md:text-xl md:flex-col sm:text-sm">
+                  <Image
+                    src="/client-list/address.png"
+                    alt="Email Icon"
+                    className="w-12 h-12 mb-4 md:w-24 md:h-24 sm:w-12 sm:h-12"
+                    width={512}
+                    height={512}
+                  />
+                  <p className="md:text-xl sm:text-sm">{client.address}</p>
+                </div>
               </div>
-              <p>Address: {client.address}</p>
-              {isAdmin && (
+              {isAdmin &&
                 <>
                   <Suspense fallback={<SnowClientInputFallback />}>
                     <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
@@ -63,7 +92,7 @@ export default async function ClientListService({
                   <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                 </>
-              )}
+              }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <div className="flex flex-col md:flex-row gap-1">
                 <Suspense fallback={<FormHeader text="Loading..." />}>

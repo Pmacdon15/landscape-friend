@@ -1,5 +1,3 @@
-import Stripe from 'stripe';
-
 export interface FetchInvoicesResponse {
     invoices: StripeInvoice[];
     totalPages: number;

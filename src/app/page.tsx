@@ -1,5 +1,4 @@
 
-import ContentContainer from "@/components/ui/containers/content-container";
 import FormContainer from "@/components/ui/containers/form-container";
 import Link from "next/link";
 import "@/animations/landing-page.css";
