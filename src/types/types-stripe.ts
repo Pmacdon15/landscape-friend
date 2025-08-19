@@ -62,3 +62,9 @@ export interface StripeQuote {
   line_items?: any; // We'll address the type issue below
   transfer_data: Stripe.Quote.TransferData | null;
 }
+
+
+export interface MarkQuoteProps {
+    action: "accept" | "cancel";
+    quoteId: string;
+}

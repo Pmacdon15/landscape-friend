@@ -6,7 +6,7 @@ import Stripe from "stripe";
 
 let stripe: Stripe | null = null;
 
-async function getStripeInstance(): Promise<Stripe> {
+export async function getStripeInstance(): Promise<Stripe> {
 
     const apiKeyResponse = await fetchStripAPIKey();
     if (apiKeyResponse instanceof Error) {

@@ -1,5 +1,5 @@
 import { StripeQuote } from "@/types/types-stripe";
-import Link from "next/link";
+import ManageQuoteButton from "../../buttons/manage-quote-button";
 
 export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
     const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white w-full md:w-[48%] lg:w-[30%] xl:w-[30%] mx-auto";
@@ -26,17 +26,8 @@ export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
                         <span>{quote.expires_at !== null ? new Date(quote.expires_at * 1000).toLocaleDateString() : 'N/A'}</span>
                     </div>
                     <div className="flex flex-wrap justify-between ">
-                       
-                        {/* {quote.pdf && (
-              <Link
-                href={quote.pdf}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                Download PDF
-              </Link>
-            )} */}
+                        <ManageQuoteButton action="accept" quoteId={quote.id} />
+                        <ManageQuoteButton action="cancel" quoteId={quote.id} />
                     </div>
                 </div>
             ))}

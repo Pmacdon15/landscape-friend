@@ -4,25 +4,25 @@ import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/stripe-utils";
 import { isOrgAdmin } from "@/lib/webhooks";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails';
-import Stripe from 'stripe'; // Import Stripe
+import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
+import { getStripeInstance } from "../dal-stripe";
+import { MarkQuoteProps } from "@/types/types-stripe";
 
-// Placeholder for getting Stripe instance. In a real app, this would fetch the API key securely.
-// For now, assuming it's available via environment variable or a secure utility.
-let stripe: Stripe | null = null;
+// let stripe: Stripe | null = null;
 
-function getStripeInstance(): Stripe {
-    if (!stripe) {
-        const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
-        if (!apiKey) {
-            throw new Error('Stripe secret key not configured.');
-        }
-        stripe = new Stripe(apiKey);
-    }
-    return stripe;
-}
+// function getStripeInstance(): Stripe {
+//     if (!stripe) {
+//         const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
+//         if (!apiKey) {
+//             throw new Error('Stripe secret key not configured.');
+//         }
+//         stripe = new Stripe(apiKey);
+//     }
+//     return stripe;
+// }
 
 //MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
@@ -75,7 +75,7 @@ export async function createStripeQuote(formData: FormData) {
     }
 
 
-            const validatedFields = schemaCreateQuote.safeParse({
+    const validatedFields = schemaCreateQuote.safeParse({
         clientName: formData.get('clientName'),
         clientEmail: formData.get('clientEmail'),
         phone_number: formData.get('phone_number'),
@@ -94,7 +94,7 @@ export async function createStripeQuote(formData: FormData) {
 
     try {
         if (!isAdmin) throw new Error("Not Admin")
-        const stripe = getStripeInstance();
+        const stripe = await getStripeInstance();
 
         // 1. Find or Create Customer
         const customerId = await findOrCreateStripeCustomerAndLinkClient(
@@ -104,7 +104,7 @@ export async function createStripeQuote(formData: FormData) {
             validatedFields.data.address,
             validatedFields.data.organization_id
         );
-        
+
 
         // 2. Handle Labour Product and Price
         let labourPriceId: string;
@@ -229,7 +229,7 @@ Thank you!`
 export async function resendInvoice(invoiceId: string) {
     const { isAdmin, sessionClaims } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
-    const stripe = getStripeInstance();
+    const stripe = await getStripeInstance();
     //TODO: when in Prod ther eis not need for use to send the email strip will do that
 
     try {
@@ -276,7 +276,7 @@ export async function markInvoicePaid(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
     if (!userId) throw new Error("No user")
 
-    const stripe = getStripeInstance();
+    const stripe = await getStripeInstance();
     try {
         const invoice = await stripe.invoices.pay(invoiceId, {
             paid_out_of_band: true,
@@ -307,7 +307,7 @@ export async function markInvoiceVoid(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
     if (!userId) throw new Error("No user")
 
-    const stripe = getStripeInstance();
+    const stripe = await getStripeInstance();
     try {
         const invoice = await stripe.invoices.voidInvoice(invoiceId);
 
@@ -328,5 +328,24 @@ export async function markInvoiceVoid(invoiceId: string) {
     } catch (error) {
         console.error(error);
         throw new Error(`Failed to mark invoice ${invoiceId} as paid`);
+    }
+}
+
+export async function markQuote({ action, quoteId }: MarkQuoteProps) {
+    const { isAdmin, userId } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+    if (!userId) throw new Error("No user");
+
+    const stripe = await getStripeInstance();
+    let quote;
+    try {
+        if (action === "accept") {
+            quote = await stripe.quotes.accept(quoteId);
+        } else if (action === "cancel") {
+            quote = await stripe.quotes.cancel(quoteId);
+        }
+        return quote;
+    } catch (e: any) {
+        throw new Error(`Error: ${e.message}`);
     }
 }
