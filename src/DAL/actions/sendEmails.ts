@@ -1,7 +1,7 @@
 'use server'
 import { sendNewsLetterDb } from '@/lib/DB/db-resend';
 import { formatCompanyName, formatSenderEmailAddress, sendEmail } from '@/lib/resend';
-import { isOrgAdmin } from '@/lib/webhooks';
+import { isOrgAdmin } from "@/lib/clerk";
 import { schemaSendEmail } from '@/lib/zod/schemas';
 import { auth } from '@clerk/nextjs/server';
 

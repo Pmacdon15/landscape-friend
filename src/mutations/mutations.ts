@@ -61,7 +61,7 @@ export const useDeleteSiteMap = () => {
             revalidatePathAction("/lists/clearing");
             revalidatePathAction("/lists/cutting");
         },
-        onError: (error) => {
+        onError: () => {
         }
     });
 };

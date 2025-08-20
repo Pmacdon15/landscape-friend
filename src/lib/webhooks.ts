@@ -1,22 +1,7 @@
-import { auth } from "@clerk/nextjs/server"
 import { neon } from "@neondatabase/serverless"
 import { addNovuSubscriber } from "./novu";
 import { generateUniqueId } from "./uuid";
 
-export async function isOrgAdmin(protect = true) {
-    let authResult;
-    if (protect) {
-        authResult = await auth.protect();
-    } else {
-        authResult = await auth();
-    }
-
-    const { userId, orgId, sessionClaims } = authResult;
-    let isAdmin = true;
-    if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false;
-
-    return { userId, orgId, sessionClaims, isAdmin };
-}
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);

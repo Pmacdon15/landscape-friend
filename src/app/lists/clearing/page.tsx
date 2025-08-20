@@ -3,7 +3,7 @@ import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { fetchSnowClearingClients } from "@/DAL/dal-clients";
-import { isOrgAdmin } from "@/lib/webhooks";
+import { isOrgAdmin } from "@/lib/clerk";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/params";

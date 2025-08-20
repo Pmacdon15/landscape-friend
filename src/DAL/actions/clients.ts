@@ -1,7 +1,7 @@
 'use server'
 import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/db-clients";
 import { getOrganizationSettings } from "@/lib/DB/db-org";
-import { isOrgAdmin } from "@/lib/webhooks";
+import { isOrgAdmin } from "@/lib/clerk";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {

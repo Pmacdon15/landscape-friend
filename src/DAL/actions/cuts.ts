@@ -1,6 +1,6 @@
 'use server'
 import { markYardServicedDb } from "@/lib/DB/db-clients";
-import { isOrgAdmin } from "@/lib/webhooks";
+import { isOrgAdmin } from "@/lib/clerk";
 import { schemaMarkYardCut } from "@/lib/zod/schemas";
 
 export async function markYardServiced(clientId: number, date: Date, snow = false) {

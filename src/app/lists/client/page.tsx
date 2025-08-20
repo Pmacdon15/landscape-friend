@@ -5,7 +5,7 @@ import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { fetchOrgMembers } from "@/DAL/dal-org";
-import { isOrgAdmin } from "@/lib/webhooks";
+import { isOrgAdmin } from "@/lib/clerk";
 import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/params";
 import { fetchAllClients } from "@/DAL/dal-clients";

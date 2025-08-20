@@ -3,7 +3,7 @@ import HeaderTitle from './header-title';
 import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
-import { isOrgAdmin } from '@/lib/webhooks';
+import { isOrgAdmin } from "@/lib/clerk";
 import { Inbox } from '@novu/nextjs';
 import { UserNovuId } from '@/types/types-novu';
 

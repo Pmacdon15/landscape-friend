@@ -1,7 +1,7 @@
 'use server'
 import { markPaidDb } from "@/lib/DB/db-clients";
 import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/stripe-utils";
-import { isOrgAdmin } from "@/lib/webhooks";
+import { isOrgAdmin } from "@/lib/clerk";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails';
 import Stripe from 'stripe';

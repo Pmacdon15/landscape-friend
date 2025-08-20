@@ -5,7 +5,7 @@ export default function ImageUploadInput() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [file, setFile] = useState<File | null>(null);
     const [captionButtonImage, setCaptionButtonImage] = useState("Select Image");
-    
+    console.log("File: ", file)
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
 

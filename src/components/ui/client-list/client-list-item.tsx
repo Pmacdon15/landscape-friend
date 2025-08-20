@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
-import { Client, ClientListItemProps } from "@/types/types-clients";
+import {  ClientListItemProps } from "@/types/types-clients";
 
 
 const ClientListItemHeader = ({ client }: ClientListItemProps) => {
