@@ -1,11 +1,12 @@
 import { neon } from "@neondatabase/serverless"
 import { addNovuSubscriber } from "./novu";
-
+import { v4 as uuidv4 } from 'uuid';
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId); 
     const sql = neon(`${process.env.DATABASE_URL}`);
 
+    const subscriberId = uuidv4();
     // Insert user, and do nothing if the user already exists.
     const insertResult = await sql`
         INSERT INTO users (id, name, email, novu_subscriber_id)
@@ -15,7 +16,7 @@ export async function handleUserCreated(userId: string, userName: string, userEm
 
     // Only if a new user was created, add them to Novu.
     if (insertResult.length > 0) {
-        const result = await addNovuSubscriber(userId, userEmail, userName);
+        const result = await addNovuSubscriber(subscriberId, userEmail, userName);
         if (!result) {
             // If Novu subscription fails, we might want to roll back the user creation
             // or handle it in some other way, e.g., a retry queue.
