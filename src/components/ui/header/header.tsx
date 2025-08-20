@@ -11,7 +11,6 @@ import { fetchNovuId } from '@/DAL/dal-user';
 export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
     const { isAdmin, userId } = await isOrgAdmin(false)
     let novuId
-
     if (userId) novuId = await fetchNovuId(userId)
 
     return (

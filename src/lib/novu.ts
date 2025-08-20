@@ -10,10 +10,10 @@ const novu = new Novu({
 export async function addNovuSubscriber(
     subscriberId: string,
     email: string,
-    firstName?: string,
-    lastName?: string
+    userName?: string
 ) {
-
+    const firstName = userName?.split(" ")[0]
+    const lastName = userName?.split(" ")[1]
     const response = await novu.subscribers.create({
         subscriberId,
         email,
@@ -21,7 +21,7 @@ export async function addNovuSubscriber(
         lastName,
     })
 
-    sayHello(subscriberId)
+    await sayHello(subscriberId)
     if (!response.result) throw new Error("Error subcribing to nova")
     return true
 
