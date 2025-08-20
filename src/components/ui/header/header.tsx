@@ -4,6 +4,7 @@ import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { isOrgAdmin } from '@/lib/webhooks';
+import { Inbox } from '@novu/nextjs';
 
 export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
     const { isAdmin, userId } = await isOrgAdmin(false)
@@ -32,6 +33,10 @@ export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKey
                                     <OrganizationSwitcher />
                                 </SignedIn>
                             </div>
+                            <Inbox
+                                applicationIdentifier="WR34Ivkn9G4M"
+                                subscriber="68a2d072064b1af91d44d2b5"
+                            />
                         </>
                         :
                         <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
