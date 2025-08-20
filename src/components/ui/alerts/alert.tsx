@@ -11,11 +11,14 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 
-export function Alert({ text, functionAction }: { text: string, functionAction: () => void }) {
+export function Alert({ text, functionAction, variant = 'default' }: { text: string, functionAction: () => void, variant?: 'default' | 'remove-sitemap' }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="outline">{text}</Button>
+                <div>
+                    {variant == 'default' && <Button variant="outline">{text}</Button>}
+                    {variant == 'remove-sitemap' && <button>{text}</button>}
+                </div>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
