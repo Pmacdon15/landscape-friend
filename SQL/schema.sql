@@ -21,7 +21,8 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
     id VARCHAR(100) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL
+    email VARCHAR(100) NOT NULL,
+    novu_subscriber_id VARCHAR(255) NULL
 );
 
 CREATE TABLE organizations (
@@ -44,8 +45,7 @@ CREATE TABLE clients (
     address VARCHAR(200) NOT NULL,
     snow_client BOOLEAN NOT NULL DEFAULT false,
     price_per_month_snow FLOAT NOT NULL DEFAULT 100,
-    stripe_customer_id VARCHAR(255) NULL,
-    novu_subscriber_id VARCHAR(255) NULL
+    stripe_customer_id VARCHAR(255) NULL
 );
 
 CREATE TABLE stripe_api_keys (
