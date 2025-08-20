@@ -8,7 +8,7 @@ export async function handleUserCreated(userId: string, userName: string, userEm
 
     // Add user to Novu as a subscriber
     const subscriberId = generateUniqueId()
-    const reuslt = await addNovuSubscriber(userId, userEmail, userName);
+    const reuslt = await addNovuSubscriber(subscriberId, userEmail, userName);
     if (!reuslt) throw new Error("Error subscribing to novu")
     const secondResult = await sql`
         INSERT INTO users (id, name, email, novu_subscriber_id)

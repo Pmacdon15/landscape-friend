@@ -9,7 +9,7 @@ const novu = new Novu({
 
 export async function addNovuSubscriber(
     subscriberId: string,
-    email: string,
+    email?: string,
     userName?: string
 ) {
     const firstName = userName?.split(" ")[0]
