@@ -3,7 +3,7 @@ import { addNovuSubscriber } from "./novu";
 
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
-    console.log('userId in handleUserCreated:', userId); /
+    console.log('userId in handleUserCreated:', userId); 
     const sql = neon(`${process.env.DATABASE_URL}`);
 
     // Insert user, and do nothing if the user already exists.
