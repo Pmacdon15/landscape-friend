@@ -18,8 +18,10 @@ DROP TABLE IF EXISTS organizations CASCADE;
 
 DROP TABLE IF EXISTS users CASCADE;
 
+DROP TABLE IF EXISTS images CASCADE;
+
 CREATE TABLE users (
-    id VARCHAR(100) PRIMARY KEY,
+    id VARCHAR(100) UNIQUE PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     novu_subscriber_id VARCHAR(255) UNIQUE NULL
@@ -31,8 +33,6 @@ CREATE TABLE organizations (
     organization_name VARCHAR(253) NOT NULL,
     max_allowed_clinents INT NOT NULL DEFAULT 50
 );
-
-DROP TABLE IF EXISTS images CASCADE;
 
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,

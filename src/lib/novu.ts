@@ -22,6 +22,8 @@ export async function addNovuSubscriber(
         lastName,
     })
 
+    console.log("Response: ", response)
+
     await sayHello(subscriberId)
     if (!response.result) throw new Error("Error subcribing to nova")
     return true
