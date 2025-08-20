@@ -352,7 +352,7 @@ FROM clients;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_marked_clear;
 -- SELECT * FROM cutting_schedule;
-SELECT * FROM clients;
+-- SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
