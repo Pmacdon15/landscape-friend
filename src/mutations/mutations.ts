@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePer, updateCuttingDay } from "@/DAL/actions/clients";
+import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/DAL/actions/clients";
 import { markYardServiced } from "@/DAL/actions/cuts";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/DAL/actions/sendEmails";
 import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/DAL/actions/stripe";
@@ -49,7 +49,22 @@ export const useUploadImage = ({ onSuccess, onError }: { onSuccess?: () => void,
         }
     });
 };
+//MARK:Delete site map
 
+export const useDeleteSiteMap = () => {
+    return useMutation({
+        mutationFn: ({ clientId, siteMapId }: { clientId: number, siteMapId: number }) => {
+            return deleteSiteMap(clientId, siteMapId);
+        },
+        onSuccess: () => {
+            revalidatePathAction("/lists/client");
+            revalidatePathAction("/lists/clearing");
+            revalidatePathAction("/lists/cutting");
+        },
+        onError: (error) => {
+        }
+    });
+};
 //MARK:Upload drawing site map
 // export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
 export const useUploadDrawing = () => {
@@ -110,7 +125,7 @@ export const useMarkYardServiced = () => {
         mutationFn: ({ clientId, date, snow = false }: { clientId: number, date: Date, snow?: boolean }) => {
             return markYardServiced(clientId, date, snow);
         },
-        onSuccess: () => { revalidatePathAction("/lists/clearing");revalidatePathAction("/lists/cutting") },
+        onSuccess: () => { revalidatePathAction("/lists/clearing"); revalidatePathAction("/lists/cutting") },
         onError: (error) => {
             console.error('Mutation error:', error);
         }

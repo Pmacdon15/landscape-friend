@@ -1,8 +1,8 @@
 'use server'
-import { addClientDB, countClientsByOrgId, deleteClientDB,  updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/db-clients";
+import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/db-clients";
 import { getOrganizationSettings } from "@/lib/DB/db-org";
 import { isOrgAdmin } from "@/lib/webhooks";
-import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -102,3 +102,24 @@ export async function updateCuttingDay(clientId: number, cuttingWeek: number, up
     }
 }
 
+
+export async function deleteSiteMap(clientId: number, siteMapId: number) {
+    const { orgId, userId } = await isOrgAdmin()
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+
+    const validatedFields = schemaDeleteSiteMap.safeParse({
+        client_id: clientId,
+        siteMap_id: siteMapId
+    });
+
+    if (!validatedFields.success) throw new Error("Invalid form data");
+
+    try {
+        const result = await deleteSiteMapDB(validatedFields.data, (orgId || userId)!)
+        if (!result.success) throw new Error('Delete Client');
+        return result;
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        throw new Error(errorMessage);
+    }
+}

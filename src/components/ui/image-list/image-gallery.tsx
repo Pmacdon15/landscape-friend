@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { ImagePlusIcon } from "lucide-react";
 import { ImageGalleryProps } from "@/types/types-components";
+import DeleteSiteMapButton from "../buttons/delete-site-map-button";
 
 
 export default function ImageGallery({
@@ -25,16 +26,20 @@ export default function ImageGallery({
 
       <div className="flex flex-wrap justify-center align-middle items-center h-full">
 
-        {client.images?.map((url: string, index) => (
-          <Image
-            className="p-2 hover:cursor-zoom-in"
-            key={index}
-            onClick={() => { setPreviewSrc(url) }}
-            src={url}
-            alt={`Image ${index + 1}`}
-            width={300}
-            height={300}
-          />
+        {client.images?.map((image, index) => (
+          <div key={index} className="relative">
+            <DeleteSiteMapButton  clientId={client.id} siteMapId={image.id} />
+
+            <Image
+              className="p-2 hover:cursor-zoom-in"
+              
+              onClick={() => { setPreviewSrc(image.url) }}
+              src={image.url}
+              alt={`Image ${index + 1}`}
+              width={300}
+              height={300}
+            />
+          </div>
         ))}
       </div>
 
