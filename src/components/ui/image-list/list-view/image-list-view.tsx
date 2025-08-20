@@ -15,12 +15,12 @@ export default function ImageListView({ client, setView, previewSrc, setPreviewS
         </button>
       </div>
 
-      {client.images?.map((url: string, index: number) => (
+      {client.images?.map((image, index: number) => (
         <Image
           className="p-2 hover:cursor-zoom-in"
           key={index}
-          onClick={() => setPreviewSrc(url)}
-          src={url}
+          onClick={() => setPreviewSrc(image.url)}
+          src={image.url}
           alt={`Image ${index + 1}`}
           width={400}
           height={400}

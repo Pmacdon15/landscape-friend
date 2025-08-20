@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 
-export function Alert({ text, functionAction, variant = 'default' }: { text: string, functionAction: () => void, variant?: 'default' | 'remove-sitemap' }) {
+export function Alert({ text, functionAction, variant = 'default', isPending }: { text: string, functionAction: () => void, variant?: 'default' | 'remove-sitemap', isPending?: boolean }) {
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <div>
                     {variant == 'default' && <Button variant="outline">{text}</Button>}
-                    {variant == 'remove-sitemap' && <button>{text}</button>}
+                    {variant == 'remove-sitemap' && <button disabled={isPending} className={`border rounded-sm p-1  ${isPending ? 'bg-gray/40' : 'bg-white/40'} `}>{text}</button>}
                 </div>
             </AlertDialogTrigger>
             <AlertDialogContent>

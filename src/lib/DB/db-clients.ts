@@ -70,7 +70,7 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
   const result = await (sql`
     WITH deleted_account AS (
       DELETE FROM accounts
-      WHERE client_id = ${data.client_id} AND client_id IN (
+      WHERE             customerid = ${data.client_id}::text AND client_id IN (
         SELECT id FROM clients WHERE organization_id = ${organization_id}
       )
       RETURNING *
@@ -88,13 +88,14 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
 
 
 export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>, organization_id: string): Promise<{ success: boolean }> {
+  console.log("deleteSiteMapDB called with data:", data, "and organization_id:", organization_id);
   const sql = neon(`${process.env.DATABASE_URL}`);
-
-  const result = await sql`
+  try {
+    const result = await sql`
     DELETE FROM images
     WHERE
       id = ${data.siteMap_id} AND
-      "customerID" = ${data.client_id}::text AND
+            customerid = ${data.client_id}::text AND
       EXISTS (
         SELECT 1
         FROM clients
@@ -102,9 +103,14 @@ export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>,
           clients.id = ${data.client_id} AND
           clients.organization_id = ${organization_id}
       )
+  RETURNING id;
   `;
-    
+    console.log("deleteSiteMapDB SQL result:", result);
   return { success: result.length > 0 };
+  } catch (error) {
+    console.error("Error in deleteSiteMapDB SQL query:", error);
+    throw error;
+  }
 }
 
 //MARK: Update price per cut
@@ -264,12 +270,12 @@ cwa.id,
   cwa.phone_number,
   cwa.email_address,
   cwa.address,
-  COALESCE(img.urls, ARRAY[]:: TEXT[]) AS images
+  COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
     FROM clients_with_assignments cwa
     LEFT JOIN LATERAL(
-    SELECT ARRAY_AGG(i.imageURL) as urls
+    SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
       FROM images i
-      WHERE i.customerID = cwa.id:: TEXT
+      WHERE i.customerid = cws.id:: TEXT
   ) img ON TRUE
     ORDER BY cwa.id
   `;
@@ -408,12 +414,12 @@ cws.id,
   cws.cutting_week,
   cws.cutting_day,
   cws.assigned_to,
-  COALESCE(img.urls, ARRAY[]:: TEXT[]) AS images
+  COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
     FROM clients_with_schedules cws
     LEFT JOIN LATERAL(
-    SELECT ARRAY_AGG(i.imageURL) as urls
+    SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
       FROM images i
-      WHERE i.customerID = cws.id:: TEXT
+      WHERE i.customerid = cws.id:: TEXT
   ) img ON TRUE
     ORDER BY cws.id
   `;
@@ -505,14 +511,14 @@ cws.id,
   cws.cutting_week,
   cws.cutting_day,
   sa.assigned_to,
-  COALESCE(img.urls, ARRAY[]:: TEXT[]) AS images
+  COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
   LEFT JOIN snow_assignments sa ON cws.id = sa.client_id
   LEFT JOIN LATERAL(
-    SELECT ARRAY_AGG(i.imageURL) as urls
+    SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
     FROM images i
-    WHERE i.customerID = cws.id:: TEXT
+    WHERE i.customerid = cws.id:: TEXT
   ) img ON TRUE
   WHERE ${ searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL` }
 `;

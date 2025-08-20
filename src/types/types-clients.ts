@@ -1,5 +1,10 @@
 import { OrgMember } from "./types-clerk";
 
+export interface Image {
+    id: number;
+    url: string;
+}
+
 export interface Client {
     id: number;
     full_name: string;
@@ -12,7 +17,7 @@ export interface Client {
     snow_client: boolean;
     cutting_schedules: CuttingSchedule[];
     assigned_to: string;
-    images: string[];
+    images: Image[];
     stripe_customer_id?: string;
 }
 export interface ClientListItemProps {
@@ -35,7 +40,7 @@ export interface ClientResult {
     cutting_day: string;
     total_count: number;
     assigned_to: string;
-    images: string[];
+    images: Image[];
 }
 
 
