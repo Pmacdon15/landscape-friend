@@ -10,7 +10,7 @@ export async function handleUserCreated(userId: string, userName: string, userEm
     // Insert user, and do nothing if the user already exists.
     const insertResult = await sql`
         INSERT INTO users (id, name, email, novu_subscriber_id)
-        VALUES (${userId}, ${userName}, ${userEmail}, ${userId})
+        VALUES (${userId}, ${userName}, ${userEmail}, ${subscriberId})
         ON CONFLICT (id) DO NOTHING;
     `;
 
