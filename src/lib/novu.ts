@@ -1,4 +1,5 @@
 'use server'
+import { sayHello } from '@/DAL/dal-novu';
 import { Novu } from '@novu/api';
 
 const novu = new Novu({
@@ -19,6 +20,8 @@ export async function addNovuSubscriber(
         firstName,
         lastName,
     })
+
+    sayHello(subscriberId)
     if (!response.result) throw new Error("Error subcribing to nova")
     return true
 
