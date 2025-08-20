@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server"
 import { neon } from "@neondatabase/serverless"
+import { addNovuSubscriber } from "./novu";
 
 export async function isOrgAdmin(protect = true) {
     let authResult;
@@ -16,11 +17,41 @@ export async function isOrgAdmin(protect = true) {
     return { userId, orgId, sessionClaims, isAdmin };
 }
 
-export async function handleUserCreated(userId: string, orgName: string, userEmail: string) {
+export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
+
+    // Add user to Novu as a subscriber
+    let novuSubscriberId: string | undefined;
+    try {
+        novuSubscriberId = await addNovuSubscriber(userId, userEmail, userName);
+    } catch (error) {
+        console.error("Failed to add Novu subscriber for user: ", userId, error);
+        // Continue without Novu subscriber ID if it fails
+    }
+
     await sql`
         INSERT INTO users (id, name, email)
-        VALUES (${userId}, ${orgName}, ${userEmail});               
+        VALUES (${userId}, ${userName}, ${userEmail});               
+    `;
+
+    // Also create a client entry for the new user
+    await sql`
+        INSERT INTO clients (
+            full_name,
+            phone_number,
+            email_address,
+            organization_id,
+            address,
+            novu_subscriber_id
+        )
+        VALUES (
+            ${userName},
+            'N/A', -- Placeholder for phone_number
+            ${userEmail},
+            ${userId}, -- Using userId as organization_id for the client
+            'N/A', -- Placeholder for address
+            ${novuSubscriberId}
+        );
     `;
 }
 
