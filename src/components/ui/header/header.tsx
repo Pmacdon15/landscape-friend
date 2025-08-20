@@ -5,11 +5,15 @@ import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { isOrgAdmin } from "@/lib/clerk";
 import { Inbox } from '@novu/nextjs';
-import { UserNovuId } from '@/types/types-novu';
 
-export default async function Header({ novuIdPromise, hasStripAPIKeyPromise }: { novuIdPromise: Promise<UserNovuId | null>, hasStripAPIKeyPromise: Promise<boolean> }) {
+import { fetchNovuId } from '@/DAL/dal-user';
+
+export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
     const { isAdmin, userId } = await isOrgAdmin(false)
-    const novuUserId = await novuIdPromise;
+    let novuId
+
+    if (userId) novuId = await fetchNovuId(userId)
+
     return (
         <>
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
@@ -35,10 +39,12 @@ export default async function Header({ novuIdPromise, hasStripAPIKeyPromise }: {
                                     <OrganizationSwitcher />
                                 </SignedIn>
                             </div>
-                            <Inbox
-                                applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
-                                subscriber={`${novuUserId}`}
-                            />
+                            {novuId &&
+                                <Inbox
+                                    applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
+                                    subscriber={`${novuId}`}
+                                />
+                            }
                         </>
                         :
                         <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
