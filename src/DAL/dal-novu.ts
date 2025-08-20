@@ -9,7 +9,7 @@ export async function sayHello(novuId: string) {
         const response = await novu.trigger({
             workflowId: 'hello-from-landscape-friend',
             to: {
-                subscriberId: `${novuId}`,
+                subscriberId: novuId,
                 timezone: 'America/Edmonton',
             },
             payload: {},
