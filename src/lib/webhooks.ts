@@ -6,15 +6,25 @@ import { generateUniqueId } from "./uuid";
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
 
-    // Add user to Novu as a subscriber
-    const subscriberId = generateUniqueId()
-    const reuslt = await addNovuSubscriber(subscriberId, userEmail, userName);
-    if (!reuslt) throw new Error("Error subscribing to novu")
-    const secondResult = await sql`
+    // Insert user, and do nothing if the user already exists.
+    const insertResult = await sql`
         INSERT INTO users (id, name, email, novu_subscriber_id)
-        VALUES (${userId}, ${userName}, ${userEmail}, ${subscriberId});               
+        VALUES (${userId}, ${userName}, ${userEmail}, ${userId})
+        ON CONFLICT (id) DO NOTHING;
     `;
-    if (secondResult.length < 1) throw new Error("Erro adding user to db")
+
+    // Only if a new user was created, add them to Novu.
+    if (insertResult.rowCount > 0) {
+        const result = await addNovuSubscriber(userId, userEmail, userName);
+        if (!result) {
+            // If Novu subscription fails, we might want to roll back the user creation
+            // or handle it in some other way, e.g., a retry queue.
+            // For now, we'll just log an error.
+            console.error(`Failed to add user ${userId} to Novu.`);
+            // Optionally, re-throw the error if this is a critical failure
+            // throw new Error(`Failed to add user ${userId} to Novu.`);
+        }
+    }
 }
 
 export async function handleOrganizationCreated(orgId: string, orgName: string) {

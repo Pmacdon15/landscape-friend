@@ -22,7 +22,7 @@ CREATE TABLE users (
     id VARCHAR(100) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    novu_subscriber_id VARCHAR(255) NULL
+    novu_subscriber_id VARCHAR(255) UNIQUE NULL
 );
 
 CREATE TABLE organizations (
@@ -350,7 +350,7 @@ FROM clients;
 
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
--- SELECT * FROM yards_marked_clear;
+-- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 SELECT * FROM users;
