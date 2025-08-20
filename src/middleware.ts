@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher(['/lists(.*)', '/(email)(.*)', '/(settings)(.*)', '/billing(.*)'])
 const isAdminRoute = createRouteMatcher(['/invoices(.*)'])
-
+//TODO: finish this routes
 export default clerkMiddleware(async (auth, req) => {
   // const clerk = await clerkClient()
   const { userId, orgId, sessionClaims } = await auth()

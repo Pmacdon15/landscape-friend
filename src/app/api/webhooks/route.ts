@@ -72,6 +72,6 @@ export async function POST(req: NextRequest) {
         } else {
             console.error('Error :', err)
         }
-        return new Response('Error', { status: 400 })
+        return new Response('Error', { status: 401 })
     }
 }
