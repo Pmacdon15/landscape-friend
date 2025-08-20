@@ -1,6 +1,5 @@
 import { neon } from "@neondatabase/serverless"
 import { addNovuSubscriber } from "./novu";
-import { generateUniqueId } from "./uuid";
 
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
