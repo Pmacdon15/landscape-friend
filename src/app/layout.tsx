@@ -10,6 +10,7 @@ import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
 import { hasStripAPIKey } from "@/DAL/dal-stripe";
+import { fetchNovuId } from "@/DAL/dal-user";
 // export const experimental_ppr = true;
 
 const geistSans = Geist({
@@ -34,6 +35,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const hasStripAPIKeyPromise = hasStripAPIKey()
+  const novuIdPromise = fetchNovuId()
   return (
     <ClerkProvider>
       <Providers>
@@ -48,7 +50,7 @@ export default async function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
             <Suspense fallback={<HeaderFallBack />}>
-              <Header hasStripAPIKeyPromise={hasStripAPIKeyPromise} />
+              <Header  novuIdPromise={novuIdPromise} hasStripAPIKeyPromise={hasStripAPIKeyPromise} />
             </Suspense>
             <PageContainer>
               {children}
