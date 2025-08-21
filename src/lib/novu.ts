@@ -29,8 +29,8 @@ export async function addNovuSubscriber(
     }
 
     console.log('Creating Novu subscriber with ID:', subId);
-    const firstName = subUserName?.split(" ")[0]
-    const lastName = subUserName?.split(" ")[1]
+    const firstName = subUserName?.split(" ")[0] ?? ""
+    const lastName = subUserName?.split(" ")[1] ?? ""
 
     const response = await novu.subscribers.create({
         subscriberId: subId,
