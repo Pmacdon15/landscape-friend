@@ -3,7 +3,7 @@ import { addNovuSubscriber } from "./novu";
 import { v4 as uuidv4 } from 'uuid';
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
-    console.log('userId in handleUserCreated:', userId); 
+    console.log('userId in handleUserCreated:', userId);
     const sql = neon(`${process.env.DATABASE_URL}`);
 
     const subscriberId = uuidv4();
@@ -18,12 +18,7 @@ export async function handleUserCreated(userId: string, userName: string, userEm
     if (insertResult.length > 0) {
         const result = await addNovuSubscriber(userEmail, userName);
         if (!result) {
-            // If Novu subscription fails, we might want to roll back the user creation
-            // or handle it in some other way, e.g., a retry queue.
-            // For now, we'll just log an error.
             console.error(`Failed to add user ${userId} to Novu.`);
-            // Optionally, re-throw the error if this is a critical failure
-            // throw new Error(`Failed to add user ${userId} to Novu.`);
         }
     }
 }
