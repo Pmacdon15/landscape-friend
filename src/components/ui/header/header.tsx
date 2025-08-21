@@ -12,6 +12,7 @@ export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKey
     const { isAdmin, userId } = await isOrgAdmin(false)
     let novuId
     if (userId) novuId = await fetchNovuId(userId)
+    console.log("Novu Id: ", novuId)
 
     return (
         <>
