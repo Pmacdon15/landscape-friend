@@ -11,7 +11,8 @@ export async function handleUserCreated(userId: string, userName: string, userEm
     const insertResult = await sql`
         INSERT INTO users (id, name, email, novu_subscriber_id)
         VALUES (${userId}, ${userName}, ${userEmail}, ${subscriberId})
-        ON CONFLICT (id) DO NOTHING;
+        ON CONFLICT (id) DO NOTHING
+        RETURNING *;
     `;
 
     // Only if a new user was created, add them to Novu.
