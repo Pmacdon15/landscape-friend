@@ -4,6 +4,7 @@ import Link from "next/link";
 import "@/animations/landing-page.css";
 import Image from "next/image";
 import FillFormContainer from "@/components/ui/containers/fill-form-container";
+import TestAddNovuSubButton from "@/components/ui/buttons/text-add-novu-sub-button";
 
 export default function Home() {
   return (
@@ -56,6 +57,7 @@ export default function Home() {
                   </p>
                 </FillFormContainer>
               </FormContainer>
+              <TestAddNovuSubButton />
             </div>
           </div>
         </div>
