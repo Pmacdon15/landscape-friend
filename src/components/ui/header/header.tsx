@@ -5,14 +5,13 @@ import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { isOrgAdmin } from "@/lib/clerk";
 import { Inbox } from '@novu/nextjs';
-
 import { fetchNovuId } from '@/DAL/dal-user';
 
 export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
     const { isAdmin, userId } = await isOrgAdmin(false)
     let novuId
     if (userId) novuId = await fetchNovuId(userId)
-    console.log("Novu Id: ", novuId)
+    // console.log("Novu Id: ", novuId)
 
     return (
         <>
@@ -42,7 +41,7 @@ export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKey
                             {novuId &&
                                 <Inbox
                                     applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
-                                    subscriber={`${novuId}`}
+                                    subscriber={`${novuId.UserNovuId}`}
                                 />
                             }
                         </>

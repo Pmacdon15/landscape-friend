@@ -361,3 +361,5 @@ SELECT * FROM users;
 -- SELECT * FROM snow_clearing_assignments;
 -- SELECT * FROM payments ;
 -- SELECT * FROM accounts;
+
+-- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
