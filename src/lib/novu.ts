@@ -12,23 +12,8 @@ export async function addNovuSubscriber(
     email?: string,
     userName?: string
 ) {
-    console.log('Creating Novu subscriber with ID:', subscriberId);
-    const firstName = userName?.split(" ")[0]
-    const lastName = userName?.split(" ")[1]
-
-    const response = await novu.subscribers.create({
-        subscriberId,
-        email,
-        firstName,
-        lastName,
-    })
-
-    console.log("Response: ", response)
-
-    await sayHello(subscriberId)
-
-    // Check if response has the expected subscriberId instead of result
-    if (!response.result) throw new Error("Error subscribing to Novu")
+    console.log('addNovuSubscriber called with:', { subscriberId, email, userName });
+    await sayHello(subscriberId, email, userName)
     return true
 };
 
