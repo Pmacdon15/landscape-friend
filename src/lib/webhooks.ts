@@ -16,7 +16,7 @@ export async function handleUserCreated(userId: string, userName: string, userEm
 
     // Only if a new user was created, add them to Novu.
     if (insertResult.length > 0) {
-        const result = await addNovuSubscriber(subscriberId, userEmail, userName);
+        const result = await addNovuSubscriber(userEmail, userName);
         if (!result) {
             // If Novu subscription fails, we might want to roll back the user creation
             // or handle it in some other way, e.g., a retry queue.
