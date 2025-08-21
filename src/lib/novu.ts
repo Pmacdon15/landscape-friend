@@ -25,7 +25,7 @@ export async function addNovuSubscriber(
 
     console.log("Response: ", response)
 
-    // await sayHello(subscriberId)
+    await sayHello(subscriberId)
 
     // Check if response has the expected subscriberId instead of result
     if (!response.result) throw new Error("Error subscribing to Novu")
