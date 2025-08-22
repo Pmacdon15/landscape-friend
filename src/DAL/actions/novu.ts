@@ -3,7 +3,7 @@
 import { Novu } from '@novu/api';
 import { ChatOrPushProviderEnum } from "@novu/api/models/components";
 import { fetchNovuId } from '../dal-user';
-import { auth } from '@clerk/nextjs/server';
+
 
 const novu = new Novu({
   secretKey: process.env.NOVU_SECRET_KEY,
@@ -15,12 +15,10 @@ interface ChannelSettingsDto {
     deviceTokens?: string[];
   };
 }
-export async function registerNovuDevice(token: string) {
+export async function registerNovuDevice(token: string, userId: string) {
   console.log(`Action: registerNovuDevice - Called with token: ${token ? 'present' : 'missing'}`);
   try {
-    console.log('Action: registerNovuDevice - Protecting authentication and getting userId.');
-    const {userId} = await auth.protect();
-    console.log(`Action: registerNovuDevice - Retrieved userId: ${userId}`);
+    
 
     console.log('Action: registerNovuDevice - Fetching Novu ID for user.');
     const subscriberId = await fetchNovuId(userId);

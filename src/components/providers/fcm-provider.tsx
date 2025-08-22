@@ -4,25 +4,25 @@
 import { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage } from 'firebase/messaging';
-
+import { useUser } from '@clerk/clerk-react';
 interface FCMContextType {
-  permissionStatus: NotificationPermission | 'not-supported';
-  fcmToken: string | null;
-  loading: boolean;
-  requestNotificationPermissionAndToken: () => Promise<void>;
+    permissionStatus: NotificationPermission | 'not-supported';
+    fcmToken: string | null;
+    loading: boolean;
+    requestNotificationPermissionAndToken: () => Promise<void>;
 }
 
 
 
 // 1. Firebase Configuration (same as before)
 const firebaseConfig = {
-  apiKey: "AIzaSyAD_HJcKzLkrYtiBfUFt3a4xICRS3n1Wm0",
-  authDomain: "landscape-friend.firebaseapp.com",
-  projectId: "landscape-friend",
-  storageBucket: "landscape-friend.firebasestorage.app",
-  messagingSenderId: "373141664807",
-  appId: "1:373141664807:web:31bd61502ffd0447c98a02",
-  measurementId: "G-81G4YHH25C"
+    apiKey: "AIzaSyAD_HJcKzLkrYtiBfUFt3a4xICRS3n1Wm0",
+    authDomain: "landscape-friend.firebaseapp.com",
+    projectId: "landscape-friend",
+    storageBucket: "landscape-friend.firebasestorage.app",
+    messagingSenderId: "373141664807",
+    appId: "1:373141664807:web:31bd61502ffd0447c98a02",
+    measurementId: "G-81G4YHH25C"
 };
 
 const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0YBut0Yg3ruXouTNfOvWL3apin4";
@@ -30,21 +30,22 @@ const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0
 // 2. Create a Context to share FCM status and functions
 const FCMContext = createContext<FCMContextType | null>(null);
 
-export default function FCMProvider({ children }) {
+export default function FCMProvider({ children }: { children: React.ReactNode }) {
     const [permissionStatus, setPermissionStatus] = useState('default'); // 'default', 'granted', 'denied'
     const [fcmToken, setFcmToken] = useState(null);
     const [loading, setLoading] = useState(true);
     const messagingInstance = useRef(null); // To hold the messaging instance
+   const { user } = useUser();
 
     // Function to send the token to your backend
-    const sendTokenToServer = async (token) => {
+        const sendTokenToServer = async (token: string, userId: string) => {
         try {
             const response = await fetch('/api/register-device', { // Your Next.js API route
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ token: token }),
+                body: JSON.stringify({ token: token, userId: userId }),
             });
 
             if (response.ok) {
@@ -80,10 +81,10 @@ export default function FCMProvider({ children }) {
                 // Get the FCM token
                 const currentToken = await getToken(messagingInstance.current, { vapidKey: VAPID_KEY });
 
-                if (currentToken) {
+                if (currentToken && user?.id) {
                     console.log('FCM Registration Token:', currentToken);
                     setFcmToken(currentToken);
-                    await sendTokenToServer(currentToken);
+                    await sendTokenToServer(currentToken, user.id);
                 } else {
                     console.warn('No registration token available. This may happen if the browser is closed or permission is denied.');
                 }
@@ -134,10 +135,10 @@ export default function FCMProvider({ children }) {
             if (initialPermission === 'granted') {
                 getToken(messagingInstance.current, { vapidKey: VAPID_KEY })
                     .then((currentToken) => {
-                        if (currentToken) {
+                        if (currentToken && user?.id) {
                             console.log('FCM Token retrieved on load:', currentToken);
                             setFcmToken(currentToken);
-                            sendTokenToServer(currentToken);
+                            sendTokenToServer(currentToken, user.id);
                         } else {
                             console.log('No FCM token available on load, despite granted permission.');
                         }
@@ -157,7 +158,7 @@ export default function FCMProvider({ children }) {
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, []); // Empty dependency array means this runs once on mount
+    }, [user?.id]); // Empty dependency array means this runs once on mount
 
     // Provide the status and the function to children
     const contextValue = {
