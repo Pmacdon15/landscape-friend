@@ -1,9 +1,11 @@
+// public/firebase-messaging-sw.js
+
+// Import the Firebase app and messaging SDKs.
+// Using 'compat' versions is fine for service workers with importScripts.
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
 
-// Initialize the Firebase app in the service worker by passing in
-// your app's Firebase config object. For more information, see
-// https://firebase.google.com/docs/web/setup#config-object
+// Your Firebase project configuration object.
 const firebaseConfig = {
   apiKey: "AIzaSyAD_HJcKzLkrYtiBfUFt3a4xICRS3n1Wm0",
   authDomain: "landscape-friend.firebaseapp.com",
@@ -11,62 +13,38 @@ const firebaseConfig = {
   storageBucket: "landscape-friend.firebasestorage.app",
   messagingSenderId: "373141664807",
   appId: "1:373141664807:web:31bd61502ffd0447c98a02",
-  measurementId: "G-81G4YHH25C"
+  // measurementId is not needed in the service worker
 };
 
+// Initialize the Firebase app in the service worker.
 firebase.initializeApp(firebaseConfig);
 
 // Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
 
-// If you would like to customize the notification that is displayed when a
-// background message is received, specify the following callback:
+// This callback is executed when a background message is received.
 messaging.onBackgroundMessage((payload) => {
   console.log(
     '[firebase-messaging-sw.js] Received background message ',
     payload
   );
-  // Customize notification here
-  const notificationTitle = 'Background Message Title';
+  
+  // Customize the notification displayed to the user.
+  const notificationTitle = payload.notification?.title || 'New Notification';
   const notificationOptions = {
-    body: 'Background Message body.',
-    icon: '/firebase-logo.png',
+    body: payload.notification?.body || 'You have a new message.',
+    icon: payload.notification?.icon || '/firebase-logo.png', // Fallback icon path
+    data: payload.data // Pass along any custom data for later retrieval if needed
   };
 
+  // Show the notification using the Service Worker's registration.
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// --- New logic for direct token registration ---
+// Remove the 'activate' listener's getToken call.
+// The service worker does not need to obtain or manage its own token.
+// Its role is purely to handle incoming messages when the app is in the background.
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    (async () => {
-      try {
-        // Replace with your actual VAPID key
-        const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0YBut0Yg3ruXouTNfOvWL3apin4"; 
-        const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY });
-        if (currentToken) {
-          console.log('[firebase-messaging-sw.js] FCM Token obtained on activate:', currentToken);
-          // Send token to your API route
-          const response = await fetch('/api/register-device', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token: currentToken }),
-          });
-
-          if (response.ok) {
-            console.log('[firebase-messaging-sw.js] Token successfully sent to API on activate.');
-          } else {
-            const errorData = await response.json();
-            console.error('[firebase-messaging-sw.js] Failed to send token to API on activate:', errorData);
-          }
-        } else {
-          console.log('[firebase-messaging-sw.js] No registration token available on activate.');
-        }
-      } catch (err) {
-        console.error('[firebase-messaging-sw.js] Error getting or sending token on activate:', err);
-      }
-    })()
-  );
+    console.log('[firebase-messaging-sw.js] Service Worker activated.');
+    // Any other non-FCM token related activation logic can go here if needed.
 });
