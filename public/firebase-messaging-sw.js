@@ -22,29 +22,5 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
 
-// This callback is executed when a background message is received.
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    '[firebase-messaging-sw.js] Received background message ',
-    payload
-  );
-  
-  // Customize the notification displayed to the user.
-  const notificationTitle = payload.notification?.title || 'New Notification';
-  const notificationOptions = {
-    body: payload.notification?.body || 'You have a new message.',
-    icon: payload.notification?.icon || '/firebase-logo.png', // Fallback icon path
-    data: payload.data // Pass along any custom data for later retrieval if needed
-  };
-
-  // Show the notification using the Service Worker's registration.
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-// Remove the 'activate' listener's getToken call.
-// The service worker does not need to obtain or manage its own token.
-// Its role is purely to handle incoming messages when the app is in the background.
-self.addEventListener('activate', (event) => {
-    console.log('[firebase-messaging-sw.js] Service Worker activated.');
-    // Any other non-FCM token related activation logic can go here if needed.
-});
+// The onBackgroundMessage callback is removed to allow Novu to handle all notifications.
+// No explicit background message handling in the service worker.
