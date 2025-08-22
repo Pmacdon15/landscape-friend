@@ -10,6 +10,8 @@ import { formatCompanyName } from "@/lib/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
 import { getStripeInstance } from "../dal-stripe";
 import { MarkQuoteProps } from "@/types/types-stripe";
+import { fetchNovuId } from "../dal-user";
+import { triggerNotifaction } from "../dal-novu";
 
 // let stripe: Stripe | null = null;
 
@@ -39,6 +41,8 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+    let novuId
+    if (userId) novuId = await fetchNovuId(userId)
 
     const validatedFields = schemaUpdateAPI.safeParse({
         APIKey: formData.get("api_key"),
@@ -49,6 +53,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     try {
         const result = await updatedStripeAPIKeyDb(validatedFields.data, (orgId || userId)!)
         if (!result.success) throw new Error(result.message);
+        if (novuId) await triggerNotifaction(novuId.UserNovuId, "stripe-api-key-updated")
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);

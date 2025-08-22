@@ -1,6 +1,4 @@
-'use server'
 import { sayHello } from '@/DAL/dal-novu';
-
 
 export async function addNovuSubscriber(
     subscriberId: string,
