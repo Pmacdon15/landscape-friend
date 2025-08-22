@@ -10,7 +10,27 @@ import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
 import { hasStripAPIKey } from "@/DAL/dal-stripe";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAD_HJcKzLkrYtiBfUFt3a4xICRS3n1Wm0",
+  authDomain: "landscape-friend.firebaseapp.com",
+  projectId: "landscape-friend",
+  storageBucket: "landscape-friend.firebasestorage.app",
+  messagingSenderId: "373141664807",
+  appId: "1:373141664807:web:31bd61502ffd0447c98a02",
+  measurementId: "G-81G4YHH25C"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 // export const experimental_ppr = true;
 
 const geistSans = Geist({

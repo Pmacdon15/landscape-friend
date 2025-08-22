@@ -4,7 +4,6 @@ import { InputDiv } from "@/components/ui/containers/input-dev";
 import { InputField } from "@/components/ui/inputs/input";
 import { SettingsLabel } from "@/components/ui/settings/settings-label";
 import { fetchStripAPIKey } from "@/DAL/dal-stripe";
-import { isOrgAdmin } from "@/lib/clerk";
 
 
 export default async function Settings() {
@@ -20,7 +19,7 @@ export default async function Settings() {
                     <InputField name={"api_key"} type={"text"} placeholder={"Your Stripe API Key"} defaultValue={apiKey} />
                     <UpdateStripeApiKeyButton />
                 </form>
-            </InputDiv>
+            </InputDiv>            
         </ContentContainer>
     );
 }
