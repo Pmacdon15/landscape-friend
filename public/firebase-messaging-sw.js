@@ -42,7 +42,7 @@ self.addEventListener('activate', (event) => {
     (async () => {
       try {
         // Replace with your actual VAPID key
-        const VAPID_KEY = "YOUR_FIREBASE_VAPID_KEY_HERE"; 
+        const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0YBut0Yg3ruXouTNfOvWL3apin4"; 
         const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY });
         if (currentToken) {
           console.log('[firebase-messaging-sw.js] FCM Token obtained on activate:', currentToken);
