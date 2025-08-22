@@ -11,12 +11,14 @@ export async function handleUserCreated(userId: string, userName: string, userEm
     const insertResult = await sql`
         INSERT INTO users (id, name, email, novu_subscriber_id)
         VALUES (${userId}, ${userName}, ${userEmail}, ${subscriberId})
-        ON CONFLICT (id) DO NOTHING;
+        ON CONFLICT (id) DO NOTHING
+        RETURNING *;
     `;
 
     // Only if a new user was created, add them to Novu.
     if (insertResult.length > 0) {
-        const result = await addNovuSubscriber(userEmail, userName);
+        console.log('Calling addNovuSubscriber with subscriberId:', subscriberId);
+        const result = await addNovuSubscriber(subscriberId, userEmail, userName);
         if (!result) {
             console.error(`Failed to add user ${userId} to Novu.`);
         }
