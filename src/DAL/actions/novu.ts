@@ -15,18 +15,20 @@ export async function registerNovuDevice(token: string, userId: string) {
     if (!token || !userId) {
       throw new Error('Missing token or userIdId');
     }
-
-    await novu.subscribers.credentials.update(
-      {
-        providerId: ChatOrPushProviderEnum.Fcm,
-        credentials: {
-          deviceTokens: [token],
+    if (subscriberId?.UserNovuId) {
+      const result = await novu.subscribers.credentials.update(
+        {
+          providerId: ChatOrPushProviderEnum.Fcm,
+          credentials: {
+            deviceTokens: [token],
+          },
         },
-      },
-      userId
-    );
+        subscriberId?.UserNovuId
+      );
+      console.log("result: ", result)
+    }
 
-    console.log(`Device token ${token} registered for subscriber ${subscriberId} with Novu.`);
+    console.log(`Device token ${token} registered for subscriber ${subscriberId?.UserNovuId} with Novu.`);
     return { success: true, message: 'Device registered successfully' };
   } catch (error) {
     console.error('Error registering device with Novu:', error);
