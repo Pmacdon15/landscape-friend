@@ -22,13 +22,17 @@ export async function addClient(formData: FormData) {
         phone_number: Number(formData.get("phone_number")),
         email_address: formData.get("email_address"),
         address: formData.get("address"),
+        organization_id: organizationId
     });
 
+    console.log("validatedFields: ", validatedFields)
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
         const result = await addClientDB(validatedFields.data, organizationId)
         if (!result) throw new Error('Failed to add Client');
+
+
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
