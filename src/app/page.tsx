@@ -1,14 +1,17 @@
-
+'use client'
 import FormContainer from "@/components/ui/containers/form-container";
 import Link from "next/link";
 import "@/animations/landing-page.css";
 import Image from "next/image";
 import FillFormContainer from "@/components/ui/containers/fill-form-container";
+import { useFCM } from "@/components/providers/fcm-provider";
 
 export default function Home() {
+   const { requestNotificationPermissionAndToken } = useFCM();
+
   return (
     <>
-
+    <button onClick={requestNotificationPermissionAndToken}>hey click me </button>
       <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible">
         <div className="flex justify-right items-right logo-slide-in">
           <Image
