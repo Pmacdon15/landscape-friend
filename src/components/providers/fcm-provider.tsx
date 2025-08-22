@@ -1,10 +1,8 @@
-// components/FCMProvider.jsx (or .tsx)
-'use client'; // This directive is essential for client-side functionality
-
 import { useState, useEffect, createContext, useContext, useRef } from 'react';
 import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
 import { useUser } from '@clerk/clerk-react';
+
 interface FCMContextType {
     permissionStatus: NotificationPermission | 'not-supported';
     fcmToken: string | null;
@@ -12,9 +10,6 @@ interface FCMContextType {
     requestNotificationPermissionAndToken: () => Promise<void>;
 }
 
-
-
-// 1. Firebase Configuration (same as before)
 const firebaseConfig = {
     apiKey: "AIzaSyAD_HJcKzLkrYtiBfUFt3a4xICRS3n1Wm0",
     authDomain: "landscape-friend.firebaseapp.com",
@@ -27,20 +22,18 @@ const firebaseConfig = {
 
 const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0YBut0Yg3ruXouTNfOvWL3apin4";
 
-// 2. Create a Context to share FCM status and functions
 const FCMContext = createContext<FCMContextType | null>(null);
 
 export default function FCMProvider({ children }: { children: React.ReactNode }) {
-    const [permissionStatus, setPermissionStatus] = useState('default'); // 'default', 'granted', 'denied'
-    const [fcmToken, setFcmToken] = useState(null);
+    const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | 'not-supported' | 'default'>('default'); 
+    const [fcmToken, setFcmToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const messagingInstance = useRef(null); // To hold the messaging instance
-   const { user } = useUser();
+    const messagingInstance = useRef<Messaging | null>(null); 
+    const { user } = useUser();
 
-    // Function to send the token to your backend
-        const sendTokenToServer = async (token: string, userId: string) => {
+    const sendTokenToServer = async (token: string, userId: string) => {
         try {
-            const response = await fetch('/api/register-device', { // Your Next.js API route
+            const response = await fetch('/api/register-device', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,7 +51,6 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
         }
     };
 
-    // Function to request notification permission and get the token
     const requestNotificationPermissionAndToken = async () => {
         if (typeof window === 'undefined' || !('Notification' in window)) {
             console.warn('Notifications not supported in this environment.');
@@ -72,13 +64,11 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
         }
 
         try {
-            // Request permission from the user
             const permission = await Notification.requestPermission();
             setPermissionStatus(permission);
 
             if (permission === 'granted') {
                 console.log('Notification permission granted.');
-                // Get the FCM token
                 const currentToken = await getToken(messagingInstance.current, { vapidKey: VAPID_KEY });
 
                 if (currentToken && user?.id) {
@@ -92,26 +82,23 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                 console.warn('Notification permission denied or dismissed.');
             }
         } catch (error) {
-            console.error('Error requesting notification permission or getting token:', error);
-            if (error.code === 'messaging/permission-blocked') {
-                console.error('Messaging permission was blocked. User needs to enable notifications manually.');
-            }
-        }
-    };
+    if (error instanceof Error) {
+        console.error('Error sending token to server:', error.message);
+    } else {
+        console.error('An unknown error occurred:', error);
+    }
+    }
+};
 
-    // useEffect for initialization and service worker registration
     useEffect(() => {
         console.log('FCMProvider useEffect triggered.');
         if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-            // Initialize Firebase App for the main application
             const app = initializeApp(firebaseConfig);
-            messagingInstance.current = getMessaging(app); // Assign to the outer variable
+            messagingInstance.current = getMessaging(app); 
 
-            // Register the service worker
             navigator.serviceWorker.register('/firebase-messaging-sw.js')
                 .then((registration) => {
                     console.log('Service Worker registered successfully:', registration.scope);
-                    // Optional: Force immediate activation of the new SW
                     if (registration.waiting) {
                         registration.waiting.postMessage('SKIP_WAITING');
                     }
@@ -120,20 +107,17 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                     console.error('Service Worker registration failed:', error);
                 });
 
-            // Listen for foreground messages
             onMessage(messagingInstance.current, (payload) => {
                 console.log('[FCMProvider] Received foreground message:', payload);
-                // You can show an in-app notification/toast here instead of an alert
                 alert(`New Message: ${payload.notification?.title || ''} - ${payload.notification?.body || ''}`);
             });
 
-            // Set initial permission status
             const initialPermission = Notification.permission;
             setPermissionStatus(initialPermission);
 
-            // If permission is already granted, try to get the token immediately
             if (initialPermission === 'granted') {
-                getToken(messagingInstance.current, { vapidKey: VAPID_KEY })
+                if(messagingInstance.current) {
+                    getToken(messagingInstance.current, { vapidKey: VAPID_KEY })
                     .then((currentToken) => {
                         if (currentToken && user?.id) {
                             console.log('FCM Token retrieved on load:', currentToken);
@@ -149,6 +133,9 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                     .finally(() => {
                         setLoading(false);
                     });
+                } else {
+                    setLoading(false);
+                }
             } else {
                 setLoading(false);
             }
@@ -158,9 +145,8 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, [user?.id]); // Empty dependency array means this runs once on mount
+    }, [user?.id]); 
 
-    // Provide the status and the function to children
     const contextValue = {
         permissionStatus,
         fcmToken,
@@ -175,7 +161,6 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
     );
 }
 
-// Hook to easily consume the FCM context in child components
 export const useFCM = () => {
     const context = useContext(FCMContext);
     if (context === null) {
