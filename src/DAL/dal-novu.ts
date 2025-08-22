@@ -26,3 +26,22 @@ export async function sayHello(novuId: string, email?: string, userName?: string
         // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
     }
 }
+
+
+export async function triggerNotifaction(novuId: string, action: string) {
+    try {
+        const response = await novu.trigger({
+            workflowId: action,
+            to: {
+                subscriberId: novuId,
+            },
+            payload: {},
+        });
+
+        console.log("response: ", response)
+
+    } catch (error) {
+        console.error(error);
+        // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
+    }
+}

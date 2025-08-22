@@ -8,11 +8,10 @@ import { Inbox } from '@novu/nextjs';
 import { fetchNovuId } from '@/DAL/dal-user';
 
 export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
-    const { isAdmin, userId } = await isOrgAdmin(false)
     let novuId
+    const { isAdmin, userId } = await isOrgAdmin(false)
     if (userId) novuId = await fetchNovuId(userId)
-    // console.log("Novu Id: ", novuId)
-
+    
     return (
         <>
             <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
