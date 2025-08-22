@@ -7,11 +7,10 @@ import FillFormContainer from "@/components/ui/containers/fill-form-container";
 import { useFCM } from "@/components/providers/fcm-provider";
 
 export default function Home() {
-   const { requestNotificationPermissionAndToken } = useFCM();
+  //  const { requestNotificationPermissionAndToken } = useFCM();
 
   return (
     <>
-    <button onClick={requestNotificationPermissionAndToken}>hey click me </button>
       <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible">
         <div className="flex justify-right items-right logo-slide-in">
           <Image

@@ -26,15 +26,15 @@ const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0
 const FCMContext = createContext<FCMContextType | null>(null);
 
 export default function FCMProvider({ children }: { children: React.ReactNode }) {
-    const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | 'not-supported' | 'default'>('default'); 
+    const [permissionStatus, setPermissionStatus] = useState<NotificationPermission | 'not-supported' | 'default'>('default');
     const [fcmToken, setFcmToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const messagingInstance = useRef<Messaging | null>(null); 
+    const messagingInstance = useRef<Messaging | null>(null);
     const { user } = useUser();
 
     const sendTokenToServer = async (token: string, userId: string) => {
         try {
-            const response = await fetch('/api/register-device', { 
+            const response = await fetch('/api/register-device', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,19 +83,25 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                 console.warn('Notification permission denied or dismissed.');
             }
         } catch (error) {
-    if (error instanceof Error) {
-        console.error('Error sending token to server:', error.message);
-    } else {
-        console.error('An unknown error occurred:', error);
-    }
-    }
-};
+            if (error instanceof Error) {
+                console.error('Error sending token to server:', error.message);
+            } else {
+                console.error('An unknown error occurred:', error);
+            }
+        }
+    };
 
+    useEffect(() => {
+        if (user?.id && permissionStatus !== 'granted' && permissionStatus !== 'not-supported') {
+            requestNotificationPermissionAndToken();
+        }
+    }, [user?.id, permissionStatus]);
+    
     useEffect(() => {
         console.log('FCMProvider useEffect triggered.');
         if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
             const app = initializeApp(firebaseConfig);
-            messagingInstance.current = getMessaging(app); 
+            messagingInstance.current = getMessaging(app);
 
             navigator.serviceWorker.register('/firebase-messaging-sw.js')
                 .then((registration) => {
@@ -117,23 +123,23 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
             setPermissionStatus(initialPermission);
 
             if (initialPermission === 'granted') {
-                if(messagingInstance.current) {
+                if (messagingInstance.current) {
                     getToken(messagingInstance.current, { vapidKey: VAPID_KEY })
-                    .then((currentToken) => {
-                        if (currentToken && user?.id) {
-                            console.log('FCM Token retrieved on load:', currentToken);
-                            setFcmToken(currentToken);
-                            sendTokenToServer(currentToken, user.id);
-                        } else {
-                            console.log('No FCM token available on load, despite granted permission.');
-                        }
-                    })
-                    .catch((err) => {
-                        console.error('Error retrieving FCM token on load:', err);
-                    })
-                    .finally(() => {
-                        setLoading(false);
-                    });
+                        .then((currentToken) => {
+                            if (currentToken && user?.id) {
+                                console.log('FCM Token retrieved on load:', currentToken);
+                                setFcmToken(currentToken);
+                                sendTokenToServer(currentToken, user.id);
+                            } else {
+                                console.log('No FCM token available on load, despite granted permission.');
+                            }
+                        })
+                        .catch((err) => {
+                            console.error('Error retrieving FCM token on load:', err);
+                        })
+                        .finally(() => {
+                            setLoading(false);
+                        });
                 } else {
                     setLoading(false);
                 }
@@ -146,7 +152,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, [user?.id]); 
+    }, [user?.id]);
 
     const contextValue = {
         permissionStatus,
