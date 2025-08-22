@@ -8,7 +8,12 @@ const novu = new Novu({
   secretKey: process.env.NOVU_SECRET_KEY,
 });
 
-
+interface ChannelSettingsDto {
+  providerId: ChatOrPushProviderEnum;
+  credentials: {
+    deviceTokens?: string[];
+  };
+}
 export async function registerNovuDevice(token: string, userId: string) {
   const subscriberId = await fetchNovuId(userId)
   try {
@@ -16,11 +21,22 @@ export async function registerNovuDevice(token: string, userId: string) {
       throw new Error('Missing token or userIdId');
     }
     if (subscriberId?.UserNovuId) {
+      const subscriber = await novu.subscribers.retrieve(subscriberId.UserNovuId);
+
+      // Get current device tokens for FCM
+      const currentTokens = subscriber.result.channels?.find(
+        (channel: ChannelSettingsDto) => channel.providerId === ChatOrPushProviderEnum.Fcm
+      )?.credentials?.deviceTokens || [];
+      // Only add the new token if it's not already present
+      const updatedTokens = currentTokens.includes(token)
+        ? currentTokens
+        : [...currentTokens, token];
+
       const result = await novu.subscribers.credentials.update(
         {
           providerId: ChatOrPushProviderEnum.Fcm,
           credentials: {
-            deviceTokens: [token],
+            deviceTokens: updatedTokens,
           },
         },
         subscriberId?.UserNovuId
