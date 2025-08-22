@@ -275,7 +275,7 @@ cwa.id,
     LEFT JOIN LATERAL(
     SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
       FROM images i
-      WHERE i.customerid = cws.id:: TEXT
+      WHERE i.customerid = cwa.id:: TEXT
   ) img ON TRUE
     ORDER BY cwa.id
   `;
