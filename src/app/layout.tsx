@@ -38,7 +38,7 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <Providers>
-        {/* <FCMProvider> */}
+        <FCMProvider>
           <html lang="en">
             <body
               style={{
@@ -59,7 +59,7 @@ export default async function RootLayout({
               <Toaster />
             </body>
           </html >
-        {/* </FCMProvider> */}
+        </FCMProvider>
       </Providers>
     </ClerkProvider>
   );
