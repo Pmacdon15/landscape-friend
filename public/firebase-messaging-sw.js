@@ -35,3 +35,38 @@ messaging.onBackgroundMessage((payload) => {
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
+
+// --- New logic for direct token registration ---
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      try {
+        // Replace with your actual VAPID key
+        const VAPID_KEY = "YOUR_FIREBASE_VAPID_KEY_HERE"; 
+        const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+        if (currentToken) {
+          console.log('[firebase-messaging-sw.js] FCM Token obtained on activate:', currentToken);
+          // Send token to your API route
+          const response = await fetch('/api/register-device', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: currentToken }),
+          });
+
+          if (response.ok) {
+            console.log('[firebase-messaging-sw.js] Token successfully sent to API on activate.');
+          } else {
+            const errorData = await response.json();
+            console.error('[firebase-messaging-sw.js] Failed to send token to API on activate:', errorData);
+          }
+        } else {
+          console.log('[firebase-messaging-sw.js] No registration token available on activate.');
+        }
+      } catch (err) {
+        console.error('[firebase-messaging-sw.js] Error getting or sending token on activate:', err);
+      }
+    })()
+  );
+});
