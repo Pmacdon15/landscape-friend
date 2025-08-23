@@ -13,7 +13,7 @@ export function useRegisterNovuDevice() {
     setError(null);
     setIsSuccess(false);
     try {
-      const result = await registerNovuDevice(token, subscriberId);
+      const result = await registerNovuDevice(token);
       if (result.success) {
         setIsSuccess(true);
       } else {
