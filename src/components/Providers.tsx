@@ -7,7 +7,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import FCMProvider from './providers/fcm-provider'; // Import the new FCMProvider
+// import FCMProvider from './providers/fcm-provider'; // Import the new FCMProvider
 
 function makeQueryClient() {
   return new QueryClient({
@@ -46,9 +46,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
  
   return (
     <QueryClientProvider client={queryClient}>
-      <FCMProvider>
+      {/* <FCMProvider> */}
         {children}
-      </FCMProvider>
+      {/* </FCMProvider> */}
     </QueryClientProvider>
   )
 }
