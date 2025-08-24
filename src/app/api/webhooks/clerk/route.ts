@@ -1,3 +1,4 @@
+import { tigggerNotifactionSendToAdmin } from '@/lib/novu';
 import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated, handleUserDeleted } from '@/lib/webhooks/clerk-webhooks';
 import { OrganizationCreatedEvent, SubscriptionItem, UserCreatedEvent, UserDeletedEvent, WebhookEvent } from '@/types/types-clerk';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
                     const orgId = evt.data.payer?.organization_id;
                     if (orgId) {
                         await handleSubscriptionUpdate(orgId, plan);
-                        await tigggerNotifactionSendToAdmin(ordIg)
+                        await tigggerNotifactionSendToAdmin(orgId)
                     }
                 }
                 break;

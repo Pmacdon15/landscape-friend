@@ -1,8 +1,7 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber } from "../novu";
+import { addNovuSubscriber, removeNovuSubscriber } from "../novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
-import { removeNovuSubscriber } from "./novu-webhooks";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);
