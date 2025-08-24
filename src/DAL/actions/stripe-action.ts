@@ -3,7 +3,7 @@ import { markPaidDb } from "@/lib/DB/db-clients";
 import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/stripe-utils";
 import { isOrgAdmin } from "@/lib/clerk";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
-import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails';
+import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";

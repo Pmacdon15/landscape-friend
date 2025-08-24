@@ -1,7 +1,8 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber } from "./novu";
+import { addNovuSubscriber } from "../novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
+import { removeNovuSubscriber } from "./novu-webhooks";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);
@@ -51,28 +52,6 @@ export async function handleUserDeleted(userId: string) {
     }
 }
 
-
-async function removeNovuSubscriber(subscriberId: string) {
-    try {
-        const response = await fetch(`${process.env.NOVU_API_URL}/subscribers/${subscriberId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `ApiKey ${process.env.NOVU_API_KEY}`,
-            },
-        });
-
-        if (response.ok) {
-            console.log(`Subscriber ${subscriberId} removed from Novu.`);
-            return true;
-        } else {
-            console.error(`Failed to remove subscriber ${subscriberId} from Novu.`);
-            return false;
-        }
-    } catch (error) {
-        console.error(`Error removing subscriber ${subscriberId} from Novu:`, error);
-        return false;
-    }
-}
 export async function handleOrganizationCreated(orgId: string, orgName: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`

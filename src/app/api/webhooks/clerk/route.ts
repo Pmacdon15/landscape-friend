@@ -1,4 +1,4 @@
-import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated, handleUserDeleted } from '@/lib/webhooks';
+import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated, handleUserDeleted } from '@/lib/webhooks/clerk-webhooks';
 import { OrganizationCreatedEvent, SubscriptionItem, UserCreatedEvent, UserDeletedEvent, WebhookEvent } from '@/types/types-clerk';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
                     const orgId = evt.data.payer?.organization_id;
                     if (orgId) {
                         await handleSubscriptionUpdate(orgId, plan);
+                        await tigggerNotifactionSendToAdmin(ordIg)
                     }
                 }
                 break;
