@@ -9,8 +9,8 @@ import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
-import { hasStripAPIKey } from "@/DAL/dal-stripe";
 import FCMProvider from "@/components/providers/fcm-provider";
+import { hasStripAPIKey } from "@/DAL/dal/stripe-dal";
 
 
 const geistSans = Geist({

@@ -3,8 +3,7 @@ import { isOrgAdmin } from "@/lib/clerk";
 import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/types-stripe";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
-import { fetchClientNamesByStripeIds } from "./dal/dal-clients";
-
+import { fetchClientNamesByStripeIds } from "./clients-dal";
 
 let stripe: Stripe | null = null;
 

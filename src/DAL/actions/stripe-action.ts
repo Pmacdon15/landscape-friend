@@ -8,23 +8,10 @@ import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
-import { getStripeInstance } from "../dal-stripe";
 import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
-
-// let stripe: Stripe | null = null;
-
-// function getStripeInstance(): Stripe {
-//     if (!stripe) {
-//         const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
-//         if (!apiKey) {
-//             throw new Error('Stripe secret key not configured.');
-//         }
-//         stripe = new Stripe(apiKey);
-//     }
-//     return stripe;
-// }
+import { getStripeInstance } from "../dal/stripe-dal";
 
 //MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
