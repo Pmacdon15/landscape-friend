@@ -36,7 +36,7 @@ export async function handleOrganizationCreated(orgId: string, orgName: string) 
 export async function handleOrganizationDeleted(orgId: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`
-        DELETE FROM price_per_cut
+        DELETE FROM organizations
         WHERE organization_id = ${orgId}        
     `;
 }
