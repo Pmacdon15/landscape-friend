@@ -23,6 +23,7 @@ export interface StripeInvoice {
     lines: {
         data: StripeLineItem[];
     };
+    client_name?: string;
 }
 
 export interface StripeLineItem {
@@ -50,6 +51,7 @@ export interface StripeQuote {
     status: string;
     expires_at: number | null;
     created: number;
+    client_name?: string;
 }
 
 

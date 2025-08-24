@@ -5,6 +5,10 @@ export interface Image {
     url: string;
 }
 
+export interface CustomerName {
+    stripe_customer_id: string;
+    full_name?: string;
+}
 export interface Client {
     id: number;
     full_name: string;
@@ -21,8 +25,8 @@ export interface Client {
     stripe_customer_id?: string;
 }
 export interface ClientListItemProps {
-  client: Client;
-  children?: React.ReactNode;
+    client: Client;
+    children?: React.ReactNode;
 }
 
 

@@ -1,10 +1,9 @@
 import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaToggleSnowClient, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
-import { Account, Client } from "@/types/types-clients";
+import { Account, Client, CustomerName } from "@/types/types-clients";
 
 //MARK: Add clients
-
 
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
   console.log("addClientDB called with data:", data, "and organization_id:", organization_id);
@@ -34,6 +33,18 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
   }
 }
 
+//MARK: Fetch Customer names from stripe id
+export async function fetchStripeCustomerNamesDB(organization_id: string, stripeCusomterIdList: string[]): Promise<CustomerName[]> {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  const result = await (sql`
+    SELECT
+      full_name,
+      stripe_customer_id
+    FROM clients
+    WHERE organization_id = ${organization_id} AND stripe_customer_id = ANY(${stripeCusomterIdList})
+  `) as CustomerName[];
+  return result;
+}
 export async function updateClientStripeCustomerIdDb(email_address: string, stripe_customer_id: string, organization_id: string) {
   console.log("updateClientStripeCustomerIdDb called with:", { email_address, stripe_customer_id, organization_id });
   const sql = neon(`${process.env.DATABASE_URL}`);
@@ -106,7 +117,7 @@ export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>,
   RETURNING id;
   `;
     console.log("deleteSiteMapDB SQL result:", result);
-  return { success: result.length > 0 };
+    return { success: result.length > 0 };
   } catch (error) {
     console.error("Error in deleteSiteMapDB SQL query:", error);
     throw error;
@@ -115,36 +126,36 @@ export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>,
 
 //MARK: Update price per cut
 export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
-  const sql = neon(`${ process.env.DATABASE_URL }`);
+  const sql = neon(`${process.env.DATABASE_URL}`);
 
   let setClause;
   if (data.snow) {
-    setClause = sql`price_per_month_snow = ${ data.pricePerCut } `;
+    setClause = sql`price_per_month_snow = ${data.pricePerCut} `;
   } else {
-    setClause = sql`price_per_cut = ${ data.pricePerCut } `;
+    setClause = sql`price_per_cut = ${data.pricePerCut} `;
   }
 
   const result = await sql`
         UPDATE clients
-        SET ${ setClause }
-        WHERE id = ${ data.clientId } AND organization_id = ${ orgId }
+        SET ${setClause}
+        WHERE id = ${data.clientId} AND organization_id = ${orgId}
   `
   return result;
 }
 
 //MARK: Updated Client Cut Day
 export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCuttingDay>, orgId: string) {
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
   const clientCheck = await sql`
         SELECT id FROM clients
-        WHERE clients.id = ${ data.clientId } AND clients.organization_id = ${ orgId }
+        WHERE clients.id = ${data.clientId} AND clients.organization_id = ${orgId}
   `;
   if (!clientCheck || clientCheck.length === 0) {
     throw new Error("Client not found or orgId mismatch");
   }
   const result = await sql`
         INSERT INTO cutting_schedule(client_id, cutting_week, cutting_day)
-  VALUES(${ data.clientId }, ${ data.cuttingWeek }, ${ data.updatedDay })
+  VALUES(${data.clientId}, ${data.cuttingWeek}, ${data.updatedDay})
         ON CONFLICT(client_id, cutting_week) DO UPDATE
         SET cutting_day = EXCLUDED.cutting_day
   RETURNING *
@@ -162,7 +173,7 @@ export async function fetchClientsClearingGroupsDb(
   searchTermIsServiced: boolean,
   searchTermAssignedTo: string
 ) {
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
 
   const baseQuery = sql`
     WITH clients_with_balance AS(
@@ -171,12 +182,12 @@ export async function fetchClientsClearingGroupsDb(
       a.current_balance AS amount_owing
       FROM clients c
       LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${ orgId } AND c.snow_client = true
+      WHERE c.organization_id = ${orgId} AND c.snow_client = true
     ),
     cleared_yards AS(
       SELECT client_id
       FROM yards_marked_clear
-      WHERE clearing_date = ${ clearingDate }
+      WHERE clearing_date = ${clearingDate}
     ),
       clients_with_assignments AS(
         SELECT 
@@ -192,7 +203,7 @@ export async function fetchClientsClearingGroupsDb(
   cwa.id
     FROM clients_with_assignments cwa
     LEFT JOIN cleared_yards cy ON cwa.id = cy.client_id
-    WHERE ${ searchTermIsServiced ? sql`cy.client_id IS NOT NULL` : sql`cy.client_id IS NULL` }
+    WHERE ${searchTermIsServiced ? sql`cy.client_id IS NOT NULL` : sql`cy.client_id IS NULL`}
   `;
 
   const whereClauses = [];
@@ -200,15 +211,15 @@ export async function fetchClientsClearingGroupsDb(
   if (searchTerm !== "") {
     whereClauses.push(sql`
     (cwa.full_name ILIKE ${`%${searchTerm}%`} 
-      OR cwa.phone_number ILIKE ${ `%${searchTerm}%` } 
-      OR cwa.email_address ILIKE ${ `%${searchTerm}%` } 
-      OR cwa.address ILIKE ${ `%${searchTerm}%` })
+      OR cwa.phone_number ILIKE ${`%${searchTerm}%`} 
+      OR cwa.email_address ILIKE ${`%${searchTerm}%`} 
+      OR cwa.address ILIKE ${`%${searchTerm}%`})
 `);
   }
 
   if (searchTermAssignedTo !== "") {
     whereClauses.push(sql`
-cwa.assigned_to = ${ searchTermAssignedTo }
+cwa.assigned_to = ${searchTermAssignedTo}
 `);
   } else {
     whereClauses.push(sql`
@@ -217,32 +228,32 @@ cwa.assigned_to IS NULL
   }
 
   if (whereClauses.length > 0) {
-    let whereClause = sql`AND ${ whereClauses[0] } `;
+    let whereClause = sql`AND ${whereClauses[0]} `;
     for (let i = 1; i < whereClauses.length; i++) {
-      whereClause = sql`${ whereClause } AND ${ whereClauses[i] } `;
+      whereClause = sql`${whereClause} AND ${whereClauses[i]} `;
     }
 
     selectQuery = sql`
-      ${ selectQuery }
-      ${ whereClause }
+      ${selectQuery}
+      ${whereClause}
 `;
   }
 
   const countQuery = sql`
-    ${ baseQuery }
+    ${baseQuery}
     SELECT COUNT(*) AS total_count
-FROM(${ selectQuery }) AS client_ids
+FROM(${selectQuery}) AS client_ids
   `;
 
   const countResult = await countQuery;
   const totalCount = countResult[0]?.total_count || 0;
 
   const paginatedClientIdsQuery = sql`
-    ${ baseQuery }
+    ${baseQuery}
     SELECT id
-FROM(${ selectQuery }) AS client_ids
+FROM(${selectQuery}) AS client_ids
     ORDER BY id
-    LIMIT ${ pageSize } OFFSET ${ offset }
+    LIMIT ${pageSize} OFFSET ${offset}
 `;
 
   const paginatedClientIdsResult = await paginatedClientIdsQuery;
@@ -255,7 +266,7 @@ FROM(${ selectQuery }) AS client_ids
   a.current_balance AS amount_owing
       FROM clients c
       LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${ orgId } AND c.id = ANY(${ paginatedClientIds })
+      WHERE c.organization_id = ${orgId} AND c.id = ANY(${paginatedClientIds})
 ),
   clients_with_assignments AS(
     SELECT 
@@ -294,7 +305,7 @@ export async function fetchClientsWithSchedules(
   searchTermCuttingWeek: number,
   searchTermCuttingDay: string
 ) {
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
 
   const baseQuery = sql`
     WITH clients_with_balance AS(
@@ -303,7 +314,7 @@ export async function fetchClientsWithSchedules(
     a.current_balance AS amount_owing
       FROM clients c
       LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${ orgId }
+      WHERE c.organization_id = ${orgId}
   ),
   clients_with_schedules AS(
     SELECT 
@@ -336,46 +347,46 @@ cws.id
 
   if (searchTermCuttingWeek > 0 && searchTermCuttingDay !== "") {
     whereClauses.push(sql`
-cws.cutting_week = ${ searchTermCuttingWeek } 
-      AND cws.cutting_day = ${ searchTermCuttingDay }
+cws.cutting_week = ${searchTermCuttingWeek} 
+      AND cws.cutting_day = ${searchTermCuttingDay}
 `);
   } else if (searchTermCuttingWeek > 0) {
     whereClauses.push(sql`
-cws.cutting_week = ${ searchTermCuttingWeek }
+cws.cutting_week = ${searchTermCuttingWeek}
 `);
   } else if (searchTermCuttingDay !== "") {
     whereClauses.push(sql`
-cws.cutting_day = ${ searchTermCuttingDay }
+cws.cutting_day = ${searchTermCuttingDay}
 `);
   }
 
   if (whereClauses.length > 0) {
-    let whereClause = sql`WHERE ${ whereClauses[0] } `;
+    let whereClause = sql`WHERE ${whereClauses[0]} `;
     if (whereClauses.length > 1) {
-      whereClause = sql`${ whereClause } AND ${ whereClauses[1] } `;
+      whereClause = sql`${whereClause} AND ${whereClauses[1]} `;
     }
 
     selectQuery = sql`
-      ${ selectQuery }
-      ${ whereClause }
+      ${selectQuery}
+      ${whereClause}
 `;
   }
 
   const countQuery = sql`
-    ${ baseQuery }
+    ${baseQuery}
     SELECT COUNT(*) AS total_count
-FROM(${ selectQuery }) AS client_ids
+FROM(${selectQuery}) AS client_ids
   `;
 
   const countResult = await countQuery;
   const totalCount = countResult[0]?.total_count || 0;
 
   const paginatedClientIdsQuery = sql`
-    ${ baseQuery }
+    ${baseQuery}
     SELECT id
-FROM(${ selectQuery }) AS client_ids
+FROM(${selectQuery}) AS client_ids
     ORDER BY id
-    LIMIT ${ pageSize } OFFSET ${ offset }
+    LIMIT ${pageSize} OFFSET ${offset}
 `;
 
   const paginatedClientIdsResult = await paginatedClientIdsQuery;
@@ -388,7 +399,7 @@ FROM(${ selectQuery }) AS client_ids
   a.current_balance AS amount_owing
       FROM clients c
       LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${ orgId }
+      WHERE c.organization_id = ${orgId}
 ),
   clients_with_schedules AS(
     SELECT 
@@ -399,7 +410,7 @@ FROM(${ selectQuery }) AS client_ids
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
       LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
-      WHERE cwb.id = ANY(${ paginatedClientIds })
+      WHERE cwb.id = ANY(${paginatedClientIds})
   )
 SELECT
 cws.id,
@@ -453,7 +464,7 @@ export async function fetchClientsCuttingSchedules(
   ];
   const cuttingDay = daysOfWeek[cuttingDate.getDay()];
 
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
 
   const query = sql`
     WITH clients_with_balance AS(
@@ -462,7 +473,7 @@ export async function fetchClientsCuttingSchedules(
     a.current_balance AS amount_owing
       FROM clients c
       LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${ orgId }
+      WHERE c.organization_id = ${orgId}
   ),
   clients_with_schedules AS(
     SELECT
@@ -471,21 +482,21 @@ export async function fetchClientsCuttingSchedules(
     cs.cutting_day
       FROM clients_with_balance cwb
       JOIN cutting_schedule cs ON cwb.id = cs.client_id
-      WHERE cs.cutting_week = ${ cuttingWeek } AND cs.cutting_day = ${ cuttingDay }
+      WHERE cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay}
   ),
     clients_marked_cut AS(
       SELECT
         ymc.client_id,
       ymc.cutting_date
       FROM yards_marked_cut ymc
-      WHERE ymc.cutting_date = ${ cuttingDate }
+      WHERE ymc.cutting_date = ${cuttingDate}
     ),
       snow_assignments AS(
         SELECT
         sca.client_id,
         sca.assigned_to
       FROM snow_clearing_assignments sca
-      WHERE sca.organization_id = ${ orgId }
+      WHERE sca.organization_id = ${orgId}
       )
         `;
 
@@ -494,7 +505,7 @@ export async function fetchClientsCuttingSchedules(
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
   LEFT JOIN snow_assignments sa ON cws.id = sa.client_id
-  WHERE ${ searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL` }
+  WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 
   let selectQuery = sql`
@@ -520,7 +531,7 @@ cws.id,
     FROM images i
     WHERE i.customerid = cws.id:: TEXT
   ) img ON TRUE
-  WHERE ${ searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL` }
+  WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 
   const whereClauses = [];
@@ -535,30 +546,30 @@ cws.id,
   }
 
   if (whereClauses.length > 0) {
-    let whereClause = sql`AND ${ whereClauses[0] } `;
+    let whereClause = sql`AND ${whereClauses[0]} `;
     if (whereClauses.length > 1) {
-      whereClause = sql`${ whereClause } AND ${ whereClauses[1] } `;
+      whereClause = sql`${whereClause} AND ${whereClauses[1]} `;
     }
 
     countQuery = sql`
-      ${ countQuery }
-      ${ whereClause }
+      ${countQuery}
+      ${whereClause}
 `;
 
     selectQuery = sql`
-      ${ selectQuery }
-      ${ whereClause }
+      ${selectQuery}
+      ${whereClause}
 `;
   }
 
   const finalQuery = sql`
-    ${ query }
-    ${ selectQuery }
+    ${query}
+    ${selectQuery}
     ORDER BY cws.id
-    LIMIT ${ pageSize } OFFSET ${ offset }
+    LIMIT ${pageSize} OFFSET ${offset}
 `;
 
-  const finalCountQuery = sql`${ query } ${ countQuery } `;
+  const finalCountQuery = sql`${query} ${countQuery} `;
 
   const [clientsResult, totalCountResult] = await Promise.all([
     finalQuery,
@@ -572,22 +583,22 @@ cws.id,
 
 //MARK: Mark yard cut
 export async function markYardServicedDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string, snow: boolean) {
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
 
   const query = snow
     ? sql`
         INSERT INTO yards_marked_clear(client_id, clearing_date)
-        SELECT ${ data.clientId }, ${ data.date }
+        SELECT ${data.clientId}, ${data.date}
         FROM clients
-        WHERE id = ${ data.clientId } AND organization_id = ${ organization_id }
+        WHERE id = ${data.clientId} AND organization_id = ${organization_id}
         ON CONFLICT(client_id, clearing_date) DO NOTHING
 RETURNING *;
 `
     : sql`
         INSERT INTO yards_marked_cut(client_id, cutting_date)
-        SELECT ${ data.clientId }, ${ data.date }
+        SELECT ${data.clientId}, ${data.date}
         FROM clients
-        WHERE id = ${ data.clientId } AND organization_id = ${ organization_id }
+        WHERE id = ${data.clientId} AND organization_id = ${organization_id}
         ON CONFLICT(client_id, cutting_date) DO NOTHING
 RETURNING *;
 `;
@@ -603,12 +614,12 @@ RETURNING *;
 
 //MARK: Toggle snow client
 export async function toggleSnowClientDb(data: z.infer<typeof schemaToggleSnowClient>, organization_id: string) {
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
 
   const result = await sql`
     UPDATE clients 
     SET snow_client = NOT snow_client 
-    WHERE id = ${ data.clientId } AND organization_id = ${ organization_id }
+    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
 RETURNING *;
 `;
 
@@ -621,13 +632,13 @@ RETURNING *;
 
 //MARK: Toggle snow client
 export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnowClearing>, organization_id: string) {
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
 
   const result = await sql`
     INSERT INTO snow_clearing_assignments(client_id, assigned_to, organization_id)
-    SELECT ${ data.clientId }, ${ data.assignedTo }, ${ organization_id }
+    SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}
     FROM clients
-    WHERE id = ${ data.clientId } AND organization_id = ${ organization_id }
+    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
     ON CONFLICT(client_id) DO UPDATE
     SET assigned_to = EXCLUDED.assigned_to
 RETURNING *;
@@ -643,36 +654,36 @@ RETURNING *;
 
 //MARK: Mark Payment
 export async function markPaidDb(invoiceId: string, customerEmail: string, amountPaid: number, organizationId: string) {
-  const sql = neon(`${ process.env.DATABASE_URL } `);
+  const sql = neon(`${process.env.DATABASE_URL} `);
   try {
     const result = await sql`
       WITH client_info AS(
   SELECT id AS client_id
           FROM clients
-          WHERE email_address = ${ customerEmail } AND organization_id = ${ organizationId }
+          WHERE email_address = ${customerEmail} AND organization_id = ${organizationId}
 ),
   inserted_payment AS(
     INSERT INTO payments(account_id, amount, organization_id)
-          SELECT a.id, ${ amountPaid }, ${ organizationId }
+          SELECT a.id, ${amountPaid}, ${organizationId}
           FROM accounts a
           JOIN client_info ci ON a.client_id = ci.client_id
           RETURNING payments.id-- Return something to indicate success
   )
       UPDATE accounts
-      SET current_balance = current_balance - ${ amountPaid }
+      SET current_balance = current_balance - ${amountPaid}
       FROM client_info ci
       WHERE accounts.client_id = ci.client_id
       RETURNING accounts.current_balance AS new_balance, (SELECT id FROM inserted_payment) AS payment_id;
 `;
 
     if (!result || result.length === 0) {
-      throw new Error(`Failed to mark invoice ${ invoiceId } as paid in DB.Client not found or update failed.`);
+      throw new Error(`Failed to mark invoice ${invoiceId} as paid in DB.Client not found or update failed.`);
     }
 
     const { new_balance, payment_id } = result[0];
-    console.log(`Invoice ${ invoiceId } marked paid.New balance: ${ new_balance }, Payment ID: ${ payment_id } `);
+    console.log(`Invoice ${invoiceId} marked paid.New balance: ${new_balance}, Payment ID: ${payment_id} `);
 
-    return { success: true, message: `Invoice ${ invoiceId } marked as paid and database updated.`, newBalance: new_balance, paymentId: payment_id };
+    return { success: true, message: `Invoice ${invoiceId} marked as paid and database updated.`, newBalance: new_balance, paymentId: payment_id };
 
   } catch (e) {
     console.error('Error marking invoice paid in DB:', e);

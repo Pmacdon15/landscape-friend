@@ -19,8 +19,7 @@ export async function sayHello(novuId: string, email?: string, userName?: string
             },
             payload: {},
         });
-        console.log("response: ", response)
-
+        
     } catch (error) {
         console.error(error);
         // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
@@ -38,7 +37,7 @@ export async function triggerNotifaction(novuId: string, action: string) {
             payload: {},
         });
 
-        console.log("response: ", response)
+        // console.log("response: ", response)
 
     } catch (error) {
         console.error(error);
