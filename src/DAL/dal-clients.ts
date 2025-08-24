@@ -1,8 +1,8 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb } from "@/lib/DB/db-clients";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB } from "@/lib/DB/db-clients";
 import { fetchClientNamesAndEmailsDb } from "@/lib/DB/db-resend";
 import { processClientsResult } from "@/lib/sort";
 import { isOrgAdmin } from "@/lib/clerk";
-import { ClientResult, NamesAndEmails, PaginatedClients } from "@/types/types-clients";
+import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName } from "@/types/types-clients";
 import { auth } from "@clerk/nextjs/server";
 
 
@@ -106,5 +106,18 @@ export async function fetchClientsNamesAndEmails(): Promise<NamesAndEmails[] | E
     if (e instanceof Error)
       return e;
     return new Error('An unknown error occurred'); // Return a generic error
+  }
+}
+
+export async function fetchClientNamesByStripeIds(stripeCustomerIds: string[]): Promise<CustomerName[] | Error> {
+  const { orgId, userId } = await auth.protect();
+  try {
+    const result = await fetchStripeCustomerNamesDB(orgId || userId, stripeCustomerIds);
+    if (!result) return [];
+    return result;
+  } catch (e) {
+    if (e instanceof Error)
+      return e;
+    return new Error('An unknown error occurred');
   }
 }

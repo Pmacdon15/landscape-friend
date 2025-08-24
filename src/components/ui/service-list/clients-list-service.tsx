@@ -30,7 +30,7 @@ export default async function ClientListService({ clientsPromise, page, serviceD
     const addresses = clients.map(c => ({ address: c.address }))
     if (addresses instanceof Error) return <FormContainer> <FormHeader text={`${addresses.message}`} /></FormContainer >
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
-    console.log("addresses: ", addresses)
+   
     return (
         <>
             <ul className="flex flex-col gap-2 md:gap-4 rounded-sm w-full items-center">

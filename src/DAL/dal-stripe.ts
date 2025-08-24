@@ -3,6 +3,8 @@ import { isOrgAdmin } from "@/lib/clerk";
 import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/types-stripe";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
+import { fetchClientNamesByStripeIds } from "./dal-clients";
+
 
 let stripe: Stripe | null = null;
 
@@ -89,6 +91,21 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         const offset = (page - 1) * pageSize;
         const paginatedInvoices = filteredInvoices.slice(offset, offset + pageSize);
 
+        const uniqueCustomerIds = [...new Set(allInvoices.map(invoice => invoice.customer).filter((customer): customer is string => typeof customer === 'string'))];
+
+        const clientNamesResult = await fetchClientNamesByStripeIds(uniqueCustomerIds);
+
+        if (clientNamesResult instanceof Error) {
+            throw clientNamesResult;
+        }
+
+        const clientNamesMap = new Map<string, string>();
+        clientNamesResult.forEach(client => {
+            if (client.stripe_customer_id && client.full_name) {
+                clientNamesMap.set(client.stripe_customer_id, client.full_name);
+            }
+        });
+
         const strippedInvoices = paginatedInvoices.map((invoice) => ({
             id: invoice.id,
             object: invoice.object,
@@ -111,6 +128,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
                     id: lineItem.id,
                 })),
             },
+            client_name: typeof invoice.customer === 'string' ? clientNamesMap.get(invoice.customer) : undefined,
         }));
 
         return { invoices: strippedInvoices as StripeInvoice[], totalPages };
@@ -166,6 +184,24 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         // }));
 
         // console.log("quotesWithPdf: ", quotesWithPdf)
+        const uniqueCustomerIds = [...new Set(allQuotes.map(quote => quote.customer).filter((customer): customer is string => typeof customer === 'string'))];
+        // console.log("Unique Customer IDs from Stripe:", uniqueCustomerIds);
+
+        const clientNamesResult = await fetchClientNamesByStripeIds(uniqueCustomerIds);
+        // console.log("Client Names Result from DB:", clientNamesResult);
+
+        if (clientNamesResult instanceof Error) {
+            throw clientNamesResult;
+        }
+
+        const clientNamesMap = new Map<string, string>();
+        clientNamesResult.forEach(client => {
+            if (client.stripe_customer_id && client.full_name) {
+                clientNamesMap.set(client.stripe_customer_id, client.full_name);
+            }
+        });
+        // console.log("Client Names Map:", clientNamesMap);
+
         const strippedQuotes = paginatedQuotes.map((quote) => ({
             id: quote.id,
             object: quote.object,
@@ -174,6 +210,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             status: quote.status as string,
             expires_at: quote.expires_at,
             created: quote.created,
+            client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
         }));
 
         return { quotes: strippedQuotes as StripeQuote[], totalPages };
