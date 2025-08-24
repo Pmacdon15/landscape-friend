@@ -1,3 +1,4 @@
+import { auth } from '@clerk/nextjs/server';
 import { Novu } from '@novu/api';
 
 const novu = new Novu({
@@ -5,6 +6,7 @@ const novu = new Novu({
 });
 
 export async function sayHello(novuId: string, email?: string, userName?: string) {
+    auth.protect()
     try {
         const firstName = userName?.split(" ")[0]
         const lastName = userName?.split(" ")[1]
@@ -28,6 +30,7 @@ export async function sayHello(novuId: string, email?: string, userName?: string
 
 
 export async function triggerNotifaction(novuId: string, action: string) {
+    auth.protect()
     try {
         await novu.trigger({
             workflowId: action,
