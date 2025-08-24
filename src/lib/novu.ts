@@ -1,6 +1,7 @@
 import { sayHello } from '@/DAL/dal/novu-dal';
 import { Novu } from '@novu/api';
 import { getOrgMembers } from './clerk';
+import { getNovuIds } from './DB/db-clients';
 
 export async function addNovuSubscriber(
     subscriberId: string,
@@ -41,18 +42,19 @@ const novu = new Novu({
 
 export async function triggerNotificationSendToAdmin(orgId: string, workflow: string) {
     const membersOfOrg = await getOrgMembers(orgId);
-    const adminMembers = membersOfOrg.filter((member) => { return member.role === 'org:admin'; });
-    const adminSubscriberIds = adminMembers.map((admin) => admin.userId);
-
+    const adminMembers = membersOfOrg.filter((member) => member.role === 'org:admin');
+    const adminUserIds = adminMembers.map((admin) => admin.userId);
+    const novuSubscriberIds = await getNovuIds(adminUserIds);
+    const adminSubscriberIds = Object.values(novuSubscriberIds).filter((id) => id !== null);
+    
     try {
         const result = await novu.trigger({
             workflowId: workflow,
             to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
             payload: {},
         });
-        console.log("Result for send notifation: ", result)
+        console.log("Result for send notification: ", result)
     } catch (error) {
         console.error(error);
     }
 }
-
