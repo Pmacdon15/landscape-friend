@@ -1,6 +1,7 @@
 import { neon } from "@neondatabase/serverless"
 import { addNovuSubscriber } from "./novu";
 import { v4 as uuidv4 } from 'uuid';
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);
@@ -92,6 +93,22 @@ export async function handleSubscriptionUpdate(orgId: string, plan: string) {
     // Placeholder for subscription update logic
     console.log(`Subscription update for organization ${orgId} with plan ${plan}`);
     // You would typically update your database here based on the subscription plan
+    const clerk = await clerkClient();
+
+    if (plan === 'new_business_plan') {
+        await clerk.organizations.updateOrganization(orgId, {
+            maxAllowedMemberships: 4
+        });
+    }
+    // else if (plan === 'pro_25_people_org') {
+    //     await clerk.organizations.updateOrganization(orgId, {
+    //         maxAllowedMemberships: 25
+    //     })
+    else {
+        await clerk.organizations.updateOrganization(orgId, {
+            maxAllowedMemberships: 1
+        })
+    }
 }
 
 
