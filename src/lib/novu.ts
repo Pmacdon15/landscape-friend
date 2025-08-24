@@ -1,4 +1,4 @@
-import { sayHello } from '@/DAL/dal-novu';
+import { sayHello } from '@/DAL/dal/novu-dal';
 
 export async function addNovuSubscriber(
     subscriberId: string,

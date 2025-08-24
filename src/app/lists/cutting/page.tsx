@@ -1,7 +1,7 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { fetchCuttingClients } from "@/DAL/dal-clients";
+import { fetchCuttingClients } from "@/DAL/dal/clients-dal";
 import { isOrgAdmin } from "@/lib/clerk";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";

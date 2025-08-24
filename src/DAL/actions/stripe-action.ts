@@ -10,8 +10,8 @@ import { formatCompanyName } from "@/lib/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
 import { getStripeInstance } from "../dal-stripe";
 import { MarkQuoteProps } from "@/types/types-stripe";
-import { fetchNovuId } from "../dal-user";
-import { triggerNotifaction } from "../dal-novu";
+import { fetchNovuId } from "../dal/user-dal";
+import { triggerNotifaction } from "../dal/novu-dal";
 
 // let stripe: Stripe | null = null;
 

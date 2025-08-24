@@ -2,7 +2,7 @@
 
 import { Novu } from '@novu/api';
 import { ChatOrPushProviderEnum } from "@novu/api/models/components";
-import { fetchNovuId } from '../dal-user';
+import { fetchNovuId } from '../dal/user-dal';
 
 
 const novu = new Novu({
