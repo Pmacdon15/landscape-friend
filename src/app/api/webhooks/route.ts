@@ -1,4 +1,4 @@
-import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated } from '@/lib/webhooks';
+import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated, handleUserDeleted } from '@/lib/webhooks';
 import { OrganizationCreatedEvent, SubscriptionItem, UserCreatedEvent, UserDeletedEvent, WebhookEvent } from '@/types/types-clerk';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
@@ -48,8 +48,9 @@ export async function POST(req: NextRequest) {
             }
 
             case 'user.deleted': {
-                const orgId = (evt.data as UserDeletedEvent).id;
-                await handleOrganizationDeleted(orgId);
+                const id = (evt.data as UserDeletedEvent).id;
+                await handleOrganizationDeleted(id);
+                await handleUserDeleted(id)
                 break;
             }
 

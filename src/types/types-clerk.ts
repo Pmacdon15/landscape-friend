@@ -18,6 +18,7 @@ export interface UserCreatedEvent {
 
 export interface UserDeletedEvent {
     id: string;
+    userId: string
 }
 export interface OrganizationCreatedEvent {
     id: string;

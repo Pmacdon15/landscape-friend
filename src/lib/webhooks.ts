@@ -24,7 +24,54 @@ export async function handleUserCreated(userId: string, userName: string, userEm
         }
     }
 }
+export async function handleUserDeleted(userId: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
 
+    // Delete the user from the database
+    const deleteResult = await sql`
+        DELETE FROM users
+        WHERE id = ${userId}
+        RETURNING *;
+    `;
+
+    if (deleteResult.length > 0) {
+        console.log(`User ${userId} deleted from database.`);
+
+        // Remove the user from Novu
+        const user = deleteResult[0];
+        if (user.novu_subscriber_id) {
+            const result = await removeNovuSubscriber(user.novu_subscriber_id);
+            if (!result) {
+                console.error(`Failed to remove user ${userId} from Novu.`);
+            }
+        }
+    } else {
+        console.log(`User ${userId} not found in database.`);
+    }
+}
+
+
+async function removeNovuSubscriber(subscriberId: string) {
+    try {
+        const response = await fetch(`${process.env.NOVU_API_URL}/subscribers/${subscriberId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `ApiKey ${process.env.NOVU_API_KEY}`,
+            },
+        });
+
+        if (response.ok) {
+            console.log(`Subscriber ${subscriberId} removed from Novu.`);
+            return true;
+        } else {
+            console.error(`Failed to remove subscriber ${subscriberId} from Novu.`);
+            return false;
+        }
+    } catch (error) {
+        console.error(`Error removing subscriber ${subscriberId} from Novu:`, error);
+        return false;
+    }
+}
 export async function handleOrganizationCreated(orgId: string, orgName: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`
