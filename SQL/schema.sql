@@ -52,8 +52,8 @@ CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
-    CONSTRAINT unique_organization_id UNIQUE (organization_id)
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id)
+    -- CONSTRAINT unique_organization_id UNIQUE (organization_id)
 );
 
 CREATE TABLE accounts (
