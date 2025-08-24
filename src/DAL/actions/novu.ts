@@ -45,7 +45,7 @@ export async function registerNovuDevice(token: string, userId: string) {
         : [...currentTokens, token];
       // console.log('Action: registerNovuDevice - Updated FCM tokens:', updatedTokens);
 
-      const result = await novu.subscribers.credentials.update(
+      await novu.subscribers.credentials.update(
         {
           providerId: ChatOrPushProviderEnum.Fcm,
           credentials: {

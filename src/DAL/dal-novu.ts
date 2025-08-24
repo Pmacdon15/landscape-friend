@@ -8,7 +8,7 @@ export async function sayHello(novuId: string, email?: string, userName?: string
     try {
         const firstName = userName?.split(" ")[0]
         const lastName = userName?.split(" ")[1]
-        const response = await novu.trigger({
+        await novu.trigger({
             workflowId: 'hello-from-landscape-friend',
             to: {
                 subscriberId: novuId,
@@ -19,7 +19,7 @@ export async function sayHello(novuId: string, email?: string, userName?: string
             },
             payload: {},
         });
-        
+
     } catch (error) {
         console.error(error);
         // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
@@ -29,7 +29,7 @@ export async function sayHello(novuId: string, email?: string, userName?: string
 
 export async function triggerNotifaction(novuId: string, action: string) {
     try {
-        const response = await novu.trigger({
+        await novu.trigger({
             workflowId: action,
             to: {
                 subscriberId: novuId,
