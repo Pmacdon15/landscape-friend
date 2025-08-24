@@ -20,7 +20,7 @@ export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
     if (!orgId) return [];
 
     try {
-                        const memberships = await clerkClient.organizations.getOrganizationMembershipList({ organizationId: orgId });
+                                const memberships = await (await clerkClient()).organizations.getOrganizationMembershipList({ organizationId: orgId });
 
         const members: OrgMember[] = memberships.map(membership => ({
             userId: membership.publicUserData.userId,

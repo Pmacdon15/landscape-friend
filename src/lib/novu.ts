@@ -1,5 +1,6 @@
 import { sayHello } from '@/DAL/dal/novu-dal';
 import { Novu } from '@novu/api';
+import { getOrgMembers } from './clerk';
 
 export async function addNovuSubscriber(
     subscriberId: string,
@@ -38,18 +39,19 @@ const novu = new Novu({
     secretKey: process.env.NOVU_SECRET_KEY,
 });
 
-export async function tigggerNotifactionSendToAdmin(orgId: string){
+export async function triggerNotificationSendToAdmin(orgId: string, workflow: string) {
+    const membersOfOrg = await getOrgMembers(orgId);
+    const adminMembers = membersOfOrg.filter((member) => { return member.role === 'org:admin'; });
+    const adminSubscriberIds = adminMembers.map((admin) => admin.userId);
 
-    const membersOfOrg = await fetch
     try {
         await novu.trigger({
-            workflowId: "",
-            to: "",
+            workflowId: workflow, 
+            to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
             payload: {},
         });
-
     } catch (error) {
         console.error(error);
-        // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
     }
 }
+

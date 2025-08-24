@@ -34,4 +34,5 @@ export interface WebhookEvent {
 export interface OrgMember {
     userId: string;
     userName: string | null;
+    role?: string
 }
