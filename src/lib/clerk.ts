@@ -18,13 +18,14 @@ export async function isOrgAdmin(protect = true) {
 
 export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
     if (!orgId) return [];
-
+    const clerk = await clerkClient();
     try {
-                                const memberships = await (await clerkClient()).organizations.getOrganizationMembershipList({ organizationId: orgId });
+        const memberships = await clerk.organizations.getOrganizationMembershipList({ organizationId: orgId });
 
-        const members: OrgMember[] = memberships.map(membership => ({
-            userId: membership.publicUserData.userId,
-            userName: membership.publicUserData.identifier
+        const members: OrgMember[] = memberships.data.map((membership) => ({
+            userId: membership.publicUserData?.userId || "",
+            userName: (membership.publicUserData?.firstName + " " + membership.publicUserData?.lastName) || "Personal Workspace",
+            role: membership.role
         }));
 
         return members;

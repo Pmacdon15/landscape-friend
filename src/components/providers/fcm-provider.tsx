@@ -50,7 +50,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
         } catch (error) {
             console.error('Error sending token to server:', error);
         }
-    }, [user?.id]);
+    }, []);
 
     const requestNotificationPermissionAndToken = useCallback(async () => {
         if (typeof window === 'undefined' || !('Notification' in window)) {
@@ -89,7 +89,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                 console.error('An unknown error occurred:', error);
             }
         }
-    }, [messagingInstance.current, user?.id, sendTokenToServer]);
+    }, [user?.id, sendTokenToServer]);
 
     useEffect(() => {
         if (user?.id && permissionStatus !== 'granted' && permissionStatus !== 'not-supported') {
@@ -153,7 +153,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, [user?.id]);
+    }, [user?.id, sendTokenToServer]);
 
     const contextValue = {
         permissionStatus,
