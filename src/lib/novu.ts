@@ -45,11 +45,12 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
     const adminSubscriberIds = adminMembers.map((admin) => admin.userId);
 
     try {
-        await novu.trigger({
-            workflowId: workflow, 
+        const result = await novu.trigger({
+            workflowId: workflow,
             to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
             payload: {},
         });
+        console.log("Result for send notifation: ", result)
     } catch (error) {
         console.error(error);
     }
