@@ -3,7 +3,7 @@ import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { CardView } from "@/components/ui/manage/invoices/manage-invoices-card-view";
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
-import { fetchInvoices } from "@/lib/DAL/dal/stripe-dal";
+import { fetchInvoices } from "@/lib/dal/stripe-dal";
 import { parseClientListParams } from "@/lib/server-funtions/params";
 import { SearchParams } from "@/types/types-params";
 import { Suspense } from "react";

@@ -3,7 +3,7 @@ import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { ManageQuoteCardView } from "@/components/ui/manage/quotes/manage-quotes-card-view";
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
-import { fetchQuotes } from "@/lib/DAL/dal/stripe-dal";
+import { fetchQuotes } from "@/lib/dal/stripe-dal";
 import { parseClientListParams } from "@/lib/server-funtions/params";
 import { SearchParams } from "@/types/types-params";
 import { Suspense } from "react";

@@ -1,6 +1,6 @@
 "use server";
 
-import { inngest } from "../../inngest/inngest";
+import { inngest } from "../inngest/inngest";
 
 export async function summarizeText(formData: FormData) {
     // Extract text and user email from the form data

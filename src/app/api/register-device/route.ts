@@ -1,4 +1,4 @@
-import { registerNovuDevice } from '@/lib/DAL/actions/novu-action';
+import { registerNovuDevice } from '@/lib/actions/novu-action';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {

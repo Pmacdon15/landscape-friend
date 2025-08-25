@@ -1,4 +1,4 @@
-import { hasStripeApiKeyAction } from '@/lib/DAL/actions/stripe-actions';
+import { hasStripeApiKeyAction } from '@/lib/actions/stripe-actions';
 import { useQuery } from '@tanstack/react-query';
 
 export const useHasStripeApiKey = () => {

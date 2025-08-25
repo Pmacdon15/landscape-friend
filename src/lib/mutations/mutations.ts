@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/DAL/actions/clients-action";
-import { markYardServiced } from "@/lib/DAL/actions/cuts-action";
-import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/DAL/actions/sendEmails-action";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/lib/DAL/actions/stripe-action";
-import revalidatePathAction from "@/lib/DAL/actions/revalidatePath-action";
-import { assignSnowClearing, toggleSnowClient } from "@/lib/DAL/actions/snow-action";
-import { uploadDrawing, uploadImage } from "@/lib/DAL/actions/blobs-action";
+import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
+import { markYardServiced } from "@/lib/actions/cuts-action";
+import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/lib/actions/stripe-action";
+import revalidatePathAction from "@/lib/actions/revalidatePath-action";
+import { assignSnowClearing, toggleSnowClient } from "@/lib/actions/snow-action";
+import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
 import { MarkQuoteProps } from "@/types/types-stripe";
 
 //MARK: Add client
