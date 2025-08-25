@@ -37,19 +37,36 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
 export async function getNovuIds(userIds: string[]): Promise<NovuSubscriberIds> {
     const sql = neon(process.env.DATABASE_URL!);
     try {
+        // Handle empty userIds array
+        if (!userIds.length) {
+            console.log("getNovuIds: No user IDs provided, returning empty mappings.");
+            return {};
+        }
+
+        // Use sql.array to safely pass the userIds array
         const result = await sql`
             SELECT id, novu_subscriber_id 
             FROM users 
-            WHERE id IN (${userIds})
+            WHERE id IN (${sql.array(userIds)})
         `;
-        const novuIds: { [key: string]: string | null } = {};
+        
+        const novuIds: NovuSubscriberIds = {};
+        // Initialize mappings with null for all userIds
+        userIds.forEach((userId) => {
+            novuIds[userId] = null;
+        });
+
+        // Map query results
         result.forEach((row) => {
             novuIds[row.id] = row.novu_subscriber_id;
         });
+
+        console.log("getNovuIds query result:", result); // Debug: log raw query results
+        console.log("getNovuIds mappings:", novuIds); // Debug: log final mappings
         return novuIds;
     } catch (error) {
-        console.error(error);
-        return {};
+        console.error("Error in getNovuIds:", error);
+        throw error; // Throw error to be caught by caller
     }
 }
 //MARK: Fetch Customer names from stripe id
