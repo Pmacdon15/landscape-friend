@@ -4,11 +4,11 @@ import "./globals.css";
 import Header from "../components/ui/header/header";
 import { ClerkProvider } from '@clerk/nextjs'
 import PageContainer from "../components/ui/containers/page-container";
-import Providers from "../components/providers/providers";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
 import FCMProvider from "@/components/providers/fcm-provider";
 import HeaderHeader from "@/components/ui/header/header-header";
+import QueryProviders from "../components/providers/query-providers";
 
 
 export const experimental_ppr = true
@@ -37,7 +37,7 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider>
-      <Providers>
+      <QueryProviders>
         <FCMProvider>
           <html lang="en">
             <body
@@ -49,7 +49,6 @@ export default async function RootLayout({
               }}
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-
               <Header>
                 <HeaderHeader />
               </Header>
@@ -61,7 +60,7 @@ export default async function RootLayout({
             </body>
           </html >
         </FCMProvider>
-      </Providers>
+      </QueryProviders>
     </ClerkProvider>
   );
 }
