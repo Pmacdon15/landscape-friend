@@ -13,7 +13,7 @@ export async function updatedStripeAPIKeyDb(data: z.infer<typeof schemaUpdateAPI
       api_key = EXCLUDED.api_key     
     RETURNING *;
 `);
-    console.log("Result: ", result)
+    // console.log("Result: ", result)
     return { success: true, message: 'API key added successfully' };
   } catch (e) {
     console.error('Error adding API key:', e);
@@ -43,7 +43,7 @@ export async function storeWebhookSecretDb(orgId: string, webhookSecret: string)
     WHERE organization_id = ${orgId}
     RETURNING *;
 `);
-    console.log("Result: ", result)
+    // console.log("Result: ", result)
     return { success: true, message: 'Webhook secret stored successfully' };
   } catch (e) {
     console.error('Error storing webhook secret:', e);

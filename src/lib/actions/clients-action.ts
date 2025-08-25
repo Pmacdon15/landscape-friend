@@ -25,7 +25,7 @@ export async function addClient(formData: FormData) {
         organization_id: organizationId
     });
 
-    console.log("validatedFields: ", validatedFields)
+    // console.log("validatedFields: ", validatedFields)
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
