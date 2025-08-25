@@ -49,6 +49,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
     console.log("membersOfOrg:", membersOfOrg)
     console.log("adminMembers:", adminMembers)
     console.log("adminUserIds:", adminUserIds)
+    console.log("novuSubscriberIds:", novuSubscriberIds)
     console.log("adminSubscriberIds:", adminSubscriberIds)
     
     try {
