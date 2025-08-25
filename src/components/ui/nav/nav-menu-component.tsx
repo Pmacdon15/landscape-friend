@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import { useMediaQuery } from "@/lib/hooks/hooks";
 import Link from "next/link";
-import { use } from "react";
+import { Suspense, use } from "react";
 
 export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
     const date = new Date();
@@ -36,7 +36,8 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     <Link href={{
                                         pathname: '/lists/cutting',
                                         query: { date: today },
-                                    }}>
+                                    }}
+                                        prefetch={false}>
                                         <div className="font-medium">Cutting List</div>
                                         <div className="text-muted-foreground">
                                             Track cutting days and clients.
@@ -47,7 +48,9 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     <Link href={{
                                         pathname: '/lists/clearing',
                                         query: { date: today, assigned: userId },
-                                    }} as={`/lists/clearing?date=${today}&assigned=${userId}`}>
+                                    }} as={`/lists/clearing?date=${today}&assigned=${userId}`
+                                    }
+                                        prefetch={false}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">
                                             Track clients that need to be cleared.

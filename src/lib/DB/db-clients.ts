@@ -99,7 +99,7 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
   const result = await (sql`
     WITH deleted_account AS (
       DELETE FROM accounts
-      WHERE             customerid = ${data.client_id}::text AND client_id IN (
+      WHERE client_id = ${data.client_id} AND client_id IN (
         SELECT id FROM clients WHERE organization_id = ${organization_id}
       )
       RETURNING *

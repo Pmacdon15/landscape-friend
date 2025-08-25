@@ -12,6 +12,7 @@ import { Toaster } from '@/components/ui/sonner';
 import FCMProvider from "@/components/providers/fcm-provider";
 import { hasStripAPIKey } from "@/DAL/dal/stripe-dal";
 
+export const experimental_ppr = true
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
