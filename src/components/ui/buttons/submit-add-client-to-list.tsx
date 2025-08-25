@@ -2,6 +2,7 @@
 
 import { useAddClient } from "@/mutations/mutations";
 import { Button } from "../button";
+import Spinner from "../spinner";
 
 export default function SubmitAddClientToList() {
     const { mutate, isPending, isError } = useAddClient();
@@ -13,7 +14,7 @@ export default function SubmitAddClientToList() {
                 type="submit"
                 formAction={mutate}
                 disabled={isPending}
-            >{!isPending ? "Submit" : "Pending"}</Button>
+            >{!isPending ? "Submit" : <div className="flex gap-4 justify-center"> Submitting... <Spinner /></div>}</Button>
             {isError && <p className="text-red-500">Error Submitting</p>}
         </>
     );
