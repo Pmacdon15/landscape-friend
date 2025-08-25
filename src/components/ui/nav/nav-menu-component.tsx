@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import { useMediaQuery } from "@/lib/hooks/hooks";
 import Link from "next/link";
-import { use } from "react";
+import { Suspense, use } from "react";
 
 export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
     const date = new Date();
@@ -33,15 +33,17 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Link href={{
-                                        pathname: '/lists/cutting',
-                                        query: { date: today },
-                                    }}>
-                                        <div className="font-medium">Cutting List</div>
-                                        <div className="text-muted-foreground">
-                                            Track cutting days and clients.
-                                        </div>
-                                    </Link>
+                                    <Suspense>
+                                        <Link href={{
+                                            pathname: '/lists/cutting',
+                                            query: { date: today },
+                                        }}>
+                                            <div className="font-medium">Cutting List</div>
+                                            <div className="text-muted-foreground">
+                                                Track cutting days and clients.
+                                            </div>
+                                        </Link>
+                                    </Suspense>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
                                     <Link href={{
