@@ -20,7 +20,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
                         <OrganizationSwitcher />
                     </SignedIn>
                 </div>
-                {isPending && user && <Spinner />}
+                {isPending && user && <Spinner variant='notification-menu' />}
                 {novuId && !isPending &&
                     <Inbox
                         applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
