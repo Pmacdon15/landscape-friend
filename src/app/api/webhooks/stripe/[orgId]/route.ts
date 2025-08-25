@@ -6,9 +6,9 @@ import { getStripeInstance } from '@/lib/dal/stripe-dal';
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { orgId: string } }
+    { params }: { params: Promise<{ orgId: string }> }
 ) {
-    const orgId = params.orgId;
+    const { orgId } = await params;
 
     if (!orgId) {
         return new NextResponse('Organization ID is required', { status: 400 });
@@ -23,6 +23,7 @@ export async function POST(
     const webhookSecret = webhookSecretResult.webhook_secret;
 
     const body = await req.text();
+    // Reverted to original and correct usage: headers() returns a Promise and needs to be awaited
     const sig = (await headers()).get('stripe-signature') as string;
 
     let event: Stripe.Event;
@@ -41,6 +42,11 @@ export async function POST(
             const invoicePaid = event.data.object as Stripe.Invoice;
             console.log('Payment received for invoice:', invoicePaid.id);
             // Add your business logic here for when an invoice is paid
+            break;
+        case 'checkout.session.completed':
+            const checkoutSession = event.data.object as Stripe.Checkout.Session;
+            console.log('Checkout session completed:', checkoutSession.id);
+            // Add your business logic here for when a checkout session is completed
             break;
         // Add other event types to handle here
         default:
