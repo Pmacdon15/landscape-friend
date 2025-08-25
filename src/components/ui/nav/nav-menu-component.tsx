@@ -33,18 +33,16 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
-                                    <Suspense>
-                                        <Link href={{
-                                            pathname: '/lists/cutting',
-                                            query: { date: today },
-                                        }}
-                                            prefetch={false}>
-                                            <div className="font-medium">Cutting List</div>
-                                            <div className="text-muted-foreground">
-                                                Track cutting days and clients.
-                                            </div>
-                                        </Link>
-                                    </Suspense>
+                                    <Link href={{
+                                        pathname: '/lists/cutting',
+                                        query: { date: today },
+                                    }}
+                                        prefetch={false}>
+                                        <div className="font-medium">Cutting List</div>
+                                        <div className="text-muted-foreground">
+                                            Track cutting days and clients.
+                                        </div>
+                                    </Link>
                                 </NavigationMenuLink>
                                 <NavigationMenuLink asChild>
                                     <Link href={{
