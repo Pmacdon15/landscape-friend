@@ -30,8 +30,9 @@ export async function POST(
     try {
         const stripe = await getStripeInstance()
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
-    } catch (err: any) {
-        return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
+    } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        return new NextResponse(`Webhook Error: ${errorMessage}`, { status: 400 });
     }
 
     // Handle the event

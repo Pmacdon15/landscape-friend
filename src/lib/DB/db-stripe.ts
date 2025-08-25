@@ -6,7 +6,7 @@ import z from "zod";
 export async function updatedStripeAPIKeyDb(data: z.infer<typeof schemaUpdateAPI>, orgId: string) {
   const sql = neon(process.env.DATABASE_URL!);
   try {
-    const result = await (sql`
+    await (sql`
     INSERT INTO stripe_api_keys (organization_id, api_key)
     VALUES (${orgId}, ${data.APIKey})
     ON CONFLICT (organization_id) DO UPDATE SET
@@ -37,7 +37,7 @@ export async function fetchStripAPIKeyDb(orgId: string) {
 export async function storeWebhookSecretDb(orgId: string, webhookSecret: string) {
   const sql = neon(process.env.DATABASE_URL!);
   try {
-    const result = await (sql`
+    await (sql`
     UPDATE stripe_api_keys
     SET webhook_secret = ${webhookSecret}
     WHERE organization_id = ${orgId}
