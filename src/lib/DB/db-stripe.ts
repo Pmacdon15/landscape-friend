@@ -32,3 +32,21 @@ export async function fetchStripAPIKeyDb(orgId: string) {
   `) as { api_key: string }[];
   return result[0];
 }
+
+//MARK: Store Webhook Secret
+export async function storeWebhookSecretDb(orgId: string, webhookSecret: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  try {
+    const result = await (sql`
+    UPDATE stripe_api_keys
+    SET webhook_secret = ${webhookSecret}
+    WHERE organization_id = ${orgId}
+    RETURNING *;
+`);
+    console.log("Result: ", result)
+    return { success: true, message: 'Webhook secret stored successfully' };
+  } catch (e) {
+    console.error('Error storing webhook secret:', e);
+    return { success: false, message: e instanceof Error ? e.message : 'Failed to store webhook secret' };
+  }
+}

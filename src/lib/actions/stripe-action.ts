@@ -12,6 +12,7 @@ import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
 import { getStripeInstance } from "../dal/stripe-dal";
+import { hasStripAPIKey } from "../dal/stripe-dal";
 
 //MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
@@ -22,6 +23,8 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
         stream.on('error', reject);
     });
 };
+
+import { createStripeWebhook } from "../server-funtions/stripe-utils";
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
@@ -40,6 +43,9 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     try {
         const result = await updatedStripeAPIKeyDb(validatedFields.data, (orgId || userId)!)
         if (!result.success) throw new Error(result.message);
+
+        await createStripeWebhook(validatedFields.data.APIKey, orgId || userId!);
+
         if (novuId) await triggerNotifaction(novuId.UserNovuId, "stripe-api-key-updated")
         return result;
     } catch (e: unknown) {
@@ -346,4 +352,11 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     } catch (e) {
         throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
+}
+
+
+
+
+export async function hasStripeApiKeyAction(): Promise<boolean> {
+    return await hasStripAPIKey();
 }

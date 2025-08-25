@@ -1,5 +1,7 @@
+'use server'
 import Stripe from 'stripe';
 import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/db-clients';
+import { storeWebhookSecretDb } from '@/lib/DB/db-stripe';
 
 let stripe: Stripe | null = null;
 
@@ -21,9 +23,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     address: string,
     organization_id: string | undefined
 ): Promise<string> {
-    console.log("findOrCreateStripeCustomerAndLinkClient called with:", {
-        clientName, clientEmail, phoneNumber, address, organization_id
-    });
+
     const stripe = getStripeInstance();
 
     const effectiveOrgId = organization_id;
@@ -88,4 +88,30 @@ export async function findOrCreateStripeCustomerAndLinkClient(
         }
     }
     return customerId;
+}
+
+export async function createStripeWebhook( apiKey: string, organizationId: string): Promise<void> {
+    const stripe = new Stripe(apiKey);
+    const webhookUrl = `https://landscapefriend.com/api/webhooks/stripe/${organizationId}`;
+
+    try {
+        const webhook = await stripe.webhookEndpoints.create({
+            url: webhookUrl,
+            enabled_events: [
+                'invoice.paid',
+                'invoice.payment_failed',
+                'customer.subscription.created',
+                'customer.subscription.deleted',
+            ],
+        });
+        // console.log("Stripe webhook created:", webhook);
+        console.log("Stripe webhook secret:", webhook.secret);
+        if (webhook.secret) {
+            await storeWebhookSecretDb(organizationId, webhook.secret);
+        }
+        // return webhook;
+    } catch (error) {
+        console.error("Error creating Stripe webhook:", error);
+        throw error;
+    }
 }

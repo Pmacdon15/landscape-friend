@@ -42,6 +42,7 @@ CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,
     organization_id VARCHAR(253) UNIQUE NOT NULL,
+    webhook_secret VARCHAR(253) NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE
 );
 

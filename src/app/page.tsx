@@ -4,9 +4,10 @@ import Link from "next/link";
 import "@/animations/landing-page.css";
 import Image from "next/image";
 import FillFormContainer from "@/components/ui/containers/fill-form-container";
+// import TestAddStripeWebHook from "@/components/ui/test/test-add-stripe-webhook";
 
 export default function Home() {
- 
+
   return (
     <>
       <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible">
@@ -56,7 +57,7 @@ export default function Home() {
                   </p>
                 </FillFormContainer>
               </FormContainer>
-              {/* <TestAddNovuSubButton /> */}
+              {/* <TestAddStripeWebHook /> */}
             </div>
           </div>
         </div>
