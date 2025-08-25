@@ -1,5 +1,5 @@
 'use client'
-import { useUpdateStripeAPIKey } from "@/mutations/mutations";
+import { useUpdateStripeAPIKey } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 
 export default function UpdateStripeApiKeyButton() {

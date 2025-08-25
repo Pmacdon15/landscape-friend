@@ -1,12 +1,12 @@
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { fetchCuttingClients } from "@/DAL/dal/clients-dal";
-import { isOrgAdmin } from "@/lib/clerk";
+import { fetchCuttingClients } from "@/lib/dal/clients-dal";
+import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
-import { parseClientListParams } from "@/lib/params";
+import { parseClientListParams } from "@/lib/server-funtions/params";
 import { SearchParams } from "@/types/types-params";
 
 export default async function page({ searchParams }: { searchParams: Promise<SearchParams>; }) {

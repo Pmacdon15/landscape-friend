@@ -1,5 +1,5 @@
 'use client'
-import { useResendInvoice, useMarkInvoicePaid, useMarkInvoiceVoid } from "@/mutations/mutations";
+import { useResendInvoice, useMarkInvoicePaid, useMarkInvoiceVoid } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 
 export default function ManageInvoiceButton({

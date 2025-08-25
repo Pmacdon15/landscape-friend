@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../novu";
+import { addNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../server-funtions/novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
 

@@ -1,5 +1,5 @@
 'use client'
-import { useSendNewsLetter } from "@/mutations/mutations";
+import { useSendNewsLetter } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 
 export default function SendNewsLetterButton() {

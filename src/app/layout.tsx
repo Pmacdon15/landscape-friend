@@ -10,7 +10,7 @@ import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
 import FCMProvider from "@/components/providers/fcm-provider";
-import { hasStripAPIKey } from "@/DAL/dal/stripe-dal";
+
 
 export const experimental_ppr = true
 
@@ -35,7 +35,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const hasStripAPIKeyPromise = hasStripAPIKey()
+  
   return (
     <ClerkProvider>
       <Providers>
@@ -51,7 +51,7 @@ export default async function RootLayout({
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
               <Suspense fallback={<HeaderFallBack />}>
-                <Header hasStripAPIKeyPromise={hasStripAPIKeyPromise} />
+                <Header  />
               </Suspense>
               <PageContainer>
                 {children}

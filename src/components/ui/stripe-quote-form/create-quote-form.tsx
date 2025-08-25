@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCreateStripeQuote } from '@/mutations/mutations';
+import { useCreateStripeQuote } from '@/lib/mutations/mutations';
 import { Button } from '@/components/ui/button';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

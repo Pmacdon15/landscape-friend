@@ -1,7 +1,7 @@
-import { sayHello } from '@/DAL/dal/novu-dal';
+import { sayHello } from '@/lib/dal/novu-dal';
 import { Novu } from '@novu/api';
 import { getOrgMembers } from './clerk';
-import { getNovuIds } from './DB/db-clients';
+import { getNovuIds } from '../DB/db-clients';
 
 export async function addNovuSubscriber(
     subscriberId: string,

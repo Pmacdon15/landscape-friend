@@ -1,6 +1,6 @@
 'use client'
 
-import { useAddClient } from "@/mutations/mutations";
+import { useAddClient } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 import Spinner from "../spinner";
 

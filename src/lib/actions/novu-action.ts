@@ -1,9 +1,11 @@
 'use server'
-
+import { fetchNovuId } from "../dal/user-dal";
 import { Novu } from '@novu/api';
 import { ChatOrPushProviderEnum } from "@novu/api/models/components";
-import { fetchNovuId } from '../dal/user-dal';
 
+export async function fetchNovuIdAction(userId: string) {
+    return await fetchNovuId(userId);
+}
 
 const novu = new Novu({
   secretKey: process.env.NOVU_SECRET_KEY,

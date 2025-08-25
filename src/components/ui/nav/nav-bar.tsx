@@ -3,10 +3,10 @@ import * as React from "react"
 import { Button } from "../button"
 import { Suspense, useState } from "react"
 import { Menu } from "lucide-react"
-
 import NavigationMenuComponent from "./nav-menu-component"
 
-export function NavBar({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
+
+export function NavBar({ userId }: { userId: string }) {
 
     const [showNav, setShowNav] = useState(false)
 
@@ -16,10 +16,10 @@ export function NavBar({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: str
                 <Button variant="outline" onClick={() => setShowNav(!showNav)} className="p-2 w-9">
                     <Menu size={24} />
                 </Button>
-                {showNav && <Suspense><NavigationMenuComponent hasStripAPIKeyPromise={hasStripAPIKeyPromise} userId={userId} isAdmin={isAdmin} /></Suspense>}
+                {showNav && <Suspense><NavigationMenuComponent userId={userId} /></Suspense>}
             </div>
 
-            <div className="hidden md:block"><Suspense><NavigationMenuComponent hasStripAPIKeyPromise={hasStripAPIKeyPromise} userId={userId} isAdmin={isAdmin} /></Suspense></div>
+            <div className="hidden md:block"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
         </>
     )
 }

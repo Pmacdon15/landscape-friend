@@ -1,5 +1,5 @@
 'use client'
-import { useMarkYardServiced } from "@/mutations/mutations";
+import { useMarkYardServiced } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 
 export default function MarkYardServiced({ clientId, serviceDate, snow = false }: { clientId: number, serviceDate: Date, snow?: boolean }) {

@@ -1,6 +1,6 @@
 'use client'
 import { useDebouncedMutation } from "@/lib/hooks/hooks";
-import { useUpdateClientPricePer } from "@/mutations/mutations";
+import { useUpdateClientPricePer } from "@/lib/mutations/mutations";
 import ReusableNumberInput from "../inputs/reusable-number-input";
 import { Client } from "@/types/types-clients";
 
