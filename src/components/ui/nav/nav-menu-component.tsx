@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/navigation-menu"
 import { useMediaQuery } from "@/lib/hooks/hooks";
 import Link from "next/link";
-import { Suspense, use } from "react";
+import { use } from "react";
 
 export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
     const date = new Date();
