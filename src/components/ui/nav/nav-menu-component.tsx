@@ -37,7 +37,8 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                         <Link href={{
                                             pathname: '/lists/cutting',
                                             query: { date: today },
-                                        }}>
+                                        }}
+                                            prefetch={false}>
                                             <div className="font-medium">Cutting List</div>
                                             <div className="text-muted-foreground">
                                                 Track cutting days and clients.
@@ -49,7 +50,9 @@ export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKe
                                     <Link href={{
                                         pathname: '/lists/clearing',
                                         query: { date: today, assigned: userId },
-                                    }} as={`/lists/clearing?date=${today}&assigned=${userId}`}>
+                                    }} as={`/lists/clearing?date=${today}&assigned=${userId}`
+                                    }
+                                        prefetch={false}>
                                         <div className="font-medium">Clearing List</div>
                                         <div className="text-muted-foreground">
                                             Track clients that need to be cleared.
