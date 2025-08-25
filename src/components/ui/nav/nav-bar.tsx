@@ -1,11 +1,10 @@
 "use client"
 import * as React from "react"
 import { Button } from "../button"
-import { Suspense, use, useState } from "react"
+import { Suspense, useState } from "react"
 import { Menu } from "lucide-react"
-
 import NavigationMenuComponent from "./nav-menu-component"
-import { UserNovuId } from "@/types/types-novu"
+
 
 export function NavBar({ userId }: { userId: string }) {
 

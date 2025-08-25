@@ -1,4 +1,4 @@
-import { fetchGeocode } from "@/lib/geocode";
+import { fetchGeocode } from "@/lib/server-funtions/geocode";
 
 
 export default async function MapComponent({ address }: { address: string }) {

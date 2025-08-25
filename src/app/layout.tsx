@@ -10,7 +10,7 @@ import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
 import FCMProvider from "@/components/providers/fcm-provider";
-import { hasStripAPIKey } from "@/DAL/dal/stripe-dal";
+
 
 export const experimental_ppr = true
 

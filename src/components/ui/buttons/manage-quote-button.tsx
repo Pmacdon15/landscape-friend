@@ -1,5 +1,5 @@
 'use client'
-import { useMarkQuote } from "@/mutations/mutations";
+import { useMarkQuote } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 import { MarkQuoteProps } from "@/types/types-stripe";
 

@@ -4,11 +4,11 @@ import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
-import { fetchOrgMembers } from "@/DAL/dal/dal-org";
-import { isOrgAdmin } from "@/lib/clerk";
+import { fetchOrgMembers } from "@/lib/DAL/dal/dal-org";
+import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { Suspense } from "react";
-import { parseClientListParams } from "@/lib/params";
-import { fetchAllClients } from "@/DAL/dal/clients-dal";
+import { parseClientListParams } from "@/lib/server-funtions/params";
+import { fetchAllClients } from "@/lib/DAL/dal/clients-dal";
 import { SearchParams } from "@/types/types-params";
 
 export default async function page({

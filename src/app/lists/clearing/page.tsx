@@ -2,11 +2,11 @@ import SearchForm from "@/components/ui/client-list/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
-import { fetchSnowClearingClients } from "@/DAL/dal/clients-dal";
-import { isOrgAdmin } from "@/lib/clerk";
+import { fetchSnowClearingClients } from "@/lib/DAL/dal/clients-dal";
+import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { parseClientListParams } from "@/lib/params";
+import { parseClientListParams } from "@/lib/server-funtions/params";
 import { SearchParams } from "@/types/types-params";
 
 

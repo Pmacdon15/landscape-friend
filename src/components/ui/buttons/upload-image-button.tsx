@@ -1,5 +1,5 @@
 'use client'
-import { useUploadImage } from "@/mutations/mutations";
+import { useUploadImage } from "@/lib/mutations/mutations";
 import { toast } from "sonner";
 import Spinner from "../spinner";
 

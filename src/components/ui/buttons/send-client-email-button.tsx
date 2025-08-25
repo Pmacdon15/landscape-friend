@@ -1,5 +1,5 @@
 'use client'
-import { useSendEmailWithTemplate } from "@/mutations/mutations";
+import { useSendEmailWithTemplate } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 
 export default function SendClientEmailButton({

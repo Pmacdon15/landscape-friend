@@ -1,5 +1,5 @@
 'use client'
-import { addNovuSubscriber } from '@/lib/novu';
+import { addNovuSubscriber } from '@/lib/server-funtions/novu';
 import { v4 as uuidv4 } from 'uuid';
 export default function TestAddNovuSubButton() {
     const subscriberId = uuidv4();

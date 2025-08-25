@@ -1,6 +1,6 @@
 'use server'
 import { toggleSnowClientDb, assignSnowClearingDb } from "@/lib/DB/db-clients";
-import { isOrgAdmin } from "@/lib/clerk";
+import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { schemaToggleSnowClient, schemaAssignSnowClearing } from "@/lib/zod/schemas";
 
 export async function toggleSnowClient(clientId: number) {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchGeocode } from '@/lib/geocode';
+import { fetchGeocode } from '@/lib/server-funtions/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/types-google-map-iframe';
 import { MaterialField } from '@/types/types-components';

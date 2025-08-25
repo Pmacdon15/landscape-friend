@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
-import { useUploadDrawing } from "@/mutations/mutations";
+import { useUploadDrawing } from "@/lib/mutations/mutations";
 import { toast } from "sonner";
 import { Client } from "@/types/types-clients";
 declare global {

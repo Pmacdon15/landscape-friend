@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import HeaderEmail from '@/components/ui/emails/header-email';
-import { schemaSendEmail } from "./zod/schemas";
+import { schemaSendEmail } from "../zod/schemas";
 import z from "zod";
 import type React from 'react';
 

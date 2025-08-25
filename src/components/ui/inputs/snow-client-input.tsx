@@ -1,5 +1,5 @@
 'use client'
-import { useAssignSnowClearing, useToggleSnowClient } from "@/mutations/mutations";
+import { useAssignSnowClearing, useToggleSnowClient } from "@/lib/mutations/mutations";
 import { use } from "react";
 import PricePerUpdateInput from "../client-list/price-per-update-input";
 import { Client } from "@/types/types-clients";

@@ -1,12 +1,12 @@
 'use server'
 import { markPaidDb } from "@/lib/DB/db-clients";
-import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/stripe-utils";
-import { isOrgAdmin } from "@/lib/clerk";
+import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
+import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
-import { sendEmailWithTemplate } from '@/DAL/actions/sendEmails-action';
+import { sendEmailWithTemplate } from '@/lib/DAL/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
-import { formatCompanyName } from "@/lib/resend";
+import { formatCompanyName } from "@/lib/server-funtions/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
 import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
