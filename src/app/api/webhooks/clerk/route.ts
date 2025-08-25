@@ -21,8 +21,7 @@ export async function POST(req: NextRequest) {
                     const plan = evt.data.plan.slug;
                     const orgId = evt.data.payer?.organization_id;
                     if (orgId) {
-                        await handleSubscriptionUpdate(orgId, plan);
-                        await triggerNotificationSendToAdmin(orgId, "subscription-added")
+                        await handleSubscriptionUpdate(orgId, plan);                       
                     }
                 }
                 break;

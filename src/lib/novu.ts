@@ -45,12 +45,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
     const adminMembers = membersOfOrg.filter((member) => member.role === 'org:admin');
     const adminUserIds = adminMembers.map((admin) => admin.userId);
     const novuSubscriberIds = await getNovuIds(adminUserIds);
-    const adminSubscriberIds = Object.values(novuSubscriberIds).filter((id) => id !== null);
-    console.log("membersOfOrg:", membersOfOrg)
-    console.log("adminMembers:", adminMembers)
-    console.log("adminUserIds:", adminUserIds)
-    console.log("novuSubscriberIds:", novuSubscriberIds)
-    console.log("adminSubscriberIds:", adminSubscriberIds)
+    const adminSubscriberIds = Object.values(novuSubscriberIds).filter((id) => id !== null);    
     
     try {
         const result = await novu.trigger({

@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber, removeNovuSubscriber } from "../novu";
+import { addNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
 
@@ -77,6 +77,7 @@ export async function handleSubscriptionUpdate(orgId: string, plan: string) {
         await clerk.organizations.updateOrganization(orgId, {
             maxAllowedMemberships: 4
         });
+        await triggerNotificationSendToAdmin(orgId, "subscription-added")
     }
     // else if (plan === 'pro_25_people_org') {
     //     await clerk.organizations.updateOrganization(orgId, {
