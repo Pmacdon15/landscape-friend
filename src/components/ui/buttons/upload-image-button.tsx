@@ -25,7 +25,7 @@ export default function UploadImageButton({ clientId, setView }: { clientId: num
                 }`
             }
         >
-            {isPending ? <div className="flex gap-8 justify-center">Uploading...<Spinner /></div> : "Upload"}
+            {isPending ? <div className="flex md:gap-8 justify-center">Uploading...<Spinner /></div> : "Upload"}
         </button >
     );
 }
