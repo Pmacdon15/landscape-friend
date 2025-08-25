@@ -10,6 +10,7 @@ import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
 import FCMProvider from "@/components/providers/fcm-provider";
+import HeaderHeader from "@/components/ui/header/header-header";
 
 
 export const experimental_ppr = true
@@ -35,7 +36,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+
   return (
     <ClerkProvider>
       <Providers>
@@ -51,7 +52,9 @@ export default async function RootLayout({
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
               <Suspense fallback={<HeaderFallBack />}>
-                <Header  />
+                <Header  >
+                  <HeaderHeader />
+                </Header>
               </Suspense>
               <PageContainer>
                 {children}
