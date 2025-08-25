@@ -50,3 +50,15 @@ export async function storeWebhookSecretDb(orgId: string, webhookSecret: string)
     return { success: false, message: e instanceof Error ? e.message : 'Failed to store webhook secret' };
   }
 }
+
+//MARK: Fetch Webhook Secret
+export async function fetchWebhookSecretDb(orgId: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  const result = await (sql`
+    SELECT 
+      webhook_secret
+    FROM stripe_api_keys 
+    WHERE organization_id = ${orgId}
+  `) as { webhook_secret: string }[];
+  return result[0];
+}

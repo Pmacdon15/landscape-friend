@@ -90,11 +90,19 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     return customerId;
 }
 
-export async function createStripeWebhook( apiKey: string, organizationId: string): Promise<void> {
+export async function createStripeWebhook(apiKey: string, organizationId: string): Promise<void> {
     const stripe = new Stripe(apiKey);
     const webhookUrl = `https://landscapefriend.com/api/webhooks/stripe/${organizationId}`;
 
     try {
+        const webhooks = await stripe.webhookEndpoints.list();
+        const existingWebhook = webhooks.data.find(webhook => webhook.url === webhookUrl);
+
+        if (existingWebhook) {
+            await stripe.webhookEndpoints.del(existingWebhook.id);
+            console.log("Existing Stripe webhook deleted:", existingWebhook.id);
+        }
+
         const webhook = await stripe.webhookEndpoints.create({
             url: webhookUrl,
             enabled_events: [
