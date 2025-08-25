@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
     return (
-        <footer className="bg-green-900 text-white py-8 px-4 mt-auto">
+        <footer className="flex flex-col justify-center bg-green-900 text-white py-8 px-4 mt-auto">
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                     <h3 className="text-lg font-bold mb-4">Landscape Friend</h3>
@@ -29,8 +29,8 @@ export default function Footer() {
                     <p className="text-gray-400">
                         Have questions or need help?
                     </p>
-                    <a href="mailto:pmacdonald15@gmail.com" className="text-blue-400 hover:text-blue-300">
-                        pmacdonald15@gmail.com
+                    <a href="mailto:support@landscapefriend.com" className="text-blue-400 hover:text-blue-300">
+                        support@landscapefriend.com
                     </a>
                 </div>
             </div>
