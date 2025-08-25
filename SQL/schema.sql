@@ -52,8 +52,8 @@ CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id),
-    CONSTRAINT unique_organization_id UNIQUE (organization_id)
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id)
+    -- CONSTRAINT unique_organization_id UNIQUE (organization_id)
 );
 
 CREATE TABLE accounts (
@@ -121,7 +121,11 @@ CREATE TABLE IF NOT EXISTS images (
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
--- SELECT * FROM users;
+SELECT * FROM users;
+
+-- SELECT id, novu_subscriber_id 
+--             FROM users 
+--             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;

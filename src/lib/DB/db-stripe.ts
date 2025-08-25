@@ -9,13 +9,11 @@ export async function updatedStripeAPIKeyDb(data: z.infer<typeof schemaUpdateAPI
         await (sql`
       INSERT INTO stripe_api_keys (organization_id, api_key)
       VALUES (${orgId}, ${data.APIKey})
-      ON CONFLICT ON CONSTRAINT unique_organization_id DO UPDATE
-      SET api_key = ${data.APIKey}
     `);
-        return { success: true, message: 'API key updated successfully' };
+        return { success: true, message: 'API key added successfully' };
     } catch (e) {
-        console.error('Error updating API key:', e);
-        return { success: false, message: e instanceof Error ? e.message : 'Failed to update API key' };
+        console.error('Error adding API key:', e);
+        return { success: false, message: e instanceof Error ? e.message : 'Failed to add API key' };
     }
 }
 

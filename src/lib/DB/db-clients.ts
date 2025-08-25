@@ -2,6 +2,7 @@ import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaDe
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { Account, Client, CustomerName } from "@/types/types-clients";
+import { NovuSubscriberIds } from "@/types/types-novu";
 
 //MARK: Add clients
 
@@ -32,7 +33,24 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
     throw error;
   }
 }
-
+//MARK:Fetch novu id 
+export async function getNovuIds(userIds: string[]): Promise<NovuSubscriberIds> {
+  const sql = neon(process.env.DATABASE_URL!);
+  try {
+    const result = await sql.query(
+      'SELECT id, novu_subscriber_id FROM users WHERE id = ANY($1)',
+      [userIds]
+    );
+    const novuIds: { [key: string]: string | null } = {};
+    result.forEach((row) => {
+      novuIds[row.id] = row.novu_subscriber_id;
+    });
+    return novuIds;
+  } catch (error) {
+    console.error(error);
+    return {};
+  }
+}
 //MARK: Fetch Customer names from stripe id
 export async function fetchStripeCustomerNamesDB(organization_id: string, stripeCusomterIdList: string[]): Promise<CustomerName[]> {
   const sql = neon(`${process.env.DATABASE_URL}`);

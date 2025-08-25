@@ -1,6 +1,7 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber } from "./novu";
+import { addNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../novu";
 import { v4 as uuidv4 } from 'uuid';
+import { clerkClient } from "@clerk/nextjs/server";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);
@@ -24,6 +25,31 @@ export async function handleUserCreated(userId: string, userName: string, userEm
         }
     }
 }
+export async function handleUserDeleted(userId: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+
+    // Delete the user from the database
+    const deleteResult = await sql`
+        DELETE FROM users
+        WHERE id = ${userId}
+        RETURNING *;
+    `;
+
+    if (deleteResult.length > 0) {
+        console.log(`User ${userId} deleted from database.`);
+
+        // Remove the user from Novu
+        const user = deleteResult[0];
+        if (user.novu_subscriber_id) {
+            const result = await removeNovuSubscriber(user.novu_subscriber_id);
+            if (!result) {
+                console.error(`Failed to remove user ${userId} from Novu.`);
+            }
+        }
+    } else {
+        console.log(`User ${userId} not found in database.`);
+    }
+}
 
 export async function handleOrganizationCreated(orgId: string, orgName: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
@@ -36,7 +62,7 @@ export async function handleOrganizationCreated(orgId: string, orgName: string) 
 export async function handleOrganizationDeleted(orgId: string) {
     const sql = neon(`${process.env.DATABASE_URL}`);
     await sql`
-        DELETE FROM price_per_cut
+        DELETE FROM organizations
         WHERE organization_id = ${orgId}        
     `;
 }
@@ -45,6 +71,23 @@ export async function handleSubscriptionUpdate(orgId: string, plan: string) {
     // Placeholder for subscription update logic
     console.log(`Subscription update for organization ${orgId} with plan ${plan}`);
     // You would typically update your database here based on the subscription plan
+    const clerk = await clerkClient();
+
+    if (plan === 'new_business_plan') {
+        await clerk.organizations.updateOrganization(orgId, {
+            maxAllowedMemberships: 4
+        });
+        await triggerNotificationSendToAdmin(orgId, "subscription-added")
+    }
+    // else if (plan === 'pro_25_people_org') {
+    //     await clerk.organizations.updateOrganization(orgId, {
+    //         maxAllowedMemberships: 25
+    //     })
+    else {
+        await clerk.organizations.updateOrganization(orgId, {
+            maxAllowedMemberships: 1
+        })
+    }
 }
 
 

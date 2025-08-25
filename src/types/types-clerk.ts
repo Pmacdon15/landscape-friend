@@ -18,6 +18,7 @@ export interface UserCreatedEvent {
 
 export interface UserDeletedEvent {
     id: string;
+    userId: string
 }
 export interface OrganizationCreatedEvent {
     id: string;
@@ -33,4 +34,5 @@ export interface WebhookEvent {
 export interface OrgMember {
     userId: string;
     userName: string | null;
+    role?: string
 }

@@ -1,7 +1,8 @@
-import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated } from '@/lib/webhooks';
+import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptionUpdate, handleUserCreated, handleUserDeleted } from '@/lib/webhooks/clerk-webhooks';
 import { OrganizationCreatedEvent, SubscriptionItem, UserCreatedEvent, UserDeletedEvent, WebhookEvent } from '@/types/types-clerk';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
+import { triggerNotificationSendToAdmin } from '@/lib/novu'
 
 function isSubscriptionItem(data: WebhookEvent['data']): data is SubscriptionItem {
     return 'plan' in data && 'slug' in data.plan;
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
                     const plan = evt.data.plan.slug;
                     const orgId = evt.data.payer?.organization_id;
                     if (orgId) {
-                        await handleSubscriptionUpdate(orgId, plan);
+                        await handleSubscriptionUpdate(orgId, plan);                       
                     }
                 }
                 break;
@@ -48,8 +49,9 @@ export async function POST(req: NextRequest) {
             }
 
             case 'user.deleted': {
-                const orgId = (evt.data as UserDeletedEvent).id;
-                await handleOrganizationDeleted(orgId);
+                const id = (evt.data as UserDeletedEvent).id;
+                await handleOrganizationDeleted(id);
+                await handleUserDeleted(id)
                 break;
             }
 

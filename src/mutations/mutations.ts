@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/DAL/actions/clients";
-import { markYardServiced } from "@/DAL/actions/cuts";
-import { sendEmailWithTemplate, sendNewsLetter } from "@/DAL/actions/sendEmails";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/DAL/actions/stripe";
-import revalidatePathAction from "@/DAL/actions/revalidatePath";
-import { assignSnowClearing, toggleSnowClient } from "@/DAL/actions/snow";
-import { uploadDrawing, uploadImage } from "@/DAL/actions/blobs";
+import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/DAL/actions/clients-action";
+import { markYardServiced } from "@/DAL/actions/cuts-action";
+import { sendEmailWithTemplate, sendNewsLetter } from "@/DAL/actions/sendEmails-action";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/DAL/actions/stripe-action";
+import revalidatePathAction from "@/DAL/actions/revalidatePath-action";
+import { assignSnowClearing, toggleSnowClient } from "@/DAL/actions/snow-action";
+import { uploadDrawing, uploadImage } from "@/DAL/actions/blobs-action";
 import { MarkQuoteProps } from "@/types/types-stripe";
 
 //MARK: Add client

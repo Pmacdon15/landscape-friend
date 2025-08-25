@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
 import { isOrgAdmin } from "@/lib/clerk";
 import { Inbox } from '@novu/nextjs';
-import { fetchNovuId } from '@/DAL/dal-user';
+import { fetchNovuId } from '@/DAL/dal/user-dal';
 
 export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
     let novuId

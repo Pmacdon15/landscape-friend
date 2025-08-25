@@ -4,13 +4,13 @@ import "./globals.css";
 import Header from "../components/ui/header/header";
 import { ClerkProvider } from '@clerk/nextjs'
 import PageContainer from "../components/ui/containers/page-container";
-import Providers from "../components/Providers";
+import Providers from "../components/providers/providers";
 import { Suspense } from "react";
 import HeaderFallBack from "@/components/ui/fallbacks/header-fallback";
 import Footer from "@/components/ui/footer/footer";
 import { Toaster } from '@/components/ui/sonner';
-import { hasStripAPIKey } from "@/DAL/dal-stripe";
 import FCMProvider from "@/components/providers/fcm-provider";
+import { hasStripAPIKey } from "@/DAL/dal/stripe-dal";
 
 
 const geistSans = Geist({

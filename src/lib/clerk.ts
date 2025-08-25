@@ -1,4 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { OrgMember } from "@/types/types-clerk";
 
 export async function isOrgAdmin(protect = true) {
     let authResult;
@@ -13,4 +14,23 @@ export async function isOrgAdmin(protect = true) {
     if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false;
 
     return { userId, orgId, sessionClaims, isAdmin };
+}
+
+export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
+    if (!orgId) return [];
+    const clerk = await clerkClient();
+    try {
+        const memberships = await clerk.organizations.getOrganizationMembershipList({ organizationId: orgId });
+
+        const members: OrgMember[] = memberships.data.map((membership) => ({
+            userId: membership.publicUserData?.userId || "",
+            userName: (membership.publicUserData?.firstName + " " + membership.publicUserData?.lastName) || "Personal Workspace",
+            role: membership.role
+        }));
+
+        return members;
+    } catch (error) {
+        console.error('Error fetching organization members:', error);
+        return [];
+    }
 }

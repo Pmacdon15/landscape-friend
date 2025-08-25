@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, createContext, useContext, useRef } from 'react';
+import { useState, useEffect, createContext, useContext, useRef, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
 import { useUser } from '@clerk/clerk-react';
@@ -32,9 +32,9 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
     const messagingInstance = useRef<Messaging | null>(null);
     const { user } = useUser();
 
-    const sendTokenToServer = async (token: string, userId: string) => {
+    const sendTokenToServer = useCallback(async (token: string, userId: string) => {
         try {
-            const response = await fetch('/api/register-device', {
+            await fetch('/api/register-device', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,9 +50,9 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
         } catch (error) {
             console.error('Error sending token to server:', error);
         }
-    };
+    }, []);
 
-    const requestNotificationPermissionAndToken = async () => {
+    const requestNotificationPermissionAndToken = useCallback(async () => {
         if (typeof window === 'undefined' || !('Notification' in window)) {
             console.warn('Notifications not supported in this environment.');
             setPermissionStatus('not-supported');
@@ -89,13 +89,13 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                 console.error('An unknown error occurred:', error);
             }
         }
-    };
+    }, [user?.id, sendTokenToServer]);
 
     useEffect(() => {
         if (user?.id && permissionStatus !== 'granted' && permissionStatus !== 'not-supported') {
             requestNotificationPermissionAndToken();
         }
-    }, [user?.id, permissionStatus]);
+    }, [user?.id, permissionStatus, requestNotificationPermissionAndToken]);
 
     useEffect(() => {
         console.log('FCMProvider useEffect triggered.');
@@ -153,7 +153,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, [user?.id]);
+    }, [user?.id, sendTokenToServer]);
 
     const contextValue = {
         permissionStatus,
