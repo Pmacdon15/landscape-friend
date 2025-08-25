@@ -1,23 +1,13 @@
 DROP TABLE IF EXISTS stripe_api_keys CASCADE;
-
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
-
 DROP TABLE IF EXISTS yards_marked_clear CASCADE;
-
 DROP TABLE IF EXISTS snow_clearing_assignments CASCADE;
-
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
-
 DROP TABLE IF EXISTS payments CASCADE;
-
 DROP TABLE IF EXISTS accounts CASCADE;
-
 DROP TABLE IF EXISTS clients CASCADE;
-
 DROP TABLE IF EXISTS organizations CASCADE;
-
 DROP TABLE IF EXISTS users CASCADE;
-
 DROP TABLE IF EXISTS images CASCADE;
 
 CREATE TABLE users (
@@ -31,7 +21,7 @@ CREATE TABLE organizations (
     id SERIAL PRIMARY KEY,
     organization_id VARCHAR(253) NOT NULL UNIQUE,
     organization_name VARCHAR(253) NOT NULL,
-    max_allowed_clients INT NOT NULL DEFAULT 50
+    max_allowed_clinents INT NOT NULL DEFAULT 50
 );
 
 CREATE TABLE clients (
@@ -106,13 +96,16 @@ CREATE TABLE snow_clearing_assignments (
     UNIQUE (client_id)
 );
 
-CREATE TABLE IF NOT EXISTS images (
+CREATE TABLE images (
     id SERIAL PRIMARY KEY,
     customerID VARCHAR(255) NOT NULL,
     imageURL TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     isActive BOOLEAN
 );
+
+
+
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
