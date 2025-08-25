@@ -26,7 +26,7 @@ export default function Page() {
             <FillFormContainer>
                 <ul className="space-y-4">
                     {documentationLinks.map((link, index) => (
-                        <li key={index} className="flex items-start space-x-2 border rounded-sm p-4 hover:scale-101 hover:shadow-2xl bg-white/40">
+                        <li key={index} className="flex items-start space-x-2 border rounded-sm p-4  shadow:sm hover:scale-101 hover:shadow-2xl bg-white/40">
                             <Link href={link.href} className="h-full w-full " >
                                 {link.icon}
                                 <p className="hover:underline font-semibold">{link.text}</p>
