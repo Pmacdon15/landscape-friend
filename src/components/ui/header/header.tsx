@@ -9,7 +9,7 @@ import { Inbox } from '@novu/nextjs';
 import Spinner from '../spinner';
 
 export default function Header() {
-    const { user, isLoaded } = useUser();
+    const { user } = useUser();
     const { data: novuId, isPending } = useGetNovuId(user?.id);
 
     return (
@@ -36,7 +36,7 @@ export default function Header() {
                             <OrganizationSwitcher />
                         </SignedIn>
                     </div>
-                    {isPending && <Spinner />}
+                    {isPending && user && <Spinner />}
                     {novuId && !isPending &&
                         <Inbox
                             applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
