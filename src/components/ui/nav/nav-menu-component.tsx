@@ -7,15 +7,18 @@ import {
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
 import { useMediaQuery } from "@/lib/hooks/hooks";
+import { useGetIsAdmin } from "@/lib/hooks/useClerk";
+import { useHasStripeApiKey } from "@/lib/hooks/useStripe";
 import Link from "next/link";
 import { use } from "react";
 
-export default function NavigationMenuComponent({ userId, isAdmin, hasStripAPIKeyPromise }: { userId: string, isAdmin: boolean, hasStripAPIKeyPromise: Promise<boolean> }) {
+export default function NavigationMenuComponent({ userId, }: { userId: string }) {
     const date = new Date();
     const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
     const isMd = useMediaQuery("(min-width: 768px)");
 
-    const hasStripAPIKey = use(hasStripAPIKeyPromise)
+    const { data: isAdmin } = useGetIsAdmin();
+    const { data: hasStripAPIKey } = useHasStripeApiKey();
     return (
         <NavigationMenu viewport={!isMd}>
             <NavigationMenuList>

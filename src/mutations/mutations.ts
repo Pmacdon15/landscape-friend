@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/DAL/actions/clients-action";
 import { markYardServiced } from "@/DAL/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/DAL/actions/sendEmails-action";
@@ -192,12 +192,15 @@ export const useCreateStripeQuote = () => {
 
 //MARK:Update stripe api key
 export const useUpdateStripeAPIKey = () => {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (formData: FormData) => {
             return updateStripeAPIKey({ formData });
         },
         onSuccess: () => {
             revalidatePathAction("/settings/stripe-api-key")
+            queryClient.invalidateQueries({ queryKey: ['hasStripeApiKey'] });
+
         },
         onError: (error) => {
             console.error('Mutation error:', error);

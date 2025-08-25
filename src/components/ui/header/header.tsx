@@ -1,37 +1,34 @@
-import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
+'use client'
+import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import HeaderTitle from './header-title';
 import HeaderImageIco from './header-image-ico';
 import Link from 'next/link';
 import { NavBar } from '../nav/nav-bar';
-import { isOrgAdmin } from "@/lib/clerk";
-import { Inbox } from '@novu/nextjs';
-import { fetchNovuId } from '@/DAL/dal/user-dal';
 
-export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKeyPromise: Promise<boolean> }) {
-    let novuId
-    const { isAdmin, userId } = await isOrgAdmin(false)
-    if (userId) novuId = await fetchNovuId(userId)
-    
+
+export default function Header() {    
+    const user = useUser().user
     return (
-        <>
-            <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
-                <div className='flex  w-full justify-baseline relative'>
-                    <div className="flex flex-col items-center justify-center h-full">
-                        <Link href='/'>
-                            <HeaderImageIco />
-                        </Link>
-                    </div>
-                    <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-fit'>
-                        <Link href='/'>
-                            <HeaderTitle text='Landscape Friend' />
-                        </Link>
-                    </div>
+        <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
+            <div className='flex  w-full justify-baseline relative'>
+                <div className="flex flex-col items-center justify-center h-full">
+                    <Link href='/'>
+                        <HeaderImageIco />
+                    </Link>
                 </div>
-                <div className='flex flex-wrap justify-between border-t w-full pt-2'>
-                    {userId ?
-                        <>
-                            <NavBar hasStripAPIKeyPromise={hasStripAPIKeyPromise} userId={userId} isAdmin={isAdmin} />
-                            <div className="flex ml-auto items-center gap-2">
+                <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-fit'>
+                    <Link href='/'>
+                        <HeaderTitle text='Landscape Friend' />
+                    </Link>
+                </div>
+            </div>
+            <div className='flex flex-wrap justify-between border-t w-full pt-2'>
+                {user &&
+                    // {/* <> */}
+                    <NavBar userId={user.id} />
+                }
+
+                {/* <div className="flex ml-auto items-center gap-2">
                                 <SignedIn>
                                     <UserButton />
                                     <OrganizationSwitcher />
@@ -51,10 +48,9 @@ export default async function Header({ hasStripAPIKeyPromise }: { hasStripAPIKey
                                 <SignUpButton />
                             </SignedOut>
                         </div>
-                    }
-                </div>
+                    } */}
             </div>
-        </>
+        </div>
     );
 }
 

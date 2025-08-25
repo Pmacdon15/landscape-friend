@@ -35,7 +35,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const hasStripAPIKeyPromise = hasStripAPIKey()
+  
   return (
     <ClerkProvider>
       <Providers>
@@ -51,7 +51,7 @@ export default async function RootLayout({
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
               <Suspense fallback={<HeaderFallBack />}>
-                <Header hasStripAPIKeyPromise={hasStripAPIKeyPromise} />
+                <Header  />
               </Suspense>
               <PageContainer>
                 {children}
