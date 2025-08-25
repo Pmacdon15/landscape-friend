@@ -1,6 +1,7 @@
 'use client'
 import { useUploadImage } from "@/mutations/mutations";
 import { toast } from "sonner";
+import Spinner from "../spinner";
 
 export default function UploadImageButton({ clientId, setView }: { clientId: number, setView: React.Dispatch<React.SetStateAction<string>> }) {
     const { mutate, isPending } = useUploadImage({
@@ -19,12 +20,12 @@ export default function UploadImageButton({ clientId, setView }: { clientId: num
             formAction={(formData: FormData) => { mutate({ clientId: clientId, formData }) }}
             disabled={isPending}
             className={`px-6 py-3 rounded-md shadow-md text-white font-semibold transition duration-300 ease-in-out ${isPending
-                ? "bg-gray-400 cursor-not-allowed"
+                ? "bg-green-400 cursor-not-allowed"
                 : "bg-background hover:bg-green-500"
                 }`
             }
         >
-            {isPending ? "Uploading..." : "Upload"}
+            {isPending ? <div className="flex gap-8 justify-center">Uploading...<Spinner /></div> : "Upload"}
         </button >
     );
 }
