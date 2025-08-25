@@ -48,7 +48,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
     const adminSubscriberIds = Object.values(novuSubscriberIds).filter((id) => id !== null);
     console.log("membersOfOrg:", membersOfOrg)
     console.log("adminMembers:", adminMembers)
-    console.log("adminUserIds:", adminSubscriberIds)
+    console.log("adminUserIds:", adminUserIds)
     console.log("adminSubscriberIds:", adminSubscriberIds)
     
     try {
