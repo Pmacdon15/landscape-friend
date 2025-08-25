@@ -2,7 +2,6 @@ import { handleOrganizationCreated, handleOrganizationDeleted, handleSubscriptio
 import { OrganizationCreatedEvent, SubscriptionItem, UserCreatedEvent, UserDeletedEvent, WebhookEvent } from '@/types/types-clerk';
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
-import { triggerNotificationSendToAdmin } from '@/lib/novu'
 
 function isSubscriptionItem(data: WebhookEvent['data']): data is SubscriptionItem {
     return 'plan' in data && 'slug' in data.plan;
@@ -65,7 +64,6 @@ export async function POST(req: NextRequest) {
                 console.log(`Unhandled event type: ${evt.type}`);
                 break;
         }
-
 
         return new Response('Webhook received', { status: 200 })
     } catch (err) {
