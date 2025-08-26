@@ -114,9 +114,7 @@ export async function createStripeWebhook(apiKey: string, organizationId: string
             url: webhookUrl,
             enabled_events: [
                 'invoice.paid',
-                'invoice.payment_failed',
-                'customer.subscription.created',
-                'customer.subscription.deleted',
+                'invoice.sent'
             ],
         });
         // console.log("Stripe webhook created:", webhook);
