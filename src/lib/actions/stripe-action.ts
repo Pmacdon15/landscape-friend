@@ -270,29 +270,28 @@ export async function resendInvoice(invoiceId: string) {
 
 //MARK:Mark invoice paid
 export async function markInvoicePaid(invoiceId: string) {
-    const { isAdmin, orgId, userId } = await isOrgAdmin()
+    const { isAdmin } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
-    if (!userId) throw new Error("No user")
 
     const stripe = await getStripeInstance();
     try {
-        const invoice = await stripe.invoices.pay(invoiceId, {
+        await stripe.invoices.pay(invoiceId, {
             paid_out_of_band: true,
         });
 
-        const customerEmail = invoice.customer_email
+        //     const customerEmail = invoice.customer_email
 
-        // Call markPaidDb to update local database
-        if (customerEmail) { // orgId is already checked above
-            const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
-            const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
-            if (!dbUpdateResult.success) {
-                console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
-                // Optionally, throw an error or handle this failure more robustly
-            }
-        } else {
-            console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
-        }
+        //     // Call markPaidDb to update local database
+        //     if (customerEmail) { // orgId is already checked above
+        //         const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
+        //         const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
+        //         if (!dbUpdateResult.success) {
+        //             console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
+        //             // Optionally, throw an error or handle this failure more robustly
+        //         }
+        //     } else {
+        //         console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
+        //     }
 
     } catch (error) {
         console.error(error);

@@ -111,7 +111,7 @@ CREATE TABLE images (
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
-SELECT * FROM clients;
+-- SELECT * FROM clients;
 -- SELECT * FROM users;
 
 -- SELECT id, novu_subscriber_id 
@@ -122,7 +122,7 @@ SELECT * FROM clients;
 -- -- SELECT * from price_per_cut ;
 SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
--- SELECT * FROM payments ;
+SELECT * FROM payments ;
 -- SELECT * FROM accounts;
 
 -- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
