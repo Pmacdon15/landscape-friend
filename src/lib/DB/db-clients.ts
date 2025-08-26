@@ -63,6 +63,22 @@ export async function fetchStripeCustomerNamesDB(organization_id: string, stripe
   `) as CustomerName[];
   return result;
 }
+
+//MARK: Fetch Client ID by Stripe Customer ID
+export async function fetchClientIdByStripeCustomerId(stripeCustomerId: string, organizationId: string): Promise<number | null> {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  try {
+    const result = await (sql`
+      SELECT id
+      FROM clients
+      WHERE stripe_customer_id = ${stripeCustomerId} AND organization_id = ${organizationId}
+    `) as { id: number }[];
+    return result.length > 0 ? result[0].id : null;
+  } catch (error) {
+    console.error("Error fetching client ID by Stripe Customer ID:", error);
+    return null;
+  }
+}
 export async function updateClientStripeCustomerIdDb(email_address: string, stripe_customer_id: string, organization_id: string) {
   console.log("updateClientStripeCustomerIdDb called with:", { email_address, stripe_customer_id, organization_id });
   const sql = neon(`${process.env.DATABASE_URL}`);
@@ -671,24 +687,25 @@ RETURNING *;
 
 
 //MARK: Mark Payment
-export async function markPaidDb(invoiceId: string, customerEmail: string, amountPaid: number, organizationId: string) {
+export async function markPaidDb(invoiceId: string, stripeCustomerId: string, amountPaid: number, organizationId: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
+  console.log("Amount paid: ", amountPaid)
   try {
     const result = await sql`
       WITH client_info AS(
   SELECT id AS client_id
           FROM clients
-          WHERE email_address = ${customerEmail} AND organization_id = ${organizationId}
+          WHERE stripe_customer_id = ${stripeCustomerId} AND organization_id = ${organizationId}
 ),
   inserted_payment AS(
     INSERT INTO payments(account_id, amount, organization_id)
-          SELECT a.id, ${amountPaid}, ${organizationId}
+          SELECT a.id, ${amountPaid / 100}, ${organizationId}
           FROM accounts a
           JOIN client_info ci ON a.client_id = ci.client_id
           RETURNING payments.id-- Return something to indicate success
   )
       UPDATE accounts
-      SET current_balance = current_balance - ${amountPaid}
+      SET current_balance = current_balance - ${amountPaid / 100}
       FROM client_info ci
       WHERE accounts.client_id = ci.client_id
       RETURNING accounts.current_balance AS new_balance, (SELECT id FROM inserted_payment) AS payment_id;
@@ -708,4 +725,8 @@ export async function markPaidDb(invoiceId: string, customerEmail: string, amoun
     return { success: false, message: e instanceof Error ? e.message : 'Failed to mark invoice paid in DB' };
   }
 }
+
+
+
+
 

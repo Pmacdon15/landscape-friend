@@ -218,3 +218,17 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         throw new Error('Failed to fetch quotes');
     }
 }
+
+// export async function createOrgWebhook() {
+//     const { isAdmin, orgId, userId } = await isOrgAdmin();
+
+//     if (!orgId && !userId) throw new Error("Must be logged in.");
+//     if (!isAdmin) throw new Error("Only admins can create webhooks.");
+
+//     const apiKeyResponse = await fetchStripAPIKeyDb(orgId || userId!);
+//     if (!apiKeyResponse || !apiKeyResponse.api_key) {
+//         throw new Error("Stripe API key not found.");
+//     }
+
+//     await createStripeWebhook(apiKeyResponse.api_key, orgId || userId!);
+// }

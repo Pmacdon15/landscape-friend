@@ -1,5 +1,4 @@
 'use server'
-import { markPaidDb } from "@/lib/DB/db-clients";
 import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
@@ -12,6 +11,7 @@ import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
 import { getStripeInstance } from "../dal/stripe-dal";
+import { hasStripAPIKey } from "../dal/stripe-dal";
 
 //MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
@@ -22,6 +22,9 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
         stream.on('error', reject);
     });
 };
+
+import { createStripeWebhook } from "../server-funtions/stripe-utils";
+import { markPaidDb } from "../DB/db-clients";
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
@@ -40,6 +43,9 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     try {
         const result = await updatedStripeAPIKeyDb(validatedFields.data, (orgId || userId)!)
         if (!result.success) throw new Error(result.message);
+
+        await createStripeWebhook(validatedFields.data.APIKey, orgId || userId!);
+
         if (novuId) await triggerNotifaction(novuId.UserNovuId, "stripe-api-key-updated")
         return result;
     } catch (e: unknown) {
@@ -264,29 +270,28 @@ export async function resendInvoice(invoiceId: string) {
 
 //MARK:Mark invoice paid
 export async function markInvoicePaid(invoiceId: string) {
-    const { isAdmin, orgId, userId } = await isOrgAdmin()
+    const { isAdmin } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
-    if (!userId) throw new Error("No user")
 
     const stripe = await getStripeInstance();
     try {
-        const invoice = await stripe.invoices.pay(invoiceId, {
+        await stripe.invoices.pay(invoiceId, {
             paid_out_of_band: true,
         });
 
-        const customerEmail = invoice.customer_email
+        //     const customerEmail = invoice.customer_email
 
-        // Call markPaidDb to update local database
-        if (customerEmail) { // orgId is already checked above
-            const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
-            const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
-            if (!dbUpdateResult.success) {
-                console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
-                // Optionally, throw an error or handle this failure more robustly
-            }
-        } else {
-            console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
-        }
+        //     // Call markPaidDb to update local database
+        //     if (customerEmail) { // orgId is already checked above
+        //         const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
+        //         const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
+        //         if (!dbUpdateResult.success) {
+        //             console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
+        //             // Optionally, throw an error or handle this failure more robustly
+        //         }
+        //     } else {
+        //         console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
+        //     }
 
     } catch (error) {
         console.error(error);
@@ -303,12 +308,12 @@ export async function markInvoiceVoid(invoiceId: string) {
     try {
         const invoice = await stripe.invoices.voidInvoice(invoiceId);
 
-        const customerEmail = invoice.customer_email
+        const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
 
         // Call markPaidDb to update local database
-        if (customerEmail) { // orgId is already checked above
+        if (customerId) { // orgId is already checked above
             const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
-            const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
+            const dbUpdateResult = await markPaidDb(invoiceId, customerId, amountPaid, orgId || userId); // Pass orgId directly
             if (!dbUpdateResult.success) {
                 console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
                 // Optionally, throw an error or handle this failure more robustly
@@ -346,4 +351,11 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     } catch (e) {
         throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
+}
+
+
+
+
+export async function hasStripeApiKeyAction(): Promise<boolean> {
+    return await hasStripAPIKey();
 }

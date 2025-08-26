@@ -1,18 +1,27 @@
+'use server'
 import Stripe from 'stripe';
 import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/db-clients';
-
+import { fetchStripAPIKeyDb, storeWebhookSecretDb } from '@/lib/DB/db-stripe';
+import {  getStripeInstance } from '../dal/stripe-dal';
+ 
 let stripe: Stripe | null = null;
 
-function getStripeInstance(): Stripe {
-    if (!stripe) {
-        const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
-        if (!apiKey) {
-            throw new Error('Stripe secret key not configured.');
-        }
-        stripe = new Stripe(apiKey);
+export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {
+
+    const apiKeyResponse =  await fetchStripAPIKeyDb(orgId);
+    if (apiKeyResponse instanceof Error) {
+        throw new Error('Stripe secret key not configured.');
     }
+
+    const apiKey = apiKeyResponse.api_key;
+    if (!apiKey) {
+        throw new Error('Stripe secret key not configured.');
+    }
+
+    stripe = new Stripe(apiKey);
     return stripe;
 }
+
 
 export async function findOrCreateStripeCustomerAndLinkClient(
     clientName: string,
@@ -21,9 +30,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     address: string,
     organization_id: string | undefined
 ): Promise<string> {
-    console.log("findOrCreateStripeCustomerAndLinkClient called with:", {
-        clientName, clientEmail, phoneNumber, address, organization_id
-    });
+
     const stripe = getStripeInstance();
 
     const effectiveOrgId = organization_id;
@@ -32,7 +39,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     }
 
     let customerId: string;
-    const existingCustomers = await stripe.customers.list({ email: clientEmail, limit: 1 });
+    const existingCustomers = await (await stripe).customers.list({ email: clientEmail, limit: 1 });
 
     if (existingCustomers.data.length > 0) {
         customerId = existingCustomers.data[0].id;
@@ -63,7 +70,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     } else {
         console.log("No existing Stripe customer found, creating new one.");
         try {
-            const newCustomer = await stripe.customers.create({
+            const newCustomer = await (await stripe).customers.create({
                 name: clientName,
                 email: clientEmail,
             });
@@ -88,4 +95,36 @@ export async function findOrCreateStripeCustomerAndLinkClient(
         }
     }
     return customerId;
+}
+
+export async function createStripeWebhook(apiKey: string, organizationId: string): Promise<void> {
+    const stripe = new Stripe(apiKey);
+    const webhookUrl = `https://landscapefriend.com/api/webhooks/stripe/${organizationId}`;
+
+    try {
+        const webhooks = await stripe.webhookEndpoints.list();
+        const existingWebhook = webhooks.data.find(webhook => webhook.url === webhookUrl);
+
+        if (existingWebhook) {
+            await stripe.webhookEndpoints.del(existingWebhook.id);
+            console.log("Existing Stripe webhook deleted:", existingWebhook.id);
+        }
+
+        const webhook = await stripe.webhookEndpoints.create({
+            url: webhookUrl,
+            enabled_events: [
+                'invoice.paid',
+                'invoice.sent'
+            ],
+        });
+        // console.log("Stripe webhook created:", webhook);
+        console.log("Stripe webhook secret:", webhook.secret);
+        if (webhook.secret) {
+            await storeWebhookSecretDb(organizationId, webhook.secret);
+        }
+        // return webhook;
+    } catch (error) {
+        console.error("Error creating Stripe webhook:", error);
+        throw error;
+    }
 }

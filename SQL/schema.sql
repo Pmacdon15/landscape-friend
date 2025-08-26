@@ -1,13 +1,25 @@
 DROP TABLE IF EXISTS stripe_api_keys CASCADE;
+
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
+
 DROP TABLE IF EXISTS yards_marked_clear CASCADE;
+
 DROP TABLE IF EXISTS snow_clearing_assignments CASCADE;
+
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
+
+DROP TABLE IF EXISTS charges CASCADE;
+
 DROP TABLE IF EXISTS payments CASCADE;
+
 DROP TABLE IF EXISTS accounts CASCADE;
+
 DROP TABLE IF EXISTS clients CASCADE;
+
 DROP TABLE IF EXISTS organizations CASCADE;
+
 DROP TABLE IF EXISTS users CASCADE;
+
 DROP TABLE IF EXISTS images CASCADE;
 
 CREATE TABLE users (
@@ -42,6 +54,7 @@ CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,
     organization_id VARCHAR(253) UNIQUE NOT NULL,
+    webhook_secret VARCHAR(253) NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE
 );
 
@@ -59,6 +72,18 @@ CREATE TABLE payments (
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
     FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE CASCADE
+);
+
+CREATE TABLE charges (
+    id SERIAL PRIMARY KEY,
+    invoice_id VARCHAR(255) NOT NULL UNIQUE,
+    client_id INT NOT NULL,
+    amount FLOAT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE
 );
 
 CREATE TABLE cutting_schedule (
@@ -104,24 +129,23 @@ CREATE TABLE images (
     isActive BOOLEAN
 );
 
-
-
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
--- SELECT * FROM clients;
+SELECT * FROM clients;
 -- SELECT * FROM users;
 
--- SELECT id, novu_subscriber_id 
---             FROM users 
+-- SELECT id, novu_subscriber_id
+--             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
--- SELECT * FROM stripe_api_keys;
+SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
 -- SELECT * FROM payments ;
 -- SELECT * FROM accounts;
 
 -- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
+SELECT * FROM charges;
