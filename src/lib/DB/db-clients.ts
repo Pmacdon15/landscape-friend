@@ -671,14 +671,14 @@ RETURNING *;
 
 
 //MARK: Mark Payment
-export async function markPaidDb(invoiceId: string, customerEmail: string, amountPaid: number, organizationId: string) {
+export async function markPaidDb(invoiceId: string, stripeCustomerId: string, amountPaid: number, organizationId: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
   try {
     const result = await sql`
       WITH client_info AS(
   SELECT id AS client_id
           FROM clients
-          WHERE email_address = ${customerEmail} AND organization_id = ${organizationId}
+          WHERE stripe_customer_id = ${stripeCustomerId} AND organization_id = ${organizationId}
 ),
   inserted_payment AS(
     INSERT INTO payments(account_id, amount, organization_id)
@@ -708,4 +708,8 @@ export async function markPaidDb(invoiceId: string, customerEmail: string, amoun
     return { success: false, message: e instanceof Error ? e.message : 'Failed to mark invoice paid in DB' };
   }
 }
+
+
+
+
 

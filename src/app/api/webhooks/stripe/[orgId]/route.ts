@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { fetchWebhookSecretDb } from '@/lib/DB/db-stripe';
 import { getStripeInstance } from '@/lib/dal/stripe-dal';
 import { getStripeInstanceUnprotected } from '@/lib/server-funtions/stripe-utils';
+import { markPaidDb } from '@/lib/DB/db-clients';
 
 export async function POST(
     req: NextRequest,
@@ -38,13 +39,26 @@ export async function POST(
         return new NextResponse(`Webhook Error: ${errorMessage}`, { status: 400 });
     }
 
-    console.log("event type: " , event)
+    console.log("event type: ", event)
     // Handle the event
     switch (event.type) {
         case 'invoice.paid':
             const invoicePaid = event.data.object as Stripe.Invoice;
             console.log('Payment received for invoice:', invoicePaid.id);
-            // Add your business logic here for when an invoice is paid
+
+            const customerId = invoicePaid.customer as string;
+            const amountPaid = invoicePaid.amount_paid;
+
+            if (customerId && amountPaid !== undefined && invoicePaid.id) {
+                const markPaidResult = await markPaidDb(invoicePaid.id, customerId, amountPaid, orgId);
+                if (markPaidResult.success) {
+                    console.log(`Successfully marked invoice ${invoicePaid.id} as paid in DB. New balance: ${markPaidResult.newBalance}`);
+                } else {
+                    console.error(`Failed to mark invoice ${invoicePaid.id} as paid in DB: ${markPaidResult.message}`);
+                }
+            } else {
+                console.error(`Missing customer ID or amount paid for invoice.paid event: ${invoicePaid.id}`);
+            }
             break;
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;

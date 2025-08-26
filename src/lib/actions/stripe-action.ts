@@ -309,12 +309,12 @@ export async function markInvoiceVoid(invoiceId: string) {
     try {
         const invoice = await stripe.invoices.voidInvoice(invoiceId);
 
-        const customerEmail = invoice.customer_email
+        const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
 
         // Call markPaidDb to update local database
-        if (customerEmail) { // orgId is already checked above
+        if (customerId) { // orgId is already checked above
             const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
-            const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
+            const dbUpdateResult = await markPaidDb(invoiceId, customerId, amountPaid, orgId || userId); // Pass orgId directly
             if (!dbUpdateResult.success) {
                 console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
                 // Optionally, throw an error or handle this failure more robustly
