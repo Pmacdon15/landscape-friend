@@ -36,6 +36,7 @@ export async function POST(
         return new NextResponse(`Webhook Error: ${errorMessage}`, { status: 400 });
     }
 
+    console.log("event type: " , event)
     // Handle the event
     switch (event.type) {
         case 'invoice.paid':
