@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { fetchWebhookSecretDb } from '@/lib/DB/db-stripe';
 import { getStripeInstanceUnprotected } from '@/lib/server-funtions/stripe-utils';
 import { handleInvoicePaid, handleInvoiceSent } from '@/lib/webhooks/stripe-webhooks';
+import { triggerNotificationSendToAdmin } from '@/lib/server-funtions/novu';
 
 export async function POST(
     req: NextRequest,
@@ -53,6 +54,7 @@ export async function POST(
         case 'invoice.sent':
             const invoiceSent = event.data.object as Stripe.Invoice;
             await handleInvoiceSent(invoiceSent, orgId);
+            await triggerNotificationSendToAdmin(orgId, 'invoice-sent')
             break;
         // Add other event types to handle here
         default:
