@@ -142,10 +142,10 @@ SELECT * FROM clients;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
-SELECT * FROM stripe_api_keys;
+-- SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
 -- SELECT * FROM payments ;
 -- SELECT * FROM accounts;
 
 -- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
-SELECT * FROM charges;
+-- SELECT * FROM charges;

@@ -99,7 +99,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
 
 export async function createStripeWebhook(apiKey: string, organizationId: string): Promise<void> {
     const stripe = new Stripe(apiKey);
-    const webhookUrl = `https://landscapefriend.com/api/webhooks/stripe/${organizationId}`;
+    const webhookUrl = `https://www.landscapefriend.com/api/webhooks/stripe/${organizationId}`;
 
     try {
         const webhooks = await stripe.webhookEndpoints.list();
