@@ -3,7 +3,7 @@ import { Button } from "../button";
 
 export default function EditInvoiceLink() {
     return (
-        <Link href="/billing/manage/invoices/edit">
+        <Link href="/billing/edit/invoice">
             <Button variant={'outline'}>Edit Invoice</Button>
         </Link>
     );
