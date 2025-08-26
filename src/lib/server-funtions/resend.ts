@@ -6,7 +6,7 @@ import type React from 'react';
 
 export function formatSenderEmailAddress(sessionClaims: { orgName?: string; userFullName?: string; userEmail?: string }): string {
   const name = (sessionClaims.orgName || sessionClaims.userFullName || 'Your Landscaper').replace(/\s+/g, '-');
-  return `${name}@landscapefriend.com`;
+  return `${name}@notifications.landscapefriend.com`;
 }
 
 export function formatCompanyName(sessionClaims: { orgName?: string; userFullName?: string; userEmail?: string }): string {
