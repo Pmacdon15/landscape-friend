@@ -63,6 +63,22 @@ export async function fetchStripeCustomerNamesDB(organization_id: string, stripe
   `) as CustomerName[];
   return result;
 }
+
+//MARK: Fetch Client ID by Stripe Customer ID
+export async function fetchClientIdByStripeCustomerId(stripeCustomerId: string, organizationId: string): Promise<number | null> {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  try {
+    const result = await (sql`
+      SELECT id
+      FROM clients
+      WHERE stripe_customer_id = ${stripeCustomerId} AND organization_id = ${organizationId}
+    `) as { id: number }[];
+    return result.length > 0 ? result[0].id : null;
+  } catch (error) {
+    console.error("Error fetching client ID by Stripe Customer ID:", error);
+    return null;
+  }
+}
 export async function updateClientStripeCustomerIdDb(email_address: string, stripe_customer_id: string, organization_id: string) {
   console.log("updateClientStripeCustomerIdDb called with:", { email_address, stripe_customer_id, organization_id });
   const sql = neon(`${process.env.DATABASE_URL}`);

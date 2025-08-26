@@ -62,6 +62,18 @@ CREATE TABLE payments (
     FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE CASCADE
 );
 
+CREATE TABLE charges (
+    id SERIAL PRIMARY KEY,
+    invoice_id VARCHAR(255) NOT NULL UNIQUE,
+    client_id INT NOT NULL,
+    amount FLOAT NOT NULL,
+    currency VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    organization_id VARCHAR(253) NOT NULL,
+    FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE
+);
+
 CREATE TABLE cutting_schedule (
     id SERIAL PRIMARY KEY,
     cutting_week INT NOT NULL,
@@ -120,9 +132,9 @@ SELECT * FROM users;
 -- WHERE
 --     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
 -- -- SELECT * from price_per_cut ;
-SELECT * FROM stripe_api_keys;
+-- SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
-SELECT * FROM payments ;
+-- SELECT * FROM payments ;
 -- SELECT * FROM accounts;
 
 -- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
