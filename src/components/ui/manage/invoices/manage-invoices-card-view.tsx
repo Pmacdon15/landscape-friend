@@ -1,6 +1,7 @@
 import { StripeInvoice } from "@/types/types-stripe";
 import ManageInvoiceButton from "../../buttons/manage-invoice-button";
 import Link from "next/link";
+import EditInvoiceLink from "../../links/edit-invoice-link";
 
 export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
   const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white w-full md:w-[48%] lg:w-[30%] xl:w-[30%] mx-auto";
@@ -39,8 +40,11 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
             }
             <div className="flex flex-wrap justify-center w-full gap-4 ">
               {invoice.status === "draft" ?
-                <ManageInvoiceButton variant="send" invoiceId={invoice.id} />
-                :                
+                <>
+                  <ManageInvoiceButton variant="send" invoiceId={invoice.id} />
+                  <EditInvoiceLink invoiceId={invoice.id} />
+                </>
+                :
                 invoice.status !== "void" && invoice.status !== "paid" && <ManageInvoiceButton variant="resend" invoiceId={invoice.id} />
               }
               {invoice.status !== "paid" && invoice.status !== "draft" && invoice.status !== "void" &&
@@ -48,7 +52,7 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
                   <ManageInvoiceButton variant="paid" invoiceId={invoice.id} />
                   <ManageInvoiceButton variant="void" invoiceId={invoice.id} />
                 </>
-              }              
+              }
             </div>
           </div>
         </div>

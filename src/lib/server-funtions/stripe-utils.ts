@@ -1,5 +1,6 @@
 'use server'
 import Stripe from 'stripe';
+import { StripeInvoice } from '../../types/types-stripe';
 import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/db-clients';
 import { fetchStripAPIKeyDb, storeWebhookSecretDb } from '@/lib/DB/db-stripe';
 import {  getStripeInstance } from '../dal/stripe-dal';

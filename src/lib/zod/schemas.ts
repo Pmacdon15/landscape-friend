@@ -74,6 +74,18 @@ export const schemaCreateQuote = z.object({
     organization_id: z.string(),
 });
 
+export const lineItemSchema = z.object({
+    description: z.string(),
+    amount: z.number(),
+    quantity: z.number(),
+});
+
+export const schemaUpdateInvoice = z.object({
+    invoiceId: z.string(),
+    lines: z.array(lineItemSchema),
+    organization_id: z.string(),
+});
+
 export const AddClientSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email address"),

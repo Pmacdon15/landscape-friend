@@ -219,6 +219,52 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
     }
 }
 
+export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const stripe = await getStripeInstance();
+    const invoice = await stripe.invoices.retrieve(invoiceId, {
+        expand: ['lines.data'],
+    });
+
+    if (!invoice) {
+        throw new Error('Invoice not found');
+    }
+
+    // Convert to plain object
+    const plainInvoice: StripeInvoice = {
+        id: invoice.id,
+        object: invoice.object,
+        amount_due: invoice.amount_due,
+        amount_paid: invoice.amount_paid,
+        amount_remaining: invoice.amount_remaining,
+        created: invoice.created,
+        currency: invoice.currency,
+        customer: typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id || '',
+        customer_email: invoice.customer_email || '',
+        customer_name: invoice.customer_name || '',
+        due_date: invoice.due_date || 0,
+        hosted_invoice_url: invoice.hosted_invoice_url || '',
+        invoice_pdf: invoice.invoice_pdf || '',
+        number: invoice.number || '',
+        status: invoice.status,
+        total: invoice.total,
+        lines: {
+            data: invoice.lines.data.map((lineItem) => ({
+                id: lineItem.id,
+                object: lineItem.object,
+                amount: lineItem.amount,
+                currency: lineItem.currency,
+                description: lineItem.description,
+                quantity: lineItem.quantity || 0,
+            })),
+        },
+    };
+
+    return plainInvoice;
+}
+
 // export async function createOrgWebhook() {
 //     const { isAdmin, orgId, userId } = await isOrgAdmin();
 
