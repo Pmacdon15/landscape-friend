@@ -1,20 +1,27 @@
 'use server'
 import Stripe from 'stripe';
 import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/db-clients';
-import { storeWebhookSecretDb } from '@/lib/DB/db-stripe';
-
+import { fetchStripAPIKeyDb, storeWebhookSecretDb } from '@/lib/DB/db-stripe';
+import {  getStripeInstance } from '../dal/stripe-dal';
+ 
 let stripe: Stripe | null = null;
 
-function getStripeInstance(): Stripe {
-    if (!stripe) {
-        const apiKey = process.env.STRIPE_SECRET_KEY; // Or fetch from DB
-        if (!apiKey) {
-            throw new Error('Stripe secret key not configured.');
-        }
-        stripe = new Stripe(apiKey);
+export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {
+
+    const apiKeyResponse =  await fetchStripAPIKeyDb(orgId);
+    if (apiKeyResponse instanceof Error) {
+        throw new Error('Stripe secret key not configured.');
     }
+
+    const apiKey = apiKeyResponse.api_key;
+    if (!apiKey) {
+        throw new Error('Stripe secret key not configured.');
+    }
+
+    stripe = new Stripe(apiKey);
     return stripe;
 }
+
 
 export async function findOrCreateStripeCustomerAndLinkClient(
     clientName: string,
@@ -32,7 +39,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     }
 
     let customerId: string;
-    const existingCustomers = await stripe.customers.list({ email: clientEmail, limit: 1 });
+    const existingCustomers = await (await stripe).customers.list({ email: clientEmail, limit: 1 });
 
     if (existingCustomers.data.length > 0) {
         customerId = existingCustomers.data[0].id;
@@ -63,7 +70,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     } else {
         console.log("No existing Stripe customer found, creating new one.");
         try {
-            const newCustomer = await stripe.customers.create({
+            const newCustomer = await (await stripe).customers.create({
                 name: clientName,
                 email: clientEmail,
             });

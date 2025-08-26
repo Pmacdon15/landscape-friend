@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { headers } from 'next/headers';
 import { fetchWebhookSecretDb } from '@/lib/DB/db-stripe';
 import { getStripeInstance } from '@/lib/dal/stripe-dal';
+import { getStripeInstanceUnprotected } from '@/lib/server-funtions/stripe-utils';
 
 export async function POST(
     req: NextRequest,
@@ -29,7 +30,7 @@ export async function POST(
     let event: Stripe.Event;
 
     try {
-        const stripe = await getStripeInstance()
+        const stripe = await getStripeInstanceUnprotected(orgId)
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
