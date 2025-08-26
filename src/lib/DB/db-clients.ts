@@ -673,6 +673,7 @@ RETURNING *;
 //MARK: Mark Payment
 export async function markPaidDb(invoiceId: string, stripeCustomerId: string, amountPaid: number, organizationId: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
+  console.log("Amount paid: ", amountPaid)
   try {
     const result = await sql`
       WITH client_info AS(
@@ -682,13 +683,13 @@ export async function markPaidDb(invoiceId: string, stripeCustomerId: string, am
 ),
   inserted_payment AS(
     INSERT INTO payments(account_id, amount, organization_id)
-          SELECT a.id, ${amountPaid}, ${organizationId}
+          SELECT a.id, ${amountPaid / 100}, ${organizationId}
           FROM accounts a
           JOIN client_info ci ON a.client_id = ci.client_id
           RETURNING payments.id-- Return something to indicate success
   )
       UPDATE accounts
-      SET current_balance = current_balance - ${amountPaid}
+      SET current_balance = current_balance - ${amountPaid / 100}
       FROM client_info ci
       WHERE accounts.client_id = ci.client_id
       RETURNING accounts.current_balance AS new_balance, (SELECT id FROM inserted_payment) AS payment_id;
