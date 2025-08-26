@@ -7,6 +7,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemaCreateQuote } from '@/lib/zod/schemas';
 import { useCreateQuoteForm } from '@/lib/hooks/hooks';
+import Spinner from '../spinner';
 
 export function CreateQuoteForm({ organizationId }: { organizationId: string }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
@@ -197,7 +198,7 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
                     type="submit"
                     disabled={isPending}
                 >
-                    {isPending ? 'Creating Quote...' : 'Create Quote'}
+                    {isPending ? <>Creating Quote...<Spinner /></> : 'Create Quote'}
                 </Button>
             </form>
 
