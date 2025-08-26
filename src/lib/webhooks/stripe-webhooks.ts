@@ -4,10 +4,10 @@ import Stripe from 'stripe';
 import { fetchClientIdByStripeCustomerId, markPaidDb } from "../DB/db-clients";
 
 
-export async function handleInvoicePaid(invoicePaid: Stripe.Invoice, customerId: string, amountPaid: number, orgId: string) {
+export async function handleInvoicePaid(invoicePaid: Stripe.Invoice, orgId: string) {
   console.log('Payment received for invoice:', invoicePaid.id);
 
-  if (customerId && amountPaid !== undefined && invoicePaid.id && invoicePaid.customer) {
+  if (invoicePaid.id && invoicePaid.customer) {
     const markPaidResult = await markPaidDb(invoicePaid.id, String(invoicePaid.customer), invoicePaid.amount_paid, orgId);
     if (markPaidResult.success) {
       console.log(`Successfully marked invoice ${invoicePaid.id} as paid in DB. New balance: ${markPaidResult.newBalance}`);

@@ -42,10 +42,8 @@ export async function POST(
     // Handle the event
     switch (event.type) {
         case 'invoice.paid':
-            const invoicePaid = event.data.object as Stripe.Invoice;
-            const customerId = invoicePaid.customer as string;
-            const amountPaid = invoicePaid.amount_paid;
-            await handleInvoicePaid(invoicePaid, customerId, amountPaid, orgId);
+            const invoicePaid = event.data.object as Stripe.Invoice;            
+            await handleInvoicePaid(invoicePaid, orgId);
             break;
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
