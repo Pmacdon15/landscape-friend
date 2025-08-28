@@ -53,12 +53,6 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
                     />
                 </section>
 
-                {/* Totals */}
-                <section>
-                    <h3 className="text-md font-semibold mb-2">Totals</h3>
-                    <p className="font-bold">Grand Total: ${subtotal.toFixed(2)}</p>
-                </section>
-
                 <Button variant="outline" type="submit" disabled={isPending}>
                     {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}
                 </Button>
