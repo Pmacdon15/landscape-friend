@@ -259,14 +259,15 @@ export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
             data: invoice.lines.data.map((lineItem) => ({
                 id: lineItem.id,
                 object: lineItem.object,
-                amount: lineItem.amount / 100,
+                // Use unit_amount if available, fallback to amount / quantity
+               amount: ((lineItem.amount / (lineItem.quantity || 1)) / 100),
                 currency: lineItem.currency,
                 description: lineItem.description,
                 quantity: lineItem.quantity || 0,
             })),
         },
     };
-
+    console.log(JSON.stringify(plainInvoice, null, 2))
     return plainInvoice;
 }
 

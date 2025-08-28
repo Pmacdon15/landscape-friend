@@ -33,6 +33,7 @@ export interface StripeLineItem {
     currency: string;
     description: string | null;
     quantity: number;
+    unit_amount?: number;
 }
 export interface APIKey {
     apk_key: string;
