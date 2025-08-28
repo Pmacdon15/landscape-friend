@@ -26,12 +26,7 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
     });
 
     const { fields, append, remove } = useFieldArray({ control, name: 'lines' });
-    const lines = watch('lines');
-    const subtotal = lines.reduce(
-        (acc, line) => acc + ((line.amount ?? 0) * (line.quantity ?? 0)),
-        0
-    );
-
+      
     return (
         <>
             <form action={mutate} className="space-y-4">
