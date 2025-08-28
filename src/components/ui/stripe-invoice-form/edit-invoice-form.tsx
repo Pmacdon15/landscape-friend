@@ -18,7 +18,7 @@ export function EditInvoiceForm({  invoice }: {  invoice: StripeInvoice }) {
             invoiceId: invoice.id || '',
             lines: invoice.lines.data.map(line => ({
                 description: line.description || '',
-                amount: line.amount ,// /10 for display
+                amount: line.amount /10,// /10 for display
                 quantity: line.quantity,
             })),
                     }
