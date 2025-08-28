@@ -1,5 +1,4 @@
 'use client';
-
 import React from 'react';
 import { useUpdateStripeInvoice } from '@/lib/mutations/mutations';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { schemaUpdateInvoice } from '@/lib/zod/schemas';
 import Spinner from '../spinner';
 import InputField from '../stripe-forms/shared/input';
 import { StripeInvoice } from '@/types/types-stripe';
+import { AlertMessage } from '../stripe-forms/shared/alert-message';
 
 export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
   const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeInvoice();
@@ -19,27 +19,27 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
       invoiceId: invoice.id || '',
       lines: invoice.lines.data.map(line => ({
         description: line.description || '',
-        amount: line.amount ,
+        amount: line.amount,
         quantity: line.quantity,
       })),
-    }
+    },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "lines",
-  });
-
+  const { fields, append, remove } = useFieldArray({ control, name: 'lines' });
   const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
 
   const lines = watch('lines');
-  const subtotal = lines.reduce((acc, line) => acc + ((line.amount ?? 0) * (line.quantity ?? 0)), 0);
+  const subtotal = lines.reduce(
+    (acc, line) => acc + ((line.amount ?? 0) * (line.quantity ?? 0)),
+    0
+  );
 
   return (
     <>
       <form action={mutate} className="space-y-4">
         <input type="hidden" {...register('invoiceId')} value={invoice.id} />
 
+        {/* Line Items Section */}
         <section>
           <h3 className="text-md font-semibold mb-2">Invoice Lines</h3>
           {fields.map((item, index) => (
@@ -94,6 +94,7 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
           </Button>
         </section>
 
+        {/* Totals */}
         <section>
           <h3 className="text-md font-semibold mb-2">Totals</h3>
           <p className="font-bold">Grand Total: ${subtotal.toFixed(2)}</p>
@@ -104,17 +105,13 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
         </Button>
       </form>
 
+      {/* Reusable Alerts */}
       {isSuccess && data && (
-        <div className="mt-4 p-3 bg-green-100 text-green-800 rounded-md">
-          <p>Invoice updated successfully!</p>
-        </div>
+        <AlertMessage type="success" message="Invoice updated successfully!" />
       )}
 
       {isError && error && (
-        <div className="mt-4 p-3 bg-red-100 text-red-800 rounded-md">
-          <p>Error updating invoice:</p>
-          <p>{error.message}</p>
-        </div>
+        <AlertMessage type="error" message={`Error updating invoice: ${error.message}`} />
       )}
     </>
   );
