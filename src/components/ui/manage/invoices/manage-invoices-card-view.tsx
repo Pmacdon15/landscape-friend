@@ -17,7 +17,7 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
           </div>
           <div className="flex justify-between mb-1">
             <span className="font-bold">Amount Due:</span>
-            <span>${(invoice.amount_due / 100).toFixed(2)}</span>
+            <span>${invoice.amount_due.toFixed(2)}</span>
           </div>
           <div className="flex justify-between mb-1">
             <span className="font-bold">Status:</span>

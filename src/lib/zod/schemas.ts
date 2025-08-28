@@ -83,12 +83,12 @@ export const lineItemSchema = z.object({
 export const schemaUpdateInvoice = z.object({
     invoiceId: z.string(),
     lines: z.array(lineItemSchema),
-    organization_id: z.string(),
+    organization_id: z.string().nullable(),
 });
 
 export const AddClientSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email address"),
+    email: z.email("Invalid email address"),
     address: z.string().min(1, "Address is required"),
     notes: z.string().optional(),
     lat: z.number().optional(),

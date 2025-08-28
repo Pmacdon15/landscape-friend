@@ -243,7 +243,7 @@ export async function updateStripeInvoice(formData: FormData) {
     const validatedFields = schemaUpdateInvoice.safeParse({
         invoiceId: formData.get('invoiceId'),
         lines: lines,
-        organization_id: formData.get('organization_id'),
+        organization_id: orgId || userId,
     });
 
     if (!validatedFields.success) {
@@ -255,28 +255,26 @@ export async function updateStripeInvoice(formData: FormData) {
         const stripe = await getStripeInstance();
         const existingInvoice = await getInvoiceDAL(validatedFields.data.invoiceId);
 
-        if (!existingInvoice) {
-            throw new Error("Invoice not found");
-        }
+        if (!existingInvoice) throw new Error("Invoice not found");
 
         // Delete existing line items
-        for (const item of existingInvoice.lines.data) {
-            await stripe.invoiceItems.del(item.id);
-        }
+        for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
 
+
+        
         // Create new line items
         const line_items = validatedFields.data.lines.map(line => ({
             customer: existingInvoice.customer as string,
             invoice: validatedFields.data.invoiceId,
-            unit_amount: Math.round(line.amount * 100),
+            unit_amount_decimal: String(line.amount * 100),
             currency: 'cad',
             description: line.description,
             quantity: line.quantity,
         }));
 
-        for (const item of line_items) {
-            await stripe.invoiceItems.create(item);
-        }
+        // console.log('Line items with amounts:', line_items.map(item => item.unit_amount_decimal));
+
+        for (const item of line_items) await stripe.invoiceItems.create(item);
 
         return { success: true };
     } catch (e: unknown) {

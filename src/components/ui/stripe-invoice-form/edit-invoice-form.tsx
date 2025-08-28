@@ -9,20 +9,19 @@ import { schemaUpdateInvoice } from '@/lib/zod/schemas';
 import Spinner from '../spinner';
 import { StripeInvoice } from '@/types/types-stripe';
 
-export function EditInvoiceForm({ organizationId, invoice }: { organizationId: string, invoice: StripeInvoice }) {
+export function EditInvoiceForm({  invoice }: {  invoice: StripeInvoice }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeInvoice();
 
-    const { register, watch, control, reset, formState: { errors } } = useForm({
+    const { register, watch, control, formState: { errors } } = useForm({
         resolver: zodResolver(schemaUpdateInvoice),
         defaultValues: {
-            invoiceId: invoice.id,
+            invoiceId: invoice.id || '',
             lines: invoice.lines.data.map(line => ({
-                description: line.description,
-                amount: line.amount / 100, // convert from cents
+                description: line.description || '',
+                amount: line.amount ,// /10 for display
                 quantity: line.quantity,
             })),
-            organization_id: organizationId,
-        }
+                    }
     });
 
     const { fields, append, remove } = useFieldArray({
@@ -40,8 +39,7 @@ export function EditInvoiceForm({ organizationId, invoice }: { organizationId: s
 
     return (
         <>
-            <form action={mutate} className="space-y-4">
-                <input type="hidden" {...register('organization_id')} value={organizationId} />
+            <form action={mutate} className="space-y-4">               
                 <input type="hidden" {...register('invoiceId')} value={invoice.id} />
 
                 <section>

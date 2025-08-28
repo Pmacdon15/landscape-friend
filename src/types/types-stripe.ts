@@ -4,7 +4,7 @@ export interface FetchInvoicesResponse {
 }
 
 export interface StripeInvoice {
-    id: string;
+    id: string | undefined;
     object: string;
     amount_due: number;
     amount_paid: number;
@@ -18,7 +18,7 @@ export interface StripeInvoice {
     hosted_invoice_url: string;
     invoice_pdf: string;
     number: string;
-    status: string;
+    status: string | null;
     total: number;
     lines: {
         data: StripeLineItem[];
@@ -31,7 +31,7 @@ export interface StripeLineItem {
     object: string;
     amount: number;
     currency: string;
-    description: string;
+    description: string | null;
     quantity: number;
 }
 export interface APIKey {
