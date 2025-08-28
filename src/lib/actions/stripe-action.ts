@@ -1,7 +1,7 @@
 'use server'
 import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
-import { schemaUpdateAPI, schemaCreateQuote } from "@/lib/zod/schemas";
+import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateInvoice } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
@@ -10,7 +10,7 @@ import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
 import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
-import { getStripeInstance } from "../dal/stripe-dal";
+import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
 import { hasStripAPIKey } from "../dal/stripe-dal";
 
 //MARK: Helper function to convert ReadableStream to Buffer
@@ -223,6 +223,67 @@ Thank you!`
         return { success: false, message: errorMessage };
     }
 }
+//MARK: Update invoice
+export async function updateStripeInvoice(formData: FormData) {
+    const { isAdmin, orgId, userId } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+
+    const lines: { description: string, amount: number, quantity: number }[] = [];
+    let i = 0;
+    while (formData.has(`lines.${i}.description`)) {
+        lines.push({
+            description: formData.get(`lines.${i}.description`) as string,
+            amount: Number(formData.get(`lines.${i}.amount`)),
+            quantity: Number(formData.get(`lines.${i}.quantity`)),
+        });
+        i++;
+    }
+
+    const validatedFields = schemaUpdateInvoice.safeParse({
+        invoiceId: formData.get('invoiceId'),
+        lines: lines,
+        organization_id: orgId || userId,
+    });
+
+    if (!validatedFields.success) {
+        console.error("Validation Error:", validatedFields.error);
+        throw new Error("Invalid input data");
+    }
+
+    try {
+        const stripe = await getStripeInstance();
+        const existingInvoice = await getInvoiceDAL(validatedFields.data.invoiceId);
+
+        if (!existingInvoice) throw new Error("Invoice not found");
+
+        // Delete existing line items
+        for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
+
+
+        
+        // Create new line items
+        const line_items = validatedFields.data.lines.map(line => ({
+            customer: existingInvoice.customer as string,
+            invoice: validatedFields.data.invoiceId,
+            unit_amount_decimal: String(line.amount * 100),
+            currency: 'cad',
+            description: line.description,
+            quantity: line.quantity,
+        }));
+
+        // console.log('Line items with amounts:', line_items.map(item => item.unit_amount_decimal));
+
+        for (const item of line_items) await stripe.invoiceItems.create(item);
+
+        return { success: true };
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Error updating Stripe invoice:", errorMessage);
+        return { success: false, message: errorMessage };
+    }
+}
+
 //MARK: Resend invoice 
 export async function resendInvoice(invoiceId: string) {
     const { isAdmin, sessionClaims } = await isOrgAdmin()

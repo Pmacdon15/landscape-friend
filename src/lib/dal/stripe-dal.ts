@@ -105,26 +105,31 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
             }
         });
 
-        const strippedInvoices = paginatedInvoices.map((invoice) => ({
-            id: invoice.id,
+        const strippedInvoices = paginatedInvoices.filter(invoice => invoice.id).map((invoice) => ({
+            id: invoice.id!,
             object: invoice.object,
-            amount_due: invoice.amount_due,
-            amount_paid: invoice.amount_paid,
-            amount_remaining: invoice.amount_remaining,
+            amount_due: invoice.amount_due / 100,
+            amount_paid: invoice.amount_paid / 100,
+            amount_remaining: invoice.amount_remaining / 100,
             created: invoice.created,
             currency: invoice.currency,
-            customer: invoice.customer,
-            customer_email: invoice.customer_email,
-            customer_name: invoice.customer_name,
-            due_date: invoice.due_date,
-            hosted_invoice_url: invoice.hosted_invoice_url,
-            invoice_pdf: invoice.invoice_pdf,
-            number: invoice.number,
+            customer: typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id || '',
+            customer_email: invoice.customer_email || '',
+            customer_name: invoice.customer_name || '',
+            due_date: invoice.due_date || 0,
+            hosted_invoice_url: invoice.hosted_invoice_url || '',
+            invoice_pdf: invoice.invoice_pdf || '',
+            number: invoice.number || '',
             status: invoice.status,
-            total: invoice.total,
+            total: invoice.total / 100,
             lines: {
                 data: invoice.lines.data.map((lineItem) => ({
                     id: lineItem.id,
+                    object: lineItem.object,
+                    amount: lineItem.amount / 100,
+                    currency: lineItem.currency,
+                    description: lineItem.description,
+                    quantity: lineItem.quantity || 0,
                 })),
             },
             client_name: typeof invoice.customer === 'string' ? clientNamesMap.get(invoice.customer) : undefined,
@@ -217,6 +222,53 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         console.error(error);
         throw new Error('Failed to fetch quotes');
     }
+}
+
+export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const stripe = await getStripeInstance();
+    const invoice = await stripe.invoices.retrieve(invoiceId, {
+        expand: ['lines.data'],
+    });
+
+    if (!invoice) {
+        throw new Error('Invoice not found');
+    }
+
+    // Convert to plain object
+    const plainInvoice: StripeInvoice = {
+        id: invoice.id,
+        object: invoice.object,
+        amount_due: invoice.amount_due / 100,
+        amount_paid: invoice.amount_paid / 100,
+        amount_remaining: invoice.amount_remaining / 100,
+        created: invoice.created,
+        currency: invoice.currency,
+        customer: typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id || '',
+        customer_email: invoice.customer_email || '',
+        customer_name: invoice.customer_name || '',
+        due_date: invoice.due_date || 0,
+        hosted_invoice_url: invoice.hosted_invoice_url || '',
+        invoice_pdf: invoice.invoice_pdf || '',
+        number: invoice.number || '',
+        status: invoice.status,
+        total: invoice.total / 100,
+        lines: {
+            data: invoice.lines.data.map((lineItem) => ({
+                id: lineItem.id,
+                object: lineItem.object,
+                // Use unit_amount if available, fallback to amount / quantity
+               amount: ((lineItem.amount / (lineItem.quantity || 1)) / 100),
+                currency: lineItem.currency,
+                description: lineItem.description,
+                quantity: lineItem.quantity || 0,
+            })),
+        },
+    };
+    console.log(JSON.stringify(plainInvoice, null, 2))
+    return plainInvoice;
 }
 
 // export async function createOrgWebhook() {

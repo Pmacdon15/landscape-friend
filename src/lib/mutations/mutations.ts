@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
 import { markYardServiced } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/lib/actions/stripe-action";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeInvoice } from "@/lib/actions/stripe-action";
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
 import { assignSnowClearing, toggleSnowClient } from "@/lib/actions/snow-action";
 import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
@@ -184,6 +184,19 @@ export const useCreateStripeQuote = () => {
             const result = await createStripeQuote(formData);
             if (!result.success) {
                 throw new Error("Failed to create Stripe quote");
+            }
+            return result;
+        },
+    });
+};
+
+//MARK:Update stripe invoice
+export const useUpdateStripeInvoice = () => {
+    return useMutation({
+        mutationFn: async (formData: FormData) => {
+            const result = await updateStripeInvoice(formData);
+            if (!result.success) {
+                throw new Error("Failed to update Stripe invoice");
             }
             return result;
         },
