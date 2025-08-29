@@ -5,6 +5,7 @@ import { fetchWebhookSecretDb } from '@/lib/DB/db-stripe';
 import { getStripeInstanceUnprotected } from '@/lib/server-funtions/stripe-utils';
 import { handleInvoicePaid, handleInvoiceSent } from '@/lib/webhooks/stripe-webhooks';
 import { triggerNotificationSendToAdmin } from '@/lib/server-funtions/novu';
+import { InvoicePayload, } from '@/types/webhooks-types';
 
 export async function POST(
     req: NextRequest,
@@ -29,9 +30,9 @@ export async function POST(
     const sig = (await headers()).get('stripe-signature') as string;
 
     let event: Stripe.Event;
-
+    let stripe: Stripe;
     try {
-        const stripe = await getStripeInstanceUnprotected(orgId)
+        stripe = await getStripeInstanceUnprotected(orgId)
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -44,8 +45,16 @@ export async function POST(
     switch (event.type) {
         case 'invoice.paid':
             const invoicePaid = event.data.object as Stripe.Invoice;
+            const clientName = invoicePaid.customer_name
+            const amount = invoicePaid.amount_paid
+            const payload: InvoicePayload = {
+                client: {
+                    name: clientName || 'Unknown Client',
+                },
+                amount: `${(amount / 100).toFixed(2)}`,
+            };
             await handleInvoicePaid(invoicePaid, orgId);
-             await triggerNotificationSendToAdmin(orgId, 'invoice-paid')
+            await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payload)
             break;
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;

@@ -25,6 +25,10 @@ export default function Header({ children }: { children: React.ReactNode }) {
                     <Inbox
                         applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
                         subscriber={`${novuId.UserNovuId}`}
+                        renderSubject={(notification) => (
+                            <strong>{(notification.subject ?? 'No Subject')}</strong>
+                            
+                        )}
                     />
                 }
                 <SignedOut>
