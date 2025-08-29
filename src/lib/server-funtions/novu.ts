@@ -2,6 +2,7 @@ import { sayHello } from '@/lib/dal/novu-dal';
 import { Novu } from '@novu/api';
 import { getOrgMembers } from './clerk';
 import { getNovuIds } from '../DB/db-clients';
+import { InvoicePayload } from '@/types/webhooks-types';
 
 export async function addNovuSubscriber(
     subscriberId: string,
@@ -40,7 +41,7 @@ const novu = new Novu({
     secretKey: process.env.NOVU_SECRET_KEY,
 });
 
-export async function triggerNotificationSendToAdmin(orgId: string, workflow: string) {
+export async function triggerNotificationSendToAdmin(orgId: string, workflow: string, payload?: InvoicePayload) {
     let adminUserIds: string[];
     if (!orgId.startsWith('user')) {
         const membersOfOrg = await getOrgMembers(orgId);
@@ -57,7 +58,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
         const result = await novu.trigger({
             workflowId: workflow,
             to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
-            payload: {},
+            payload: payload,
         });
         console.log("Result for send notification: ", result)
     } catch (error) {

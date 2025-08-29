@@ -5,6 +5,7 @@ import { fetchWebhookSecretDb } from '@/lib/DB/db-stripe';
 import { getStripeInstanceUnprotected } from '@/lib/server-funtions/stripe-utils';
 import { handleInvoicePaid, handleInvoiceSent } from '@/lib/webhooks/stripe-webhooks';
 import { triggerNotificationSendToAdmin } from '@/lib/server-funtions/novu';
+import { InvoicePayload, } from '@/types/webhooks-types';
 
 export async function POST(
     req: NextRequest,
@@ -44,8 +45,9 @@ export async function POST(
     switch (event.type) {
         case 'invoice.paid':
             const invoicePaid = event.data.object as Stripe.Invoice;
+            const payloadPaid = createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid);
             await handleInvoicePaid(invoicePaid, orgId);
-             await triggerNotificationSendToAdmin(orgId, 'invoice-paid')
+            await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
             break;
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
@@ -54,8 +56,10 @@ export async function POST(
             break;
         case 'invoice.sent':
             const invoiceSent = event.data.object as Stripe.Invoice;
+
+            const payloadSent = createInvoicePayload(invoiceSent.customer_name, invoiceSent.amount_paid);
             await handleInvoiceSent(invoiceSent, orgId);
-            await triggerNotificationSendToAdmin(orgId, 'invoice-sent')
+            await triggerNotificationSendToAdmin(orgId, 'invoice-sent', payloadSent)
             break;
         // Add other event types to handle here
         default:
@@ -64,4 +68,12 @@ export async function POST(
 
     return NextResponse.json({ status: 'success' }, { status: 200 })
 }
-//
+
+function createInvoicePayload(clientName: string | null, amount: number): InvoicePayload {
+    return {
+        client: {
+            name: clientName || 'Unknown Client',
+        },
+        amount: `${(amount / 100).toFixed(2)}`,
+    };
+};
