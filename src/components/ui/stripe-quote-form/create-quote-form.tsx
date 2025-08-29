@@ -32,7 +32,15 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
     useCreateQuoteForm({ isSuccess, reset, fields, append });
 
     const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
-   
+
+    const watchedValues = watch();
+    const total = (watchedValues.labourCostPerUnit * watchedValues.labourUnits) +
+        (watchedValues.materials?.reduce((acc, item) => {
+            const cost = item.materialCostPerUnit ?? 0;
+            const units = item.materialUnits ?? 0;
+            return acc + (cost * units);
+        }, 0) ?? 0);
+
     return (
         <>
             <form action={mutate} className="space-y-4">
@@ -63,11 +71,11 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
                     register={register}
                     control={control}
                     errors={errors}
-                    watch={watch}
                     labels={{ description: 'Material', amount: 'Material Cost (per unit)', quantity: 'Material Units' }}
                     newItem={() => ({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 })}
                 />
 
+                <p className="font-bold mt-2">Total: ${total.toFixed(2)}</p>
 
                 <Button variant="outline" type="submit" disabled={isPending}>
                     {isPending ? <>Creating Quote...<Spinner /></> : 'Create Quote'}

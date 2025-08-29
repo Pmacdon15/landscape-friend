@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Control, FieldErrors, FieldValues, UseFormRegister, UseFormWatch, Path } from 'react-hook-form';
+import { Control, FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import InputField from './input'; // adjust path if needed
 
@@ -13,7 +13,6 @@ interface DynamicFieldsProps<T, TFieldValues extends FieldValues> {
   remove: (index: number) => void;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
-  watch: UseFormWatch<TFieldValues>;
   control: Control<TFieldValues>;
   labels: { description: string; amount: string; quantity: string }; // customizable labels
   newItem: () => T;
@@ -26,20 +25,11 @@ export function DynamicFields<T extends { description?: string; amount?: number;
   remove,
   register,
   errors,
-  watch,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   control,
   labels,
   newItem
 }: DynamicFieldsProps<T, TFieldValues>) {
-
-  const items = watch(name as Path<TFieldValues>) as readonly T[];
-  const subtotal = items?.reduce((acc: number, item: T) => {
-    const amt = item.amount ?? item.materialCostPerUnit ?? 0;
-    const qty = item.quantity ?? item.materialUnits ?? 0;
-    return acc + (amt * qty);
-  }, 0);
-
   return (
     <section>
       <h3 className="text-md font-semibold mb-2">{labels.description} Items</h3>
@@ -105,8 +95,6 @@ export function DynamicFields<T extends { description?: string; amount?: number;
       >
         Add {labels.description} Item
       </Button>
-
-      <p className="font-bold mt-2">Matreal: ${subtotal?.toFixed(2)}</p>
     </section>
   );
 }
