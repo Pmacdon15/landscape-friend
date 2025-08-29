@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Control, FieldErrors, FieldValues, UseFormRegister, UseFormWatch } from 'react-hook-form';
+import { Control, FieldErrors, FieldValues, UseFormRegister, UseFormWatch, Path } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import InputField from './input'; // adjust path if needed
 
@@ -33,7 +33,7 @@ export function DynamicFields<T extends { description?: string; amount?: number;
   newItem
 }: DynamicFieldsProps<T, TFieldValues>) {
 
-  const items = watch(name) as T[];
+  const items = watch(name as Path<TFieldValues>) as readonly T[];
   const subtotal = items?.reduce((acc: number, item: T) => {
     const amt = item.amount ?? item.materialCostPerUnit ?? 0;
     const qty = item.quantity ?? item.materialUnits ?? 0;
@@ -106,7 +106,7 @@ export function DynamicFields<T extends { description?: string; amount?: number;
         Add {labels.description} Item
       </Button>
 
-      <p className="font-bold mt-2">Subtotal: ${subtotal?.toFixed(2)}</p>
+      <p className="font-bold mt-2">Matreal: ${subtotal?.toFixed(2)}</p>
     </section>
   );
 }
