@@ -196,8 +196,8 @@ export const useCreateStripeQuote = () => {
 //MARK:Update stripe invoice
 export const useUpdateStripeInvoice = () => {
     return useMutation({
-        mutationFn: async (formData: FormData) => {
-            const result = await updateStripeInvoice(formData);
+        mutationFn: async (invoiceData: z.infer<typeof schemaUpdateInvoice>) => {
+            const result = await updateStripeInvoice(invoiceData);
             if (!result.success) {
                 throw new Error("Failed to update Stripe invoice");
             }

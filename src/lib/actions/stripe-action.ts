@@ -206,25 +206,13 @@ Thank you!`
 }
 
 //MARK: Update invoice
-export async function updateStripeInvoice(formData: FormData) {
+export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpdateInvoice>) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
-    const lines: { description: string, amount: number, quantity: number }[] = [];
-    let i = 0;
-    while (formData.has(`lines.${i}.description`)) {
-        lines.push({
-            description: formData.get(`lines.${i}.description`) as string,
-            amount: Number(formData.get(`lines.${i}.amount`)),
-            quantity: Number(formData.get(`lines.${i}.quantity`)),
-        });
-        i++;
-    }
-
     const validatedFields = schemaUpdateInvoice.safeParse({
-        invoiceId: formData.get('invoiceId'),
-        lines: lines,
+        ...invoiceData,
         organization_id: orgId || userId,
     });
 

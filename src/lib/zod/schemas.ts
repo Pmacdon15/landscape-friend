@@ -76,8 +76,8 @@ export const schemaCreateQuote = z.object({
 
 export const lineItemSchema = z.object({
     description: z.string(),
-    amount: z.number(),
-    quantity: z.number(),
+    amount: z.coerce.number().min(0, "Amount must be a non-negative number"),
+    quantity: z.coerce.number().min(0, "Quantity must be a non-negative number"),
 });
 
 export const schemaUpdateInvoice = z.object({

@@ -18,7 +18,7 @@ interface DynamicFieldsProps<T, TFieldValues extends FieldValues> {
   newItem: () => T;
 }
 
-export function DynamicFields<T extends { description?: string; amount?: number; quantity?: number; materialType?: string; materialCostPerUnit?: number; materialUnits?: number }, TFieldValues extends FieldValues>({
+export function DynamicFields<T extends { description?: string; amount?: number | unknown; quantity?: number | unknown; materialType?: string; materialCostPerUnit?: number; materialUnits?: number }, TFieldValues extends FieldValues>({
   name,
   fields,
   append,

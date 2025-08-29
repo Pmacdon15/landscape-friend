@@ -9,11 +9,14 @@ import Spinner from '../spinner';
 import { StripeInvoice } from '@/types/types-stripe';
 import { AlertMessage } from '../stripe-forms/shared/alert-message';
 import { DynamicFields } from '../stripe-forms/shared/dynamic-fields'; // our reusable component
+import { z } from 'zod';
+import { SubmitHandler } from 'react-hook-form';
+
 
 export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeInvoice();
 
-    const { register, watch, control, formState: { errors } } = useForm({
+    const { register, watch, control, handleSubmit, formState: { errors } } = useForm<z.input<typeof schemaUpdateInvoice>>({
         resolver: zodResolver(schemaUpdateInvoice),
         defaultValues: {
             invoiceId: invoice.id || '',
@@ -22,17 +25,25 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
                 amount: line.amount,
                 quantity: line.quantity,
             })),
-        },
+        } as z.input<typeof schemaUpdateInvoice>,
     });
 
     const { fields, append, remove } = useFieldArray({ control, name: 'lines' });
 
     const watchedLines = watch('lines');
-    const subtotal = watchedLines?.reduce((acc, item) => acc + (item.amount * item.quantity), 0) ?? 0;
+    const subtotal = watchedLines?.reduce((acc, item) => acc + (Number(item.amount) * Number(item.quantity)), 0) ?? 0;
+
+    
+
+    const onSubmit: SubmitHandler<z.input<typeof schemaUpdateInvoice>> = (formData) => {
+        mutate(formData as z.infer<typeof schemaUpdateInvoice>);
+    };
+
+    const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
       
     return (
         <>
-            <form action={mutate} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <input type="hidden" {...register('invoiceId')} value={invoice.id} />
 
                 {/* Reusable Dynamic Fields for Invoice Lines */}
