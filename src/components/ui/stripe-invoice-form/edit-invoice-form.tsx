@@ -45,6 +45,7 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
                         errors={errors}
                         watch={watch}
                         labels={{ description: 'Invoice Line', amount: 'Amount (per unit)', quantity: 'Quantity' }}
+                        newItem={() => ({ description: '', amount: 0, quantity: 1 })}
                     />
                 </section>
 

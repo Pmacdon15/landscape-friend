@@ -65,6 +65,7 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
                     errors={errors}
                     watch={watch}
                     labels={{ description: 'Material', amount: 'Material Cost (per unit)', quantity: 'Material Units' }}
+                    newItem={() => ({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 })}
                 />
 
 

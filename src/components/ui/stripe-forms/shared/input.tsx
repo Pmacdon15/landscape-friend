@@ -1,20 +1,20 @@
 // components/InputField.tsx
 import React from 'react';
-import { FieldErrors, FieldValues, UseFormRegister, get } from 'react-hook-form';
+import { FieldErrors, FieldValues, Path, UseFormRegister, get } from 'react-hook-form';
 
-interface InputFieldProps {
+interface InputFieldProps<TFieldValues extends FieldValues> {
   label: string;
   id: string;
   type: string;
-  register: UseFormRegister<FieldValues>;
-  errors: FieldErrors<FieldValues>;
+  register: UseFormRegister<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
   className?: string;
   min?: string | number;
   step?: string | number;
   valueAsNumber?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
+const InputField = <TFieldValues extends FieldValues>({
   label,
   id,
   type,
@@ -24,7 +24,7 @@ const InputField: React.FC<InputFieldProps> = ({
   min,
   step,
   valueAsNumber,
-}) => {
+}: InputFieldProps<TFieldValues>) => {
   const error = get(errors, id);
 
   return (
@@ -33,7 +33,7 @@ const InputField: React.FC<InputFieldProps> = ({
       <input
         type={type}
         id={id}
-        {...register(id, { valueAsNumber })}
+        {...register(id as Path<TFieldValues>, { valueAsNumber })}
         className={className}
         min={min}
         step={step}

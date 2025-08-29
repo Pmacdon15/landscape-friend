@@ -1,23 +1,25 @@
 'use client';
 import React from 'react';
-import { FieldErrors, FieldValues, UseFormRegister, UseFormWatch } from 'react-hook-form';
+import { Control, FieldErrors, FieldValues, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import InputField from './input'; // adjust path if needed
 
 type FieldWithId<T> = T & { id: string };
 
-interface DynamicFieldsProps<T> {
+interface DynamicFieldsProps<T, TFieldValues extends FieldValues> {
   name: string; // "lines" or "materials"
   fields: FieldWithId<T>[];
-  append: (item: Partial<T>) => void;
+  append: (item: T | T[]) => void;
   remove: (index: number) => void;
-  register: UseFormRegister<FieldValues>;
-  errors: FieldErrors<FieldValues>;
-  watch: UseFormWatch<FieldValues>;
+  register: UseFormRegister<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
+  watch: UseFormWatch<TFieldValues>;
+  control: Control<TFieldValues>;
   labels: { description: string; amount: string; quantity: string }; // customizable labels
+  newItem: () => T;
 }
 
-export function DynamicFields<T extends { description?: string; amount?: number; quantity?: number; materialType?: string; materialCostPerUnit?: number; materialUnits?: number }>({
+export function DynamicFields<T extends { description?: string; amount?: number; quantity?: number; materialType?: string; materialCostPerUnit?: number; materialUnits?: number }, TFieldValues extends FieldValues>({
   name,
   fields,
   append,
@@ -25,8 +27,11 @@ export function DynamicFields<T extends { description?: string; amount?: number;
   register,
   errors,
   watch,
-  labels
-}: DynamicFieldsProps<T>) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  control,
+  labels,
+  newItem
+}: DynamicFieldsProps<T, TFieldValues>) {
 
   const items = watch(name) as T[];
   const subtotal = items?.reduce((acc: number, item: T) => {
@@ -95,7 +100,7 @@ export function DynamicFields<T extends { description?: string; amount?: number;
 
       <Button
         type="button"
-        onClick={() => append({ description: '', amount: 0, quantity: 1 } as Partial<T>)}
+        onClick={() => append(newItem())}
         className="mt-2"
       >
         Add {labels.description} Item
