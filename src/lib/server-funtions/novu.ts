@@ -41,9 +41,15 @@ const novu = new Novu({
 });
 
 export async function triggerNotificationSendToAdmin(orgId: string, workflow: string) {
-    const membersOfOrg = await getOrgMembers(orgId);
-    const adminMembers = membersOfOrg.filter((member) => member.role === 'org:admin');
-    const adminUserIds = adminMembers.map((admin) => admin.userId);
+    let adminUserIds: string[];
+    if (!orgId.startsWith('user')) {
+        const membersOfOrg = await getOrgMembers(orgId);
+        const adminMembers = membersOfOrg.filter((member) => member.role === 'org:admin');
+        adminUserIds = adminMembers.map((admin) => admin.userId);
+    } else {
+        adminUserIds = [orgId];
+    }
+
     const novuSubscriberIds = await getNovuIds(adminUserIds);
     const adminSubscriberIds = Object.values(novuSubscriberIds).filter((id) => id !== null);
     console.log("orgId: ", orgId)

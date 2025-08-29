@@ -43,7 +43,7 @@ export async function POST(
     // Handle the event
     switch (event.type) {
         case 'invoice.paid':
-            const invoicePaid = event.data.object as Stripe.Invoice;            
+            const invoicePaid = event.data.object as Stripe.Invoice;
             await handleInvoicePaid(invoicePaid, orgId);
             break;
         case 'checkout.session.completed':
@@ -63,3 +63,4 @@ export async function POST(
 
     return NextResponse.json({ status: 'success' }, { status: 200 })
 }
+//
