@@ -26,12 +26,10 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
     });
 
     const { fields, append, remove } = useFieldArray({ control, name: 'lines' });
-    const lines = watch('lines');
-    const subtotal = lines.reduce(
-        (acc, line) => acc + ((line.amount ?? 0) * (line.quantity ?? 0)),
-        0
-    );
 
+    const watchedLines = watch('lines');
+    const subtotal = watchedLines?.reduce((acc, item) => acc + (item.amount * item.quantity), 0) ?? 0;
+      
     return (
         <>
             <form action={mutate} className="space-y-4">
@@ -48,10 +46,12 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
                         register={register}
                         control={control}
                         errors={errors}
-                        watch={watch}
                         labels={{ description: 'Invoice Line', amount: 'Amount (per unit)', quantity: 'Quantity' }}
+                        newItem={() => ({ description: '', amount: 0, quantity: 1 })}
                     />
                 </section>
+
+                <p className="font-bold mt-2">Subtotal: ${subtotal.toFixed(2)}</p>
 
                 <Button variant="outline" type="submit" disabled={isPending}>
                     {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}

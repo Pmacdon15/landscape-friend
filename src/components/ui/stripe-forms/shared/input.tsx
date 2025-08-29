@@ -1,19 +1,20 @@
 // components/InputField.tsx
 import React from 'react';
+import { FieldErrors, FieldValues, Path, UseFormRegister, get } from 'react-hook-form';
 
-interface InputFieldProps {
+interface InputFieldProps<TFieldValues extends FieldValues> {
   label: string;
   id: string;
   type: string;
-  register: any;
-  errors: any;
+  register: UseFormRegister<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
   className?: string;
   min?: string | number;
   step?: string | number;
   valueAsNumber?: boolean;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
+const InputField = <TFieldValues extends FieldValues>({
   label,
   id,
   type,
@@ -23,20 +24,24 @@ const InputField: React.FC<InputFieldProps> = ({
   min,
   step,
   valueAsNumber,
-}) => (
-  <div>
-    <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
-    <input
-      type={type}
-      id={id}
-      {...register(id, { valueAsNumber })}
-      className={className}
-      min={min}
-      step={step}
-      aria-invalid={errors[id] ? "true" : "false"}
-    />
-    {errors[id] && <p className="text-red-500 text-sm mt-1">{errors[id].message}</p>}
-  </div>
-);
+}: InputFieldProps<TFieldValues>) => {
+  const error = get(errors, id);
+
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700">{label}</label>
+      <input
+        type={type}
+        id={id}
+        {...register(id as Path<TFieldValues>, { valueAsNumber })}
+        className={className}
+        min={min}
+        step={step}
+        aria-invalid={error ? 'true' : 'false'}
+      />
+      {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
+    </div>
+  );
+};
 
 export default InputField;

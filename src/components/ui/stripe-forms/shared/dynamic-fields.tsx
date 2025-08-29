@@ -1,44 +1,39 @@
 'use client';
 import React from 'react';
-import { useFieldArray, UseFormRegister, Control, FieldErrors, UseFormWatch } from 'react-hook-form';
+import { Control, FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import InputField from './input'; // adjust path if needed
 
-interface DynamicFieldsProps<T> {
+type FieldWithId<T> = T & { id: string };
+
+interface DynamicFieldsProps<T, TFieldValues extends FieldValues> {
   name: string; // "lines" or "materials"
-  fields: T[];
-  append: (item: any) => void;
+  fields: FieldWithId<T>[];
+  append: (item: T | T[]) => void;
   remove: (index: number) => void;
-  register: UseFormRegister<any>;
-  control: Control<any>;
-  errors: FieldErrors<any>;
-  watch: UseFormWatch<any>;
+  register: UseFormRegister<TFieldValues>;
+  errors: FieldErrors<TFieldValues>;
+  control: Control<TFieldValues>;
   labels: { description: string; amount: string; quantity: string }; // customizable labels
+  newItem: () => T;
 }
 
-export function DynamicFields<T extends { description?: string; amount?: number; quantity?: number; materialType?: string; materialCostPerUnit?: number; materialUnits?: number }>({
+export function DynamicFields<T extends { description?: string; amount?: number; quantity?: number; materialType?: string; materialCostPerUnit?: number; materialUnits?: number }, TFieldValues extends FieldValues>({
   name,
   fields,
   append,
   remove,
   register,
-  control,
   errors,
-  watch,
-  labels
-}: DynamicFieldsProps<T>) {
-
-  const items = watch(name);
-  const subtotal = items?.reduce((acc: number, item: any) => {
-    const amt = item.amount ?? item.materialCostPerUnit ?? 0;
-    const qty = item.quantity ?? item.materialUnits ?? 0;
-    return acc + (amt * qty);
-  }, 0);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  control,
+  labels,
+  newItem
+}: DynamicFieldsProps<T, TFieldValues>) {
   return (
     <section>
       <h3 className="text-md font-semibold mb-2">{labels.description} Items</h3>
-      {fields.map((item: any, index: number) => (
+      {fields.map((item, index: number) => (
         <div key={item.id} className="border p-4 mb-4 rounded-md">
           {item.description !== undefined && (
             <InputField
@@ -95,13 +90,11 @@ export function DynamicFields<T extends { description?: string; amount?: number;
 
       <Button
         type="button"
-        onClick={() => append({ description: '', amount: 0, quantity: 1 })}
+        onClick={() => append(newItem())}
         className="mt-2"
       >
         Add {labels.description} Item
       </Button>
-
-      <p className="font-bold mt-2">Subtotal: ${subtotal?.toFixed(2)}</p>
     </section>
   );
 }
