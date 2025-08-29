@@ -19,6 +19,10 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
         resolver: zodResolver(schemaCreateQuote),
         mode: 'onBlur',
         defaultValues: {
+            clientName: '',
+            clientEmail: '',
+            phone_number: '',
+            address: '',
             labourCostPerUnit: 0,
             labourUnits: 0,
             materials: [{ materialType: '', materialCostPerUnit: 0, materialUnits: 0 }],

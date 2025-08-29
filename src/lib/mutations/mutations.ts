@@ -177,11 +177,14 @@ export const useSendNewsLetter = () => {
     });
 };
 
+import { z } from 'zod';
+import { schemaCreateQuote } from '@/lib/zod/schemas';
+
 //MARK:Create stripe quote
 export const useCreateStripeQuote = () => {
     return useMutation({
-        mutationFn: async (formData: FormData) => {
-            const result = await createStripeQuote(formData);
+        mutationFn: async (quoteData: z.infer<typeof schemaCreateQuote>) => {
+            const result = await createStripeQuote(quoteData);
             if (!result.success) {
                 throw new Error("Failed to create Stripe quote");
             }

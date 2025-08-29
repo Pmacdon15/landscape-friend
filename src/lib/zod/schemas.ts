@@ -59,8 +59,8 @@ export const schemaUpdateAPI = z.object({
 
 export const materialSchema = z.object({
     materialType: z.string().optional().or(z.literal('')),
-    materialCostPerUnit: z.number().optional().default(0),
-    materialUnits: z.number().optional().default(0),
+    materialCostPerUnit: z.number(),
+    materialUnits: z.number(),
 });
 
 export const schemaCreateQuote = z.object({
