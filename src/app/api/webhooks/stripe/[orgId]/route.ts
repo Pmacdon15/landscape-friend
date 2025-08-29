@@ -30,9 +30,9 @@ export async function POST(
     const sig = (await headers()).get('stripe-signature') as string;
 
     let event: Stripe.Event;
-    let stripe: Stripe;
+
     try {
-        stripe = await getStripeInstanceUnprotected(orgId)
+        const stripe = await getStripeInstanceUnprotected(orgId)
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
@@ -45,16 +45,9 @@ export async function POST(
     switch (event.type) {
         case 'invoice.paid':
             const invoicePaid = event.data.object as Stripe.Invoice;
-            const clientName = invoicePaid.customer_name
-            const amount = invoicePaid.amount_paid
-            const payload: InvoicePayload = {
-                client: {
-                    name: clientName || 'Unknown Client',
-                },
-                amount: `${(amount / 100).toFixed(2)}`,
-            };
+            const payloadPaid = createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid);
             await handleInvoicePaid(invoicePaid, orgId);
-            await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payload)
+            await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
             break;
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
@@ -63,8 +56,10 @@ export async function POST(
             break;
         case 'invoice.sent':
             const invoiceSent = event.data.object as Stripe.Invoice;
+
+            const payloadSent = createInvoicePayload(invoiceSent.customer_name, invoiceSent.amount_paid);
             await handleInvoiceSent(invoiceSent, orgId);
-            await triggerNotificationSendToAdmin(orgId, 'invoice-sent')
+            await triggerNotificationSendToAdmin(orgId, 'invoice-sent', payloadSent)
             break;
         // Add other event types to handle here
         default:
@@ -73,4 +68,12 @@ export async function POST(
 
     return NextResponse.json({ status: 'success' }, { status: 200 })
 }
-//
+
+function createInvoicePayload(clientName: string | null, amount: number): InvoicePayload {
+    return {
+        client: {
+            name: clientName || 'Unknown Client',
+        },
+        amount: `${(amount / 100).toFixed(2)}`,
+    };
+};
