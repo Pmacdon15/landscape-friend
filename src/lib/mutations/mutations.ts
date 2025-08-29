@@ -177,11 +177,14 @@ export const useSendNewsLetter = () => {
     });
 };
 
+import { z } from 'zod';
+import { schemaCreateQuote } from '@/lib/zod/schemas';
+
 //MARK:Create stripe quote
 export const useCreateStripeQuote = () => {
     return useMutation({
-        mutationFn: async (formData: FormData) => {
-            const result = await createStripeQuote(formData);
+        mutationFn: async (quoteData: z.infer<typeof schemaCreateQuote>) => {
+            const result = await createStripeQuote(quoteData);
             if (!result.success) {
                 throw new Error("Failed to create Stripe quote");
             }
@@ -193,8 +196,8 @@ export const useCreateStripeQuote = () => {
 //MARK:Update stripe invoice
 export const useUpdateStripeInvoice = () => {
     return useMutation({
-        mutationFn: async (formData: FormData) => {
-            const result = await updateStripeInvoice(formData);
+        mutationFn: async (invoiceData: z.infer<typeof schemaUpdateInvoice>) => {
+            const result = await updateStripeInvoice(invoiceData);
             if (!result.success) {
                 throw new Error("Failed to update Stripe invoice");
             }

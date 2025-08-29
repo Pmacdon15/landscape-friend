@@ -59,13 +59,13 @@ export const schemaUpdateAPI = z.object({
 
 export const materialSchema = z.object({
     materialType: z.string().optional().or(z.literal('')),
-    materialCostPerUnit: z.number().optional().default(0),
-    materialUnits: z.number().optional().default(0),
+    materialCostPerUnit: z.number(),
+    materialUnits: z.number(),
 });
 
 export const schemaCreateQuote = z.object({
     clientName: z.string(),
-    clientEmail: z.string(),
+    clientEmail: z.email(),
     phone_number: z.string(),
     address: z.string(),
     labourCostPerUnit: z.number(),
@@ -76,8 +76,8 @@ export const schemaCreateQuote = z.object({
 
 export const lineItemSchema = z.object({
     description: z.string(),
-    amount: z.number(),
-    quantity: z.number(),
+    amount: z.coerce.number().min(0, "Amount must be a non-negative number"),
+    quantity: z.coerce.number().min(0, "Quantity must be a non-negative number"),
 });
 
 export const schemaUpdateInvoice = z.object({
