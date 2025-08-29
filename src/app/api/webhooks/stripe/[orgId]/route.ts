@@ -45,6 +45,7 @@ export async function POST(
         case 'invoice.paid':
             const invoicePaid = event.data.object as Stripe.Invoice;
             await handleInvoicePaid(invoicePaid, orgId);
+             await triggerNotificationSendToAdmin(orgId, 'invoice-paid')
             break;
         case 'checkout.session.completed':
             const checkoutSession = event.data.object as Stripe.Checkout.Session;
