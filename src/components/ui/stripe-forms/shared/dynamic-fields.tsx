@@ -1,18 +1,19 @@
 'use client';
 import React from 'react';
-import { useFieldArray, UseFormRegister, Control, FieldErrors, UseFormWatch } from 'react-hook-form';
+import { FieldErrors, FieldValues, UseFormRegister, UseFormWatch } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import InputField from './input'; // adjust path if needed
 
+type FieldWithId<T> = T & { id: string };
+
 interface DynamicFieldsProps<T> {
   name: string; // "lines" or "materials"
-  fields: T[];
-  append: (item: any) => void;
+  fields: FieldWithId<T>[];
+  append: (item: Partial<T>) => void;
   remove: (index: number) => void;
-  register: UseFormRegister<any>;
-  control: Control<any>;
-  errors: FieldErrors<any>;
-  watch: UseFormWatch<any>;
+  register: UseFormRegister<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  watch: UseFormWatch<FieldValues>;
   labels: { description: string; amount: string; quantity: string }; // customizable labels
 }
 
@@ -22,14 +23,13 @@ export function DynamicFields<T extends { description?: string; amount?: number;
   append,
   remove,
   register,
-  control,
   errors,
   watch,
   labels
 }: DynamicFieldsProps<T>) {
 
-  const items = watch(name);
-  const subtotal = items?.reduce((acc: number, item: any) => {
+  const items = watch(name) as T[];
+  const subtotal = items?.reduce((acc: number, item: T) => {
     const amt = item.amount ?? item.materialCostPerUnit ?? 0;
     const qty = item.quantity ?? item.materialUnits ?? 0;
     return acc + (amt * qty);
@@ -38,7 +38,7 @@ export function DynamicFields<T extends { description?: string; amount?: number;
   return (
     <section>
       <h3 className="text-md font-semibold mb-2">{labels.description} Items</h3>
-      {fields.map((item: any, index: number) => (
+      {fields.map((item, index: number) => (
         <div key={item.id} className="border p-4 mb-4 rounded-md">
           {item.description !== undefined && (
             <InputField
@@ -95,7 +95,7 @@ export function DynamicFields<T extends { description?: string; amount?: number;
 
       <Button
         type="button"
-        onClick={() => append({ description: '', amount: 0, quantity: 1 })}
+        onClick={() => append({ description: '', amount: 0, quantity: 1 } as Partial<T>)}
         className="mt-2"
       >
         Add {labels.description} Item
