@@ -65,7 +65,7 @@ export const materialSchema = z.object({
 
 export const schemaCreateQuote = z.object({
     clientName: z.string(),
-    clientEmail: z.string(),
+    clientEmail: z.email(),
     phone_number: z.string(),
     address: z.string(),
     labourCostPerUnit: z.number(),

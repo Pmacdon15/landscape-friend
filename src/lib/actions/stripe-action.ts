@@ -54,35 +54,16 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
     }
 }
 
+import { z } from 'zod';
+
 //MARK: Create quote
-export async function createStripeQuote(formData: FormData) {
+export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQuote>) {
     const { isAdmin, orgId, userId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin")
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
     const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
 
-    const materials: { materialType: string, materialCostPerUnit: number, materialUnits: number }[] = [];
-    let i = 0;
-    while (formData.has(`materials.${i}.materialType`)) {
-        materials.push({
-            materialType: formData.get(`materials.${i}.materialType`) as string,
-            materialCostPerUnit: Number(formData.get(`materials.${i}.materialCostPerUnit`)),
-            materialUnits: Number(formData.get(`materials.${i}.materialUnits`)),
-        });
-        i++;
-    }
-
-
-    const validatedFields = schemaCreateQuote.safeParse({
-        clientName: formData.get('clientName'),
-        clientEmail: formData.get('clientEmail'),
-        phone_number: formData.get('phone_number'),
-        address: formData.get('address'),
-        labourCostPerUnit: Number(formData.get('labourCostPerUnit')),
-        labourUnits: Number(formData.get('labourUnits')),
-        materials: materials,
-        organization_id: formData.get('organization_id'),
-    });
+    const validatedFields = schemaCreateQuote.safeParse(quoteData);
 
     if (!validatedFields.success) {
         console.error("Validation Error:", validatedFields.error);
@@ -223,6 +204,7 @@ Thank you!`
         return { success: false, message: errorMessage };
     }
 }
+
 //MARK: Update invoice
 export async function updateStripeInvoice(formData: FormData) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
