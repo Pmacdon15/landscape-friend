@@ -1,0 +1,50 @@
+/* Top Header Animations */
+
+  /* Title fade in */
+  
+  @keyframes titleFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+  }
+
+  /* Title underline when mouseover */
+
+  @keyframes titleUnderline {
+    from {
+        border-bottom-color: rgba(0, 150, 0, 0);
+    }
+    to {
+        border-bottom-color: rgba(0, 150, 0, 1);
+    }
+  }
+
+  /* responsive adjustments */
+  @media only screen and (max-width: 800px) {
+    
+  }
+
+  /* animation applicator classes */
+
+
+  /* Title animations */
+  .title {
+    border-style: solid;
+    border-width: 3px;
+    border-top-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 150, 0, 0);
+    animation: titleFadeIn 0.5s forwards;
+}
+    
+    .title:hover {
+        animation: titleUnderline 0.5s forwards;
+    }
+    
+    .title:not(:hover) {
+        animation: titleUnderline 0.5s reverse;
+    }
