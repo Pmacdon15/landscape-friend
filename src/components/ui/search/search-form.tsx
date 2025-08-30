@@ -3,8 +3,7 @@ import { ServiceStatusSelector } from '../selectors/service-status-selector';
 import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 import { BillingStatusSelector } from '../selectors/billing-status-selector';
 import { SearchInput } from '../inputs/search-input';
-
-type SearchFormVariant = 'cutting' | 'clearing' | 'invoices' | 'default' | 'quotes';
+import { SearchFormVariant } from '@/types/search-fallback-types';
 
 export default function SearchForm({ variant = 'default' }: { variant?: SearchFormVariant }) {
   return (

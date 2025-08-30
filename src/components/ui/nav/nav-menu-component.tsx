@@ -6,7 +6,6 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { useMediaQuery } from "@/lib/hooks/hooks";
 import { useGetIsAdmin } from "@/lib/hooks/useClerk";
 import { useHasStripeApiKey } from "@/lib/hooks/useStripe";
 import Link from "next/link";
@@ -14,13 +13,12 @@ import Link from "next/link";
 
 export default function NavigationMenuComponent({ userId, }: { userId: string }) {
     const date = new Date();
-    const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
-    const isMd = useMediaQuery("(min-width: 768px)");
+    const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC    
 
     const { data: isAdmin } = useGetIsAdmin();
     const { data: hasStripAPIKey } = useHasStripeApiKey();
     return (
-        <NavigationMenu viewport={!isMd}>
+        <NavigationMenu viewport={true}>
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>List</NavigationMenuTrigger>

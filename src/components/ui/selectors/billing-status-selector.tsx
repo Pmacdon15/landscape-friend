@@ -1,11 +1,8 @@
 'use client'
-
+import { VariantBillingStatusSelector } from "@/types/search-fallback-types";
 import { useBillingStatusSearch } from "../../../lib/hooks/hooks";
 
-type Variant = "invoices" | "quotes";
-
-
-export function BillingStatusSelector({ variant = "invoices" }: { variant?: Variant }) {
+export function BillingStatusSelector({ variant = "invoices" }: { variant?: VariantBillingStatusSelector }) {
   const { currentStatus, setBillingStatus } = useBillingStatusSearch();
   const statuses = variant === "invoices"
     ? ["all", "draft", "open", "paid", "void"]

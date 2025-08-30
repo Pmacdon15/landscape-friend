@@ -10,7 +10,7 @@ export function SearchInput() {
     <div className="relative sm:w-1/2 md:w-2/6">
       <input
         name="search"
-        className="w-full border rounded-sm p-1 pr-8"
+        className="w-full border rounded-sm p-2 pr-8"
         placeholder="Search"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
