@@ -1,4 +1,4 @@
-import SearchForm from "@/components/ui/client-list/search-form";
+import SearchForm from "@/components/ui/search/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
