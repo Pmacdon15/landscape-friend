@@ -26,8 +26,9 @@ export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
                     </div>
                     <div className="flex flex-wrap justify-center w-full gap-4 ">
                         {quote.status == "draft" && <ManageQuoteButton action="edit" quoteId={quote.id} />}
+                         {quote.status == "draft" && <ManageQuoteButton action="send" quoteId={quote.id} />}
                         {quote.status == "open" && <ManageQuoteButton action="accept" quoteId={quote.id} />}
-                        {quote.status == "accecpted" && <ManageQuoteButton action="cancel" quoteId={quote.id} />}
+                        {quote.status == "open" && <ManageQuoteButton action="cancel" quoteId={quote.id} />}
                     </div>
                 </div>
             ))}
