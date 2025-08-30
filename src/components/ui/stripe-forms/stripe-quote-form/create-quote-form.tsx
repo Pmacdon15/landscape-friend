@@ -6,11 +6,12 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemaCreateQuote } from '@/lib/zod/schemas';
 import { useCreateQuoteForm } from '@/lib/hooks/hooks';
-import Spinner from '../spinner';
-import InputField from '../stripe-forms/shared/input';
-import { AlertMessage } from '../stripe-forms/shared/alert-message';
-import { DynamicFields } from '../stripe-forms/shared/dynamic-fields';
 import { z } from 'zod';
+import BackToLink from '../../links/back-to-link';
+import InputField from '../shared/input';
+import { DynamicFields } from '../shared/dynamic-fields';
+import Spinner from '../../spinner';
+import { AlertMessage } from '../shared/alert-message';
 
 export function CreateQuoteForm({ organizationId }: { organizationId: string }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
@@ -86,10 +87,13 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
                 />
 
                 <p className="font-bold mt-2">Total: ${total.toFixed(2)}</p>
+                <div>
+                    <Button variant="outline" type="submit" disabled={isPending}>
+                        {isPending ? <>Creating Quote...<Spinner /></> : 'Create Quote'}
+                    </Button>
+                </div>
 
-                <Button variant="outline" type="submit" disabled={isPending}>
-                    {isPending ? <>Creating Quote...<Spinner /></> : 'Create Quote'}
-                </Button>
+                <BackToLink path={'/billing/manage/quotes'} place={'Quotes'} />
             </form>
 
             {/* Alerts */}
