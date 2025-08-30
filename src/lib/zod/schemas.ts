@@ -83,7 +83,7 @@ export const lineItemSchema = z.object({
 export const schemaUpdateInvoice = z.object({
     invoiceId: z.string(),
     lines: z.array(lineItemSchema),
-    organization_id: z.string().nullable(),
+    organization_id: z.string().nullable().optional(),
 });
 
 export const AddClientSchema = z.object({
