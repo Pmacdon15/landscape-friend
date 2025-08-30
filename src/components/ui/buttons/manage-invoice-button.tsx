@@ -1,6 +1,7 @@
 'use client'
 import { useResendInvoice, useMarkInvoicePaid, useMarkInvoiceVoid } from "@/lib/mutations/mutations";
 import { Button } from "../button";
+import EllipsisSpinner from "../loaders/EllipsisSpinner";
 
 export default function ManageInvoiceButton({
   invoiceId,
@@ -41,7 +42,7 @@ export default function ManageInvoiceButton({
       disabled={isPending}
       onClick={handleClick}
     >
-      {buttonText}
+      {buttonText} {isPending && <EllipsisSpinner />}
     </Button>
   );
 }

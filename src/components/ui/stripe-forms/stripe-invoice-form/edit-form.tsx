@@ -67,7 +67,7 @@ export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm })
 
                 <div>
                     <Button variant="outline" type="submit" disabled={isPending}>
-                        {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}
+                        {isPending ? <>Updating document...<Spinner /></> : 'Update Document'}
                     </Button>
                 </div>
 
