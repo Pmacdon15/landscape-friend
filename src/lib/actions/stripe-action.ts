@@ -12,6 +12,7 @@ import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
 import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
 import { hasStripAPIKey } from "../dal/stripe-dal";
+import { fetchClientNamesByStripeIds } from "../dal/clients-dal";
 
 //MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
@@ -211,7 +212,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
         } else if (id.startsWith('qt_')) {
             // Quote update logic
             const line_items = await Promise.all(lines.map(async (line) => {
-                const products = await stripe.products.list({ limit: 100 });
+                const products = await stripe.products.list();
                 let product = products.data.find(p => p.name === (line.description || 'Service'));
                 if (!product) {
                     product = await stripe.products.create({ name: line.description || 'Service' });
@@ -227,10 +228,28 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                 };
             }));
 
-            await stripe.quotes.update(id, {
+            const updatedQuote = await stripe.quotes.update(id, {
                 line_items: line_items
             });
-            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', { quoteId: id });
+
+            const customerId = typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer?.id;
+            let clientName = '';
+            if (customerId) {
+                const clientNamesResult = await fetchClientNamesByStripeIds([customerId]);
+                if (!(clientNamesResult instanceof Error) && clientNamesResult.length > 0) {
+                    clientName = clientNamesResult[0].full_name || '';
+                }
+            }
+
+            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', {
+                quote: {
+                    amount: (updatedQuote.amount_total / 100).toString(),
+                    id: updatedQuote.id || ""
+                },
+                client: {
+                    name: clientName
+                }
+            });
         } else {
             throw new Error("Invalid document ID prefix.");
         }
@@ -316,9 +335,9 @@ export async function markInvoiceVoid(invoiceId: string) {
 
         const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
 
-        if (customerId) { 
-            const amountPaid = Number(invoice.amount_due / 100); 
-            const dbUpdateResult = await markPaidDb(invoiceId, customerId, amountPaid, orgId || userId); 
+        if (customerId) {
+            const amountPaid = Number(invoice.amount_due / 100);
+            const dbUpdateResult = await markPaidDb(invoiceId, customerId, amountPaid, orgId || userId);
             if (!dbUpdateResult.success) {
                 console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
             }
@@ -332,11 +351,7 @@ export async function markInvoiceVoid(invoiceId: string) {
     }
 }
 
-export async function sendQuote(quoteId: string) {
-    const { isAdmin, sessionClaims } = await isOrgAdmin()
-    if (!isAdmin) throw new Error("Not Admin")
-    const stripe = await getStripeInstance();
-
+async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: any) {
     try {
         const quote = await stripe.quotes.retrieve(quoteId);
         if (!quote) throw new Error("Quote not found");
@@ -388,7 +403,7 @@ export async function sendQuote(quoteId: string) {
 }
 
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
-    const { isAdmin, userId } = await isOrgAdmin();
+    const { isAdmin, userId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!userId) throw new Error("No user");
 
@@ -401,7 +416,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
             resultQuote = await stripe.quotes.cancel(quoteId);
         } else if (action === "send") {
             resultQuote = await stripe.quotes.finalizeQuote(quoteId);
-            return await sendQuote(quoteId);
+            return await sendQuote(quoteId, stripe, sessionClaims);
         } else {
             throw new Error("Invalid action for quote operation.");
         }

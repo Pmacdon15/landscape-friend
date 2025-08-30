@@ -49,9 +49,18 @@ export interface FetchQuotesResponse {
 export interface InvoiceId {
     invoiceId: string;
 }
-export interface QuoteId {
-    quoteId: string;
+export interface QuotePayload {
+    quote: {
+        amount: string;
+        id: string;
+
+    }
+    client: {
+        name: string;
+    }
 }
+
+
 export interface StripeQuote {
     id: string;
     object: 'quote';
