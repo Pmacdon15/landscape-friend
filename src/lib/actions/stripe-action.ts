@@ -236,7 +236,7 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
         const line_items = validatedFields.data.lines.map(line => ({
             customer: existingInvoice.customer as string,
             invoice: validatedFields.data.invoiceId,
-            unit_amount_decimal: String(line.amount * 100),
+            unit_amount_decimal: String(Math.round(line.amount * 100)),
             currency: 'cad',
             description: line.description,
             quantity: line.quantity,

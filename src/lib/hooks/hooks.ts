@@ -3,6 +3,8 @@ import { fetchGeocode } from '@/lib/server-funtions/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/types-google-map-iframe';
 import { MaterialField } from '@/types/types-components';
+import { UseFormReset } from 'react-hook-form';
+import React from 'react';
 
 export const useDebouncedMutation = <TData>(
   mutate: (data: TData) => void,
@@ -217,4 +219,16 @@ export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuc
       append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 });
     }
   }, [fields.length, append]);
+}
+
+export function useResetFormOnSuccess<T extends object>(
+    isSuccess: boolean,
+    submittedData: React.MutableRefObject<T | null>,
+    reset: UseFormReset<T>
+) {
+    useEffect(() => {
+        if (isSuccess && submittedData.current) {
+            reset(submittedData.current);
+        }
+    }, [isSuccess, reset, submittedData]);
 }

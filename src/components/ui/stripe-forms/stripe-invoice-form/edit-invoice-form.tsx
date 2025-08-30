@@ -2,21 +2,21 @@
 import React from 'react';
 import { useUpdateStripeInvoice } from '@/lib/mutations/mutations';
 import { Button } from '@/components/ui/button';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemaUpdateInvoice } from '@/lib/zod/schemas';
-import Spinner from '../spinner';
+import Spinner from '../../spinner';
 import { StripeInvoice } from '@/types/types-stripe';
-import { AlertMessage } from '../stripe-forms/shared/alert-message';
-import { DynamicFields } from '../stripe-forms/shared/dynamic-fields'; // our reusable component
+import { AlertMessage } from '../shared/alert-message';
+import { DynamicFields } from '../shared/dynamic-fields'; // our reusable component
 import { z } from 'zod';
-import { SubmitHandler } from 'react-hook-form';
-
+import { useResetFormOnSuccess } from '@/lib/hooks/hooks';
+import BackToLink from '../../links/back-to-link';
 
 export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeInvoice();
 
-    const { register, watch, control, handleSubmit, formState: { errors } } = useForm<z.input<typeof schemaUpdateInvoice>>({
+    const { register, watch, control, handleSubmit, reset, formState: { errors } } = useForm<z.input<typeof schemaUpdateInvoice>>({
         resolver: zodResolver(schemaUpdateInvoice),
         defaultValues: {
             invoiceId: invoice.id || '',
@@ -28,19 +28,20 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
         } as z.input<typeof schemaUpdateInvoice>,
     });
 
+    const submittedData = React.useRef<z.input<typeof schemaUpdateInvoice> | null>(null);
+
+    useResetFormOnSuccess(isSuccess, submittedData, reset);
+
     const { fields, append, remove } = useFieldArray({ control, name: 'lines' });
 
     const watchedLines = watch('lines');
     const subtotal = watchedLines?.reduce((acc, item) => acc + (Number(item.amount) * Number(item.quantity)), 0) ?? 0;
 
-    
-
     const onSubmit: SubmitHandler<z.input<typeof schemaUpdateInvoice>> = (formData) => {
-        mutate(formData as z.infer<typeof schemaUpdateInvoice>);
+        submittedData.current = formData;
+        mutate(formData as z.infer<typeof schemaUpdateInvoice>)
     };
 
-    
-      
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -64,9 +65,14 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
 
                 <p className="font-bold mt-2">Subtotal: ${subtotal.toFixed(2)}</p>
 
-                <Button variant="outline" type="submit" disabled={isPending}>
-                    {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}
-                </Button>
+                <div>
+                    <Button variant="outline" type="submit" disabled={isPending}>
+                        {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}
+                    </Button>
+                </div>
+
+                <BackToLink path={'/billing/manage/invoices'} place={'Invoices'} />
+
             </form>
 
             {/* Reusable Alerts */}
