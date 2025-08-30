@@ -109,5 +109,15 @@ export const ImageSchema = z.object({
         .refine(
             (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
             "Only .jpg, .jpeg, .png and .webp formats are supported.",
-        ),
+),
+});
+
+
+export const schemaUpdateStatement = z.object({
+  id: z.string(),
+  lines: z.array(z.object({
+    description: z.string().optional(),
+    amount: z.number(),
+    quantity: z.number(),
+  }))
 });

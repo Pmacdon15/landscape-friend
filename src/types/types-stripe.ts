@@ -3,6 +3,7 @@ export interface FetchInvoicesResponse {
     totalPages: number;
 }
 
+
 export interface StripeInvoice {
     id: string | undefined;
     object: string;
@@ -39,6 +40,7 @@ export interface APIKey {
     apk_key: string;
 }
 
+export type EditStripeForm = StripeInvoice | StripeQuote;
 export interface FetchQuotesResponse {
     quotes: StripeQuote[];
     totalPages: number;
@@ -56,6 +58,9 @@ export interface StripeQuote {
     expires_at: number | null;
     created: number;
     client_name?: string;
+    lines?: {
+        data: StripeLineItem[];
+    };
 }
 
 

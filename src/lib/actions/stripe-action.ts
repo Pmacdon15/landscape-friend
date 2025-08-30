@@ -1,7 +1,7 @@
 'use server'
 import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
-import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateInvoice } from "@/lib/zod/schemas";
+import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
@@ -207,12 +207,12 @@ Thank you!`
 }
 
 //MARK: Update invoice
-export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpdateInvoice>) {
+export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpdateStatement>) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
-    const validatedFields = schemaUpdateInvoice.safeParse({
+    const validatedFields = schemaUpdateStatement.safeParse({
         ...invoiceData,
         organization_id: orgId || userId,
     });
@@ -224,7 +224,7 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
 
     try {
         const stripe = await getStripeInstance();
-        const existingInvoice = await getInvoiceDAL(validatedFields.data.invoiceId);
+        const existingInvoice = await getInvoiceDAL(validatedFields.data.id);
 
         if (!existingInvoice) throw new Error("Invoice not found");
 
@@ -235,7 +235,7 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
         // Create new line items
         const line_items = validatedFields.data.lines.map(line => ({
             customer: existingInvoice.customer as string,
-            invoice: validatedFields.data.invoiceId,
+            invoice: validatedFields.data.id,
             unit_amount_decimal: String(Math.round(line.amount * 100)),
             currency: 'cad',
             description: line.description,
@@ -246,7 +246,7 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
 
         for (const item of line_items) await stripe.invoiceItems.create(item);
 
-        triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: validatedFields.data.invoiceId })
+        triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: validatedFields.data.id })
 
         return { success: true };
     } catch (e: unknown) {
