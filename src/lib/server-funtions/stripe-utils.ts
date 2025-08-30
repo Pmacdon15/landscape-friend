@@ -87,7 +87,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
                 organization_id: effectiveOrgId as string,
             };
             // console.log("Attempting to add new client to DB with data:", newClientData);
-            const addResult = await addClientDB(newClientData, effectiveOrgId as string);
+            await addClientDB(newClientData, effectiveOrgId as string);
             // console.log("addClientDB result:", addResult);
         } catch (error) {
             console.error("Error in creating Stripe customer or addClientDB:", error);
