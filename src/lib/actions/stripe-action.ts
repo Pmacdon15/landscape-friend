@@ -1,5 +1,5 @@
 'use server'
-import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
+import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
@@ -229,16 +229,8 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                     clientName = clientNamesResult[0].full_name || '';
                 }
             }
-
-            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', {
-                invoice: {
-                    amount: (updatedInvoice.total / 100).toString(),
-                    id: updatedInvoice.id || ""
-                },
-                client: {
-                    name: clientName
-                }
-            });
+            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', createNotificationPayloadInvoice(updatedInvoice, clientName));
+            //MARK:look here TODO
         } else if (id.startsWith('qt_')) {
             // Quote update logic
             const line_items = await Promise.all(lines.map(async (line) => {
@@ -271,15 +263,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                 }
             }
 
-            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', {
-                quote: {
-                    amount: (updatedQuote.amount_total / 100).toString(),
-                    id: updatedQuote.id || ""
-                },
-                client: {
-                    name: clientName
-                }
-            });
+            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', createNotificationPayloadQuote(updatedQuote, clientName));
         } else {
             throw new Error("Invalid document ID prefix.");
         }
@@ -475,23 +459,14 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         }
 
         if (notificationType[action]) {
-            triggerNotificationSendToAdmin(orgId || userId!, notificationType[action], createNotificationPayload(updatedQuote, clientName));
+            triggerNotificationSendToAdmin(orgId || userId!, notificationType[action], createNotificationPayloadQuote(updatedQuote, clientName));
         }
-        
+
     } catch (e) {
         throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
 }
 
-const createNotificationPayload = (quote: Stripe.Response<Stripe.Quote>, clientName: string) => ({
-    quote: {
-        amount: ((quote.amount_total ?? 0) / 100).toString(),
-        id: quote.id || "",
-    },
-    client: {
-        name: clientName,
-    },
-});
 
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();

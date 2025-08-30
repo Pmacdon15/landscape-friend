@@ -2,13 +2,13 @@
 import Stripe from 'stripe';
 import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/db-clients';
 import { fetchStripAPIKeyDb, storeWebhookSecretDb } from '@/lib/DB/db-stripe';
-import {  getStripeInstance } from '../dal/stripe-dal';
- 
+import { getStripeInstance } from '../dal/stripe-dal';
+
 let stripe: Stripe | null = null;
 
 export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {
 
-    const apiKeyResponse =  await fetchStripAPIKeyDb(orgId);
+    const apiKeyResponse = await fetchStripAPIKeyDb(orgId);
     if (apiKeyResponse instanceof Error) {
         throw new Error('Stripe secret key not configured.');
     }
@@ -128,3 +128,26 @@ export async function createStripeWebhook(apiKey: string, organizationId: string
         throw error;
     }
 }
+
+
+
+export const createNotificationPayloadQuote = (quote: Stripe.Response<Stripe.Quote>, clientName: string) => ({
+    quote: {
+        amount: ((quote.amount_total ?? 0) / 100).toString(),
+        id: quote.id || "",
+    },
+    client: {
+        name: clientName,
+    },
+});
+
+
+export const createNotificationPayloadInvoice = (invoice: Stripe.Response<Stripe.Invoice>, clientName: string) => ({
+    quote: {
+        amount: ((invoice.total ?? 0) / 100).toString(),
+        id: invoice.id || "",
+    },
+    client: {
+        name: clientName,
+    },
+});
