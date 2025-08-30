@@ -95,8 +95,8 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                                 <ul className="grid w-[300px] gap-4">
                                     <li>
                                         <NavigationMenuLink asChild>
-                                            <Link href="/billing/send-quote">
-                                                <div className="font-medium">Send a Quote</div>
+                                            <Link href="/billing/create-quote">
+                                                <div className="font-medium">Create a Quote</div>
                                                 <div className="text-muted-foreground">
                                                     Send an Quote as an Email.
                                                 </div>

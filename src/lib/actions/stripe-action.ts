@@ -60,10 +60,10 @@ import { triggerNotificationSendToAdmin } from "../server-funtions/novu";
 
 //MARK: Create quote
 export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQuote>) {
-    const { isAdmin, orgId, userId, sessionClaims } = await isOrgAdmin();
+    const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin")
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
-    const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
+    // const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
 
     const validatedFields = schemaCreateQuote.safeParse(quoteData);
 
@@ -164,6 +164,15 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             collection_method: 'send_invoice',
             invoice_settings: { days_until_due: 30 },
         });
+        await triggerNotificationSendToAdmin(orgId || userId!, 'quote-created', {
+            quote: {
+            amount: (quote.amount_total / 100).toString(),
+            id: quote.id || ""
+            },
+            client: {
+            name: validatedFields.data.clientName
+            }
+        })
 
         return { success: true, quoteId: quote.id };
     } catch (e: unknown) {
