@@ -36,7 +36,7 @@ export async function sendEmail(
         }) as React.ReactElement,
         attachments: attachments,
       });
-      console.log('Email sent successfully:', response);
+      // console.log('Email sent successfully:', response);
     }
 
     return true;

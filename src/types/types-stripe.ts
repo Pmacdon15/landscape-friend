@@ -60,7 +60,16 @@ export interface QuotePayload {
     }
 }
 
+export interface InoivePayload {
+    invoice: {
+        amount: string;
+        id: string;
 
+    }
+    client: {
+        name: string;
+    }
+}
 export interface StripeQuote {
     id: string;
     object: 'quote';

@@ -208,7 +208,27 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                 quantity: line.quantity,
             }));
             for (const item of line_items) await stripe.invoiceItems.create(item);
-            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: id });
+
+            const updatedInvoice = await stripe.invoices.retrieve(id);
+
+            const customerId = typeof updatedInvoice.customer === 'string' ? updatedInvoice.customer : updatedInvoice.customer?.id;
+            let clientName = '';
+            if (customerId) {
+                const clientNamesResult = await fetchClientNamesByStripeIds([customerId]);
+                if (!(clientNamesResult instanceof Error) && clientNamesResult.length > 0) {
+                    clientName = clientNamesResult[0].full_name || '';
+                }
+            }
+
+            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', {
+                invoice: {
+                    amount: (updatedInvoice.total / 100).toString(),
+                    id: updatedInvoice.id || ""
+                },
+                client: {
+                    name: clientName
+                }
+            });
         } else if (id.startsWith('qt_')) {
             // Quote update logic
             const line_items = await Promise.all(lines.map(async (line) => {
@@ -300,7 +320,7 @@ export async function resendInvoice(invoiceId: string) {
             throw new Error("Failed to send invoice email.");
         }
 
-        console.log("Invoice re-sent and email sent successfully:", invoice.id);
+        // console.log("Invoice re-sent and email sent successfully:", invoice.id);
     } catch (error) {
         console.error(error);
         throw new Error(`Failed to resend invoice ${invoiceId}`);
@@ -394,7 +414,7 @@ async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: any) {
             throw new Error("Failed to send quote email.");
         }
 
-        console.log("Quote re-sent and email sent successfully:", quoteId);
+        // console.log("Quote re-sent and email sent successfully:", quoteId);
         return { success: true, message: "Quote sent successfully." };
     } catch (error) {
         console.error(error);

@@ -7,7 +7,7 @@ import { NovuSubscriberIds } from "@/types/types-novu";
 //MARK: Add clients
 
 export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
-  console.log("addClientDB called with data:", data, "and organization_id:", organization_id);
+  // console.log("addClientDB called with data:", data, "and organization_id:", organization_id);
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
     const result = await (sql`
@@ -26,7 +26,7 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
             (SELECT row_to_json(new_client.*)::jsonb AS client FROM new_client),
             (SELECT row_to_json(new_account.*)::jsonb AS account FROM new_account);
     `) as { client: Client; account: Account }[];
-    console.log("addClientDB result:", result);
+    // console.log("addClientDB result:", result);
     return result;
   } catch (error) {
     console.error("Error in addClientDB SQL query:", error);
@@ -80,7 +80,7 @@ export async function fetchClientIdByStripeCustomerId(stripeCustomerId: string, 
   }
 }
 export async function updateClientStripeCustomerIdDb(email_address: string, stripe_customer_id: string, organization_id: string) {
-  console.log("updateClientStripeCustomerIdDb called with:", { email_address, stripe_customer_id, organization_id });
+  // console.log("updateClientStripeCustomerIdDb called with:", { email_address, stripe_customer_id, organization_id });
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
     const result = await sql`
@@ -89,7 +89,7 @@ export async function updateClientStripeCustomerIdDb(email_address: string, stri
     WHERE email_address = ${email_address} AND organization_id = ${organization_id}
     RETURNING *;
   `;
-    console.log("updateClientStripeCustomerIdDb result:", result);
+    // console.log("updateClientStripeCustomerIdDb result:", result);
     return result;
   } catch (error) {
     console.error("Error in updateClientStripeCustomerIdDb SQL query:", error);
@@ -133,7 +133,7 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
 
 
 export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>, organization_id: string): Promise<{ success: boolean }> {
-  console.log("deleteSiteMapDB called with data:", data, "and organization_id:", organization_id);
+  // console.log("deleteSiteMapDB called with data:", data, "and organization_id:", organization_id);
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
     const result = await sql`
@@ -150,7 +150,7 @@ export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>,
       )
   RETURNING id;
   `;
-    console.log("deleteSiteMapDB SQL result:", result);
+    // console.log("deleteSiteMapDB SQL result:", result);
     return { success: result.length > 0 };
   } catch (error) {
     console.error("Error in deleteSiteMapDB SQL query:", error);
@@ -689,7 +689,7 @@ RETURNING *;
 //MARK: Mark Payment
 export async function markPaidDb(invoiceId: string, stripeCustomerId: string, amountPaid: number, organizationId: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
-  console.log("Amount paid: ", amountPaid)
+  // console.log("Amount paid: ", amountPaid)
   try {
     const result = await sql`
       WITH client_info AS(
@@ -716,7 +716,7 @@ export async function markPaidDb(invoiceId: string, stripeCustomerId: string, am
     }
 
     const { new_balance, payment_id } = result[0];
-    console.log(`Invoice ${invoiceId} marked paid.New balance: ${new_balance}, Payment ID: ${payment_id} `);
+    // console.log(`Invoice ${invoiceId} marked paid.New balance: ${new_balance}, Payment ID: ${payment_id} `);
 
     return { success: true, message: `Invoice ${invoiceId} marked as paid and database updated.`, newBalance: new_balance, paymentId: payment_id };
 
