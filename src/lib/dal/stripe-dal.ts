@@ -171,42 +171,33 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             }
         }
 
-        let filteredQuotes = allQuotes;
-        if (searchTerm) {
-            const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            filteredQuotes = allQuotes.filter(quote =>
-                (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm))
-            );
-        }
-
-        const totalQuotes = filteredQuotes.length;
-        const totalPages = Math.ceil(totalQuotes / pageSize);
-        const offset = (page - 1) * pageSize;
-        const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
-
-        // const quotesWithPdf = await Promise.all(paginatedQuotes.map(async (quote) => {
-        //     const retrievedQuote = await stripe.quotes.pdf(quote.id);
-        //     return retrievedQuote
-        // }));
-
-        // console.log("quotesWithPdf: ", quotesWithPdf)
         const uniqueCustomerIds = [...new Set(allQuotes.map(quote => quote.customer).filter((customer): customer is string => typeof customer === 'string'))];
-        // console.log("Unique Customer IDs from Stripe:", uniqueCustomerIds);
-
         const clientNamesResult = await fetchClientNamesByStripeIds(uniqueCustomerIds);
-        // console.log("Client Names Result from DB:", clientNamesResult);
-
         if (clientNamesResult instanceof Error) {
             throw clientNamesResult;
         }
-
         const clientNamesMap = new Map<string, string>();
         clientNamesResult.forEach(client => {
             if (client.stripe_customer_id && client.full_name) {
                 clientNamesMap.set(client.stripe_customer_id, client.full_name);
             }
         });
-        // console.log("Client Names Map:", clientNamesMap);
+
+        let filteredQuotes = allQuotes;
+        if (searchTerm) {
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            filteredQuotes = allQuotes.filter(quote => {
+                const clientName = typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined;
+                return (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (quote.id && quote.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (clientName && clientName.toLowerCase().includes(lowerCaseSearchTerm));
+            });
+        }
+
+        const totalQuotes = filteredQuotes.length;
+        const totalPages = Math.ceil(totalQuotes / pageSize);
+        const offset = (page - 1) * pageSize;
+        const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
 
         const strippedQuotes = paginatedQuotes.map((quote) => ({
             id: quote.id,
