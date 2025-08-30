@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/server-funtions/params";
 import { SearchParams } from "@/types/types-params";
+import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
 
 export default async function page({ searchParams }: { searchParams: Promise<SearchParams> }) {
@@ -28,7 +29,7 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
         <>
             <FormContainer>
                 <FormHeader text={"Clearing List"} />
-                <Suspense>
+                <Suspense fallback={<SearchFormFallBack variant="clearing" />}>
                     <SearchForm variant="clearing" />
                 </Suspense>
             </FormContainer>

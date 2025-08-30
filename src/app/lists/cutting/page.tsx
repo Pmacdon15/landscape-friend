@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { parseClientListParams } from "@/lib/server-funtions/params";
 import { SearchParams } from "@/types/types-params";
+import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
 export default async function page({ searchParams }: { searchParams: Promise<SearchParams>; }) {
     const [{ isAdmin }, params] = await Promise.all([
@@ -24,7 +25,7 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
         <>
             <FormContainer>
                 <FormHeader text={"Cutting List"} />
-                <Suspense>
+                <Suspense fallback={<SearchFormFallBack variant="cutting" />}>
                     <SearchForm variant="cutting" />
                 </Suspense>
             </FormContainer>

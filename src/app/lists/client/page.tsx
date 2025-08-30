@@ -10,6 +10,7 @@ import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/server-funtions/params";
 import { fetchAllClients } from "@/lib/dal/clients-dal";
 import { SearchParams } from "@/types/types-params";
+import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
 export default async function page({
     searchParams,
@@ -29,7 +30,7 @@ export default async function page({
         <>
             <FormContainer>
                 <FormHeader text={"Client List"} />
-                <Suspense>
+                <Suspense fallback={<SearchFormFallBack />}>
                     <SearchForm />
                 </Suspense >
             </FormContainer >

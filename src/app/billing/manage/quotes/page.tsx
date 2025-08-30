@@ -7,6 +7,7 @@ import { fetchQuotes } from "@/lib/dal/stripe-dal";
 import { parseClientListParams } from "@/lib/server-funtions/params";
 import { SearchParams } from "@/types/types-params";
 import { Suspense } from "react";
+import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
 export default async function Page({ searchParams }: { searchParams: Promise<SearchParams> }) {
     const params = await searchParams
@@ -16,7 +17,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     return (
         <FormContainer>
             <FormHeader text={"Manage Quotes"} />
-            <Suspense>
+            <Suspense fallback={<SearchFormFallBack variant="quotes" />}>
                 <SearchForm variant="quotes" />
             </Suspense>
             <PaginationTabs path={"/billing/manage/quotes"} page={page} totalPages={totalPages} fullWidth />
