@@ -206,14 +206,62 @@ Thank you!`
     }
 }
 
-//MARK: Update invoice
-export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpdateStatement>) {
+// //MARK: Update invoice (original)
+// export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpdateInvoice>) {
+//     const { isAdmin, orgId, userId } = await isOrgAdmin();
+//     if (!isAdmin) throw new Error("Not Admin");
+//     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+
+//     const validatedFields = schemaUpdateInvoice.safeParse({
+//         ...invoiceData,
+//         organization_id: orgId || userId,
+//     });
+
+//     if (!validatedFields.success) {
+//         console.error("Validation Error:", validatedFields.error);
+//         throw new Error("Invalid input data");
+//     }
+
+//     try {
+//         const stripe = await getStripeInstance();
+//         const existingInvoice = await getInvoiceDAL(validatedFields.data.invoiceId);
+
+//         if (!existingInvoice) throw new Error("Invoice not found");
+
+//         // Delete existing line items
+//         for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
+
+
+//         // Create new line items
+//         const line_items = validatedFields.data.lines.map(line => ({
+//             customer: existingInvoice.customer as string,
+//             invoice: validatedFields.data.invoiceId,
+//             unit_amount_decimal: String(Math.round(line.amount * 100)),
+//             currency: 'cad',
+//             description: line.description,
+//             quantity: line.quantity,
+//         }));
+
+//         for (const item of line_items) await stripe.invoiceItems.create(item);
+
+//         triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: validatedFields.data.invoiceId })
+
+//         return { success: true };
+//     } catch (e: unknown) {
+//         const errorMessage = e instanceof Error ? e.message : String(e);
+//         console.error("Error updating Stripe invoice:", errorMessage);
+//         return { success: false, message: errorMessage };
+//     }
+// }
+
+//MARK: Update document (invoice or quote)
+export async function updateStripeDocument(documentData: z.infer<typeof schemaUpdateStatement>) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaUpdateStatement.safeParse({
-        ...invoiceData,
+        ...documentData,
         organization_id: orgId || userId,
     });
 
@@ -222,36 +270,57 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
         throw new Error("Invalid input data");
     }
 
+    const { id, lines } = validatedFields.data;
+
     try {
         const stripe = await getStripeInstance();
-        const existingInvoice = await getInvoiceDAL(validatedFields.data.id);
 
-        if (!existingInvoice) throw new Error("Invoice not found");
+        if (id.startsWith('in_')) {
+            // Invoice update logic
+            const existingInvoice = await getInvoiceDAL(id);
+            if (!existingInvoice) throw new Error("Invoice not found");
+            for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
+            const line_items = lines.map(line => ({
+                customer: existingInvoice.customer as string,
+                invoice: id,
+                unit_amount_decimal: String(Math.round(line.amount * 100)),
+                currency: 'cad',
+                description: line.description,
+                quantity: line.quantity,
+            }));
+            for (const item of line_items) await stripe.invoiceItems.create(item);
+            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: id });
+        } else if (id.startsWith('qt_')) {
+            // Quote update logic
+            const line_items = await Promise.all(lines.map(async (line) => {
+                const products = await stripe.products.list({ limit: 100 });
+                let product = products.data.find(p => p.name === (line.description || 'Service'));
+                if (!product) {
+                    product = await stripe.products.create({ name: line.description || 'Service' });
+                }
 
-        // Delete existing line items
-        for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
+                return {
+                    price_data: {
+                        currency: 'cad',
+                        product: product.id,
+                        unit_amount: Math.round(line.amount * 100),
+                    },
+                    quantity: line.quantity,
+                };
+            }));
 
-
-        // Create new line items
-        const line_items = validatedFields.data.lines.map(line => ({
-            customer: existingInvoice.customer as string,
-            invoice: validatedFields.data.id,
-            unit_amount_decimal: String(Math.round(line.amount * 100)),
-            currency: 'cad',
-            description: line.description,
-            quantity: line.quantity,
-        }));
-
-        // console.log('Line items with amounts:', line_items.map(item => item.unit_amount_decimal));
-
-        for (const item of line_items) await stripe.invoiceItems.create(item);
-
-        triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: validatedFields.data.id })
+            await stripe.quotes.update(id, {
+                line_items: line_items
+            });
+            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', { quoteId: id });
+        } else {
+            throw new Error("Invalid document ID prefix.");
+        }
 
         return { success: true };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
-        console.error("Error updating Stripe invoice:", errorMessage);
+        console.error("Error updating Stripe document:", errorMessage);
         return { success: false, message: errorMessage };
     }
 }

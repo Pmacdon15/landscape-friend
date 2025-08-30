@@ -2,12 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
 import { markYardServiced } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeInvoice } from "@/lib/actions/stripe-action";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
 import { assignSnowClearing, toggleSnowClient } from "@/lib/actions/snow-action";
 import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
 import { MarkQuoteProps } from "@/types/types-stripe";
-import { schemaUpdateInvoice } from '@/lib/zod/schemas';
+import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from '@/lib/zod/schemas';
 
 //MARK: Add client
 export const useAddClient = () => {
@@ -194,13 +194,13 @@ export const useCreateStripeQuote = () => {
     });
 };
 
-//MARK:Update stripe invoice
-export const useUpdateStripeInvoice = () => {
+//MARK:Update stripe document
+export const useUpdateStripeDocument = () => {
     return useMutation({
-        mutationFn: async (invoiceData: z.infer<typeof schemaUpdateInvoice>) => {
-            const result = await updateStripeInvoice(invoiceData);
+        mutationFn: async (documentData: z.infer<typeof schemaUpdateStatement>) => {
+            const result = await updateStripeDocument(documentData);
             if (!result.success) {
-                throw new Error("Failed to update Stripe invoice");
+                throw new Error("Failed to update Stripe document");
             }
             return result;
         },

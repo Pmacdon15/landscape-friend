@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { useUpdateStripeInvoice } from '@/lib/mutations/mutations';
+import { useUpdateStripeDocument } from '@/lib/mutations/mutations';
 import { Button } from '@/components/ui/button';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,8 +13,8 @@ import { useResetFormOnSuccess } from '@/lib/hooks/hooks';
 import BackToLink from '../../links/back-to-link';
 import { EditStripeForm } from '@/types/types-stripe';
 
-export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm }) {
-    const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeInvoice();
+export function EditForm({ invoiceOrQuote, variant = "invoice" }: { invoiceOrQuote: EditStripeForm, variant?: "invoice" | "quote" }) {
+    const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeDocument();
 
     const { register, watch, control, handleSubmit, reset, formState: { errors } } = useForm<z.input<typeof schemaUpdateStatement>>({
         resolver: zodResolver(schemaUpdateStatement),
