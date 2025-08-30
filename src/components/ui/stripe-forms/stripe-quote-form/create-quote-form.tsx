@@ -10,7 +10,7 @@ import { z } from 'zod';
 import BackToLink from '../../links/back-to-link';
 import InputField from '../shared/input';
 import { DynamicFields } from '../shared/dynamic-fields';
-import Spinner from '../../spinner';
+import Spinner from '../../loaders/spinner';
 import { AlertMessage } from '../shared/alert-message';
 
 export function CreateQuoteForm({ organizationId }: { organizationId: string }) {

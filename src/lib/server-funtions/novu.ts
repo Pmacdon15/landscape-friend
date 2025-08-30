@@ -61,7 +61,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
             to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
             payload: payload,
         });
-        console.log("Result for send notification: ", result)
+        // console.log("Result for send notification: ", result)
     } catch (error) {
         console.error(error);
     }

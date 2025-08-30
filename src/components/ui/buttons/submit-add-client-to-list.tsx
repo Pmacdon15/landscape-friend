@@ -2,7 +2,7 @@
 
 import { useAddClient } from "@/lib/mutations/mutations";
 import { Button } from "../button";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 
 export default function SubmitAddClientToList() {
     const { mutate, isPending, isError } = useAddClient();

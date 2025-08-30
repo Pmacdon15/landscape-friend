@@ -1,7 +1,7 @@
 'use client'
 import { useUpdateStripeAPIKey } from "@/lib/mutations/mutations";
 import { Button } from "../button";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 
 export default function UpdateStripeApiKeyButton() {
     const { mutate, isPending, isError } = useUpdateStripeAPIKey();

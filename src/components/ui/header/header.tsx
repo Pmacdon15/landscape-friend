@@ -3,7 +3,7 @@ import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, 
 import { NavBar } from '../nav/nav-bar';
 import { useGetNovuId } from '@/lib/hooks/useNovu';
 import { Inbox } from '@novu/nextjs';
-import Spinner from '../spinner';
+import Spinner from '../loaders/spinner';
 
 export default function Header({ children }: { children: React.ReactNode }) {
     const { user } = useUser();

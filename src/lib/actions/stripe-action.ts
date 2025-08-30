@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/server-funtions/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
-import { MarkQuoteProps } from "@/types/types-stripe";
+import { MarkQuoteProps, StripeQuote } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
 import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
@@ -445,6 +445,7 @@ async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
     return { updatedQuote, clientName };
 }
 
+
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     const { isAdmin, userId, orgId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
@@ -454,40 +455,43 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     const stripe = await getStripeInstance();
     try {
         let resultQuote: Stripe.Response<Stripe.Quote>;
+        const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
+
+        const notificationType = {
+            accept: null,
+            cancel: "quote-cancled",
+            send: "quote-sent",
+        };
+
         if (action === "accept") {
             resultQuote = await stripe.quotes.accept(quoteId);
         } else if (action === "cancel") {
             resultQuote = await stripe.quotes.cancel(quoteId);
         } else if (action === "send") {
             resultQuote = await stripe.quotes.finalizeQuote(quoteId);
-            const sendQuoteResult = await sendQuote(quoteId, stripe, sessionClaims);
-            // Fetch the updated quote to get customer details
-            const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
-
-            // Trigger admin notification
-            await triggerNotificationSendToAdmin(orgId || userId!, 'quote-sent', {
-                quote: {
-                    amount: (updatedQuote.amount_total / 100).toString(),
-                    id: updatedQuote.id || ""
-                },
-                client: {
-                    name: clientName
-                }
-            });
-
-            return sendQuoteResult;
+            await sendQuote(quoteId, stripe, sessionClaims);
         } else {
             throw new Error("Invalid action for quote operation.");
         }
 
-        return {
-            id: resultQuote.id,
-            status: resultQuote.status,
-        };
+        if (notificationType[action]) {
+            triggerNotificationSendToAdmin(orgId || userId!, notificationType[action], createNotificationPayload(updatedQuote, clientName));
+        }
+        
     } catch (e) {
         throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
 }
+
+const createNotificationPayload = (quote: Stripe.Response<Stripe.Quote>, clientName: string) => ({
+    quote: {
+        amount: ((quote.amount_total ?? 0) / 100).toString(),
+        id: quote.id || "",
+    },
+    client: {
+        name: clientName,
+    },
+});
 
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();
