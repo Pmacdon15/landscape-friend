@@ -44,6 +44,9 @@ export interface FetchQuotesResponse {
     totalPages: number;
 }
 
+export interface InvoiceId {
+    invoiceId: string;
+}
 export interface StripeQuote {
     id: string;
     object: 'quote';

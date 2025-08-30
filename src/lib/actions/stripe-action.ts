@@ -55,6 +55,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 }
 
 import { z } from 'zod';
+import { triggerNotificationSendToAdmin } from "../server-funtions/novu";
 
 //MARK: Create quote
 export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQuote>) {
@@ -231,7 +232,6 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
         for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
 
 
-        
         // Create new line items
         const line_items = validatedFields.data.lines.map(line => ({
             customer: existingInvoice.customer as string,
@@ -245,6 +245,8 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
         // console.log('Line items with amounts:', line_items.map(item => item.unit_amount_decimal));
 
         for (const item of line_items) await stripe.invoiceItems.create(item);
+
+        triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: validatedFields.data.invoiceId })
 
         return { success: true };
     } catch (e: unknown) {
