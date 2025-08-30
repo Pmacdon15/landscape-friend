@@ -186,23 +186,34 @@ export function useServiceStatusSearch() {
   return { currentServiceStatus, setServiceStatus };
 }
 
-export function useSearchInput(delay: number = 500) {
+export function useSearchInput(delay: number = 300) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialSearchTerm = searchParams.get('search') || '';
+  const urlSearchTerm = searchParams.get('search') || '';
 
-  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
-  const debouncedSearchTerm = useDebouncedValue(searchTerm, delay);
+  const [searchTerm, setSearchTerm] = useState(urlSearchTerm);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (debouncedSearchTerm) {
-      params.set('search', debouncedSearchTerm);
-    } else {
-      params.delete('search');
-    }
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [debouncedSearchTerm, router, searchParams]);
+    setSearchTerm(urlSearchTerm);
+  }, [urlSearchTerm]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchTerm !== urlSearchTerm) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (searchTerm) {
+          params.set('search', searchTerm);
+        } else {
+          params.delete('search');
+        }
+        router.replace(`?${params.toString()}`, { scroll: false });
+      }
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, urlSearchTerm, delay, router, searchParams]);
 
   return { searchTerm, setSearchTerm };
 }

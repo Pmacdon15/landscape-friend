@@ -3,6 +3,7 @@ import { Novu } from '@novu/api';
 import { getOrgMembers } from './clerk';
 import { getNovuIds } from '../DB/db-clients';
 import { InvoicePayload } from '@/types/webhooks-types';
+import { InvoiceId } from '@/types/types-stripe';
 
 export async function addNovuSubscriber(
     subscriberId: string,
@@ -41,7 +42,7 @@ const novu = new Novu({
     secretKey: process.env.NOVU_SECRET_KEY,
 });
 
-export async function triggerNotificationSendToAdmin(orgId: string, workflow: string, payload?: InvoicePayload) {
+export async function triggerNotificationSendToAdmin(orgId: string, workflow: string, payload?: InvoicePayload | InvoiceId) {
     let adminUserIds: string[];
     if (!orgId.startsWith('user')) {
         const membersOfOrg = await getOrgMembers(orgId);

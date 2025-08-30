@@ -45,7 +45,7 @@ export async function POST(
     switch (event.type) {
         case 'invoice.paid':
             const invoicePaid = event.data.object as Stripe.Invoice;
-            const payloadPaid = createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid);
+            const payloadPaid = createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid, invoicePaid.id);
             await handleInvoicePaid(invoicePaid, orgId);
             await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
             break;
@@ -56,8 +56,7 @@ export async function POST(
             break;
         case 'invoice.sent':
             const invoiceSent = event.data.object as Stripe.Invoice;
-
-            const payloadSent = createInvoicePayload(invoiceSent.customer_name, invoiceSent.amount_paid);
+            const payloadSent = createInvoicePayload(invoiceSent.customer_name, invoiceSent.amount_paid, invoiceSent.id);
             await handleInvoiceSent(invoiceSent, orgId);
             await triggerNotificationSendToAdmin(orgId, 'invoice-sent', payloadSent)
             break;
@@ -69,11 +68,15 @@ export async function POST(
     return NextResponse.json({ status: 'success' }, { status: 200 })
 }
 
-function createInvoicePayload(clientName: string | null, amount: number): InvoicePayload {
+function createInvoicePayload(clientName: string | null | undefined, amount: number, invoiceId?: string): InvoicePayload {
     return {
         client: {
             name: clientName || 'Unknown Client',
         },
-        amount: `${(amount / 100).toFixed(2)}`,
+        invoice: {
+            invoiceId: invoiceId,
+            amount: `${(amount / 100).toFixed(2)}`,
+        }
+
     };
 };

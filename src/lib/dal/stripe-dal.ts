@@ -81,7 +81,9 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
             filteredInvoices = allInvoices.filter(invoice =>
                 (invoice.customer_name && invoice.customer_name.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm))
+                (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                (invoice.id && invoice.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                (invoice.number && invoice.number.toLowerCase().includes(lowerCaseSearchTerm))
             );
         }
 
