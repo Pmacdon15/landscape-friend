@@ -446,6 +446,9 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
             resultQuote = await stripe.quotes.cancel(quoteId);
         } else if (action === "send") {
             resultQuote = await stripe.quotes.finalizeQuote(quoteId);
+            if (!sessionClaims) {
+                throw new Error("Session claims are missing.");
+            }
             return await sendQuote(quoteId, stripe, sessionClaims);
         } else {
             throw new Error("Invalid action for quote operation.");
