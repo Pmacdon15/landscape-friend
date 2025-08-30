@@ -1,7 +1,7 @@
 import FillFormContainer from '@/components/ui/containers/fill-form-container';
 import FormContainer from '@/components/ui/containers/form-container';
 import FormHeader from '@/components/ui/header/form-header';
-import { EditInvoiceForm } from '@/components/ui/stripe-forms/stripe-invoice-form/edit-invoice-form';
+import { EditForm } from '@/components/ui/stripe-forms/stripe-invoice-form/edit-form';
 import { getInvoiceDAL } from '@/lib/dal/stripe-dal';
 import { SearchParams } from "@/types/types-params";
 
@@ -21,9 +21,9 @@ export default async function EditInvoicePage({
   return (
     <FormContainer>
       <FillFormContainer>
-        <FormHeader text={'Edit Stripe Invoice'} />
+        <FormHeader text={'Edit Invoice'} />
         <div className="p-4 border rounded-md shadow-sm">
-          <EditInvoiceForm invoice={invoice} />
+          <EditForm invoiceOrQuote={invoice} />
         </div>
       </FillFormContainer>
     </FormContainer >

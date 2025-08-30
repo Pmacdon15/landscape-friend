@@ -43,15 +43,15 @@ export async function findOrCreateStripeCustomerAndLinkClient(
 
     if (existingCustomers.data.length > 0) {
         customerId = existingCustomers.data[0].id;
-        console.log("Existing Stripe customer found:", customerId);
+        // console.log("Existing Stripe customer found:", customerId);
         // Update existing client with Stripe customer ID
         try {
             const result = await updateClientStripeCustomerIdDb(clientEmail, customerId, effectiveOrgId);
-            console.log("updateClientStripeCustomerIdDb result:", result);
-            console.log("updateResult.length:", result.length);
+            // console.log("updateClientStripeCustomerIdDb result:", result);
+            // console.log("updateResult.length:", result.length);
             if (result.length === 0) {
                 // No client found with that email and organization_id, so create a new one
-                console.log("No existing client found for email and organization, creating new client.");
+                // console.log("No existing client found for email and organization, creating new client.");
                 const newClientData = {
                     full_name: clientName,
                     phone_number: Number(phoneNumber),
@@ -60,8 +60,8 @@ export async function findOrCreateStripeCustomerAndLinkClient(
                     stripe_customer_id: customerId,
                     organization_id: effectiveOrgId as string,
                 };
-                const addResult = await addClientDB(newClientData, effectiveOrgId as string);
-                console.log("addClientDB result (after update failed):", addResult);
+                await addClientDB(newClientData, effectiveOrgId as string);
+                // console.log("addClientDB result (after update failed):", addResult);
             }
         } catch (error) {
             console.error("Error in updateClientStripeCustomerIdDb or subsequent addClientDB:", error);
@@ -75,7 +75,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
                 email: clientEmail,
             });
             customerId = newCustomer.id;
-            console.log("New Stripe customer created:", customerId);
+            // console.log("New Stripe customer created:", customerId);
 
             // Create new client in local DB with Stripe customer ID
             const newClientData = {
@@ -86,9 +86,9 @@ export async function findOrCreateStripeCustomerAndLinkClient(
                 stripe_customer_id: customerId,
                 organization_id: effectiveOrgId as string,
             };
-            console.log("Attempting to add new client to DB with data:", newClientData);
-            const addResult = await addClientDB(newClientData, effectiveOrgId as string);
-            console.log("addClientDB result:", addResult);
+            // console.log("Attempting to add new client to DB with data:", newClientData);
+            await addClientDB(newClientData, effectiveOrgId as string);
+            // console.log("addClientDB result:", addResult);
         } catch (error) {
             console.error("Error in creating Stripe customer or addClientDB:", error);
             throw error; // Re-throw the error

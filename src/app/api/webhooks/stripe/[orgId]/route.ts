@@ -74,7 +74,7 @@ function createInvoicePayload(clientName: string | null | undefined, amount: num
             name: clientName || 'Unknown Client',
         },
         invoice: {
-            invoiceId: invoiceId,
+            id: invoiceId,
             amount: `${(amount / 100).toFixed(2)}`,
         }
 

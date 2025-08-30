@@ -3,7 +3,7 @@ export interface InvoicePayload {
         name: string;
     },
     invoice: {
-        invoiceId: string | undefined;
+        id: string | undefined;
         amount: string;
     }
 }

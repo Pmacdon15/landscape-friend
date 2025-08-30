@@ -1,34 +1,34 @@
 'use client';
 import React from 'react';
-import { useUpdateStripeInvoice } from '@/lib/mutations/mutations';
+import { useUpdateStripeDocument } from '@/lib/mutations/mutations';
 import { Button } from '@/components/ui/button';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { schemaUpdateInvoice } from '@/lib/zod/schemas';
+import { schemaUpdateStatement } from '@/lib/zod/schemas';
 import Spinner from '../../spinner';
-import { StripeInvoice } from '@/types/types-stripe';
 import { AlertMessage } from '../shared/alert-message';
 import { DynamicFields } from '../shared/dynamic-fields'; // our reusable component
 import { z } from 'zod';
 import { useResetFormOnSuccess } from '@/lib/hooks/hooks';
 import BackToLink from '../../links/back-to-link';
+import { EditStripeForm } from '@/types/types-stripe';
 
-export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
-    const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeInvoice();
+export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm }) {
+    const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeDocument();
 
-    const { register, watch, control, handleSubmit, reset, formState: { errors } } = useForm<z.input<typeof schemaUpdateInvoice>>({
-        resolver: zodResolver(schemaUpdateInvoice),
+    const { register, watch, control, handleSubmit, reset, formState: { errors } } = useForm<z.input<typeof schemaUpdateStatement>>({
+        resolver: zodResolver(schemaUpdateStatement),
         defaultValues: {
-            invoiceId: invoice.id || '',
-            lines: invoice.lines.data.map(line => ({
+            id: invoiceOrQuote.id || '',
+            lines: (invoiceOrQuote.lines?.data || []).map(line => ({
                 description: line.description || '',
                 amount: line.amount,
                 quantity: line.quantity,
             })),
-        } as z.input<typeof schemaUpdateInvoice>,
+        } as z.input<typeof schemaUpdateStatement>,
     });
 
-    const submittedData = React.useRef<z.input<typeof schemaUpdateInvoice> | null>(null);
+    const submittedData = React.useRef<z.input<typeof schemaUpdateStatement> | null>(null);
 
     useResetFormOnSuccess(isSuccess, submittedData, reset);
 
@@ -37,15 +37,15 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
     const watchedLines = watch('lines');
     const subtotal = watchedLines?.reduce((acc, item) => acc + (Number(item.amount) * Number(item.quantity)), 0) ?? 0;
 
-    const onSubmit: SubmitHandler<z.input<typeof schemaUpdateInvoice>> = (formData) => {
+    const onSubmit: SubmitHandler<z.input<typeof schemaUpdateStatement>> = (formData) => {
         submittedData.current = formData;
-        mutate(formData as z.infer<typeof schemaUpdateInvoice>)
+        mutate(formData as z.infer<typeof schemaUpdateStatement>)
     };
 
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <input type="hidden" {...register('invoiceId')} value={invoice.id} />
+                <input type="hidden" {...register('id')} value={invoiceOrQuote.id} />
 
                 {/* Reusable Dynamic Fields for Invoice Lines */}
                 <section>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '../button';
 
-export function EditInvoiceFormFallback() {
+export function EditDocumentFormFallback() {
     const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
     return (
         <form className="space-y-4">

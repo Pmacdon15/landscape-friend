@@ -1,7 +1,7 @@
 'use server'
 import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
-import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateInvoice } from "@/lib/zod/schemas";
+import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
@@ -12,6 +12,7 @@ import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
 import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
 import { hasStripAPIKey } from "../dal/stripe-dal";
+import { fetchClientNamesByStripeIds } from "../dal/clients-dal";
 
 //MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
@@ -55,14 +56,15 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 }
 
 import { z } from 'zod';
+import { JwtPayload } from '@clerk/types';
 import { triggerNotificationSendToAdmin } from "../server-funtions/novu";
 
 //MARK: Create quote
 export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQuote>) {
-    const { isAdmin, orgId, userId, sessionClaims } = await isOrgAdmin();
+    const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin")
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
-    const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
+    // const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
 
     const validatedFields = schemaCreateQuote.safeParse(quoteData);
 
@@ -163,42 +165,17 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             collection_method: 'send_invoice',
             invoice_settings: { days_until_due: 30 },
         });
+        await triggerNotificationSendToAdmin(orgId || userId!, 'quote-created', {
+            quote: {
+            amount: (quote.amount_total / 100).toString(),
+            id: quote.id || ""
+            },
+            client: {
+            name: validatedFields.data.clientName
+            }
+        })
 
-        // Finalize the quote immediately
-        const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
-
-        if (!finalizedQuote.id) throw new Error("Failed")
-
-        // Download the PDF using Stripe's built-in method
-        const pdfStream = await stripe.quotes.pdf(finalizedQuote.id);
-        const pdfContent = await streamToBuffer(pdfStream);
-
-        // Prepare attachment
-        const attachments = [{
-            filename: `quote_${finalizedQuote.id}.pdf`,
-            content: pdfContent,
-        }];
-        if (!quote.id) throw new Error("Failed")
-        // Construct email content
-        const emailSubject = `Your Quote from ${companyName}`;
-        const emailBody = `Dear ${validatedFields.data.clientName},
-
-Please find your quote attached. Please reply to this email to confirm the quote.
-
-Thank you!`
-
-        // Create FormData for sendEmailWithTemplate
-        const formDataForEmail = new FormData();
-        formDataForEmail.append('title', emailSubject);
-        formDataForEmail.append('message', emailBody);
-
-        // Send the email with attachment
-        const emailResult = await sendEmailWithTemplate(formDataForEmail, validatedFields.data.clientEmail, attachments);
-        if (!emailResult) {
-            throw new Error("Failed");
-        }
-
-        return { success: true, quoteId: finalizedQuote.id };
+        return { success: true, quoteId: quote.id };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         console.error("Error creating Stripe quote:", errorMessage);
@@ -206,14 +183,14 @@ Thank you!`
     }
 }
 
-//MARK: Update invoice
-export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpdateInvoice>) {
+//MARK: Update document (invoice or quote)
+export async function updateStripeDocument(documentData: z.infer<typeof schemaUpdateStatement>) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
-    const validatedFields = schemaUpdateInvoice.safeParse({
-        ...invoiceData,
+    const validatedFields = schemaUpdateStatement.safeParse({
+        ...documentData,
         organization_id: orgId || userId,
     });
 
@@ -222,36 +199,95 @@ export async function updateStripeInvoice(invoiceData: z.infer<typeof schemaUpda
         throw new Error("Invalid input data");
     }
 
+    const { id, lines } = validatedFields.data;
+
     try {
         const stripe = await getStripeInstance();
-        const existingInvoice = await getInvoiceDAL(validatedFields.data.invoiceId);
 
-        if (!existingInvoice) throw new Error("Invoice not found");
+        if (id.startsWith('in_')) {
+            // Invoice update logic
+            const existingInvoice = await getInvoiceDAL(id);
+            if (!existingInvoice) throw new Error("Invoice not found");
+            for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
+            const line_items = lines.map(line => ({
+                customer: existingInvoice.customer as string,
+                invoice: id,
+                unit_amount_decimal: String(Math.round(line.amount * 100)),
+                currency: 'cad',
+                description: line.description,
+                quantity: line.quantity,
+            }));
+            for (const item of line_items) await stripe.invoiceItems.create(item);
 
-        // Delete existing line items
-        for (const item of existingInvoice.lines.data) await stripe.invoiceItems.del(item.id);
+            const updatedInvoice = await stripe.invoices.retrieve(id);
 
+            const customerId = typeof updatedInvoice.customer === 'string' ? updatedInvoice.customer : updatedInvoice.customer?.id;
+            let clientName = '';
+            if (customerId) {
+                const clientNamesResult = await fetchClientNamesByStripeIds([customerId]);
+                if (!(clientNamesResult instanceof Error) && clientNamesResult.length > 0) {
+                    clientName = clientNamesResult[0].full_name || '';
+                }
+            }
 
-        // Create new line items
-        const line_items = validatedFields.data.lines.map(line => ({
-            customer: existingInvoice.customer as string,
-            invoice: validatedFields.data.invoiceId,
-            unit_amount_decimal: String(Math.round(line.amount * 100)),
-            currency: 'cad',
-            description: line.description,
-            quantity: line.quantity,
-        }));
+            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', {
+                invoice: {
+                    amount: (updatedInvoice.total / 100).toString(),
+                    id: updatedInvoice.id || ""
+                },
+                client: {
+                    name: clientName
+                }
+            });
+        } else if (id.startsWith('qt_')) {
+            // Quote update logic
+            const line_items = await Promise.all(lines.map(async (line) => {
+                const products = await stripe.products.list();
+                let product = products.data.find(p => p.name === (line.description || 'Service'));
+                if (!product) {
+                    product = await stripe.products.create({ name: line.description || 'Service' });
+                }
 
-        // console.log('Line items with amounts:', line_items.map(item => item.unit_amount_decimal));
+                return {
+                    price_data: {
+                        currency: 'cad',
+                        product: product.id,
+                        unit_amount: Math.round(line.amount * 100),
+                    },
+                    quantity: line.quantity,
+                };
+            }));
 
-        for (const item of line_items) await stripe.invoiceItems.create(item);
+            const updatedQuote = await stripe.quotes.update(id, {
+                line_items: line_items
+            });
 
-        triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', { invoiceId: validatedFields.data.invoiceId })
+            const customerId = typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer?.id;
+            let clientName = '';
+            if (customerId) {
+                const clientNamesResult = await fetchClientNamesByStripeIds([customerId]);
+                if (!(clientNamesResult instanceof Error) && clientNamesResult.length > 0) {
+                    clientName = clientNamesResult[0].full_name || '';
+                }
+            }
+
+            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', {
+                quote: {
+                    amount: (updatedQuote.amount_total / 100).toString(),
+                    id: updatedQuote.id || ""
+                },
+                client: {
+                    name: clientName
+                }
+            });
+        } else {
+            throw new Error("Invalid document ID prefix.");
+        }
 
         return { success: true };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
-        console.error("Error updating Stripe invoice:", errorMessage);
+        console.error("Error updating Stripe document:", errorMessage);
         return { success: false, message: errorMessage };
     }
 }
@@ -294,7 +330,7 @@ export async function resendInvoice(invoiceId: string) {
             throw new Error("Failed to send invoice email.");
         }
 
-        console.log("Invoice re-sent and email sent successfully:", invoice.id);
+        // console.log("Invoice re-sent and email sent successfully:", invoice.id);
     } catch (error) {
         console.error(error);
         throw new Error(`Failed to resend invoice ${invoiceId}`);
@@ -311,20 +347,6 @@ export async function markInvoicePaid(invoiceId: string) {
         await stripe.invoices.pay(invoiceId, {
             paid_out_of_band: true,
         });
-
-        //     const customerEmail = invoice.customer_email
-
-        //     // Call markPaidDb to update local database
-        //     if (customerEmail) { // orgId is already checked above
-        //         const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
-        //         const dbUpdateResult = await markPaidDb(invoiceId, customerEmail, amountPaid, orgId || userId); // Pass orgId directly
-        //         if (!dbUpdateResult.success) {
-        //             console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
-        //             // Optionally, throw an error or handle this failure more robustly
-        //         }
-        //     } else {
-        //         console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
-        //     }
 
     } catch (error) {
         console.error(error);
@@ -343,13 +365,11 @@ export async function markInvoiceVoid(invoiceId: string) {
 
         const customerId = typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id;
 
-        // Call markPaidDb to update local database
-        if (customerId) { // orgId is already checked above
-            const amountPaid = Number(invoice.amount_due / 100); // Convert cents to dollars
-            const dbUpdateResult = await markPaidDb(invoiceId, customerId, amountPaid, orgId || userId); // Pass orgId directly
+        if (customerId) {
+            const amountPaid = Number(invoice.amount_due / 100);
+            const dbUpdateResult = await markPaidDb(invoiceId, customerId, amountPaid, orgId || userId);
             if (!dbUpdateResult.success) {
                 console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
-                // Optionally, throw an error or handle this failure more robustly
             }
         } else {
             console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
@@ -361,8 +381,59 @@ export async function markInvoiceVoid(invoiceId: string) {
     }
 }
 
+async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayload) {
+    try {
+        const quote = await stripe.quotes.retrieve(quoteId);
+        if (!quote) throw new Error("Quote not found");
+
+        const customerId = typeof quote.customer === 'string' ? quote.customer : quote.customer?.id;
+        if (!customerId) throw new Error("Customer ID not found for quote.");
+
+        const customer = await stripe.customers.retrieve(customerId);
+        if (customer.deleted) throw new Error("Customer has been deleted.");
+
+        const customerEmail = customer.email;
+        const customerName = customer.name || 'Valued Customer';
+
+        if (!customerEmail) throw new Error("Customer email not found.");
+
+        const pdfStream = await stripe.quotes.pdf(quoteId);
+        const pdfContent = await streamToBuffer(pdfStream);
+
+        const attachments = [{
+            filename: `quote_${quoteId}.pdf`,
+            content: pdfContent,
+        }];
+
+        const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string });
+
+        const emailSubject = `Your Quote from ${companyName}`;
+        const emailBody = `Dear ${customerName},
+
+                            Please find your quote attached.
+
+                            Thank you for your business!`;
+
+        const formDataForEmail = new FormData();
+        formDataForEmail.append('title', emailSubject);
+        formDataForEmail.append('message', emailBody);
+
+        const emailResult = await sendEmailWithTemplate(formDataForEmail, customerEmail, attachments);
+
+        if (!emailResult) {
+            throw new Error("Failed to send quote email.");
+        }
+
+        // console.log("Quote re-sent and email sent successfully:", quoteId);
+        return { success: true, message: "Quote sent successfully." };
+    } catch (error) {
+        console.error(error);
+        throw new Error(`Failed to resend quote ${quoteId}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
-    const { isAdmin, userId } = await isOrgAdmin();
+    const { isAdmin, userId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!userId) throw new Error("No user");
 
@@ -373,6 +444,12 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
             resultQuote = await stripe.quotes.accept(quoteId);
         } else if (action === "cancel") {
             resultQuote = await stripe.quotes.cancel(quoteId);
+        } else if (action === "send") {
+            resultQuote = await stripe.quotes.finalizeQuote(quoteId);
+            if (!sessionClaims) {
+                throw new Error("Session claims are missing.");
+            }
+            return await sendQuote(quoteId, stripe, sessionClaims);
         } else {
             throw new Error("Invalid action for quote operation.");
         }
@@ -385,9 +462,6 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
 }
-
-
-
 
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();

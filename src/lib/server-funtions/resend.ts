@@ -23,7 +23,7 @@ export async function sendEmail(
 
   try {
     if (data.sender) {
-      const response = await resend.emails.send({
+      await resend.emails.send({
         from: data.sender,
         to: [clientsEmail],
         subject: data.title,
@@ -36,7 +36,7 @@ export async function sendEmail(
         }) as React.ReactElement,
         attachments: attachments,
       });
-      console.log('Email sent successfully:', response);
+      // console.log('Email sent successfully:', response);
     }
 
     return true;

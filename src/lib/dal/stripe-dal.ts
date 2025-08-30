@@ -157,7 +157,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.QuoteListParams = { limit: 200 };
+        const params: Stripe.QuoteListParams = {};
         if (typesOfQuotes && ['draft', 'open', 'accepted', 'canceled'].includes(typesOfQuotes)) {
             params.status = typesOfQuotes as 'draft' | 'open' | 'accepted' | 'canceled';
         }
@@ -171,42 +171,33 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             }
         }
 
-        let filteredQuotes = allQuotes;
-        if (searchTerm) {
-            const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            filteredQuotes = allQuotes.filter(quote =>
-                (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm))
-            );
-        }
-
-        const totalQuotes = filteredQuotes.length;
-        const totalPages = Math.ceil(totalQuotes / pageSize);
-        const offset = (page - 1) * pageSize;
-        const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
-
-        // const quotesWithPdf = await Promise.all(paginatedQuotes.map(async (quote) => {
-        //     const retrievedQuote = await stripe.quotes.pdf(quote.id);
-        //     return retrievedQuote
-        // }));
-
-        // console.log("quotesWithPdf: ", quotesWithPdf)
         const uniqueCustomerIds = [...new Set(allQuotes.map(quote => quote.customer).filter((customer): customer is string => typeof customer === 'string'))];
-        // console.log("Unique Customer IDs from Stripe:", uniqueCustomerIds);
-
         const clientNamesResult = await fetchClientNamesByStripeIds(uniqueCustomerIds);
-        // console.log("Client Names Result from DB:", clientNamesResult);
-
         if (clientNamesResult instanceof Error) {
             throw clientNamesResult;
         }
-
         const clientNamesMap = new Map<string, string>();
         clientNamesResult.forEach(client => {
             if (client.stripe_customer_id && client.full_name) {
                 clientNamesMap.set(client.stripe_customer_id, client.full_name);
             }
         });
-        // console.log("Client Names Map:", clientNamesMap);
+
+        let filteredQuotes = allQuotes;
+        if (searchTerm) {
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            filteredQuotes = allQuotes.filter(quote => {
+                const clientName = typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined;
+                return (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (quote.id && quote.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (clientName && clientName.toLowerCase().includes(lowerCaseSearchTerm));
+            });
+        }
+
+        const totalQuotes = filteredQuotes.length;
+        const totalPages = Math.ceil(totalQuotes / pageSize);
+        const offset = (page - 1) * pageSize;
+        const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
 
         const strippedQuotes = paginatedQuotes.map((quote) => ({
             id: quote.id,
@@ -271,6 +262,42 @@ export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
     };
     console.log(JSON.stringify(plainInvoice, null, 2))
     return plainInvoice;
+}
+
+export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const stripe = await getStripeInstance();
+    const quote = await stripe.quotes.retrieve(quoteId, {
+        expand: ['line_items.data'],
+    });
+
+    if (!quote) {
+        throw new Error('Quote not found');
+    }
+
+    const plainQuote: StripeQuote = {
+        id: quote.id,
+        object: quote.object,
+        amount_total: quote.amount_total,
+        customer: typeof quote.customer === 'string' ? quote.customer : quote.customer?.id || '',
+        status: quote.status,
+        expires_at: quote.expires_at,
+        created: quote.created,
+        lines: {
+            data: (quote.line_items?.data || []).map((lineItem) => ({
+                id: lineItem.id,
+                object: lineItem.object,
+                amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
+                currency: lineItem.currency,
+                description: lineItem.description,
+                quantity: lineItem.quantity || 0,
+            })),
+        },
+    };
+
+    return plainQuote;
 }
 
 // export async function createOrgWebhook() {
