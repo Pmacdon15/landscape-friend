@@ -131,7 +131,7 @@ export async function createStripeWebhook(apiKey: string, organizationId: string
 
 
 
-export const createNotificationPayloadQuote = (quote: Stripe.Response<Stripe.Quote>, clientName: string) => ({
+export const createNotificationPayloadQuote = async (quote: Stripe.Response<Stripe.Quote>, clientName: string) => ({
     quote: {
         amount: ((quote.amount_total ?? 0) / 100).toString(),
         id: quote.id || "",
@@ -142,7 +142,7 @@ export const createNotificationPayloadQuote = (quote: Stripe.Response<Stripe.Quo
 });
 
 
-export const createNotificationPayloadInvoice = (invoice: Stripe.Response<Stripe.Invoice>, clientName: string) => ({
+export const createNotificationPayloadInvoice = async (invoice: Stripe.Response<Stripe.Invoice>, clientName: string) => ({
     quote: {
         amount: ((invoice.total ?? 0) / 100).toString(),
         id: invoice.id || "",

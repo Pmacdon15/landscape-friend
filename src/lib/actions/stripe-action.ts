@@ -229,7 +229,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                     clientName = clientNamesResult[0].full_name || '';
                 }
             }
-            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', createNotificationPayloadInvoice(updatedInvoice, clientName));
+            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', await createNotificationPayloadInvoice(updatedInvoice, clientName));
             //MARK:look here TODO
         } else if (id.startsWith('qt_')) {
             // Quote update logic
@@ -263,7 +263,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                 }
             }
 
-            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', createNotificationPayloadQuote(updatedQuote, clientName));
+            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', await createNotificationPayloadQuote(updatedQuote, clientName));
         } else {
             throw new Error("Invalid document ID prefix.");
         }
@@ -459,7 +459,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         }
 
         if (notificationType[action]) {
-            triggerNotificationSendToAdmin(orgId || userId!, notificationType[action], createNotificationPayloadQuote(updatedQuote, clientName));
+            triggerNotificationSendToAdmin(orgId || userId!, notificationType[action], await createNotificationPayloadQuote(updatedQuote, clientName));
         }
 
     } catch (e) {
