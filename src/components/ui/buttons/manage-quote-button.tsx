@@ -20,7 +20,7 @@ export default function ManageQuoteButton({
       disabled={isPending}
       onClick={() => mutate({ action, quoteId })}
     >
-      {buttonText}{isPending && <> ing ... <Spinner /></>}
+      {buttonText}{isPending && <Spinner />}
     </Button>
   );
 }

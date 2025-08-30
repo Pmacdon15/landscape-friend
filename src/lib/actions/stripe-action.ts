@@ -167,11 +167,11 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
         });
         await triggerNotificationSendToAdmin(orgId || userId!, 'quote-created', {
             quote: {
-            amount: (quote.amount_total / 100).toString(),
-            id: quote.id || ""
+                amount: (quote.amount_total / 100).toString(),
+                id: quote.id || ""
             },
             client: {
-            name: validatedFields.data.clientName
+                name: validatedFields.data.clientName
             }
         })
 
@@ -432,10 +432,24 @@ async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayl
     }
 }
 
+async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
+    const updatedQuote = await stripe.quotes.retrieve(quoteId);
+    const customerId = typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer?.id;
+    let clientName = '';
+    if (customerId) {
+        const clientNamesResult = await fetchClientNamesByStripeIds([customerId]);
+        if (!(clientNamesResult instanceof Error) && clientNamesResult.length > 0) {
+            clientName = clientNamesResult[0].full_name || '';
+        }
+    }
+    return { updatedQuote, clientName };
+}
+
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
-    const { isAdmin, userId, sessionClaims } = await isOrgAdmin();
+    const { isAdmin, userId, orgId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!userId) throw new Error("No user");
+    if (!sessionClaims) throw new Error("Session claims are missing.");
 
     const stripe = await getStripeInstance();
     try {
@@ -446,10 +460,22 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
             resultQuote = await stripe.quotes.cancel(quoteId);
         } else if (action === "send") {
             resultQuote = await stripe.quotes.finalizeQuote(quoteId);
-            if (!sessionClaims) {
-                throw new Error("Session claims are missing.");
-            }
-            return await sendQuote(quoteId, stripe, sessionClaims);
+            const sendQuoteResult = await sendQuote(quoteId, stripe, sessionClaims);
+            // Fetch the updated quote to get customer details
+            const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
+
+            // Trigger admin notification
+            await triggerNotificationSendToAdmin(orgId || userId!, 'quote-sent', {
+                quote: {
+                    amount: (updatedQuote.amount_total / 100).toString(),
+                    id: updatedQuote.id || ""
+                },
+                client: {
+                    name: clientName
+                }
+            });
+
+            return sendQuoteResult;
         } else {
             throw new Error("Invalid action for quote operation.");
         }
