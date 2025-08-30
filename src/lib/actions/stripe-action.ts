@@ -56,6 +56,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 }
 
 import { z } from 'zod';
+import { JwtPayload } from '@clerk/types';
 import { triggerNotificationSendToAdmin } from "../server-funtions/novu";
 
 //MARK: Create quote
@@ -380,7 +381,7 @@ export async function markInvoiceVoid(invoiceId: string) {
     }
 }
 
-async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: any) {
+async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayload) {
     try {
         const quote = await stripe.quotes.retrieve(quoteId);
         if (!quote) throw new Error("Quote not found");
