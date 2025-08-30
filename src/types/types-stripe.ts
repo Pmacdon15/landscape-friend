@@ -68,6 +68,6 @@ export interface StripeQuote {
 
 
 export interface MarkQuoteProps {
-    action: "accept" | "cancel" | "send";
+    action: "accept" | "cancel" | "send" | "edit";
     quoteId: string;
 }

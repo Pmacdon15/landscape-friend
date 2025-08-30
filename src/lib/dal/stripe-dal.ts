@@ -157,7 +157,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.QuoteListParams = { limit: 200 };
+        const params: Stripe.QuoteListParams = {};
         if (typesOfQuotes && ['draft', 'open', 'accepted', 'canceled'].includes(typesOfQuotes)) {
             params.status = typesOfQuotes as 'draft' | 'open' | 'accepted' | 'canceled';
         }
@@ -271,6 +271,42 @@ export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
     };
     console.log(JSON.stringify(plainInvoice, null, 2))
     return plainInvoice;
+}
+
+export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const stripe = await getStripeInstance();
+    const quote = await stripe.quotes.retrieve(quoteId, {
+        expand: ['line_items.data'],
+    });
+
+    if (!quote) {
+        throw new Error('Quote not found');
+    }
+
+    const plainQuote: StripeQuote = {
+        id: quote.id,
+        object: quote.object,
+        amount_total: quote.amount_total,
+        customer: typeof quote.customer === 'string' ? quote.customer : quote.customer?.id || '',
+        status: quote.status,
+        expires_at: quote.expires_at,
+        created: quote.created,
+        lines: {
+            data: (quote.line_items?.data || []).map((lineItem) => ({
+                id: lineItem.id,
+                object: lineItem.object,
+                amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
+                currency: lineItem.currency,
+                description: lineItem.description,
+                quantity: lineItem.quantity || 0,
+            })),
+        },
+    };
+
+    return plainQuote;
 }
 
 // export async function createOrgWebhook() {

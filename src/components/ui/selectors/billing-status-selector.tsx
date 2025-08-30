@@ -6,7 +6,7 @@ export function BillingStatusSelector({ variant = "invoices" }: { variant?: Vari
   const { currentStatus, setBillingStatus } = useBillingStatusSearch();
   const statuses = variant === "invoices"
     ? ["all", "draft", "open", "paid", "void"]
-    : ["all", "open", "accepted", "canceled"];
+    : ["all", "draft", "open", "accepted", "canceled"];
 
   return (
     <select

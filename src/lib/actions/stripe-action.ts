@@ -165,40 +165,38 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
         });
 
         // Finalize the quote immediately
-        const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
+        // const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
 
-        if (!finalizedQuote.id) throw new Error("Failed")
+        // if (!finalizedQuote.id) throw new Error("Failed")
 
         // Download the PDF using Stripe's built-in method
-        const pdfStream = await stripe.quotes.pdf(finalizedQuote.id);
-        const pdfContent = await streamToBuffer(pdfStream);
+        // const pdfStream = await stripe.quotes.pdf(quote.id);
+        // const pdfContent = await streamToBuffer(pdfStream);
 
-        // Prepare attachment
-        const attachments = [{
-            filename: `quote_${finalizedQuote.id}.pdf`,
-            content: pdfContent,
-        }];
-        if (!quote.id) throw new Error("Failed")
-        // Construct email content
-        const emailSubject = `Your Quote from ${companyName}`;
-        const emailBody = `Dear ${validatedFields.data.clientName},
+        // // Prepare attachment
+        // const attachments = [{
+        //     filename: `quote_${quote.id}.pdf`,
+        //     content: pdfContent,
+        // }];
+        // if (!quote.id) throw new Error("Failed")
+        // // Construct email content
+        // const emailSubject = `Your Quote from ${companyName}`;
+        // const emailBody = `Dear ${validatedFields.data.clientName},
+        //     Please find your quote attached. Please reply to this email to confirm the quote.
+        //     Thank you!`
 
-Please find your quote attached. Please reply to this email to confirm the quote.
+        // // Create FormData for sendEmailWithTemplate
+        // const formDataForEmail = new FormData();
+        // formDataForEmail.append('title', emailSubject);
+        // formDataForEmail.append('message', emailBody);
 
-Thank you!`
+        // // Send the email with attachment
+        // const emailResult = await sendEmailWithTemplate(formDataForEmail, validatedFields.data.clientEmail, attachments);
+        // if (!emailResult) {
+        //     throw new Error("Failed");
+        // }
 
-        // Create FormData for sendEmailWithTemplate
-        const formDataForEmail = new FormData();
-        formDataForEmail.append('title', emailSubject);
-        formDataForEmail.append('message', emailBody);
-
-        // Send the email with attachment
-        const emailResult = await sendEmailWithTemplate(formDataForEmail, validatedFields.data.clientEmail, attachments);
-        if (!emailResult) {
-            throw new Error("Failed");
-        }
-
-        return { success: true, quoteId: finalizedQuote.id };
+        return { success: true, quoteId: quote.id };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         console.error("Error creating Stripe quote:", errorMessage);

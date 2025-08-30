@@ -13,7 +13,7 @@ import { useResetFormOnSuccess } from '@/lib/hooks/hooks';
 import BackToLink from '../../links/back-to-link';
 import { EditStripeForm } from '@/types/types-stripe';
 
-export function EditForm({ invoiceOrQuote, variant = "invoice" }: { invoiceOrQuote: EditStripeForm, variant?: "invoice" | "quote" }) {
+export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeDocument();
 
     const { register, watch, control, handleSubmit, reset, formState: { errors } } = useForm<z.input<typeof schemaUpdateStatement>>({
