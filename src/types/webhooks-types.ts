@@ -1,6 +1,9 @@
 export interface InvoicePayload {
     client: {
         name: string;
-    };
-    amount: string;
+    },
+    invoice: {
+        invoiceId: string | undefined;
+        amount: string;
+    }
 }
