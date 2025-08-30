@@ -10,6 +10,8 @@ import { StripeInvoice } from '@/types/types-stripe';
 import { AlertMessage } from '../stripe-forms/shared/alert-message';
 import { DynamicFields } from '../stripe-forms/shared/dynamic-fields'; // our reusable component
 import { z } from 'zod';
+import { useResetFormOnSuccess } from '@/lib/hooks/hooks';
+import BackToLink from '../links/back-to-link';
 
 export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeInvoice();
@@ -28,6 +30,8 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
 
     const submittedData = React.useRef<z.input<typeof schemaUpdateInvoice> | null>(null);
 
+    useResetFormOnSuccess(isSuccess, submittedData, reset);
+
     const { fields, append, remove } = useFieldArray({ control, name: 'lines' });
 
     const watchedLines = watch('lines');
@@ -37,12 +41,6 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
         submittedData.current = formData;
         mutate(formData as z.infer<typeof schemaUpdateInvoice>)
     };
-
-    React.useEffect(() => {
-        if (isSuccess && submittedData.current) {
-            reset(submittedData.current);
-        }
-    }, [isSuccess, reset]);
 
     return (
         <>
@@ -66,10 +64,15 @@ export function EditInvoiceForm({ invoice }: { invoice: StripeInvoice }) {
                 </section>
 
                 <p className="font-bold mt-2">Subtotal: ${subtotal.toFixed(2)}</p>
+                <section className='flex flex-col md:flex-flex-row gap-2'>
+                    <div>
+                        <Button variant="outline" type="submit" disabled={isPending}>
+                            {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}
+                        </Button>
+                    </div>
 
-                <Button variant="outline" type="submit" disabled={isPending}>
-                    {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}
-                </Button>
+                    <BackToLink path={'/billing/manage/invoices'} place={'Invoices'} />
+                </section>
             </form>
 
             {/* Reusable Alerts */}
