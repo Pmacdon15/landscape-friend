@@ -1,8 +1,7 @@
 'use client'
-
 import { useAddClient } from "@/lib/mutations/mutations";
 import { Button } from "../button";
-import Spinner from "../spinner";
+import EllipsisSpinner from "../loaders/EllipsisSpinner";
 
 export default function SubmitAddClientToList() {
     const { mutate, isPending, isError } = useAddClient();
@@ -14,7 +13,7 @@ export default function SubmitAddClientToList() {
                 type="submit"
                 formAction={mutate}
                 disabled={isPending}
-            >{!isPending ? "Submit" : <div className="flex gap-4 justify-center"> Submitting... <Spinner /></div>}</Button>
+            >{!isPending ? "Submit" : <div className="flex gap-4 justify-center"> Submitting <EllipsisSpinner /></div>}</Button>
             {isError && <p className="text-red-500">Error Submitting</p>}
         </>
     );

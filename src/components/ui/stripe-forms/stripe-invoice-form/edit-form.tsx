@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemaUpdateStatement } from '@/lib/zod/schemas';
-import Spinner from '../../spinner';
+import Spinner from '../../loaders/spinner';
 import { AlertMessage } from '../shared/alert-message';
 import { DynamicFields } from '../shared/dynamic-fields'; // our reusable component
 import { z } from 'zod';
@@ -67,7 +67,7 @@ export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm })
 
                 <div>
                     <Button variant="outline" type="submit" disabled={isPending}>
-                        {isPending ? <>Updating Invoice...<Spinner /></> : 'Update Invoice'}
+                        {isPending ? <>Updating document...<Spinner /></> : 'Update Document'}
                     </Button>
                 </div>
 

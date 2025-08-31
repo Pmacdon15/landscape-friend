@@ -2,7 +2,7 @@
 import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef } from "react";
 import { useImageSelector } from "@/lib/hooks/useImageSelector";
-import Spinner from "@/components/ui/spinner";
+import Spinner from "@/components/ui/loaders/spinner";
 import { Client } from "@/types/types-clients";
 
 export default function ImageSelectorMain({

@@ -1,7 +1,7 @@
 'use client'
 import { useUploadImage } from "@/lib/mutations/mutations";
 import { toast } from "sonner";
-import Spinner from "../spinner";
+import Spinner from "../loaders/spinner";
 
 export default function UploadImageButton({ clientId, setView }: { clientId: number, setView: React.Dispatch<React.SetStateAction<string>> }) {
     const { mutate, isPending } = useUploadImage({
