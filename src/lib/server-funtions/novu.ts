@@ -15,6 +15,12 @@ export async function addNovuSubscriber(
     return true
 };
 
+export async function deleteNovuSubscriber(subscriberId: string) {
+    await novu.subscribers.delete(subscriberId);
+    console.log(`Subscriber ${subscriberId} deleted successfully`);
+    return true;
+}
+
 export async function removeNovuSubscriber(subscriberId: string) {
     try {
         const response = await fetch(`${process.env.NOVU_API_URL}/subscribers/${subscriberId}`, {

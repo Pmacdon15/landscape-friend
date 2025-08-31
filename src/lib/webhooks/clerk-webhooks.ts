@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../server-funtions/novu";
+import { addNovuSubscriber, deleteNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../server-funtions/novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
 
@@ -41,7 +41,7 @@ export async function handleUserDeleted(userId: string) {
         // Remove the user from Novu
         const user = deleteResult[0];
         if (user.novu_subscriber_id) {
-            const result = await removeNovuSubscriber(user.novu_subscriber_id);
+            const result = await deleteNovuSubscriber(user.novu_subscriber_id);
             if (!result) {
                 console.error(`Failed to remove user ${userId} from Novu.`);
             }
