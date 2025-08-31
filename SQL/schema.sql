@@ -26,7 +26,7 @@ CREATE TABLE users (
     id VARCHAR(100) UNIQUE PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    novu_subscriber_id VARCHAR(255) UNIQUE NULL,
+    novu_subscriber_id VARCHAR(255) UNIQUE NULL
 );
 
 CREATE TABLE organizations (
@@ -133,7 +133,7 @@ CREATE TABLE images (
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
--- SELECT * FROM clients;
+SELECT * FROM clients;
 -- SELECT * FROM users;
 
 -- SELECT id, novu_subscriber_id

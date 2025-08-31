@@ -2,8 +2,8 @@ import { sayHello } from '@/lib/dal/novu-dal';
 import { Novu } from '@novu/api';
 import { getOrgMembers } from './clerk';
 import { getNovuIds } from '../DB/db-clients';
-import { InvoicePayload } from '@/types/webhooks-types';
-import { QuotePayload } from '@/types/types-stripe';
+import { PayloadType } from '@/types/webhooks-types';
+
 
 export async function addNovuSubscriber(
     subscriberId: string,
@@ -42,7 +42,7 @@ const novu = new Novu({
     secretKey: process.env.NOVU_SECRET_KEY,
 });
 
-export async function triggerNotificationSendToAdmin(orgId: string, workflow: string, payload?: InvoicePayload | QuotePayload) {
+export async function triggerNotificationSendToAdmin(orgId: string, workflow: string, payload?: PayloadType) {
     let adminUserIds: string[];
     if (!orgId.startsWith('user')) {
         const membersOfOrg = await getOrgMembers(orgId);
@@ -54,7 +54,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
 
     const novuSubscriberIds = await getNovuIds(adminUserIds);
     const adminSubscriberIds = Object.values(novuSubscriberIds).filter((id) => id !== null);
-    
+    //TODO: Maybe this try catch can go and would be better to find the error higher instead of ending here
     try {
         await novu.trigger({
             workflowId: workflow,

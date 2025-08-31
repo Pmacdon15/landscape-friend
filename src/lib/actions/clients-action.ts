@@ -3,6 +3,7 @@ import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, upda
 import { getOrganizationSettings } from "@/lib/DB/db-org";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
+import { triggerNotificationSendToAdmin } from "../server-funtions/novu";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -31,7 +32,12 @@ export async function addClient(formData: FormData) {
     try {
         const result = await addClientDB(validatedFields.data, organizationId)
         if (!result) throw new Error('Failed to add Client');
-
+        triggerNotificationSendToAdmin(organizationId, 'client-added', {
+            client: {
+                name: validatedFields.data.full_name,
+                encodedName: encodeURIComponent(validatedFields.data.full_name)
+            }
+        })
 
         return result;
     } catch (e: unknown) {
