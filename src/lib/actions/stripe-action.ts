@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/server-funtions/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
-import { MarkQuoteProps, StripeQuote } from "@/types/types-stripe";
+import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
 import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
@@ -449,11 +449,11 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         };
 
         if (action === "accept") {
-            resultQuote = await stripe.quotes.accept(quoteId);
+            await stripe.quotes.accept(quoteId);
         } else if (action === "cancel") {
-            resultQuote = await stripe.quotes.cancel(quoteId);
+            await stripe.quotes.cancel(quoteId);
         } else if (action === "send") {
-            resultQuote = await stripe.quotes.finalizeQuote(quoteId);
+            await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
         } else {
             throw new Error("Invalid action for quote operation.");
