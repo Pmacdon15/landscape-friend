@@ -56,7 +56,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
     const adminSubscriberIds = Object.values(novuSubscriberIds).filter((id) => id !== null);
     
     try {
-        const result = await novu.trigger({
+        await novu.trigger({
             workflowId: workflow,
             to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
             payload: payload,
