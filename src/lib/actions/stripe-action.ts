@@ -444,7 +444,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 
         const notificationType = {
             accept: null,
-            cancel: "quote-cancled",
+            cancel: "quote-canceled",
             send: "quote-sent",
         };
 
