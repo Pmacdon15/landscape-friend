@@ -355,6 +355,7 @@ export async function markInvoiceVoid(invoiceId: string) {
             if (!dbUpdateResult.success) {
                 console.warn(`Failed to update local database for invoice ${invoiceId}: ${dbUpdateResult.message}`);
             }
+            await triggerNotificationSendToAdmin(orgId || userId, 'invoice-void', await createNotificationPayloadInvoice(invoice, invoice?.customer_name || 'Unknown Customer'));
         } else {
             console.warn(`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`);
         }
