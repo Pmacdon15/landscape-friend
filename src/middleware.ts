@@ -22,6 +22,7 @@ export default clerkMiddleware(async (auth, req) => {
     console.log("Calling redirect from middleware")
     return NextResponse.redirect(url)
   }
+  
   console.log("middleware End")
 })
 

@@ -1,4 +1,3 @@
-import { sayHello } from '@/lib/dal/novu-dal';
 import { Novu } from '@novu/api';
 import { getOrgMembers } from './clerk';
 import { getNovuIds } from '../DB/db-clients';
@@ -70,5 +69,29 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
         // console.log("Result for send notification: ", result)
     } catch (error) {
         console.error(error);
+    }
+}
+
+
+
+export async function sayHello(novuId: string, email?: string, userName?: string) {
+        try {
+        const firstName = userName?.split(" ")[0]
+        const lastName = userName?.split(" ")[1]
+        await novu.trigger({
+            workflowId: 'hello-from-landscape-friend',
+            to: {
+                subscriberId: novuId,
+                email,
+                firstName,
+                lastName,
+                timezone: 'America/Edmonton',
+            },
+            payload: {},
+        });
+
+    } catch (error) {
+        console.error(error);
+        // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
     }
 }

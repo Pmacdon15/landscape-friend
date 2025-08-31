@@ -1,15 +1,15 @@
 'use server'
-import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
-import { isOrgAdmin } from "@/lib/server-funtions/clerk";
+import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-functions/stripe-utils";
+import { isOrgAdmin } from "@/lib/server-functions/clerk";
 import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
-import { formatCompanyName } from "@/lib/server-funtions/resend";
+import { formatCompanyName } from "@/lib/server-functions/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
 import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
-import { triggerNotifaction } from "../dal/novu-dal";
+import { triggerNotification } from "../dal/novu-dal";
 import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
 import { hasStripAPIKey } from "../dal/stripe-dal";
 import { fetchClientNamesByStripeIds } from "../dal/clients-dal";
@@ -24,7 +24,7 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
     });
 };
 
-import { createStripeWebhook } from "../server-funtions/stripe-utils";
+import { createStripeWebhook } from "../server-functions/stripe-utils";
 import { markPaidDb } from "../DB/db-clients";
 
 //MARK: Update API key
@@ -47,7 +47,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
         await createStripeWebhook(validatedFields.data.APIKey, orgId || userId!);
 
-        if (novuId) await triggerNotifaction(novuId.UserNovuId, "stripe-api-key-updated")
+        if (novuId) await triggerNotification(novuId.UserNovuId, "stripe-api-key-updated")
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
@@ -57,7 +57,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 import { z } from 'zod';
 import { JwtPayload } from '@clerk/types';
-import { triggerNotificationSendToAdmin } from "../server-funtions/novu";
+import { triggerNotificationSendToAdmin } from "../server-functions/novu";
 
 //MARK: Create quote
 export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQuote>) {
