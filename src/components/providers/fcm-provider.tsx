@@ -35,7 +35,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
 
     const sendTokenToServer = useCallback(async (token: string, userId: string) => {
         try {
-            await registerNovuDevice(token, token)
+            await registerNovuDevice(token, userId)
         } catch (error) {
             console.error('Error sending token to server:', error);
         }
