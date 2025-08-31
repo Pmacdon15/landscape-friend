@@ -59,6 +59,7 @@ export async function deleteClient(clientId: number) {
     try {
         const result = await deleteClientDB(validatedFields.data, (orgId || userId)!)
         if (!result) throw new Error('Delete Client');
+        triggerNotificationSendToAdmin(orgId || userId!, 'client-deleted')
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
