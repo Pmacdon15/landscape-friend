@@ -1,5 +1,5 @@
 'use server'
-import { findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
+import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-funtions/stripe-utils";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/server-funtions/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
-import { MarkQuoteProps } from "@/types/types-stripe";
+import { MarkQuoteProps, StripeQuote } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotifaction } from "../dal/novu-dal";
 import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
@@ -167,11 +167,11 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
         });
         await triggerNotificationSendToAdmin(orgId || userId!, 'quote-created', {
             quote: {
-            amount: (quote.amount_total / 100).toString(),
-            id: quote.id || ""
+                amount: (quote.amount_total / 100).toString(),
+                id: quote.id || ""
             },
             client: {
-            name: validatedFields.data.clientName
+                name: validatedFields.data.clientName
             }
         })
 
@@ -229,16 +229,8 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                     clientName = clientNamesResult[0].full_name || '';
                 }
             }
-
-            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', {
-                invoice: {
-                    amount: (updatedInvoice.total / 100).toString(),
-                    id: updatedInvoice.id || ""
-                },
-                client: {
-                    name: clientName
-                }
-            });
+            triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', await createNotificationPayloadInvoice(updatedInvoice, clientName));
+            //MARK:look here TODO
         } else if (id.startsWith('qt_')) {
             // Quote update logic
             const line_items = await Promise.all(lines.map(async (line) => {
@@ -271,15 +263,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                 }
             }
 
-            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', {
-                quote: {
-                    amount: (updatedQuote.amount_total / 100).toString(),
-                    id: updatedQuote.id || ""
-                },
-                client: {
-                    name: clientName
-                }
-            });
+            triggerNotificationSendToAdmin(orgId || userId!, 'quote-edited', await createNotificationPayloadQuote(updatedQuote, clientName));
         } else {
             throw new Error("Invalid document ID prefix.");
         }
@@ -432,36 +416,57 @@ async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayl
     }
 }
 
+async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
+    const updatedQuote = await stripe.quotes.retrieve(quoteId);
+    const customerId = typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer?.id;
+    let clientName = '';
+    if (customerId) {
+        const clientNamesResult = await fetchClientNamesByStripeIds([customerId]);
+        if (!(clientNamesResult instanceof Error) && clientNamesResult.length > 0) {
+            clientName = clientNamesResult[0].full_name || '';
+        }
+    }
+    return { updatedQuote, clientName };
+}
+
+
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
-    const { isAdmin, userId, sessionClaims } = await isOrgAdmin();
+    const { isAdmin, userId, orgId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!userId) throw new Error("No user");
+    if (!sessionClaims) throw new Error("Session claims are missing.");
 
     const stripe = await getStripeInstance();
     try {
         let resultQuote: Stripe.Response<Stripe.Quote>;
+        const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
+
+        const notificationType = {
+            accept: null,
+            cancel: "quote-cancled",
+            send: "quote-sent",
+        };
+
         if (action === "accept") {
             resultQuote = await stripe.quotes.accept(quoteId);
         } else if (action === "cancel") {
             resultQuote = await stripe.quotes.cancel(quoteId);
         } else if (action === "send") {
             resultQuote = await stripe.quotes.finalizeQuote(quoteId);
-            if (!sessionClaims) {
-                throw new Error("Session claims are missing.");
-            }
-            return await sendQuote(quoteId, stripe, sessionClaims);
+            await sendQuote(quoteId, stripe, sessionClaims);
         } else {
             throw new Error("Invalid action for quote operation.");
         }
 
-        return {
-            id: resultQuote.id,
-            status: resultQuote.status,
-        };
+        if (notificationType[action]) {
+            triggerNotificationSendToAdmin(orgId || userId!, notificationType[action], await createNotificationPayloadQuote(updatedQuote, clientName));
+        }
+
     } catch (e) {
         throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
     }
 }
+
 
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();

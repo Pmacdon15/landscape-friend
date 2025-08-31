@@ -130,3 +130,23 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes ellipsis-dots {
+  0% {
+    content: "";
+  }
+  33% {
+    content: ".";
+  }
+  66% {
+    content: ". .";
+  }
+  100% {
+    content: ". . .";
+  }
+}
+
+.animate-ellipsis-dots::after {
+  content: "";
+  animation: ellipsis-dots 1.5s infinite steps(4);
+}

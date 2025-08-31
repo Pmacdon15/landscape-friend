@@ -3,7 +3,8 @@ import { useMarkQuote } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 import { MarkQuoteProps } from "@/types/types-stripe";
 import EditQuoteLink from "../links/edit-quote-link";
-import Spinner from "../spinner";
+// import Spinner from "../loaders/spinner";
+import EllipsisSpinner from "../loaders/EllipsisSpinner";
 
 export default function ManageQuoteButton({
   quoteId,
@@ -20,7 +21,7 @@ export default function ManageQuoteButton({
       disabled={isPending}
       onClick={() => mutate({ action, quoteId })}
     >
-      {buttonText}{isPending && <> ing ... <Spinner /></>}
+      {buttonText}{isPending && <EllipsisSpinner />}
     </Button>
   );
 }
