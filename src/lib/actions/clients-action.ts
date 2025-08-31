@@ -1,9 +1,9 @@
 'use server'
 import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/db-clients";
 import { getOrganizationSettings } from "@/lib/DB/db-org";
-import { isOrgAdmin } from "@/lib/server-funtions/clerk";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
-import { triggerNotificationSendToAdmin } from "../server-funtions/novu";
+import { triggerNotificationSendToAdmin } from "../utils/novu";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();

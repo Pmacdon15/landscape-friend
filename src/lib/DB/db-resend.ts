@@ -1,6 +1,6 @@
 import { Email, NamesAndEmails } from "@/types/types-clients";
 import { neon } from "@neondatabase/serverless";
-import { sendGroupEmail } from "../server-funtions/resend";
+import { sendGroupEmail } from "../utils/resend";
 import { schemaSendEmail } from "../zod/schemas";
 import { JwtPayload } from "@clerk/types";
 import z from "zod";

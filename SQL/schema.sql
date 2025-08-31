@@ -33,7 +33,7 @@ CREATE TABLE organizations (
     id SERIAL PRIMARY KEY,
     organization_id VARCHAR(253) NOT NULL UNIQUE,
     organization_name VARCHAR(253) NOT NULL,
-    max_allowed_clinents INT NOT NULL DEFAULT 50
+    max_allowed_clinents INT NOT NULL DEFAULT 50 
 );
 
 CREATE TABLE clients (
@@ -55,6 +55,7 @@ CREATE TABLE stripe_api_keys (
     api_key VARCHAR(253) NOT NULL,
     organization_id VARCHAR(253) UNIQUE NOT NULL,
     webhook_secret VARCHAR(253) NULL,
+    webhook_id VARCHAR(253) NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE
 );
 
@@ -133,9 +134,9 @@ CREATE TABLE images (
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
-SELECT * FROM clients;
+-- SELECT * FROM clients;
 -- SELECT * FROM users;
-
+-- SELECT * FROM organizations;
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');

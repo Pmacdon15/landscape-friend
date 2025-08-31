@@ -3,10 +3,10 @@ import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { fetchSnowClearingClients } from "@/lib/dal/clients-dal";
-import { isOrgAdmin } from "@/lib/server-funtions/clerk";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { parseClientListParams } from "@/lib/server-funtions/params";
+import { parseClientListParams } from "@/lib/utils/params";
 import { SearchParams } from "@/types/types-params";
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 

@@ -13,56 +13,61 @@ export async function POST(req: NextRequest) {
             signingSecret: process.env.CLERK_WEBHOOK_SIGNING_SECRET,
         }) as WebhookEvent;
 
-        console.log("Web Hook :", evt.type, " ", evt.data)
-        switch (evt.type) {
-            case 'subscriptionItem.active': {
-                if (isSubscriptionItem(evt.data)) {
-                    const plan = evt.data.plan.slug;
-                    const orgId = evt.data.payer?.organization_id;
-                    if (orgId) {
-                        await handleSubscriptionUpdate(orgId, plan);                       
-                    }
-                }
-                break;
-            }
+        console.log("Web Hook :", evt.type, " ", evt.data);
 
-            case 'user.created': {
-                const data = evt.data as UserCreatedEvent;
-                const userId = data.id;
-                const userName = `${data.first_name || ''} ${data.last_name || ''}`.trim() || data.username || 'Personal Workspace';
-                const userEmail = data.email_addresses[0]?.email_address;
-                if (!userEmail) {
-                    console.error('User created event without email address');
+        try {
+            switch (evt.type) {
+                case 'subscriptionItem.active': {
+                    if (isSubscriptionItem(evt.data)) {
+                        const plan = evt.data.plan.slug;
+                        const orgId = evt.data.payer?.organization_id;
+                        if (orgId) {
+                            await handleSubscriptionUpdate(orgId, plan);
+                        }
+                    }
                     break;
                 }
-                await handleUserCreated(userId, userName, userEmail);
-                await handleOrganizationCreated(userId, userName);
-                break;
-            }
 
-            case 'organization.created': {
-                const orgId = (evt.data as OrganizationCreatedEvent).id;
-                const orgName = (evt.data as OrganizationCreatedEvent).name;
-                await handleOrganizationCreated(orgId, orgName);
-                break;
-            }
+                case 'user.created': {
+                    const data = evt.data as UserCreatedEvent;
+                    const userId = data.id;
+                    const userName = `${data.first_name || ''} ${data.last_name || ''}`.trim() || data.username || 'Personal Workspace';
+                    const userEmail = data.email_addresses[0]?.email_address;
+                    if (!userEmail) {
+                        console.error('User created event without email address');
+                        break;
+                    }
+                    await handleUserCreated(userId, userName, userEmail);
+                    await handleOrganizationCreated(userId, userName);
+                    break;
+                }
 
-            case 'user.deleted': {
-                const id = (evt.data as UserDeletedEvent).id;
-                await handleOrganizationDeleted(id);
-                await handleUserDeleted(id)
-                break;
-            }
+                case 'organization.created': {
+                    const orgId = (evt.data as OrganizationCreatedEvent).id;
+                    const orgName = (evt.data as OrganizationCreatedEvent).name;
+                    await handleOrganizationCreated(orgId, orgName);
+                    break;
+                }
 
-            case 'organization.deleted': {
-                const orgId = (evt.data as OrganizationCreatedEvent).id;
-                await handleOrganizationDeleted(orgId);
-                break;
-            }
+                case 'user.deleted': {
+                    const id = (evt.data as UserDeletedEvent).id;
+                    await handleOrganizationDeleted(id);
+                    await handleUserDeleted(id);
+                    break;
+                }
 
-            default:
-                console.log(`Unhandled event type: ${evt.type}`);
-                break;
+                case 'organization.deleted': {
+                    const orgId = (evt.data as OrganizationCreatedEvent).id;
+                    await handleOrganizationDeleted(orgId);
+                    break;
+                }
+
+                default:
+                    console.log(`Unhandled event type: ${evt.type}`);
+                    break;
+            }
+        } catch (error) {
+            console.error('Error handling webhook event:', error);
         }
 
         return new Response('Webhook received', { status: 200 })

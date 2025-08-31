@@ -3,27 +3,35 @@ import { NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher(['/lists(.*)', '/(email)(.*)', '/(settings)(.*)', '/billing(.*)'])
 const isAdminRoute = createRouteMatcher(['/invoices(.*)', '/quotes(.*)'])
-//TODO: finish this routes
-export default clerkMiddleware(async (auth, req) => {
-  // const clerk = await clerkClient()
-  const { userId, orgId, sessionClaims } = await auth()
-  // console.log("Admin?: ", sessionClaims?.orgRole)
 
+export default clerkMiddleware(async (auth, req) => {
+  
+  const { userId, orgId, sessionClaims } = await auth()
+  
   if (isProtectedRoute(req) && !userId) {
     const url = req.nextUrl.clone()
     url.pathname = '/'
+    console.log("Calling redirect from middleware")
     return NextResponse.redirect(url)
   }
 
   if (isAdminRoute(req) && sessionClaims?.orgRole !== 'org:admin' && orgId) {
     const url = req.nextUrl.clone()
     url.pathname = '/'
+    console.log("Calling redirect from middleware")
     return NextResponse.redirect(url)
-  }
-
+  }   
 })
+
 export const config = {
   matcher: [
-    '/((?!_next|static|favicon.ico|api/webhooks).*)',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api/webhooks (webhook routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api/webhooks|_next/static|_next/image|favicon.ico).*)',
   ],
 }

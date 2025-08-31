@@ -1,5 +1,5 @@
 'use client';
-import { cn } from '@/lib/server-funtions/utils';
+import { cn } from '@/lib/utils/utils';
 import React from 'react';
 
 
