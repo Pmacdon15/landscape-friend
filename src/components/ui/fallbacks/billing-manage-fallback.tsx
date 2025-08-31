@@ -7,7 +7,7 @@ import { SearchFormVariant } from "@/types/search-fallback-types";
 export default function BillingManageFallback({ variant = 'default' }: { variant?: SearchFormVariant }) {
     return (
         <FormContainer>
-            <FormHeader text={`Manage ${variant.charAt(0).toUpperCase() + variant.slice(1)}.`} />
+            <FormHeader text={`Manage ${variant.charAt(0).toUpperCase() + variant.slice(1)}`} />
             <SearchFormFallback variant={variant} />
             <FillFormContainer>
                 Loading . . .
