@@ -64,8 +64,6 @@ export async function handleOrganizationCreated(orgId: string, orgName: string) 
 export async function handleOrganizationDeleted(orgId: string) {
     await deleteStripeWebhookRoute(orgId)
     await handleOrganizationDeletedDb(orgId)
-
-
 }
 
 export async function handleSubscriptionUpdate(orgId: string, plan: string) {
