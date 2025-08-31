@@ -12,13 +12,13 @@ interface FCMContextType {
 }
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAD_HJcKzLkrYtiBfUFt3a4xICRS3n1Wm0",
-    authDomain: "landscape-friend.firebaseapp.com",
-    projectId: "landscape-friend",
-    storageBucket: "landscape-friend.firebasestorage.app",
-    messagingSenderId: "373141664807",
-    appId: "1:373141664807:web:31bd61502ffd0447c98a02",
-    measurementId: "G-81G4YHH25C"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0YBut0Yg3ruXouTNfOvWL3apin4";
@@ -130,7 +130,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                                 // console.log('FCM Token retrieved on load:', currentToken);
                                 setFcmToken(currentToken);
                                 sendTokenToServer(currentToken, user.id);
-                            } 
+                            }
                             // else {
                             //     console.log('No FCM token available on load, despite granted permission.');
                             // }
