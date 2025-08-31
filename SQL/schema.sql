@@ -136,7 +136,7 @@ CREATE TABLE images (
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- SELECT * FROM users;
-
+SELECT * FROM organizations;
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');

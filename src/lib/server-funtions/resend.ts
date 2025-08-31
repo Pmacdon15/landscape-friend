@@ -78,8 +78,10 @@ export async function sendGroupEmail(
 export async function createAduince(orgId: string, orgName: string) {
   const resend = new Resend(process.env.RESEND_API_KEY as string);
   const result = await resend.audiences.create({ name: orgName });
+  console.log("audiences reuslts : ", result)
   if (result.data) {
-    addResendIdToDb(orgId, String(result.data?.id))
+    const dbResults = await addResendIdToDb(orgId, String(result.data?.id))
+      console.log("dbResults : ", dbResults)
   }
 }
 

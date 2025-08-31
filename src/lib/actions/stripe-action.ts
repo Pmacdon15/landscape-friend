@@ -439,7 +439,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 
     const stripe = await getStripeInstance();
     try {
-        let resultQuote: Stripe.Response<Stripe.Quote>;
+        // let resultQuote: Stripe.Response<Stripe.Quote>;
         const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
 
         const notificationType = {
