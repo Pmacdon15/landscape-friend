@@ -34,16 +34,16 @@ export async function fetchStripAPIKeyDb(orgId: string) {
 }
 
 //MARK: Store Webhook Secret
-export async function storeWebhookSecretDb(orgId: string, webhookSecret: string) {
+export async function storeWebhookInfoDb(orgId: string, webhookSecret: string, webhookId: string) {
   const sql = neon(process.env.DATABASE_URL!);
   try {
     await (sql`
     UPDATE stripe_api_keys
-    SET webhook_secret = ${webhookSecret}
+    SET webhook_secret = ${webhookSecret},
+    webhook_id = ${webhookId}
     WHERE organization_id = ${orgId}
     RETURNING *;
 `);
-    // console.log("Result: ", result)
     return { success: true, message: 'Webhook secret stored successfully' };
   } catch (e) {
     console.error('Error storing webhook secret:', e);
@@ -61,4 +61,34 @@ export async function fetchWebhookSecretDb(orgId: string) {
     WHERE organization_id = ${orgId}
   `) as { webhook_secret: string }[];
   return result[0];
+}
+
+//MARK: Fetch Webhook ID
+export async function fetchWebhookIdDb(orgId: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  const result = await (sql`
+    SELECT 
+      webhook_id
+    FROM stripe_api_keys 
+    WHERE organization_id = ${orgId}
+  `) as { webhook_id: string }[];
+  return result[0];
+}
+
+//MARK: Delete Webhook ID
+export async function deleteWebhookIdDb(orgId: string) {
+  const sql = neon(process.env.DATABASE_URL!);
+  try {
+    await (sql`
+    UPDATE stripe_api_keys
+    SET webhook_secret = NULL,
+    webhook_id = NULL
+    WHERE organization_id = ${orgId}
+    RETURNING *;
+`);
+    return { success: true, message: 'Webhook info deleted successfully' };
+  } catch (e) {
+    console.error('Error deleting webhook info:', e);
+    return { success: false, message: e instanceof Error ? e.message : 'Failed to delete webhook info' };
+  }
 }

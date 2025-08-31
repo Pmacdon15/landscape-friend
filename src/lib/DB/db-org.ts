@@ -11,3 +11,12 @@ export async function getOrganizationSettings(organization_id: string): Promise<
   }
   return null;
 }
+
+export async function handleOrganizationDeletedDb(orgId: string) {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  return await sql`
+        DELETE FROM organizations
+        WHERE organization_id = ${orgId} 
+        RETURNING*;       
+    `;
+}
