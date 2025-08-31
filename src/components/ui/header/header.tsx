@@ -3,12 +3,21 @@ import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, 
 import { NavBar } from '../nav/nav-bar';
 import { useGetNovuId } from '@/lib/hooks/useNovu';
 import { Inbox } from '@novu/nextjs';
+// import { dark } from '@novu/react/themes';
 import Spinner from '../loaders/spinner';
 
 export default function Header({ children }: { children: React.ReactNode }) {
     const { user } = useUser();
     const { data: novuId, isPending } = useGetNovuId(user?.id);
 
+    const appearance = {
+        elements: {
+            notificationPrimaryAction__button: {
+                backgroundColor: '#138b10',
+                color: '#fff',
+            },
+        },
+    };
     return (
         <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
             {children}
@@ -27,8 +36,9 @@ export default function Header({ children }: { children: React.ReactNode }) {
                         subscriber={`${novuId.UserNovuId}`}
                         renderSubject={(notification) => (
                             <strong>{(notification.subject ?? 'No Subject')}</strong>
-                            
+
                         )}
+                        appearance={appearance}
                     />
                 }
                 <SignedOut>
