@@ -3,6 +3,7 @@ import { useState, useEffect, createContext, useContext, useRef, useCallback } f
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
 import { useUser } from '@clerk/clerk-react';
+import { registerNovuDevice } from '@/lib/actions/novu-action';
 
 interface FCMContextType {
     permissionStatus: NotificationPermission | 'not-supported';
@@ -34,19 +35,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
 
     const sendTokenToServer = useCallback(async (token: string, userId: string) => {
         try {
-            await fetch('/api/register-device', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: token, userId: userId }),
-            });
-
-            // if (response.ok) {
-            //     console.log('FCM Token successfully sent to API.');
-            // } else {
-            //     console.error('Failed to send FCM Token to API. Status:', response.status, 'Error:', await response.text());
-            // }
+            await registerNovuDevice(token, token)
         } catch (error) {
             console.error('Error sending token to server:', error);
         }

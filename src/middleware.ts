@@ -5,10 +5,9 @@ const isProtectedRoute = createRouteMatcher(['/lists(.*)', '/(email)(.*)', '/(se
 const isAdminRoute = createRouteMatcher(['/invoices(.*)', '/quotes(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
-  console.log("middleware Start")
+  
   const { userId, orgId, sessionClaims } = await auth()
-  // console.log("Admin?: ", sessionClaims?.orgRole)
-
+  
   if (isProtectedRoute(req) && !userId) {
     const url = req.nextUrl.clone()
     url.pathname = '/'
@@ -21,9 +20,7 @@ export default clerkMiddleware(async (auth, req) => {
     url.pathname = '/'
     console.log("Calling redirect from middleware")
     return NextResponse.redirect(url)
-  }
-  
-  console.log("middleware End")
+  }   
 })
 
 export const config = {
