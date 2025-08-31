@@ -1,5 +1,5 @@
 import { fetchStripAPIKeyDb } from "@/lib/DB/db-stripe";
-import { isOrgAdmin } from "@/lib/server-functions/clerk";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/types-stripe";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";

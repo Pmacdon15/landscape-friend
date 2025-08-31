@@ -1,6 +1,6 @@
 "use server";
-import { isOrgAdmin } from "@/lib/server-functions/clerk";
-import { uploadImageBlob } from "@/lib/server-functions/image-control";
+import { isOrgAdmin } from "@/lib/utils/clerk";
+import { uploadImageBlob } from "@/lib/utils/image-control";
 import { ImageSchema } from "@/lib/zod/schemas";
 import { revalidatePath } from "next/cache";
 

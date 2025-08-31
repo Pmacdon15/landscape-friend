@@ -1,9 +1,9 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber, deleteNovuSubscriber, triggerNotificationSendToAdmin } from "../server-functions/novu";
+import { addNovuSubscriber, deleteNovuSubscriber, triggerNotificationSendToAdmin } from "../utils/novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
 import { handleOrganizationDeletedDb } from "../DB/db-org";
-import { deleteStripeWebhookRoute } from "../server-functions/stripe-utils";
+import { deleteStripeWebhookRoute } from "../utils/stripe-utils";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);

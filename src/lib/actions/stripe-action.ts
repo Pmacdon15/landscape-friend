@@ -1,11 +1,11 @@
 'use server'
-import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/server-functions/stripe-utils";
-import { isOrgAdmin } from "@/lib/server-functions/clerk";
+import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/utils/stripe-utils";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
-import { formatCompanyName } from "@/lib/server-functions/resend";
+import { formatCompanyName } from "@/lib/utils/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
 import { MarkQuoteProps } from "@/types/types-stripe";
 import { fetchNovuId } from "../dal/user-dal";
@@ -24,7 +24,7 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
     });
 };
 
-import { createStripeWebhook } from "../server-functions/stripe-utils";
+import { createStripeWebhook } from "../utils/stripe-utils";
 import { markPaidDb } from "../DB/db-clients";
 
 //MARK: Update API key
@@ -57,7 +57,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 import { z } from 'zod';
 import { JwtPayload } from '@clerk/types';
-import { triggerNotificationSendToAdmin } from "../server-functions/novu";
+import { triggerNotificationSendToAdmin } from "../utils/novu";
 
 //MARK: Create quote
 export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQuote>) {

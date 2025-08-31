@@ -1,7 +1,7 @@
 import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB } from "@/lib/DB/db-clients";
 import { fetchClientNamesAndEmailsDb } from "@/lib/DB/db-resend";
-import { processClientsResult } from "@/lib/server-functions/sort";
-import { isOrgAdmin } from "@/lib/server-functions/clerk";
+import { processClientsResult } from "@/lib/utils/sort";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName } from "@/types/types-clients";
 import { auth } from "@clerk/nextjs/server";
 

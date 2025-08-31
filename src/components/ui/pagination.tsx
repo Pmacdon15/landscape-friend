@@ -5,7 +5,7 @@ import {
   MoreHorizontalIcon,
 } from "lucide-react"
 
-import { cn } from "@/lib/server-functions/utils"
+import { cn } from "@/lib/utils/utils"
 import { buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
 

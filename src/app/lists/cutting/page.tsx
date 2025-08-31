@@ -2,11 +2,11 @@ import SearchForm from "@/components/ui/search/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { fetchCuttingClients } from "@/lib/dal/clients-dal";
-import { isOrgAdmin } from "@/lib/server-functions/clerk";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
-import { parseClientListParams } from "@/lib/server-functions/params";
+import { parseClientListParams } from "@/lib/utils/params";
 import { SearchParams } from "@/types/types-params";
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
