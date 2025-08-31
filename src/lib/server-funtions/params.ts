@@ -10,8 +10,10 @@ export function parseClientListParams(params: SearchParams): ParsedClientListPar
   const searchTermCuttingDay = String(params.day ?? '');
   const searchTermAssignedTo = String(params.assigned ?? '');
   const searchTermStatus = String(params.status ?? '');
+  
 
   return {
+    
     page,
     searchTerm,
     serviceDate,

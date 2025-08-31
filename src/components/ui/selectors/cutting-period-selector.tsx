@@ -9,6 +9,7 @@ export function CuttingPeriodSelector({
 }: {
   variant: 'week' | 'day';
 }) {
+  
   const { currentPeriod, setCuttingPeriod } = useCuttingPeriodSearch(variant);
 
   const label = variant === 'week' ? 'Cutting Week' : 'Cutting Day';
