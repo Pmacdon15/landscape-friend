@@ -1,11 +1,11 @@
-import { clerkClient, clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher(['/lists(.*)', '/(email)(.*)', '/(settings)(.*)', '/billing(.*)'])
 const isAdminRoute = createRouteMatcher(['/invoices(.*)', '/quotes(.*)'])
-//TODO: finish this routes
+
 export default clerkMiddleware(async (auth, req) => {
-  // const clerk = await clerkClient()
+  
   const { userId, orgId, sessionClaims } = await auth()
   // console.log("Admin?: ", sessionClaims?.orgRole)
 
@@ -20,9 +20,17 @@ export default clerkMiddleware(async (auth, req) => {
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
-
 })
 
 export const config = {
-  matcher: ['/((?!_next|static|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api/webhooks (webhook routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api/webhooks|_next/static|_next/image|favicon.ico).*)',
+  ],
 }
