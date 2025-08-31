@@ -26,14 +26,15 @@ CREATE TABLE users (
     id VARCHAR(100) UNIQUE PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    novu_subscriber_id VARCHAR(255) UNIQUE NULL,
+    novu_subscriber_id VARCHAR(255) UNIQUE NULL
 );
 
 CREATE TABLE organizations (
     id SERIAL PRIMARY KEY,
     organization_id VARCHAR(253) NOT NULL UNIQUE,
     organization_name VARCHAR(253) NOT NULL,
-    max_allowed_clinents INT NOT NULL DEFAULT 50
+    max_allowed_clients INT NOT NULL DEFAULT 50,
+    resend_id UUID
 );
 
 CREATE TABLE clients (

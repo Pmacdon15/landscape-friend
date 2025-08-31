@@ -3,6 +3,7 @@ import HeaderEmail from '@/components/ui/emails/header-email';
 import { schemaSendEmail } from "../zod/schemas";
 import z from "zod";
 import type React from 'react';
+import { addResendIdToDb } from "../DB/db-user";
 
 export function formatSenderEmailAddress(sessionClaims: { orgName?: string; userFullName?: string; userEmail?: string }): string {
   const name = (sessionClaims.orgName || sessionClaims.userFullName || 'Your Landscaper').replace(/\s+/g, '-');
@@ -71,4 +72,25 @@ export async function sendGroupEmail(
     console.error('Error sending email:', error);
     return false;
   }
+}
+
+
+export async function createAduince(orgId: string, orgName: string) {
+  const resend = new Resend(process.env.RESEND_API_KEY as string);
+  const result = await resend.audiences.create({ name: orgName });
+  if (result.data) {
+    addResendIdToDb(orgId, String(result.data?.id))
+  }
+}
+
+export async function addClientToAduince(email: string, firstName: string, lastName: string, orgId: string) {
+  const resend = new Resend(process.env.RESEND_API_KEY as string);
+  const result = await resend.contacts.create({
+    email: email,
+    firstName: firstName,
+    lastName: lastName,
+    unsubscribed: false,
+    audienceId: orgId,
+  });
+  return result
 }

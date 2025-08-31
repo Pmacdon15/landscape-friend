@@ -2,6 +2,8 @@ import { neon } from "@neondatabase/serverless"
 import { addNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../server-funtions/novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
+import { handleOrganizationCreatedDb } from "../DB/db-org";
+import { createAduince } from "../server-funtions/resend";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);
@@ -52,11 +54,8 @@ export async function handleUserDeleted(userId: string) {
 }
 
 export async function handleOrganizationCreated(orgId: string, orgName: string) {
-    const sql = neon(`${process.env.DATABASE_URL}`);
-    await sql`
-        INSERT INTO organizations (organization_id, organization_name)
-        VALUES (${orgId}, ${orgName});               
-    `;
+    await handleOrganizationCreatedDb(orgId, orgName)
+    await createAduince(orgId,orgName)
 }
 
 export async function handleOrganizationDeleted(orgId: string) {
@@ -70,7 +69,7 @@ export async function handleOrganizationDeleted(orgId: string) {
 export async function handleSubscriptionUpdate(orgId: string, plan: string) {
     // Placeholder for subscription update logic
     console.log(`Subscription update for organization ${orgId} with plan ${plan}`);
-    // You would typically update your database here based on the subscription plan
+    //TODO: Up the max number of clients 
     const clerk = await clerkClient();
 
     if (plan === 'new_business_plan') {

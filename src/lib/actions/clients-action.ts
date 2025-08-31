@@ -1,8 +1,9 @@
 'use server'
 import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/db-clients";
-import { getOrganizationSettings } from "@/lib/DB/db-org";
+import { getOrganizationSettings, getOrganizationUniqueId } from "@/lib/DB/db-org";
 import { isOrgAdmin } from "@/lib/server-funtions/clerk";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
+import { addClientToAduince } from "../server-funtions/resend";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -31,8 +32,20 @@ export async function addClient(formData: FormData) {
     try {
         const result = await addClientDB(validatedFields.data, organizationId)
         if (!result) throw new Error('Failed to add Client');
+        
+        const firstName = validatedFields.data.full_name.split(" ")[0]
+        const lastName = validatedFields.data.full_name.split(" ")[1]
+        const organizationUniqueId = await getOrganizationUniqueId(organizationId);
+        if (!organizationUniqueId) throw new Error('Failed to get organization unique ID');
 
-
+        const aduniceResult = await addClientToAduince(
+            validatedFields.data.email_address,
+            firstName,
+            lastName,
+            organizationUniqueId.id
+        );
+        
+        console.log("aduniceResult: ", aduniceResult)
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);

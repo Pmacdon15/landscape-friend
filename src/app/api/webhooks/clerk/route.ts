@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
         }) as WebhookEvent;
 
         console.log("Web Hook :", evt.type, " ", evt.data)
+        
         switch (evt.type) {
             case 'subscriptionItem.active': {
                 if (isSubscriptionItem(evt.data)) {

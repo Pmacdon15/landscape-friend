@@ -10,3 +10,16 @@ export async function fetchUniqueIdDb(userId: string): Promise<UserNovuId | null
   }
   return null;
 }
+
+
+export async function addResendIdToDb(orgId: string, resendId: string) {
+  const sql = neon(`${process.env.DATABASE_URL}`);  
+    const result = await sql`
+      UPDATE organizations
+      SET resend_id = ${resendId}
+      WHERE organization_id = ${orgId}
+      RETURNING *;
+    `;
+    return result;
+
+}
