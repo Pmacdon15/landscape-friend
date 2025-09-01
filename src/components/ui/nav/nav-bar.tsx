@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 export function NavBar({ userId }: { userId: string }) {
     return (
         <>
-            <div className="md:hidden">
+            <div className="lg:hidden">
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="outline" className="p-2 w-9">
@@ -25,7 +25,7 @@ export function NavBar({ userId }: { userId: string }) {
                 </Sheet>
             </div>
 
-            <div className="hidden lg:flex md:flex-row lg:justify-start"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
+            <div className="hidden lg:flex lg:flex-row lg:justify-start"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
         </>
     )
 }
