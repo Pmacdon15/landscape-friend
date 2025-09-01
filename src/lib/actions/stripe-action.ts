@@ -395,8 +395,8 @@ async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayl
         const emailSubject = `Your Quote from ${companyName}`;
         const emailBody = `Dear ${customerName},
 
-                            Please find your quote attached.
-
+                            Please find your quote attached and reply to this email to let us know you accept.
+                        
                             Thank you for your business!`;
 
         const formDataForEmail = new FormData();
@@ -443,15 +443,12 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
 
         const notificationType = {
-            accept: null,
-            cancel: "quote-canceled",
+            accept: 'quote-accepted',            
             send: "quote-sent",
         };
 
         if (action === "accept") {
             await stripe.quotes.accept(quoteId);
-        } else if (action === "cancel") {
-            await stripe.quotes.cancel(quoteId);
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
