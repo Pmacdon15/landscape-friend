@@ -128,15 +128,7 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                     <NavigationMenuTrigger>Documentation</NavigationMenuTrigger>
                     <NavigationMenuContent>
                         <ul className="grid w-[300px] gap-4">
-                            <li>
-                                <NavigationMenuLink asChild>
-                                    <Link href="/billing/create-quote">
-                                        <div className="font-medium">Create a Quote</div>
-                                        <div className="text-muted-foreground">
-                                            Send an Quote as an Email.
-                                        </div>
-                                    </Link>
-                                </NavigationMenuLink>
+                            <li>                                
                                 <NavigationMenuLink asChild>
                                     <Link href="/documentation/plans">
                                         <div className="font-medium">Plans</div>
