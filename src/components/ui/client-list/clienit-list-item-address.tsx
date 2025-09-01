@@ -19,9 +19,10 @@ export default function ClientListItemAddress({ client, children }: ClientListIt
                     <p className="text-sm">Address:</p>
                     <p>{client.address}</p>
                 </div>
-                {showMap && children}
             </button>
+            <div className={showMap ? "block" : "hidden"}>
+                {children}
+            </div>
         </div>
-
     );
 };
