@@ -122,8 +122,8 @@ export const useAssignSnowClearing = () => {
 //MARK:Mark yard serviced
 export const useMarkYardServiced = () => {
     return useMutation({
-        mutationFn: ({ clientId, date, snow = false }: { clientId: number, date: Date, snow?: boolean }) => {
-            return markYardServiced(clientId, date, snow);
+        mutationFn: ({ clientId, date, snow = false, image }: { clientId: number, date: Date, snow?: boolean, image:File }) => {
+            return markYardServiced(clientId, date, snow, image);
         },
         onSuccess: () => { revalidatePathAction("/lists/clearing"); revalidatePathAction("/lists/cutting") },
         onError: (error) => {
