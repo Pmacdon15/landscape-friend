@@ -41,7 +41,7 @@ export async function POST(
     switch (event.type) {
         case 'invoice.paid':
             const invoicePaid = event.data.object as Stripe.Invoice;
-            const payloadPaid = createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid, invoicePaid.id);
+            const payloadPaid = await createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid, invoicePaid.id);
             await handleInvoicePaid(invoicePaid, orgId);
             triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
             break;

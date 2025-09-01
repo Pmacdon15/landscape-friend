@@ -97,7 +97,7 @@ export async function sayHello(novuId: string, email?: string, userName?: string
 }
 
 
-export async function createInvoicePayload(clientName: string | null | undefined, amount: number, invoiceId?: string): PayloadType {
+export async function createInvoicePayload(clientName: string | null | undefined, amount: number, invoiceId?: string): Promise<PayloadType> {
     console.log("amount: ", (amount / 100).toFixed(2))
     return {
         client: {
