@@ -42,6 +42,7 @@ export default async function ClientListService({ clientsPromise, page, serviceD
                         </div>
                     </FormContainer>}
                 <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} page={page} totalPages={totalPages} />
+                //TODO Break down this in to smaller components
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
                         <li className="border p-4 rounded-sm  bg-white/50">
