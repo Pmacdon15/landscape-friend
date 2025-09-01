@@ -67,14 +67,14 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                     <NavigationMenuContent>
                         <ul className="grid w-[300px] gap-4">
                             <li>
-                                {isAdmin && <NavigationMenuLink asChild>
+                                {/* {isAdmin && <NavigationMenuLink asChild>
                                     <Link href="/email/news-letter">
                                         <div className="font-medium">Send News Letter</div>
                                         <div className="text-muted-foreground">
                                             Send all clients an update email.
                                         </div>
                                     </Link>
-                                </NavigationMenuLink>}
+                                </NavigationMenuLink>} */}
                                 <NavigationMenuLink asChild>
                                     <Link href="/email/individual">
                                         <div className="font-medium">Send Individual</div>
@@ -124,6 +124,39 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                         </NavigationMenuItem>
                     </>
                 }
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Documentation</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[300px] gap-4">
+                            <li>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/billing/create-quote">
+                                        <div className="font-medium">Create a Quote</div>
+                                        <div className="text-muted-foreground">
+                                            Send an Quote as an Email.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/documentation/plans">
+                                        <div className="font-medium">Plans</div>
+                                        <div className="text-muted-foreground">
+                                         View Information about our Plans.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/documentation/stripe">
+                                        <div className="font-medium">Stripe</div>
+                                        <div className="text-muted-foreground">
+                                            View information about how to configure stripe for our service.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                            </li>
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Settings</NavigationMenuTrigger>
                     <NavigationMenuContent>

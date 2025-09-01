@@ -19,8 +19,6 @@ export default function Header({ children }: { children: React.ReactNode }) {
         }
     };
 
-
-
     return (
         <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
 
