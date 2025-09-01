@@ -81,10 +81,10 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
     }, [user?.id, sendTokenToServer]);
 
     useEffect(() => {
-        if (user?.id && permissionStatus !== 'granted' && permissionStatus !== 'not-supported') {
+        if (user?.id && permissionStatus === 'default') {
             requestNotificationPermissionAndToken();
         }
-    }, [user?.id, permissionStatus, requestNotificationPermissionAndToken]);
+    }, [user?.id, requestNotificationPermissionAndToken]);
 
     useEffect(() => {
         console.log('FCMProvider useEffect triggered.');

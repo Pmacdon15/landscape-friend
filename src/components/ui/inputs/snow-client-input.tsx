@@ -15,7 +15,7 @@ export default function SnowClientInput({ client, orgMembersPromise }:
   const defaultValue = client.assigned_to ? client.assigned_to.toString() : "not-assigned";
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col md:flex-row w-full justify-center items-center">
       <div className="flex gap-2">
         <input
           type="checkbox"
@@ -27,11 +27,11 @@ export default function SnowClientInput({ client, orgMembersPromise }:
         <label htmlFor={`snow-removal-${client.id}`}>Snow Removal</label>
       </div>
       {client.snow_client &&
-        <div className="flex flex-col gap-2 mb-2">
-          < div className="flex">
-            <p className="align-middle w-40">Assigned to : </p>
+        <div className="flex lg:flex-row flex-col gap-2 mb-2 items-center ">
+          < div className="flex gap-2">
+            <p className="align-middle ">Assigned to : </p>
             <select
-              className="  rounded-sm border md:w-2/6  w-3/6 p-1"
+              className="  rounded-sm border md:w-3/6  w-3/6 p-1"
               defaultValue={defaultValue}
               onChange={(e) => {
                 const selectedUserId = e.target.value;

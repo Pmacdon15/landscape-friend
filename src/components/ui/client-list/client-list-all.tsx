@@ -38,7 +38,7 @@ export default async function ClientListService({
                 <DeleteClientButton clientId={client.id} />
               }
               <FormHeader text={client.full_name} />
-              <div className="flex flex-col gap-4 items-center justify-center mt-8 mb-8 lg:flex-row w-full">
+              <div className="flex flex-col gap-2 items-center justify-center mt-8 mb-8 lg:flex-row w-full">
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
                 <ClientListItemAddress client={client} >

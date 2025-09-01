@@ -12,8 +12,8 @@ export default function PricePerUpdateInput({ client, snow = false }: { client: 
         <div className="flex">
 
             {snow ?
-                <div className="flex">
-                    <p className=" my-auto w-40"> Snow service Price: $  </p>
+                <div className="flex w-full items-center justify-center">
+                    <p className=" my-auto"> Snow service Price: $  </p>
                     <ReusableNumberInput
                         name="updated_price_per_month_snow"
                         defaultValue={client.price_per_month_snow}
