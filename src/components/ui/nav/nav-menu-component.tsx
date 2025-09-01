@@ -18,7 +18,7 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
     const { data: isAdmin } = useGetIsAdmin();
     const { data: hasStripAPIKey } = useHasStripeApiKey();
     return (
-        <NavigationMenu viewport={true}>
+        <NavigationMenu viewport={false}>
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>List</NavigationMenuTrigger>
