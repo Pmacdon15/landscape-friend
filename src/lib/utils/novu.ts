@@ -75,7 +75,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
 
 
 export async function sayHello(novuId: string, email?: string, userName?: string) {
-        try {
+    try {
         const firstName = userName?.split(" ")[0]
         const lastName = userName?.split(" ")[1]
         await novu.trigger({
@@ -98,6 +98,7 @@ export async function sayHello(novuId: string, email?: string, userName?: string
 
 
 export function createInvoicePayload(clientName: string | null | undefined, amount: number, invoiceId?: string): PayloadType {
+    console.log("amount: ", (amount / 100).toFixed(2))
     return {
         client: {
             name: clientName || 'Unknown Client',

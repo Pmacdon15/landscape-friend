@@ -313,7 +313,7 @@ export async function resendInvoice(invoiceId: string) {
 
         if (!emailResult) throw new Error("Failed to send invoice email.");
 
-        triggerNotificationSendToAdmin(orgId || userId!, 'invoice-sent', createInvoicePayload(customerName, invoice.amount_due, invoice.id))
+        // triggerNotificationSendToAdmin(orgId || userId!, 'invoice-sent', createInvoicePayload(customerName, invoice.amount_due, invoice.id))
 
         // console.log("Invoice re-sent and email sent successfully:", invoice.id);
     } catch (error) {

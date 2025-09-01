@@ -18,7 +18,6 @@ export async function handleInvoicePaid(invoicePaid: Stripe.Invoice, orgId: stri
     console.error(`Missing customer ID or amount paid for invoice.paid event: ${invoicePaid.id}`);
   }
 }
-
 export async function handleInvoiceSent(invoice: Stripe.Invoice, orgId: string) {
   console.log('Invoice sent:', invoice.id);
   console.log('Customer:', invoice.customer_email || invoice.customer);
@@ -44,29 +43,29 @@ export async function handleInvoiceSent(invoice: Stripe.Invoice, orgId: string) 
       return;
     }
 
-    // Insert into charges table and update account balance
     const result = await sql`
-            WITH inserted_charge AS (
-                INSERT INTO charges(invoice_id, client_id, amount, currency, organization_id)
-                VALUES (${invoiceId}, ${clientId}, ${amountDue / 100}, ${currency}, ${orgId})
-                RETURNING id
-            )
-            UPDATE accounts
-            SET current_balance = current_balance + ${amountDue / 100}
-            FROM clients
-            WHERE accounts.client_id = clients.id
-            AND clients.id = ${clientId}
-            RETURNING accounts.current_balance AS new_balance, (SELECT id FROM inserted_charge) AS charge_id;
-        `;
+      WITH inserted_charge AS (
+        INSERT INTO charges(invoice_id, client_id, amount, currency, organization_id)
+        VALUES (${invoiceId}, ${clientId}, ${amountDue / 100}, ${currency}, ${orgId})
+        ON CONFLICT (invoice_id) DO NOTHING
+        RETURNING id
+      )
+      UPDATE accounts
+      SET current_balance = current_balance + ${amountDue / 100}
+      FROM clients
+      WHERE accounts.client_id = clients.id
+      AND clients.id = ${clientId}
+      RETURNING accounts.current_balance AS new_balance, (SELECT id FROM inserted_charge) AS charge_id;
+    `;
 
     if (!result || result.length === 0) {
-      throw new Error(`Failed to process invoice.sent for invoice ${invoiceId}. No update or insert occurred.`);
+      console.log(`Invoice ${invoiceId} already processed or failed to process.`);
+      return;
     }
 
     const { new_balance, charge_id } = result[0];
     console.log(`Invoice ${invoiceId} processed. New balance: ${new_balance}, Charge ID: ${charge_id}`);
-
   } catch (e) {
-    console.error('Error handling invoice.sent event:', e);
+    console.error('Unexpected error handling invoice.sent event:', e);
   }
 }
