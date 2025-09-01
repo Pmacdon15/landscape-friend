@@ -6,8 +6,8 @@ import { useState } from "react";
 export default function ClientListItemAddress({ client, children }: ClientListItemProps) {
     const [showMap, setShowMap] = useState(false)
     return (
-        <div className="flex flex-col gap-2 items-start">
-            <button onClick={() => setShowMap(!showMap)}>
+        <div className="flex flex-col gap-2 items-center w-full">
+            <button onClick={() => setShowMap(!showMap)} className="flex">
                 <Image
                     src="/client-list/address.png"
                     alt="Address Icon"
@@ -15,7 +15,7 @@ export default function ClientListItemAddress({ client, children }: ClientListIt
                     width={512}
                     height={512}
                 />
-                <div className="flex flex-col">
+                <div className="flex flex-col ">
                     <p className="text-sm">Address:</p>
                     <p>{client.address}</p>
                 </div>
@@ -26,3 +26,4 @@ export default function ClientListItemAddress({ client, children }: ClientListIt
         </div>
     );
 };
+

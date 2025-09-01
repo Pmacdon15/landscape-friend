@@ -12,7 +12,7 @@ import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
 import { ClientListServiceProps } from "@/types/types-clients";
 import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
-import ClientListItemAddress from "./clienit-list-item-address";
+import ClientListItemAddress from "./client-list-item-address";
 
 export default async function ClientListService({
   clientsPromise,
@@ -38,7 +38,7 @@ export default async function ClientListService({
                 <DeleteClientButton clientId={client.id} />
               }
               <FormHeader text={client.full_name} />
-              <div className="flex flex-col flex-wrap gap-4 items-center justify-center mt-8 mb-8  sm:flex-col lg:flex-row w-full">
+              <div className="flex flex-row flex-wrap gap-4 items-center justify-center mt-8 mb-8  sm:flex-col lg:flex-row w-full">
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
                 <ClientListItemAddress client={client} >

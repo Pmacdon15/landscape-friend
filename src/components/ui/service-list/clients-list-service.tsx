@@ -3,7 +3,7 @@ import { PaginationTabs } from "../pagination/pagination-tabs";
 import { Suspense } from "react";
 import ManyPointsMap from "../map-component/many-points-map";
 import Link from "next/link";
-
+import Image from "next/image";
 import { ClientEmailPopover } from "../popovers/client-email-popover";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
@@ -30,7 +30,7 @@ export default async function ClientListService({ clientsPromise, page, serviceD
     const addresses = clients.map(c => ({ address: c.address }))
     if (addresses instanceof Error) return <FormContainer> <FormHeader text={`${addresses.message}`} /></FormContainer >
     const flattenedAddresses = addresses?.map(address => address.address) ?? [];
-   
+
     return (
         <>
             <ul className="flex flex-col gap-2 md:gap-4 rounded-sm w-full items-center">
@@ -44,19 +44,42 @@ export default async function ClientListService({ clientsPromise, page, serviceD
                 <PaginationTabs path={`${!snow ? "/lists/cutting" : "/lists/clearing"}`} page={page} totalPages={totalPages} />
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
-                        <li className="border p-4 rounded-sm relative bg-white/50">
+                        <li className="border p-4 rounded-sm  bg-white/50">
                             <p>Name: {client.full_name}</p>
-                            <p>
-                                Phone Number:{" "}
+                            <div className="flex w-full gap-2">
+                                <Image
+                                    src="/client-list/telephone.png"
+                                    alt="Email Icon"
+                                    className="w-8 h-8"
+                                    width={512}
+                                    height={512}
+                                />
+                                <p className="my-auto">Phone Number:{" "}</p>
                                 <Link className="cursor-pointer text-blue-600 hover:underline" href={`tel:${client.phone_number}`}>
                                     {client.phone_number}
                                 </Link>
-                            </p>
-                            <div>
-                                Email:{" "}
+                            </div>
+                            <div className="flex w-full gap-2">
+                                <Image
+                                    src="/client-list/email.png"
+                                    alt="Email Icon"
+                                    className="w-8 h-8"
+                                    width={512}
+                                    height={512}
+                                />
+                                <p className="my-auto">Email:{" "}</p>
                                 <ClientEmailPopover client={client} />
                             </div>
-                            <p>Address: {client.address}</p>
+                            <div className="flex w-full gap-2">
+                                <Image
+                                    src="/client-list/address.png"
+                                    alt="Address Icon"
+                                    className="w-8 h-8"
+                                    width={512}
+                                    height={512}
+                                />
+                                <p>Address: {client.address}</p>
+                            </div>
                             <div className="flex flex-col sm:flex-row gap-1">
                                 <Suspense fallback={<FormHeader text="Loading..." />}>
                                     <MapComponent address={client.address} />

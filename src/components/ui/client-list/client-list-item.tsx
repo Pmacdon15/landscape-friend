@@ -7,7 +7,7 @@ import {  ClientListItemProps } from "@/types/types-clients";
 
 const ClientListItemHeader = ({ client }: ClientListItemProps) => {
   return (
-    <div className="flex flex-row gap-2 items-start">
+    <div className="flex flex-row gap-2 items-center justify-center">
       <Image
         src="/client-list/telephone.png"
         alt="Phone Icon"
@@ -15,9 +15,9 @@ const ClientListItemHeader = ({ client }: ClientListItemProps) => {
         width={512}
         height={512}
       />
-      <div className="flex flex-col">
-        <p className="text-sm">Phone Number:</p>
-        <Link className="cursor-pointer text-blue-600 hover:underline" href={`tel:${client.phone_number}`}>
+      <div className="flex flex-col w-full  items-center">
+        <p className="text-sm mx-auto">Phone Number:</p>
+        <Link className="cursor-pointer  hover:underline text-center" href={`tel:${client.phone_number}`}>
           {client.phone_number}
         </Link>
       </div>
@@ -27,7 +27,7 @@ const ClientListItemHeader = ({ client }: ClientListItemProps) => {
 
 const ClientListItemEmail = ({ client }: ClientListItemProps) => {
   return (
-    <div className="flex flex-row gap-2 items-start">
+    <div className="flex flex-row gap-2 justify-center  items-center w-full ">
       <Image
         src="/client-list/email.png"
         alt="Email Icon"
@@ -36,7 +36,7 @@ const ClientListItemEmail = ({ client }: ClientListItemProps) => {
         height={512}
       />
       <div className="flex flex-col">
-        <p className="text-sm">Email:</p>
+        <p className="text-sm text-center">Email:</p>
         <ClientEmailPopover client={client} />
       </div>
     </div>
