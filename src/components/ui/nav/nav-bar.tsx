@@ -7,6 +7,7 @@ import NavigationMenuComponent from "./nav-menu-component"
 import VerticalNav from "./vertical-nav"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
+
 export function NavBar({ userId }: { userId: string }) {
     return (
         <>
@@ -24,7 +25,7 @@ export function NavBar({ userId }: { userId: string }) {
                 </Sheet>
             </div>
 
-            <div className="hidden md:block"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
+            <div className="hidden lg:flex md:flex-row lg:justify-start"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
         </>
     )
 }
