@@ -22,7 +22,7 @@ export async function POST(
     const webhookSecret = webhookSecretResult.webhook_secret;
 
     const body = await req.text();
-    
+
     const sig = (await headers()).get('stripe-signature') as string;
 
     let event: Stripe.Event;
@@ -37,23 +37,26 @@ export async function POST(
     }
 
     console.log("event type: ", event)
-    // Handle the event
-    switch (event.type) {
-        case 'invoice.paid':
-            const invoicePaid = event.data.object as Stripe.Invoice;
-            const payloadPaid = await createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid, invoicePaid.id);
-            await handleInvoicePaid(invoicePaid, orgId);
-            await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
-            break;
-        case 'invoice.sent':
-            const invoiceSent = event.data.object as Stripe.Invoice;
-            const payloadSent = await createInvoicePayload(invoiceSent.customer_name, invoiceSent.amount_due, invoiceSent.id);
-            await handleInvoiceSent(invoiceSent, orgId);
-            await triggerNotificationSendToAdmin(orgId, 'invoice-sent', payloadSent)
-            break;        
-        default:
-            console.log(`Unhandled event type ${event.type}`);
+    try {
+        switch (event.type) {
+            case 'invoice.paid':
+                const invoicePaid = event.data.object as Stripe.Invoice;
+                const payloadPaid = await createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid, invoicePaid.id);
+                await handleInvoicePaid(invoicePaid, orgId);
+                await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
+                break;
+            case 'invoice.sent':
+                const invoiceSent = event.data.object as Stripe.Invoice;
+                const payloadSent = await createInvoicePayload(invoiceSent.customer_name, invoiceSent.amount_due, invoiceSent.id);
+                await handleInvoiceSent(invoiceSent, orgId);
+                await triggerNotificationSendToAdmin(orgId, 'invoice-sent', payloadSent)
+                break;
+            default:
+                console.log(`Unhandled event type ${event.type}`);
+        }
+    } catch (e) {
+        console.error("Error", e)
+        return NextResponse.json({ status: 'fail' }, { status: 400 })
     }
-
     return NextResponse.json({ status: 'success' }, { status: 200 })
 }
