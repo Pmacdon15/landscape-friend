@@ -12,14 +12,14 @@ export function NavBar({ userId }: { userId: string }) {
 
     return (
         <>
-            <div className="lg:hidden flex flex-col gap-2 pb-2">
+            <div className="md:hidden flex flex-col gap-2 pb-2">
                 <Button variant="outline" onClick={() => setShowNav(!showNav)} className="p-2 w-9">
                     <Menu size={24} />
                 </Button>
                 {showNav && <Suspense><VerticalNav userId={userId} /></Suspense>}
             </div>
 
-            <div className="hidden lg:block"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
+            <div className="hidden md:block"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
         </>
     )
 }
