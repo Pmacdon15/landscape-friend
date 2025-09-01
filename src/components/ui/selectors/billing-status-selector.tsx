@@ -11,7 +11,7 @@ export function BillingStatusSelector({ variant = "invoices" }: { variant?: Vari
   return (
     <select
       name="status"
-      className="w-fit border rounded-sm text-center"
+      className="w-fit border rounded-sm text-center p-2"
       value={currentStatus}
       onChange={(e) => setBillingStatus(e.target.value)}
     >

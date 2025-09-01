@@ -16,11 +16,11 @@ export function CuttingPeriodSelector({
   const options = variant === 'week' ? weeks : days;
 
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1  ">
       <label className="flex items-center">{label} </label>
       <select
         name={variant}
-        className="w-fit border rounded-sm text-center"
+        className="w-fit border rounded-sm text-center p-2"
         value={currentPeriod}
         onChange={(e) => setCuttingPeriod(e.target.value)}
       >

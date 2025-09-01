@@ -8,7 +8,7 @@ export function BillingStatusSelectorFallback({ variant = "invoices" }: { varian
   return (
     <select
       name="status"
-      className="w-fit border rounded-sm text-center"      
+      className="w-fit border rounded-sm text-center p-2"      
     >
       {statuses.map(status => (
         <option key={status} value={status}>{status}</option>

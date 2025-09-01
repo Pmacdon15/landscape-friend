@@ -14,7 +14,7 @@ export function CuttingPeriodSelectorFallback({
       <label className="flex items-center">{label} </label>
       <select
         name={variant}
-        className="w-fit border rounded-sm text-center"        
+        className="w-fit border rounded-sm text-center p-2"        
       >
         <option value="">All</option>
         {options.map((option) => (
