@@ -19,6 +19,9 @@ export default function Page() {
                 <ScribeContainer text="Tax">
                     <ScribeIframe url="https://scribehow.com/embed/How_to_Set_Up_Stripe_Tax_Registrations__vT9RPkWESISEjwSSV-e_zA" />
                 </ScribeContainer>
+                 <ScribeContainer text="Getting and Setting API key">
+                    <ScribeIframe url="https://scribehow.com/embed/How_to_Enable_Invoicing_with_Stripe__l4ib7MmMSbaEJ6y7_07AHw" />
+                </ScribeContainer>
                 <BackToDocsLink />
             </FillFormContainer>
         </FormContainer >
