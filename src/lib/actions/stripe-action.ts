@@ -57,7 +57,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 import { z } from 'zod';
 import { JwtPayload } from '@clerk/types';
-import { triggerNotificationSendToAdmin } from "../utils/novu";
+import { createInvoicePayload, triggerNotificationSendToAdmin } from "../utils/novu";
 
 //MARK: Create quote
 export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQuote>) {
@@ -278,10 +278,11 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
 
 //MARK: Resend invoice 
 export async function resendInvoice(invoiceId: string) {
-    const { isAdmin, sessionClaims } = await isOrgAdmin()
+    const { isAdmin, sessionClaims, orgId, userId } = await isOrgAdmin()
     if (!isAdmin) throw new Error("Not Admin")
+    if (!orgId && !userId) throw new Error("Not logged in.")
     const stripe = await getStripeInstance();
-    //TODO: when in Prod ther eis not need for use to send the email strip will do that
+    //TODO: when in Prod there is not need for use to send the email strip will do that
 
     try {
         const invoice: Stripe.Invoice = await stripe.invoices.sendInvoice(invoiceId);
@@ -310,9 +311,9 @@ export async function resendInvoice(invoiceId: string) {
 
         const emailResult = await sendEmailWithTemplate(formDataForEmail, customerEmail);
 
-        if (!emailResult) {
-            throw new Error("Failed to send invoice email.");
-        }
+        if (!emailResult) throw new Error("Failed to send invoice email.");
+
+        triggerNotificationSendToAdmin(orgId || userId!, 'invoice-sent', createInvoicePayload(customerName, invoice.amount_due, invoice.id))
 
         // console.log("Invoice re-sent and email sent successfully:", invoice.id);
     } catch (error) {
@@ -443,7 +444,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
 
         const notificationType = {
-            accept: 'quote-accepted',            
+            accept: 'quote-accepted',
             send: "quote-sent",
         };
 

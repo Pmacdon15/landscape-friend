@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { fetchWebhookSecretDb } from '@/lib/DB/db-stripe';
 import { getStripeInstanceUnprotected } from '@/lib/utils/stripe-utils';
 import { handleInvoicePaid, handleInvoiceSent } from '@/lib/webhooks/stripe-webhooks';
-import { triggerNotificationSendToAdmin } from '@/lib/utils/novu';
+import { createInvoicePayload, triggerNotificationSendToAdmin } from '@/lib/utils/novu';
 import { PayloadType } from '@/types/webhooks-types';
 
 
@@ -68,16 +68,3 @@ export async function POST(
 
     return NextResponse.json({ status: 'success' }, { status: 200 })
 }
-
-function createInvoicePayload(clientName: string | null | undefined, amount: number, invoiceId?: string): PayloadType {
-    return {
-        client: {
-            name: clientName || 'Unknown Client',
-        },
-        invoice: {
-            id: invoiceId,
-            amount: `${(amount / 100).toFixed(2)}`,
-        }
-
-    };
-};

@@ -95,3 +95,17 @@ export async function sayHello(novuId: string, email?: string, userName?: string
         // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
     }
 }
+
+
+export function createInvoicePayload(clientName: string | null | undefined, amount: number, invoiceId?: string): PayloadType {
+    return {
+        client: {
+            name: clientName || 'Unknown Client',
+        },
+        invoice: {
+            id: invoiceId,
+            amount: `${(amount / 100).toFixed(2)}`,
+        }
+
+    };
+};
