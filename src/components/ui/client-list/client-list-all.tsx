@@ -13,56 +13,79 @@ import ImageList from "../image-list/image-list";
 import { ClientListServiceProps } from "@/types/types-clients";
 import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
 import ClientListItemAddress from "./clienit-list-item-address";
+import ListServices from "../list-services/list-services";
 
 export default async function ClientListService({
   clientsPromise,
   page,
   orgMembersPromise,
-  isAdmin
+  isAdmin,
 }: ClientListServiceProps) {
   const result = await clientsPromise;
 
-  if (!result) return <ContentContainer>{" "}<p>Error Loading clients</p>{" "}</ContentContainer>
+  if (!result)
+    return (
+      <ContentContainer>
+        {" "}
+        <p>Error Loading clients</p>{" "}
+      </ContentContainer>
+    );
   const { clients, totalPages } = result;
 
-  if (clients.length < 1) return <ContentContainer> <p>Please add clients</p> </ContentContainer>
+  if (clients.length < 1)
+    return (
+      <ContentContainer>
+        {" "}
+        <p>Please add clients</p>{" "}
+      </ContentContainer>
+    );
 
   return (
     <>
-      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
+      <PaginationTabs
+        path="/lists/client"
+        page={page}
+        totalPages={totalPages}
+      />
       <ul className="flex flex-col gap-4 rounded-sm w-full items-center justify-center">
         {clients.map((client) => (
           <FormContainer key={client.id}>
             <li className="border p-4 rounded-sm relative bg-white/70">
-              {isAdmin &&
-                <DeleteClientButton clientId={client.id} />
-              }
+              {isAdmin && <DeleteClientButton clientId={client.id} />}
               <FormHeader text={client.full_name} />
               <div className="flex flex-col flex-wrap gap-4 items-center justify-center mt-8 mb-8  sm:flex-col lg:flex-row w-full">
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
-                <ClientListItemAddress client={client} >
+                <ClientListItemAddress client={client}>
                   <Suspense fallback={<FormHeader text="Loading..." />}>
                     <MapComponent address={client.address} />
                   </Suspense>
                 </ClientListItemAddress>
               </div>
-              {isAdmin &&
+              {isAdmin && (
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
                   <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
                   <Suspense fallback={<SnowClientInputFallback />}>
-                    <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
+                    <SnowClientInput
+                      client={client}
+                      orgMembersPromise={orgMembersPromise}
+                    />
                   </Suspense>
                 </div>
-              }
+              )}
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <ImageList isAdmin={isAdmin} client={client} />
+              <ListServices client={client}/>
             </li>
           </FormContainer>
         ))}
-      </ul >
-      <PaginationTabs path="/lists/client" page={page} totalPages={totalPages} />
+      </ul>
+      <PaginationTabs
+        path="/lists/client"
+        page={page}
+        totalPages={totalPages}
+      />
     </>
   );
 }
