@@ -9,6 +9,7 @@ export async function getServicedImagesUrls(clientId:number): Promise<{ date:Dat
     (
       SELECT cutting_date AS date, image_url
       FROM yards_marked_cut
+      WHERE client_id = ${clientId}
       UNION
       SELECT clearing_date AS date, image_url
       FROM yards_marked_clear
