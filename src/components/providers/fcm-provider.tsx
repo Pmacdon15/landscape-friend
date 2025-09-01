@@ -84,7 +84,8 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
         if (user?.id && permissionStatus === 'default') {
             requestNotificationPermissionAndToken();
         }
-    }, [user?.id, requestNotificationPermissionAndToken]);
+    }, [user?.id, requestNotificationPermissionAndToken, permissionStatus]);
+
 
     useEffect(() => {
         console.log('FCMProvider useEffect triggered.');
@@ -142,7 +143,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, [user?.id, sendTokenToServer]);
+    }, [user?.id, sendTokenToServer, permissionStatus]);
 
     const contextValue = {
         permissionStatus,
