@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useGetIsAdmin } from "@/lib/hooks/useClerk";
 import { useHasStripeApiKey } from "@/lib/hooks/useStripe";
 import { ChevronDownIcon } from "lucide-react";
-
+import Image
+    from "next/image";
+import HeaderTitle from "../header/header-title";
 const CollapsibleSection = ({ title, children }: { title: string, children: React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -26,6 +28,10 @@ export default function VerticalNav({ userId }: { userId: string }) {
 
     return (
         <nav className="flex flex-col gap-2 w-full">
+            <div className="flex flex-col justify-center items-center p-4 w-full">
+                <Image src="/logo.png" alt="Lawn Buddy Logo" width={100} height={100} />
+                <HeaderTitle text='Landscape Friend' />
+            </div>
             <CollapsibleSection title="List">
                 <Link href="/lists/client" className="p-2 hover:bg-accent rounded-md">Client List</Link>
                 <Link href={{ pathname: '/lists/cutting', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Cutting List</Link>
