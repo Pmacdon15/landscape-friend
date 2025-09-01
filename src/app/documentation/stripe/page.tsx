@@ -9,20 +9,19 @@ export default function Page() {
     return (
         <FormContainer>
             <FillFormContainer>
-                <FormHeader text={'Stripe'} />                
-                    <ScribeContainer text="Branding">
-                        <ScribeIframe url="https://scribehow.com/embed/Customize_Your_Stripe_Invoice_Branding_Settings__N-dNtjD0RrOXSFyEwINFIg" />
-                    </ScribeContainer>
-                    <ScribeContainer text="Tax">
-                        <ScribeIframe url="https://scribehow.com/embed/How_to_Set_Up_Stripe_Tax_Registrations__vT9RPkWESISEjwSSV-e_zA" />
-                    </ScribeContainer>               
+                <FormHeader text={'Stripe'} />
+                <ScribeContainer text="Switch to production">
+                    <ScribeIframe url="https://scribehow.com/embed/Create_a_Stripe_Account_and_Switch_to_Live_Mode__Gj5DvOBPRqS9KzOyk-uvew" />
+                </ScribeContainer>
+                <ScribeContainer text="Branding">
+                    <ScribeIframe url="https://scribehow.com/embed/Customize_Your_Stripe_Invoice_Branding_Settings__N-dNtjD0RrOXSFyEwINFIg" />
+                </ScribeContainer>
+                <ScribeContainer text="Tax">
+                    <ScribeIframe url="https://scribehow.com/embed/How_to_Set_Up_Stripe_Tax_Registrations__vT9RPkWESISEjwSSV-e_zA" />
+                </ScribeContainer>
                 <BackToDocsLink />
             </FillFormContainer>
         </FormContainer >
     );
 }
 
-{/* <iframe src="https://scribehow.com/embed/How_to_Set_Up_Stripe_Tax_Registrations__vT9RPkWESISEjwSSV-e_zA" 
-width="100%" height="640"
- allow="fullscreen"
- style="aspect-ratio: 1 / 1; border: 0; min-height: 480px"></iframe> */}
