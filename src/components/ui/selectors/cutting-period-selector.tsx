@@ -20,7 +20,7 @@ export function CuttingPeriodSelector({
       <label className="flex items-center">{label} </label>
       <select
         name={variant}
-        className="w-fit border rounded-sm text-center p-2"
+        className="w-fit border rounded-sm text-center py-2"
         value={currentPeriod}
         onChange={(e) => setCuttingPeriod(e.target.value)}
       >

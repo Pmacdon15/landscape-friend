@@ -19,7 +19,7 @@ export default function UploadImageButton({ clientId, setView }: { clientId: num
         <button
             formAction={(formData: FormData) => { mutate({ clientId: clientId, formData }) }}
             disabled={isPending}
-            className={`px-6 py-3 rounded-md shadow-md text-white font-semibold transition duration-300 ease-in-out ${isPending
+            className={`px-6 py-3 rounded-md shadow-md text-white font-semibold  ${isPending
                 ? "bg-green-400 cursor-not-allowed"
                 : "bg-background hover:bg-green-500"
                 }`
