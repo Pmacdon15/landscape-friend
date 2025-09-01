@@ -1,15 +1,12 @@
-'use client';
-
 import Image from "next/image";
 import { ClientListItemProps } from "@/types/types-clients";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 const ClientListItemAddress = ({ client, children }: { client: ClientListItemProps['client'], children: ReactNode }) => {
-  const [showMap, setShowMap] = useState(false);
-
   return (
     <div className="flex flex-col items-center w-full">
-      <div className="flex flex-row gap-2 justify-center items-center cursor-pointer" onClick={() => setShowMap(!showMap)}>
+      <input type="checkbox" id={`map-toggle-${client.id}`} className="hidden peer" />
+      <label htmlFor={`map-toggle-${client.id}`} className="flex flex-row gap-2 justify-center items-center cursor-pointer">
           <Image
             src="/client-list/address.png"
             alt="Address Icon"
@@ -21,8 +18,10 @@ const ClientListItemAddress = ({ client, children }: { client: ClientListItemPro
             <p className="text-sm text-center">Address:</p>
             <p className="text-center">{client.address}</p>
           </div>
+      </label>
+      <div className="hidden peer-checked:block w-full">
+        {children}
       </div>
-      {showMap && children}
     </div>
   );
 };

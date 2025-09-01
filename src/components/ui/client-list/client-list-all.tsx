@@ -42,9 +42,7 @@ export default async function ClientListService({
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
                 <ClientListItemAddress client={client} >
-                  <Suspense fallback={<FormHeader text="Loading..." />}>
-                    <MapComponent address={client.address} />
-                  </Suspense>
+                  <MapComponent address={client.address} />
                 </ClientListItemAddress>
               </div>
               {isAdmin &&
