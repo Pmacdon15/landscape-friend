@@ -7,7 +7,7 @@ export default function Page() {
     return (
         <FormContainer>
             <FillFormContainer>
-                <FormHeader text={'Plans'} />
+                <FormHeader text={'Stripe'} />
                 <BackToDocsLink />
             </FillFormContainer>
         </FormContainer >
