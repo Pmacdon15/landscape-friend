@@ -43,13 +43,13 @@ export async function POST(
             const invoicePaid = event.data.object as Stripe.Invoice;
             const payloadPaid = await createInvoicePayload(invoicePaid.customer_name, invoicePaid.amount_paid, invoicePaid.id);
             await handleInvoicePaid(invoicePaid, orgId);
-            triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
+            await triggerNotificationSendToAdmin(orgId, 'invoice-paid', payloadPaid)
             break;
         case 'invoice.sent':
             const invoiceSent = event.data.object as Stripe.Invoice;
             const payloadSent = await createInvoicePayload(invoiceSent.customer_name, invoiceSent.amount_due, invoiceSent.id);
             await handleInvoiceSent(invoiceSent, orgId);
-            triggerNotificationSendToAdmin(orgId, 'invoice-sent', payloadSent)
+            await triggerNotificationSendToAdmin(orgId, 'invoice-sent', payloadSent)
             break;        
         default:
             console.log(`Unhandled event type ${event.type}`);
