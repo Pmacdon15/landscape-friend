@@ -3,8 +3,8 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import React, { useState } from "react";
 import { ImagePlusIcon } from "lucide-react";
-import { ImageGalleryProps } from "@/types/types-components";
 import DeleteSiteMapButton from "../buttons/delete-site-map-button";
+import { ImageGalleryProps } from "@/types/components-types";
 
 
 export default function ImageGallery({
