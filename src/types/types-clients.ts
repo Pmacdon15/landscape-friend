@@ -17,8 +17,7 @@ export interface Client {
     address: string;
     amount_owing: number;
     price_per_cut: number;
-    price_per_month_snow: number;
-    snow_client: boolean;
+    price_per_month_snow: number;    
     cutting_schedules: CuttingSchedule[];
     assigned_to: string;
     images: Image[];
@@ -39,7 +38,6 @@ export interface ClientResult {
     amount_owing: number;
     price_per_cut: number;
     price_per_month_snow: number;
-    snow_client: boolean;
     cutting_week: number;
     cutting_day: string;
     total_count: number;

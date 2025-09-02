@@ -49,9 +49,7 @@ export const schemaAssignSnowClearing = z.object({
 })
 
 
-export const schemaToggleSnowClient = z.object({
-    clientId: z.number()
-})
+
 
 export const schemaUpdateAPI = z.object({
     APIKey: z.string()
