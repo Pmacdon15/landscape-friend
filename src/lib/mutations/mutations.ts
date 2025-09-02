@@ -110,14 +110,34 @@ export const useUpdateCuttingDay = () => {
 
 //MARK: Assign snow clearing
 export const useAssignSnowClearing = () => {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
             return assignSnowClearing(clientId, assignedTo);
         },
-        onSuccess: () => { revalidatePathAction("/lists/client") },
-        onError: (error) => {
-            console.error('Mutation error:', error);
-        }
+        onMutate: async ({ clientId, assignedTo }) => {
+            await queryClient.cancelQueries({ queryKey: ['clients'] });
+
+            const previousClients = queryClient.getQueryData(['clients']);
+
+            queryClient.setQueryData(['clients'], (old: any) => {
+                if (!old) return old;
+                return old.map((client: any) =>
+                    client.id === clientId
+                        ? { ...client, assigned_to: assignedTo }
+                        : client
+                );
+            });
+
+            return { previousClients };
+        },
+        onError: (err, newClient, context) => {
+            queryClient.setQueryData(['clients'], context?.previousClients);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['clients'] });
+            revalidatePathAction("/lists/client");
+        },
     });
 };
 //MARK:Mark yard serviced
@@ -134,14 +154,39 @@ export const useMarkYardServiced = () => {
 };
 //MARK:Toggle snow client
 export const useToggleSnowClient = () => {
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ clientId }: { clientId: number }) => {
             return toggleSnowClient(clientId);
         },
-        onSuccess: () => { revalidatePathAction("/lists/client") },
-        onError: (error) => {
-            console.error('Mutation error:', error);
-        }
+        onMutate: async ({ clientId }) => {
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            await queryClient.cancelQueries({ queryKey: ['clients'] });
+
+            // Snapshot the previous value
+            const previousClients = queryClient.getQueryData(['clients']);
+
+            // Optimistically update to the new value
+            queryClient.setQueryData(['clients'], (old: any) => {
+                if (!old) return old;
+                return old.map((client: any) =>
+                    client.id === clientId
+                        ? { ...client, snow_client: !client.snow_client }
+                        : client
+                );
+            });
+
+            return { previousClients };
+        },
+        onError: (err, newClient, context) => {
+            // Rollback on error
+            queryClient.setQueryData(['clients'], context?.previousClients);
+        },
+        onSettled: () => {
+            // Always refetch after error or success
+            queryClient.invalidateQueries({ queryKey: ['clients'] });
+            revalidatePathAction("/lists/client");
+        },
     });
 };
 
