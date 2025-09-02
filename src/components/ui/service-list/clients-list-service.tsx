@@ -45,42 +45,45 @@ export default async function ClientListService({ clientsPromise, page, serviceD
                 {/* TODO Break down this in to smaller components */}
                 {clients.map((client: Client) => (
                     <FormContainer key={client.id}>
-                        <li className="border p-4 rounded-sm  bg-white/50">
-                            <p>Name: {client.full_name}</p>
-                            <div className="flex w-full gap-2">
-                                <Image
-                                    src="/client-list/telephone.png"
-                                    alt="Email Icon"
-                                    className="w-8 h-8"
-                                    width={512}
-                                    height={512}
-                                />
-                                <p className="my-auto">Phone Number:{" "}</p>
-                                <Link className="cursor-pointer text-blue-600 hover:underline" href={`tel:${client.phone_number}`}>
-                                    {client.phone_number}
-                                </Link>
+                        <li className="border p-4 rounded-sm bg-white/50 w-full">
+                            <div className="flex flex-col items-center w-full">
+                                <p className="text-center w-full">Name: {client.full_name}</p>
+                                <div className="flex w-full gap-2 items-center justify-center">
+                                    <Image
+                                        src="/client-list/telephone.png"
+                                        alt="Email Icon"
+                                        className="w-8 h-8"
+                                        width={512}
+                                        height={512}
+                                    />
+                                    <p className="my-auto">Phone Number:</p>
+                                    <Link className="cursor-pointer text-blue-600 hover:underline" href={`tel:${client.phone_number}`}>
+                                        {client.phone_number}
+                                    </Link>
+                                </div>
+                                <div className="flex w-full gap-2 items-center justify-center">
+                                    <Image
+                                        src="/client-list/email.png"
+                                        alt="Email Icon"
+                                        className="w-8 h-8"
+                                        width={512}
+                                        height={512}
+                                    />
+                                    <p className="my-auto">Email:</p>
+                                    <ClientEmailPopover client={client} />
+                                </div>
+                                <div className="flex w-full gap-2 items-center justify-center">
+                                    <Image
+                                        src="/client-list/address.png"
+                                        alt="Address Icon"
+                                        className="w-8 h-8"
+                                        width={512}
+                                        height={512}
+                                    />
+                                    <p>Address: {client.address}</p>
+                                </div>
                             </div>
-                            <div className="flex w-full gap-2">
-                                <Image
-                                    src="/client-list/email.png"
-                                    alt="Email Icon"
-                                    className="w-8 h-8"
-                                    width={512}
-                                    height={512}
-                                />
-                                <p className="my-auto">Email:{" "}</p>
-                                <ClientEmailPopover client={client} />
-                            </div>
-                            <div className="flex w-full gap-2">
-                                <Image
-                                    src="/client-list/address.png"
-                                    alt="Address Icon"
-                                    className="w-8 h-8"
-                                    width={512}
-                                    height={512}
-                                />
-                                <p>Address: {client.address}</p>
-                            </div>
+
                             <div className="flex flex-col sm:flex-row gap-1">
                                 <Suspense fallback={<FormHeader text="Loading..." />}>
                                     <MapComponent address={client.address} />
