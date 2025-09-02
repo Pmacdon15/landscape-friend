@@ -44,8 +44,7 @@ CREATE TABLE clients (
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
-    address VARCHAR(200) NOT NULL,
-    snow_client BOOLEAN NOT NULL DEFAULT false,
+    address VARCHAR(200) NOT NULL,    
     price_per_month_snow FLOAT NOT NULL DEFAULT 100,
     stripe_customer_id VARCHAR(255) NULL
 );

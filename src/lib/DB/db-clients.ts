@@ -1,4 +1,4 @@
-import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaToggleSnowClient, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { Account, Client, CustomerName } from "@/types/types-clients";
@@ -216,7 +216,7 @@ export async function fetchClientsClearingGroupsDb(
       a.current_balance AS amount_owing
       FROM clients c
       LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId} AND c.snow_client = true
+      WHERE c.organization_id = ${orgId}
     ),
     cleared_yards AS(
       SELECT client_id
@@ -228,7 +228,7 @@ export async function fetchClientsClearingGroupsDb(
         cwb.*,
         sca.assigned_to
       FROM clients_with_balance cwb
-      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
+      INNER JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
       )
         `;
 
@@ -455,7 +455,6 @@ cws.id,
   cws.amount_owing,
   cws.price_per_cut,
   cws.price_per_month_snow,
-  cws.snow_client,
   cws.cutting_week,
   cws.cutting_day,
   cws.assigned_to,
@@ -552,7 +551,6 @@ cws.id,
   cws.amount_owing,
   cws.price_per_cut,
   cws.price_per_month_snow,
-  cws.snow_client,
   cws.cutting_week,
   cws.cutting_day,
   sa.assigned_to,
@@ -646,23 +644,7 @@ RETURNING *;
   return result;
 }
 
-//MARK: Toggle snow client
-export async function toggleSnowClientDb(data: z.infer<typeof schemaToggleSnowClient>, organization_id: string) {
-  const sql = neon(`${process.env.DATABASE_URL} `);
 
-  const result = await sql`
-    UPDATE clients 
-    SET snow_client = NOT snow_client 
-    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-RETURNING *;
-`;
-
-  if (!result || result.length === 0) {
-    throw new Error('Toggle Failed');
-  }
-
-  return result;
-}
 
 //MARK: Toggle snow client
 export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnowClearing>, organization_id: string) {
