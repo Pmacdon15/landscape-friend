@@ -12,7 +12,7 @@
         "@hookform/resolvers": "^5.2.1",
         "@neondatabase/serverless": "^1.0.1",
         "@novu/api": "^1.6.0",
-        "@novu/nextjs": "^3.8.1",
+        "@novu/nextjs": "^3.9.1",
         "@radix-ui/react-alert-dialog": "^1.1.14",
         "@radix-ui/react-navigation-menu": "^1.2.13",
         "@radix-ui/react-popover": "^1.1.14",
@@ -445,11 +445,11 @@
 
     "@novu/api": ["@novu/api@1.6.0", "", { "dependencies": { "zod": "^3.20.0" }, "peerDependencies": { "@modelcontextprotocol/sdk": ">=1.5.0 <1.10.0" }, "optionalPeers": ["@modelcontextprotocol/sdk"], "bin": { "mcp": "bin/mcp-server.js" } }, "sha512-Zi2FzlQw2m5s2rPTrcJ2YuD8Q0P/7H343RsGwyXSqWwajQpjTnWV3us0PzIr8m0oK0H5wDxi9LkGYoHHHFYbfg=="],
 
-    "@novu/js": ["@novu/js@3.8.1", "", { "dependencies": { "@floating-ui/dom": "^1.6.13", "@kobalte/core": "^0.13.10", "class-variance-authority": "^0.7.0", "clsx": "^2.1.1", "mitt": "^3.0.1", "partysocket": "^1.1.4", "socket.io-client": "4.7.2", "solid-floating-ui": "^0.3.1", "solid-js": "^1.9.4", "solid-motionone": "^1.0.3", "tailwind-merge": "^2.4.0" } }, "sha512-1DXMW2rZseQ9BQPzMLa37LgqpUG45swzxMeX/ni9c+bKj2ZhjdzaeR58iw6NJBoPaq+nFkN0xidlYgiJy6yJdA=="],
+    "@novu/js": ["@novu/js@3.9.1", "", { "dependencies": { "@floating-ui/dom": "^1.6.13", "@kobalte/core": "^0.13.10", "class-variance-authority": "^0.7.0", "clsx": "^2.1.1", "mitt": "^3.0.1", "partysocket": "^1.1.4", "socket.io-client": "4.7.2", "solid-floating-ui": "^0.3.1", "solid-js": "^1.9.4", "solid-motionone": "^1.0.3", "tailwind-merge": "^2.4.0" } }, "sha512-ufCN3uDY11gahnRcu6jDz0v4Hydw1JiXCYquM4I1nkZ10jxGMZIhXCPGJWek1hg4Dv3rCwMexPZuEhw3ATm2Xg=="],
 
-    "@novu/nextjs": ["@novu/nextjs@3.8.1", "", { "dependencies": { "@novu/react": "3.8.1" }, "peerDependencies": { "next": ">=13.5.2 || ^14.0.0 || ^15.0.0", "react": "^18.0.0 || ^19.0.0 || ^19.0.0-0", "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-0" }, "optionalPeers": ["react-dom"] }, "sha512-SwGiTriIsA29QVat/v6Jjj8n0IBXUDVlbzzZkyHI6o5AuSPg6l6DwKk+45CCYMSu73IYmgT6ATD34UWPOs/Q1A=="],
+    "@novu/nextjs": ["@novu/nextjs@3.9.1", "", { "dependencies": { "@novu/react": "3.9.1" }, "peerDependencies": { "next": ">=13.5.2 || ^14.0.0 || ^15.0.0", "react": "^18.0.0 || ^19.0.0 || ^19.0.0-0", "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-0" }, "optionalPeers": ["react-dom"] }, "sha512-enGM1FBJL+GCysDBHQtmVQIJs+afcZmjI6R2JFx2fIYcwPtQ09VyGbJHvYk3u5DOkscpRiACPqqwPDhP27tmug=="],
 
-    "@novu/react": ["@novu/react@3.8.1", "", { "dependencies": { "@novu/js": "3.8.1" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0 || ^19.0.0-0", "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-0" }, "optionalPeers": ["react-dom"] }, "sha512-KA/cdiK0tw6Qf4VTTpTP9mb0YTHfQCVB6YR9Yfd5lkcovfts1D+nxo1bue89uNWOr4/msbBGgyZzmkkkNyMRwA=="],
+    "@novu/react": ["@novu/react@3.9.1", "", { "dependencies": { "@novu/js": "3.9.1" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0 || ^19.0.0-0", "react-dom": "^18.0.0 || ^19.0.0 || ^19.0.0-0" }, "optionalPeers": ["react-dom"] }, "sha512-iwQgBAAlGl6FabP5FN47FRDFdGb1W1w5zB/CNcXnpLs3Cn4NBr86NfOR3qiwiPlyHVgIoLgrjt7Z1pJLwL25SQ=="],
 
     "@open-draft/deferred-promise": ["@open-draft/deferred-promise@2.2.0", "", {}, "sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA=="],
 
