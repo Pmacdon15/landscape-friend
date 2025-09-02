@@ -6,7 +6,7 @@ import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendI
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
 import { assignSnowClearing } from "@/lib/actions/snow-action";
 import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
-import { MarkQuoteProps } from "@/types/types-stripe";
+import { MarkQuoteProps } from "@/types/stripe-types";
 import { schemaCreateQuote, schemaUpdateStatement } from '@/lib/zod/schemas';
 import { z } from 'zod';
 //MARK: Add client

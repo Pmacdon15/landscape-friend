@@ -10,7 +10,7 @@ import SnowClientInput from "../inputs/snow-client-input";
 import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
-import { ClientListServiceProps } from "@/types/types-clients";
+import { ClientListServiceProps } from "@/types/clients-types";
 import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
 import ClientListItemAddress from "./client-list-item-address";
 

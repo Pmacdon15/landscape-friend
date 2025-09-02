@@ -1,4 +1,4 @@
-import { OrgMember } from "./types-clerk";
+import { OrgMember } from "./clerk-types";
 
 export interface Image {
     id: number;

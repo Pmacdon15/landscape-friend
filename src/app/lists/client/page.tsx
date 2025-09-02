@@ -9,7 +9,7 @@ import { isOrgAdmin } from "@/lib/utils/clerk";
 import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/utils/params";
 import { fetchAllClients } from "@/lib/dal/clients-dal";
-import { SearchParams } from "@/types/types-params";
+import { SearchParams } from "@/types/params-types";
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
 export default async function page({

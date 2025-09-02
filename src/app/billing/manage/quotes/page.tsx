@@ -5,7 +5,7 @@ import { ManageQuoteCardView } from "@/components/ui/manage/quotes/manage-quotes
 import { PaginationTabs } from "@/components/ui/pagination/pagination-tabs";
 import { fetchQuotes } from "@/lib/dal/stripe-dal";
 import { parseClientListParams } from "@/lib/utils/params";
-import { SearchParams } from "@/types/types-params";
+import { SearchParams } from "@/types/params-types";
 import { Suspense } from "react";
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 

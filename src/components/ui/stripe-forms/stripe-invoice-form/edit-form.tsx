@@ -11,7 +11,7 @@ import { DynamicFields } from '../shared/dynamic-fields'; // our reusable compon
 import { z } from 'zod';
 import { useResetFormOnSuccess } from '@/lib/hooks/hooks';
 import BackToLink from '../../links/back-to-link';
-import { EditStripeForm } from '@/types/types-stripe';
+import { EditStripeForm } from '@/types/stripe-types';
 
 export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeDocument();

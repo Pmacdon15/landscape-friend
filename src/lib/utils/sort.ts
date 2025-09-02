@@ -1,4 +1,4 @@
-import { Client, ClientResult } from "@/types/types-clients";
+import { Client, ClientResult } from "@/types/clients-types";
 
 export function processClientsResult(clientsResult: ClientResult[], totalCount: number, pageSize: number): { clients: Client[], totalPages: number } {
   const totalPages = Math.ceil(totalCount / pageSize);

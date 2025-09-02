@@ -1,4 +1,4 @@
-import { OrgMember } from "@/types/types-clerk";
+import { OrgMember } from "@/types/clerk-types";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 
 export async function fetchOrgMembers(): Promise<OrgMember[]> {

@@ -1,7 +1,7 @@
 'use client'
 import { useMarkQuote } from "@/lib/mutations/mutations";
 import { Button } from "../button";
-import { MarkQuoteProps } from "@/types/types-stripe";
+import { MarkQuoteProps } from "@/types/stripe-types";
 import EditQuoteLink from "../links/edit-quote-link";
 // import Spinner from "../loaders/spinner";
 import EllipsisSpinner from "../loaders/EllipsisSpinner";

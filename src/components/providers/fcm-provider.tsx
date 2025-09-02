@@ -4,13 +4,8 @@ import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
 import { useUser } from '@clerk/clerk-react';
 import { registerNovuDevice } from '@/lib/actions/novu-action';
+import { FCMContextType } from '@/types/fcm-types';
 
-interface FCMContextType {
-    permissionStatus: NotificationPermission | 'not-supported';
-    fcmToken: string | null;
-    loading: boolean;
-    requestNotificationPermissionAndToken: () => Promise<void>;
-}
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

@@ -3,7 +3,7 @@ import ClientName from './ClientName';
 import ClientPhoneNumber from './ClientPhoneNumber';
 import ClientEmail from './ClientEmail';
 import ClientAddress from './ClientAddress';
-import { Client } from '@/types/types-clients';
+import { Client } from '@/types/clients-types';
 import MapComponent from '../../map-component/map-component';
 import ImageList from '../../image-list/image-list';
 import MarkYardServiced from '../../buttons/mark-yard-serviced';
