@@ -1,5 +1,5 @@
 'use client'
-import { ClientListItemProps } from "@/types/types-clients";
+import { ClientListItemProps } from "@/types/clients-types";
 import Image from "next/image";
 import { useState } from "react";
 

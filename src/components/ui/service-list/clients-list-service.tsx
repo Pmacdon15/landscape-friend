@@ -2,7 +2,7 @@ import { PaginationTabs } from "../pagination/pagination-tabs";
 import ManyPointsMap from "../map-component/many-points-map";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import { Client, PaginatedClients } from "@/types/types-clients";
+import { Client, PaginatedClients } from "@/types/clients-types";
 import ClientDetailsCard from "./client-details/ClientDetailsCard";
 import MarkYardServiced from "../buttons/mark-yard-serviced";
 

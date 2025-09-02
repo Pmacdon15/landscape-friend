@@ -1,8 +1,8 @@
 import { schemaAddClient, schemaAssignSnowClearing, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
-import { Account, Client, CustomerName } from "@/types/types-clients";
-import { NovuSubscriberIds } from "@/types/types-novu";
+import { Account, Client, CustomerName } from "@/types/clients-types";
+import { NovuSubscriberIds } from "@/types/novu-types";
 
 //MARK: Add clients
 

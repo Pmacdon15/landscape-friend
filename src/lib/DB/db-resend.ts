@@ -1,4 +1,4 @@
-import { Email, NamesAndEmails } from "@/types/types-clients";
+import { Email, NamesAndEmails } from "@/types/clients-types";
 import { neon } from "@neondatabase/serverless";
 import { sendGroupEmail } from "../utils/resend";
 import { schemaSendEmail } from "../zod/schemas";

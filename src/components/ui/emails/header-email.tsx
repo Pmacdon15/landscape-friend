@@ -1,4 +1,4 @@
-import { HeaderEmailProps } from "@/types/types-resend";
+import { HeaderEmailProps } from "@/types/resend-types";
 import {
   Body,
   Head,

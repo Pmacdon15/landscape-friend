@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchGeocode } from '@/lib/utils/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/types-google-map-iframe';
+import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/google-map-iframe-types';
 import { MaterialField } from '@/types/types-components';
 import { UseFormReset } from 'react-hook-form';
 import React from 'react';

@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/utils/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
-import { MarkQuoteProps } from "@/types/types-stripe";
+import { MarkQuoteProps } from "@/types/stripe-types";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotification } from "../dal/novu-dal";
 import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";

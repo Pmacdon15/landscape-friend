@@ -2,8 +2,8 @@
 import { useAssignSnowClearing } from "@/lib/mutations/mutations";
 import { use } from "react";
 import PricePerUpdateInput from "../client-list/price-per-update-input";
-import { Client } from "@/types/types-clients";
-import { OrgMember } from "@/types/types-clerk";
+import { Client } from "@/types/clients-types";
+import { OrgMember } from "@/types/clerk-types";
 
 export default function SnowClientInput({ client, orgMembersPromise }: { client: Client, orgMembersPromise?: Promise<OrgMember[]> }) {
 

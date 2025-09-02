@@ -1,4 +1,4 @@
-import { UserNovuId } from "@/types/types-novu";
+import { UserNovuId } from "@/types/novu-types";
 import { auth } from "@clerk/nextjs/server";
 import { neon } from "@neondatabase/serverless";
 

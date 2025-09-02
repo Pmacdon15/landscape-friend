@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ClientListItemProps } from "@/types/types-clients";
+import { ClientListItemProps } from "@/types/clients-types";
 import { ReactNode } from "react";
 
 const ClientListItemAddress = ({ client, children }: { client: ClientListItemProps['client'], children: ReactNode }) => {

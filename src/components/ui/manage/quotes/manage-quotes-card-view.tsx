@@ -1,4 +1,4 @@
-import { StripeQuote } from "@/types/types-stripe";
+import { StripeQuote } from "@/types/stripe-types";
 import ManageQuoteButton from "../../buttons/manage-quote-button";
 
 export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {

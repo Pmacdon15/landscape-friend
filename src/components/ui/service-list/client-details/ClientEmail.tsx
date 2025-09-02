@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { Client } from '@/types/types-clients'; // Assuming Client type is needed
+import { Client } from '@/types/clients-types'; // Assuming Client type is needed
 import { ClientEmailPopover } from '../../popovers/client-email-popover';
 
 interface ClientEmailProps {

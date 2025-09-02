@@ -1,5 +1,5 @@
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { OrgMember } from "@/types/types-clerk";
+import { OrgMember } from "@/types/clerk-types";
 
 export async function isOrgAdmin(protect = true) {
     let authResult;

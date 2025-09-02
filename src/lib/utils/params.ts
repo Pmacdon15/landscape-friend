@@ -1,4 +1,4 @@
-import { ParsedClientListParams, SearchParams } from "@/types/types-params";
+import { ParsedClientListParams, SearchParams } from "@/types/params-types";
 
 export function parseClientListParams(params: SearchParams): ParsedClientListParams {
   const page = Number(params.page ?? 1);
