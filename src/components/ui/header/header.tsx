@@ -4,6 +4,7 @@ import { NavBar } from '../nav/nav-bar';
 import { useGetNovuId } from '@/lib/hooks/useNovu';
 import { Inbox } from '@novu/nextjs';
 import Spinner from '../loaders/spinner';
+import Image from 'next/image';
 
 
 export default function Header({ children }: { children: React.ReactNode }) {
@@ -15,7 +16,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
             notificationPrimaryAction__button: {
                 backgroundColor: '#138b10',
                 color: '#fff',
-            },           
+            },
         }
     };
 
@@ -40,6 +41,11 @@ export default function Header({ children }: { children: React.ReactNode }) {
                             <>
                                 <strong>{(notification.subject ?? 'No Subject')}</strong>
                             </>
+                        )}
+                        renderAvatar={() => (
+                            <div className='w-8 h-8 rounded-full bg-[#138b10] flex items-center justify-center text-sm font-bold'>
+                                <Image src={'/logo.png'} alt={'Logo'} width={100} height={100} />
+                            </div>
                         )}
                         appearance={appearance}
                     />
