@@ -190,7 +190,7 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
   const result = await sql`
         INSERT INTO cutting_schedule(client_id, cutting_week, cutting_day, organization_id)
   VALUES(${data.clientId}, ${data.cuttingWeek}, ${data.updatedDay}, ${orgId})
-        ON CONFLICT(client_id, organization_id) DO UPDATE
+        ON CONFLICT(client_id, cutting_week, organization_id) DO UPDATE
         SET cutting_day = EXCLUDED.cutting_day, cutting_week = EXCLUDED.cutting_week
   RETURNING *
     `;
@@ -650,13 +650,13 @@ RETURNING *;
 
 
 //MARK: Unassign grass cutting
-export async function unassignGrassCuttingDb(clientId: number, organization_id: string) {
+export async function unassignGrassCuttingDb(clientId: number, organization_id: string, cuttingWeek: number | null) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const result = await sql`
     UPDATE cutting_schedule
     SET assigned_to = NULL
-    WHERE client_id = ${clientId} AND organization_id = ${organization_id}
+    WHERE client_id = ${clientId} AND organization_id = ${organization_id} AND cutting_week = ${cuttingWeek}
     RETURNING *;
   `;
 
@@ -707,14 +707,14 @@ export async function assignGrassCuttingDb(data: z.infer<typeof schemaAssign>, o
   const sql = neon(`${process.env.DATABASE_URL} `);
 
   const result = await sql`
-  INSERT INTO cutting_schedule (client_id, assigned_to, organization_id)
-  SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}
-  FROM clients
-  WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-  ON CONFLICT (client_id, organization_id) DO UPDATE
-  SET assigned_to = EXCLUDED.assigned_to
-  RETURNING *;
-`;
+    INSERT INTO cutting_schedule(client_id, assigned_to, organization_id, cutting_week, cutting_day)
+    SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}, ${data.cuttingWeek}, ${data.cuttingDay}
+    FROM clients
+    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+    ON CONFLICT(client_id, cutting_week, organization_id) DO UPDATE
+    SET assigned_to = EXCLUDED.assigned_to, cutting_day = EXCLUDED.cutting_day
+    RETURNING *;
+    `;
 
   if (!result || result.length === 0) {
     throw new Error('Assignment Failed');

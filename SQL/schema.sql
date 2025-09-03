@@ -95,7 +95,7 @@ CREATE TABLE cutting_schedule (
     organization_id VARCHAR(100) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE SET NULL,
-    UNIQUE (client_id, organization_id)
+    UNIQUE (client_id, cutting_week, organization_id)
 );
 
 CREATE TABLE yards_marked_cut (

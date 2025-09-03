@@ -1,7 +1,7 @@
 'use server'
 import { assignSnowClearingDb, unassignSnowClearingDb } from "@/lib/DB/db-clients";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { schemaAssign } from "../zod/schemas";
+import { schemaAssignSnow } from "../zod/schemas";
 
 
 export async function assignSnowClearing(clientId: number, assignedTo: string) {
@@ -9,7 +9,7 @@ export async function assignSnowClearing(clientId: number, assignedTo: string) {
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
-    const validatedFields = schemaAssign.safeParse({
+    const validatedFields = schemaAssignSnow.safeParse({
         clientId: clientId,
         assignedTo: assignedTo
     });

@@ -32,14 +32,16 @@ export async function assignGrassCutting(clientId: number, assignedTo: string, c
 
     const validatedFields = schemaAssign.safeParse({
         clientId: clientId,
-        assignedTo: assignedTo
+        assignedTo: assignedTo,
+        cuttingWeek: cuttingWeek,
+        cuttingDay: cuttingDay
     });
 
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
         if (assignedTo === 'not-assigned') {
-            const result = await unassignGrassCuttingDb(validatedFields.data.clientId, (orgId || userId)!)
+            const result = await unassignGrassCuttingDb(validatedFields.data.clientId, (orgId || userId)!, validatedFields.data.cuttingWeek)
             if (!result) throw new Error('Failed to unassign grass cutting');
             return result;
         } else {
