@@ -2,9 +2,7 @@
 import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import { NavBar } from '../nav/nav-bar';
 import { useGetNovuId } from '@/lib/hooks/useNovu';
-import { Inbox } from '@novu/nextjs';
 import Spinner from '../loaders/spinner';
-import Image from 'next/image';
 import NotificationInbox from '../inbox/inbox';
 // import { dark } from '@novu/react/themes';
 
