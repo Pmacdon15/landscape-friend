@@ -10,11 +10,8 @@ export default function Header({ children }: { children: React.ReactNode }) {
     const { user } = useUser();
     const { data: novuId, isPending } = useGetNovuId(user?.id);
 
-
-
     return (
         <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
-
             {children}
             <div className='flex flex-wrap justify-between border-t w-full pt-2'>
                 {user?.id && <NavBar userId={user.id} />}
@@ -25,9 +22,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
                     </SignedIn>
                 </div>
                 {isPending && user && <Spinner variant='notification-menu' />}
-                {novuId && !isPending &&
-                    <NotificationInbox userNovuId={novuId.UserNovuId} />
-                }
+                {novuId && !isPending && <NotificationInbox userNovuId={novuId.UserNovuId} />}
                 <SignedOut>
                     <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
                         <SignInButton />
