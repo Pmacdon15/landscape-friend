@@ -4,7 +4,7 @@ import { use } from "react";
 import { Client } from "@/types/clients-types";
 import { OrgMember } from "@/types/clerk-types";
 
-export default function AssignedTo({ client, orgMembersPromise, snow = false, cuttingWeek, cuttingDay }: { client: Client, orgMembersPromise?: Promise<OrgMember[]>, snow?: boolean, cuttingWeek?: number, cuttingDay?: string }) {
+export default function AssignedTo({ client, orgMembersPromise, snow = false}: { client: Client, orgMembersPromise?: Promise<OrgMember[]>, snow?: boolean }) {
 
   const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
   const { mutate: mutateAssignGrassCutting } = useAssignGrassCutting()

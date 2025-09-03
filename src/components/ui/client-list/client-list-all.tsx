@@ -52,7 +52,7 @@ export default async function ClientListService({
                   <PricePerUpdateInput client={client} />
                   <PricePerUpdateInput client={client} snow={true} />
                   <Suspense fallback={<AssignedToFallback />}>
-                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} cuttingWeek={client.cutting_week} cuttingDay={client.cutting_day} />
+                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>
                   <Suspense fallback={<AssignedToFallback />}>
                     <AssignedTo client={client} orgMembersPromise={orgMembersPromise} snow />

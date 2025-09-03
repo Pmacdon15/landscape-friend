@@ -33,7 +33,6 @@ const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({ client, isAdmin, 
         </Suspense>
         <ImageList isAdmin={isAdmin} client={client} />
       </div>
-      {!searchTermIsServiced && serviceDate && <MarkYardServiced clientId={client.id} serviceDate={serviceDate} snow={snow} />}
     </>
   );
 };
