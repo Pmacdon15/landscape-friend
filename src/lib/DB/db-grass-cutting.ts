@@ -10,7 +10,7 @@ export async function assignGrassCuttingDb(data: z.infer<typeof schemaAssign>, o
      SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}
      FROM clients
      WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-     ON CONFLICT(client_id) DO UPDATE
+     ON CONFLICT(client_id, cutting_week, organization_id) DO UPDATE
      SET assigned_to = EXCLUDED.assigned_to
      RETURNING *;
      `;

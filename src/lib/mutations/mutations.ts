@@ -120,8 +120,8 @@ export const useAssignSnowClearing = () => {
 //MARK: Assign grass cutting
 export const useAssignGrassCutting = () => {
     return useMutation({
-        mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
-            return assignGrassCutting(clientId, assignedTo);
+        mutationFn: ({ clientId, assignedTo, cuttingWeek, cuttingDay }: { clientId: number, assignedTo: string, cuttingWeek?: number | null, cuttingDay?: string | null }) => {
+            return assignGrassCutting(clientId, assignedTo, cuttingWeek ?? null, cuttingDay ?? null);
         }
     });
 };

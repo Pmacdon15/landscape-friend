@@ -1,31 +1,32 @@
 'use client'
 import { useAssignGrassCutting, useAssignSnowClearing } from "@/lib/mutations/mutations";
 import { use } from "react";
-import PricePerUpdateInput from "../client-list/price-per-update-input";
 import { Client } from "@/types/clients-types";
 import { OrgMember } from "@/types/clerk-types";
 
-export default function AssignedTo({ client, orgMembersPromise, snow = false }: { client: Client, orgMembersPromise?: Promise<OrgMember[]>, snow?: boolean }) {
+export default function AssignedTo({ client, orgMembersPromise, snow = false, cuttingWeek, cuttingDay }: { client: Client, orgMembersPromise?: Promise<OrgMember[]>, snow?: boolean, cuttingWeek?: number, cuttingDay?: string }) {
 
   const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
   const { mutate: mutateAssignGrassCutting } = useAssignGrassCutting()
 
-  let mutate
-  { snow ? mutate = mutateAssignSnowClearing : mutate = mutateAssignGrassCutting }
 
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
 
-  const defaultValue = client.assigned_to ? client.assigned_to.toString() : "not-assigned";
-
+  const defaultValue = snow ? (client.snow_assigned_to ? client.snow_assigned_to.toString() : "not-assigned") : (client.grass_assigned_to ? client.grass_assigned_to.toString() : "not-assigned");
+  console.log("defaultValue: ", client.grass_assigned_to)
   return (
     < div className="flex gap-2 justify-center mb-2">
-      <p className="align-middle ">Assigned to {snow ? "snow" : "grass"}: </p>
+      <p className=" my-auto ">Assigned to {snow ? "snow" : "grass"}: </p>
       <select
         className="rounded-sm border md:w-3/6  w-3/6 p-1"
         defaultValue={defaultValue}
         onChange={(e) => {
           const selectedUserId = e.target.value;
-          mutate({ clientId: client.id, assignedTo: selectedUserId });
+          if (snow) {
+            mutateAssignSnowClearing({ clientId: client.id, assignedTo: selectedUserId });
+          } else {
+            mutateAssignGrassCutting({ clientId: client.id, assignedTo: selectedUserId, cuttingWeek: client.cutting_week, cuttingDay: client.cutting_day });
+          }
         }}
       >
         <option value="not-assigned">Not Assigned</option>

@@ -17,9 +17,12 @@ export interface Client {
     address: string;
     amount_owing: number;
     price_per_cut: number;
-    price_per_month_snow: number;    
+    price_per_month_snow: number;
+    cutting_week: number;
+    cutting_day: string;
     cutting_schedules: CuttingSchedule[];
-    assigned_to: string;
+    snow_assigned_to: string | null;
+    grass_assigned_to: string | null;
     images: Image[];
     stripe_customer_id?: string;
 }
@@ -41,7 +44,8 @@ export interface ClientResult {
     cutting_week: number;
     cutting_day: string;
     total_count: number;
-    assigned_to: string;
+    snow_assigned_to: string | null;
+    grass_assigned_to: string | null;
     images: Image[];
 }
 

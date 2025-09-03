@@ -45,13 +45,14 @@ export default async function ClientListService({
                   <MapComponent address={client.address} />
                 </ClientListItemAddress>
               </div>
+              {client.grass_assigned_to && <p>Assigned to: {client.grass_assigned_to}</p>}
               {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
                   <p>Amount owing: ${client.amount_owing} </p>
                   <PricePerUpdateInput client={client} />
                   <PricePerUpdateInput client={client} snow={true} />
                   <Suspense fallback={<AssignedToFallback />}>
-                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
+                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} cuttingWeek={client.cutting_week} cuttingDay={client.cutting_day} />
                   </Suspense>
                   <Suspense fallback={<AssignedToFallback />}>
                     <AssignedTo client={client} orgMembersPromise={orgMembersPromise} snow />

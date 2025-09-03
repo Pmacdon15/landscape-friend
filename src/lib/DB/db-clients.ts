@@ -355,7 +355,8 @@ export async function fetchClientsWithSchedules(
         cwb.*,
     COALESCE(cs.cutting_week, 0) AS cutting_week,
     COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-    sca.assigned_to
+    sca.assigned_to AS snow_assigned_to,
+    cs.assigned_to AS grass_assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
       LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
@@ -440,7 +441,8 @@ FROM(${selectQuery}) AS client_ids
         cwb.*,
     COALESCE(cs.cutting_week, 0) AS cutting_week,
     COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-    sca.assigned_to
+    cs.assigned_to as grass_assigned_to,
+    sca.assigned_to as snow_assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
       LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
@@ -457,7 +459,8 @@ cws.id,
   cws.price_per_month_snow,
   cws.cutting_week,
   cws.cutting_day,
-  cws.assigned_to,
+  cws.grass_assigned_to,
+  cws.snow_assigned_to,
   COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
     FROM clients_with_schedules cws
     LEFT JOIN LATERAL(
@@ -658,6 +661,27 @@ export async function assignSnowClearingDb(data: z.infer<typeof schemaAssign>, o
     ON CONFLICT(client_id) DO UPDATE
     SET assigned_to = EXCLUDED.assigned_to
 RETURNING *;
+`;
+
+  if (!result || result.length === 0) {
+    throw new Error('Assignment Failed');
+  }
+
+  return result;
+}
+
+//MARK: Assign grass cutting
+export async function assignGrassCuttingDb(data: z.infer<typeof schemaAssign>, organization_id: string) {
+  const sql = neon(`${process.env.DATABASE_URL} `);
+
+  const result = await sql`
+  INSERT INTO cutting_schedule (client_id, assigned_to, organization_id)
+  SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}
+  FROM clients
+  WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+  ON CONFLICT (client_id, organization_id) DO UPDATE
+  SET assigned_to = EXCLUDED.assigned_to
+  RETURNING *;
 `;
 
   if (!result || result.length === 0) {

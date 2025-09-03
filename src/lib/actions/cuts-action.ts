@@ -1,8 +1,7 @@
 'use server'
-import { markYardServicedDb } from "@/lib/DB/db-clients";
+import { markYardServicedDb, assignGrassCuttingDb } from "@/lib/DB/db-clients";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaAssign, schemaMarkYardCut } from "@/lib/zod/schemas";
-import { assignGrassCuttingDb } from "../DB/db-grass-cutting";
 
 export async function markYardServiced(clientId: number, date: Date, snow = false) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
@@ -26,7 +25,7 @@ export async function markYardServiced(clientId: number, date: Date, snow = fals
     }
 }
 
-export async function assignGrassCutting(clientId: number, assignedTo: string) {
+export async function assignGrassCutting(clientId: number, assignedTo: string, cuttingWeek: number | null, cuttingDay: string | null) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");

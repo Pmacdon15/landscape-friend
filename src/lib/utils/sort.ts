@@ -20,7 +20,10 @@ export function processClientsResult(clientsResult: ClientResult[], totalCount: 
         amount_owing: current.amount_owing,
         price_per_cut: current.price_per_cut,
         price_per_month_snow: current.price_per_month_snow,
-        assigned_to: current.assigned_to,
+        cutting_week: current.cutting_week,
+        cutting_day: current.cutting_day,
+        snow_assigned_to: current.snow_assigned_to,
+        grass_assigned_to: current.grass_assigned_to,
         images: current.images,
         cutting_schedules: [{
           cutting_week: current.cutting_week !== null ? current.cutting_week : 0,
