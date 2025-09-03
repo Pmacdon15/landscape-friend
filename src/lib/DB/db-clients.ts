@@ -1,4 +1,4 @@
-import { schemaAddClient, schemaAssign, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaAssign, schemaAssignSnow, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { Account, Client, CustomerName } from "@/types/clients-types";
@@ -682,7 +682,7 @@ export async function unassignSnowClearingDb(clientId: number, organization_id: 
 }
 
 //MARK: Toggle snow client
-export async function assignSnowClearingDb(data: z.infer<typeof schemaAssign>, organization_id: string) {
+export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow>, organization_id: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
 
   const result = await sql`

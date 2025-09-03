@@ -6,7 +6,6 @@ import ClientAddress from './ClientAddress';
 import { Client } from '@/types/clients-types';
 import MapComponent from '../../map-component/map-component';
 import ImageList from '../../image-list/image-list';
-import MarkYardServiced from '../../buttons/mark-yard-serviced';
 import FormHeader from '../../header/form-header';
 
 interface ClientDetailsCardProps {
@@ -17,7 +16,7 @@ interface ClientDetailsCardProps {
   snow: boolean;
 }
 
-const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({ client, isAdmin, searchTermIsServiced, serviceDate, snow }) => {
+const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({ client, isAdmin}) => {
   return (
     <>
       <div className="flex flex-col items-center w-full">
