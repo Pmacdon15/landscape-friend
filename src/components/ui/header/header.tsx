@@ -29,7 +29,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
         borderRadius: '6px',
         cursor: 'pointer',
         fontSize: '12px',
-        background: '#fff',       
+        background: '#fff',
     };
 
     const appearance = {
@@ -68,6 +68,14 @@ export default function Header({ children }: { children: React.ReactNode }) {
                                     {notification.primaryAction && (
                                         <button
                                             style={primaryButtonStyle}
+                                            onClick={() => {
+                                                if (notification.primaryAction?.redirect?.url) {
+                                                    window.open(
+                                                        notification.primaryAction.redirect.url,
+                                                        notification.primaryAction.redirect.target || '_blank'
+                                                    );
+                                                }
+                                            }}
                                         >
                                             {notification.primaryAction.label}
                                         </button>
@@ -75,6 +83,14 @@ export default function Header({ children }: { children: React.ReactNode }) {
                                     {notification.secondaryAction && (
                                         <button
                                             style={secondaryButtonStyle}
+                                            onClick={() => {
+                                                if (notification.secondaryAction?.redirect?.url) {
+                                                    window.open(
+                                                        notification.secondaryAction.redirect.url,
+                                                        notification.secondaryAction.redirect.target || '_blank'
+                                                    );
+                                                }
+                                            }}
                                         >
                                             {notification.secondaryAction.label}
                                         </button>
@@ -82,9 +98,6 @@ export default function Header({ children }: { children: React.ReactNode }) {
                                 </div>
                             );
                         }}
-
-
-
                         renderAvatar={() => (
                             <div className='w-8 h-8 rounded-full bg-[#138b10] flex items-center justify-center text-sm font-bold'>
                                 <Image src={'/logo.png'} alt={'Logo'} width={100} height={100} />
