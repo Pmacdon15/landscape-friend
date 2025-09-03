@@ -13,7 +13,7 @@ export default function AssignedTo({ client, orgMembersPromise, snow = false, cu
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
 
   const defaultValue = snow ? (client.snow_assigned_to ? client.snow_assigned_to.toString() : "not-assigned") : (client.grass_assigned_to ? client.grass_assigned_to.toString() : "not-assigned");
-  console.log("defaultValue: ", client.grass_assigned_to)
+  
   return (
     < div className="flex gap-2 justify-center mb-2">
       <p className=" my-auto ">Assigned to {snow ? "snow" : "grass"}: </p>

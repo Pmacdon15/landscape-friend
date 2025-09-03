@@ -1,5 +1,5 @@
 'use server'
-import { markYardServicedDb, assignGrassCuttingDb } from "@/lib/DB/db-clients";
+import { markYardServicedDb, assignGrassCuttingDb, unassignGrassCuttingDb } from "@/lib/DB/db-clients";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaAssign, schemaMarkYardCut } from "@/lib/zod/schemas";
 
@@ -38,9 +38,15 @@ export async function assignGrassCutting(clientId: number, assignedTo: string, c
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await assignGrassCuttingDb(validatedFields.data, (orgId || userId)!)
-        if (!result) throw new Error('Failed to update Client cut day');
-        return result;
+        if (assignedTo === 'not-assigned') {
+            const result = await unassignGrassCuttingDb(validatedFields.data.clientId, (orgId || userId)!)
+            if (!result) throw new Error('Failed to unassign grass cutting');
+            return result;
+        } else {
+            const result = await assignGrassCuttingDb(validatedFields.data, (orgId || userId)!)
+            if (!result) throw new Error('Failed to update Client cut day');
+            return result;
+        }
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         throw new Error(errorMessage);

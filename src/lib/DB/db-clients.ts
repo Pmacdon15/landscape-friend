@@ -649,6 +649,38 @@ RETURNING *;
 
 
 
+//MARK: Unassign grass cutting
+export async function unassignGrassCuttingDb(clientId: number, organization_id: string) {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+
+  const result = await sql`
+    UPDATE cutting_schedule
+    SET assigned_to = NULL
+    WHERE client_id = ${clientId} AND organization_id = ${organization_id}
+    RETURNING *;
+  `;
+
+  if (!result || result.length === 0) {
+    throw new Error('Unassignment Failed');
+  }
+
+  return result;
+}
+
+//MARK: Unassign snow clearing
+export async function unassignSnowClearingDb(clientId: number, organization_id: string) {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+
+  const result = await sql`
+    DELETE FROM snow_clearing_assignments
+    WHERE client_id = ${clientId} AND organization_id = ${organization_id}
+    RETURNING *;
+  `;
+
+  // Does not throw error if no rows are deleted, because that means it's already unassigned.
+  return result;
+}
+
 //MARK: Toggle snow client
 export async function assignSnowClearingDb(data: z.infer<typeof schemaAssign>, organization_id: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
