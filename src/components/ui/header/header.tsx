@@ -5,20 +5,14 @@ import { useGetNovuId } from '@/lib/hooks/useNovu';
 import { Inbox } from '@novu/nextjs';
 import Spinner from '../loaders/spinner';
 import Image from 'next/image';
-
+import NotificationInbox from '../inbox/inbox';
+// import { dark } from '@novu/react/themes';
 
 export default function Header({ children }: { children: React.ReactNode }) {
     const { user } = useUser();
     const { data: novuId, isPending } = useGetNovuId(user?.id);
 
-    const appearance = {
-        elements: {
-            notificationPrimaryAction__button: {
-                backgroundColor: '#138b10',
-                color: '#fff',
-            },
-        }
-    };
+
 
     return (
         <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
@@ -34,21 +28,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
                 </div>
                 {isPending && user && <Spinner variant='notification-menu' />}
                 {novuId && !isPending &&
-                    <Inbox
-                        applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
-                        subscriber={`${novuId.UserNovuId}`}
-                        renderSubject={(notification) => (
-                            <>
-                                <strong>{(notification.subject ?? 'No Subject')}</strong>
-                            </>
-                        )}
-                        renderAvatar={() => (
-                            <div className='w-8 h-8 rounded-full bg-[#138b10] flex items-center justify-center text-sm font-bold'>
-                                <Image src={'/logo.png'} alt={'Logo'} width={100} height={100} />
-                            </div>
-                        )}
-                        appearance={appearance}
-                    />
+                    <NotificationInbox userNovuId={novuId.UserNovuId} />
                 }
                 <SignedOut>
                     <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
