@@ -6,13 +6,13 @@ import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Suspense } from "react";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import SnowClientInput from "../inputs/snow-client-input";
-import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
 import { ClientListServiceProps } from "@/types/clients-types";
 import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
 import ClientListItemAddress from "./client-list-item-address";
+import AssignedTo from "../inputs/AssignedToSelect";
+import AssignedToFallback from "../fallbacks/assigned-to-fallback";
 
 export default async function ClientListService({
   clientsPromise,
@@ -45,12 +45,17 @@ export default async function ClientListService({
                   <MapComponent address={client.address} />
                 </ClientListItemAddress>
               </div>
+              {client.grass_assigned_to && <p>Assigned to: {client.grass_assigned_to}</p>}
               {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
-                  <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
-                  <Suspense fallback={<SnowClientInputFallback />}>
-                    <SnowClientInput client={client} orgMembersPromise={orgMembersPromise} />
+                  <PricePerUpdateInput client={client} />
+                  <PricePerUpdateInput client={client} snow={true} />
+                  <Suspense fallback={<AssignedToFallback />}>
+                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
+                  </Suspense>
+                  <Suspense fallback={<AssignedToFallback />}>
+                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} snow />
                   </Suspense>
                 </div>
               }

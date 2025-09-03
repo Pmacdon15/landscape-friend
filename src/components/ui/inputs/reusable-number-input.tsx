@@ -7,7 +7,7 @@ interface ReusableNumberInputProps {
 }
 
 export default function ReusableNumberInput({
-  className = "md:w-2/6 w-1/6 border rounded-sm  p-1",
+  className = " w-16 border rounded-sm  p-1",
   name,
   defaultValue,
   onChange,

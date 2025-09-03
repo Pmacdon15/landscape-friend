@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
-import { markYardServiced } from "@/lib/actions/cuts-action";
+import { markYardServiced,assignGrassCutting } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
 import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
@@ -113,6 +113,15 @@ export const useAssignSnowClearing = () => {
     return useMutation({
         mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
             return assignSnowClearing(clientId, assignedTo);
+        }
+    });
+};
+
+//MARK: Assign grass cutting
+export const useAssignGrassCutting = () => {
+    return useMutation({
+        mutationFn: ({ clientId, assignedTo, cuttingWeek, cuttingDay }: { clientId: number, assignedTo: string, cuttingWeek?: number | null, cuttingDay?: string | null }) => {
+            return assignGrassCutting(clientId, assignedTo, cuttingWeek ?? null, cuttingDay ?? null);
         }
     });
 };
@@ -245,7 +254,7 @@ export const useMarkInvoiceVoid = () => {
     });
 };
 
-//MARK: Accecpt quote
+//MARK: Accept quote
 export const useMarkQuote = () => {
     return useMutation({
         mutationFn: async ({ action, quoteId }: MarkQuoteProps) => {

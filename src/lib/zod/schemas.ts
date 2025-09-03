@@ -43,7 +43,7 @@ export const schemaMarkYardCut = z.object({
     date: z.date()
 })
 
-export const schemaAssignSnowClearing = z.object({
+export const schemaAssign = z.object({
     clientId: z.number(),
     assignedTo: z.string()
 })
