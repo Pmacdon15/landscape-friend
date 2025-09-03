@@ -91,7 +91,9 @@ CREATE TABLE cutting_schedule (
     cutting_week INT NOT NULL,
     cutting_day VARCHAR(10) NOT NULL,
     client_id INT NOT NULL,
+    assigned_to VARCHAR(100) NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE SET NULL,
     UNIQUE (client_id, cutting_week)
 );
 
@@ -99,26 +101,29 @@ CREATE TABLE yards_marked_cut (
     id SERIAL PRIMARY KEY,
     cutting_date DATE NOT NULL,
     client_id INT NOT NULL,
+    assigned_to VARCHAR(100) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     UNIQUE (client_id, cutting_date)
 );
--- //TODO MAke assigned to an fk
+
 CREATE TABLE yards_marked_clear (
     id SERIAL PRIMARY KEY,
     clearing_date DATE NOT NULL,
     client_id INT NOT NULL,
-    assigned_to VARCHAR(75) NOT NULL,
+    assigned_to VARCHAR(100) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE CASCADE,
     UNIQUE (client_id, clearing_date)
 );
 
 CREATE TABLE snow_clearing_assignments (
     id SERIAL PRIMARY KEY,
     client_id INT NOT NULL,
-    assigned_to VARCHAR(75) NOT NULL,
+    assigned_to VARCHAR(100) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE CASCADE,
     UNIQUE (client_id)
 );
 
