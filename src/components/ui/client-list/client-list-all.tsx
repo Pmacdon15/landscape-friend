@@ -53,6 +53,9 @@ export default async function ClientListService({
                   <Suspense fallback={<AssignedToFallback />}>
                     <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>
+                  <Suspense fallback={<AssignedToFallback />}>
+                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} snow />
+                  </Suspense>
                 </div>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />

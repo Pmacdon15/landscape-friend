@@ -5,7 +5,7 @@ import PricePerUpdateInput from "../client-list/price-per-update-input";
 import { Client } from "@/types/clients-types";
 import { OrgMember } from "@/types/clerk-types";
 
-export default function AssignedTo({ client, orgMembersPromise }: { client: Client, orgMembersPromise?: Promise<OrgMember[]> }) {
+export default function AssignedTo({ client, orgMembersPromise, snow = false }: { client: Client, orgMembersPromise?: Promise<OrgMember[]>, snow?: boolean }) {
 
   const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
@@ -14,7 +14,7 @@ export default function AssignedTo({ client, orgMembersPromise }: { client: Clie
 
   return (
     < div className="flex gap-2 justify-center mb-2">
-      <p className="align-middle ">Assigned to : </p>
+      <p className="align-middle ">Assigned to {snow ? "snow" : "grass"}: </p>
       <select
         className="rounded-sm border md:w-3/6  w-3/6 p-1"
         defaultValue={defaultValue}

@@ -102,11 +102,12 @@ CREATE TABLE yards_marked_cut (
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     UNIQUE (client_id, cutting_date)
 );
-
+-- //TODO MAke assigned to an fk
 CREATE TABLE yards_marked_clear (
     id SERIAL PRIMARY KEY,
     clearing_date DATE NOT NULL,
     client_id INT NOT NULL,
+    assigned_to VARCHAR(75) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     UNIQUE (client_id, clearing_date)
 );
