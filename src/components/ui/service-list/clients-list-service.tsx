@@ -18,6 +18,7 @@ export default async function ClientListService({ clientsPromise, page, serviceD
 
     const result = await clientsPromise;
 
+    if (!serviceDate) return <FormContainer> <FormHeader text={"Please select a date to see the client list"} /> </FormContainer>
     if (!result) return <FormContainer> <p className="text-red-500">Error Loading clients</p> </FormContainer>
     const { clients, totalPages } = result;
     if (clients.length < 1) return <FormContainer> <FormHeader text={"No clients scheduled for today"} /> </FormContainer>

@@ -19,7 +19,8 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
     const { page, searchTerm, serviceDate, searchTermIsServiced } = parseClientListParams(params);
 
     if (!isAdmin) redirect("/")
-    const clientsPromise = fetchCuttingClients(page, searchTerm, serviceDate, searchTermIsServiced);
+
+    const clientsPromise = serviceDate ? fetchCuttingClients(page, searchTerm, serviceDate, searchTermIsServiced) : Promise.resolve(null);
 
     return (
         <>
