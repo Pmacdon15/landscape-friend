@@ -22,7 +22,17 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
 
     const { page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
     // const searchTermAssignedTo = String(params.assigned_to ?? userId);
+    if (!serviceDate) return (
+        <FormContainer>
+            <FormHeader text={"Clearing List"} />
+            <Suspense fallback={<SearchFormFallBack variant="clearing" />}>
+                <SearchForm variant="clearing" />
+            </Suspense>
 
+            <FormHeader text={"No date query"} />
+        </FormContainer>
+    )
+    
     const clientsPromise = fetchSnowClearingClients(page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo);
 
     return (
