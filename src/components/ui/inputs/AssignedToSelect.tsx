@@ -1,5 +1,5 @@
 'use client'
-import { useAssignSnowClearing } from "@/lib/mutations/mutations";
+import { useAssignGrassCutting, useAssignSnowClearing } from "@/lib/mutations/mutations";
 import { use } from "react";
 import PricePerUpdateInput from "../client-list/price-per-update-input";
 import { Client } from "@/types/clients-types";
@@ -8,6 +8,11 @@ import { OrgMember } from "@/types/clerk-types";
 export default function AssignedTo({ client, orgMembersPromise, snow = false }: { client: Client, orgMembersPromise?: Promise<OrgMember[]>, snow?: boolean }) {
 
   const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
+  const { mutate: mutateAssignGrassCutting } = useAssignGrassCutting()
+
+  let mutate
+  { snow ? mutate = mutateAssignSnowClearing : mutate = mutateAssignGrassCutting }
+
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
 
   const defaultValue = client.assigned_to ? client.assigned_to.toString() : "not-assigned";
@@ -20,7 +25,7 @@ export default function AssignedTo({ client, orgMembersPromise, snow = false }: 
         defaultValue={defaultValue}
         onChange={(e) => {
           const selectedUserId = e.target.value;
-          mutateAssignSnowClearing({ clientId: client.id, assignedTo: selectedUserId });
+          mutate({ clientId: client.id, assignedTo: selectedUserId });
         }}
       >
         <option value="not-assigned">Not Assigned</option>

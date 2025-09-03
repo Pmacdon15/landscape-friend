@@ -22,7 +22,7 @@ export default function PricePerUpdateInput({ client, snow = false }: { client: 
                     />
                 </div>
                 :
-                <div className="flex" items-center justify-center>
+                <div className="flex items-center justify-center">
                     <p className="my-auto "> Price Per Cut: $ </p>                    
                     < ReusableNumberInput
                         name="updated_price_per_cut"
