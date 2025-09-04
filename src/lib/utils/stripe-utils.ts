@@ -1,7 +1,7 @@
 'use server'
 import Stripe from 'stripe';
-import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/db-clients';
-import { fetchStripAPIKeyDb, storeWebhookInfoDb, fetchWebhookIdDb, deleteWebhookIdDb } from '@/lib/DB/db-stripe';
+import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/clients-db';
+import { fetchStripAPIKeyDb, storeWebhookInfoDb, fetchWebhookIdDb, deleteWebhookIdDb } from '@/lib/DB/stripe-db';
 import { getStripeInstance } from '../dal/stripe-dal';
 
 let stripe: Stripe | null = null;

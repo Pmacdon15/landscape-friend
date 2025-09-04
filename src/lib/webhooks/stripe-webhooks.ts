@@ -1,7 +1,7 @@
 
 import { neon } from "@neondatabase/serverless";
 import Stripe from 'stripe';
-import { fetchClientIdByStripeCustomerId, markPaidDb } from "../DB/db-clients";
+import { fetchClientIdByStripeCustomerId, markPaidDb } from "../DB/clients-db";
 
 
 export async function handleInvoicePaid(invoicePaid: Stripe.Invoice, orgId: string) {

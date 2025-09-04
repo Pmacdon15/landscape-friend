@@ -1,5 +1,5 @@
 'use server'
-import { sendNewsLetterDb } from '@/lib/DB/db-resend';
+import { sendNewsLetterDb } from '@/lib/DB/resend-db';
 import { formatCompanyName, formatSenderEmailAddress, sendEmail } from '@/lib/utils/resend';
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaSendEmail } from '@/lib/zod/schemas';

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
-import { fetchWebhookSecretDb } from '@/lib/DB/db-stripe';
+import { fetchWebhookSecretDb } from '@/lib/DB/stripe-db';
 import { getStripeInstanceUnprotected } from '@/lib/utils/stripe-utils';
 import { handleInvoicePaid, handleInvoiceSent } from '@/lib/webhooks/stripe-webhooks';
 import { createInvoicePayload, triggerNotificationSendToAdmin } from '@/lib/utils/novu';

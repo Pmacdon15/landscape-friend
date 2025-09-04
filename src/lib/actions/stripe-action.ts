@@ -6,7 +6,7 @@ import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/utils/resend";
-import { updatedStripeAPIKeyDb } from "@/lib/DB/db-stripe";
+import { updatedStripeAPIKeyDb } from "@/lib/DB/stripe-db";
 import { MarkQuoteProps } from "@/types/stripe-types";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotification } from "../dal/novu-dal";
@@ -29,7 +29,7 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
 };
 
 import { createStripeWebhook } from "../utils/stripe-utils";
-import { markPaidDb } from "../DB/db-clients";
+import { markPaidDb } from "../DB/clients-db";
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {

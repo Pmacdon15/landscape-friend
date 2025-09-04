@@ -1,5 +1,5 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB } from "@/lib/DB/db-clients";
-import { fetchClientNamesAndEmailsDb } from "@/lib/DB/db-resend";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB } from "@/lib/DB/clients-db";
+import { fetchClientNamesAndEmailsDb } from "@/lib/DB/resend-db";
 import { processClientsResult } from "@/lib/utils/sort";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName } from "@/types/clients-types";

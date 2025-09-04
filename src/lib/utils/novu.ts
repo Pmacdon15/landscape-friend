@@ -1,6 +1,6 @@
 import { Novu } from '@novu/api';
 import { getOrgMembers } from './clerk';
-import { getNovuIds } from '../DB/db-clients';
+import { getNovuIds } from '../DB/clients-db';
 import { PayloadType } from '@/types/webhooks-types';
 
 
