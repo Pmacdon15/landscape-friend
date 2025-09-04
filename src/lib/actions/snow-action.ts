@@ -1,5 +1,5 @@
 'use server'
-import { assignSnowClearingDb, unassignSnowClearingDb } from "@/lib/DB/db-clients";
+import { assignSnowClearingDb, unassignSnowClearingDb } from "@/lib/DB/clients-db";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaAssignSnow } from "../zod/schemas";
 
