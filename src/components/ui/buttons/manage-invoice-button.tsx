@@ -2,6 +2,7 @@
 import { useResendInvoice, useMarkInvoicePaid, useMarkInvoiceVoid } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 import EllipsisSpinner from "../loaders/EllipsisSpinner";
+import { Ban, CreditCard, Send } from "lucide-react";
 
 export default function ManageInvoiceButton({
   invoiceId,
@@ -31,10 +32,10 @@ export default function ManageInvoiceButton({
         : isResendPending;
 
   const buttonText =
-    variant === "paid" ? "Mark Paid"
-      : variant === "void" ? "Mark Void"
-        : variant === "send" ? "Send"
-          : "Resend";
+    variant === "paid" ? <><CreditCard />Mark Paid</>
+      : variant === "void" ? <><Ban />Mark Void</>
+        : variant === "send" ? <><Send />Send</>
+          : <><Send />Resend</>;
 
   return (
     <Button
