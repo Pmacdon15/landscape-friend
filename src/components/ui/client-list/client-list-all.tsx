@@ -75,9 +75,9 @@ export default async function ClientListService({
                 </div>
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <ImageList isAdmin={isAdmin} client={client} />
-              <ListServices client={client} />
               <ViewSitePhotoSheet />
+              <ImageList isAdmin={isAdmin} client={client} />
+              {/* <ListServices client={client} /> */}              
             </li>
           </FormContainer>
         ))}
