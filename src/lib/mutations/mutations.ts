@@ -9,6 +9,7 @@ import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
 import { MarkQuoteProps } from "@/types/stripe-types";
 import { schemaCreateQuote, schemaUpdateStatement } from '@/lib/zod/schemas';
 import { z } from 'zod';
+import { createSubscriptionAction } from '@/lib/actions/stripe-subscription-action';
 //MARK: Add client
 export const useAddClient = () => {
     return useMutation({
@@ -184,6 +185,22 @@ export const useCreateStripeQuote = () => {
                 throw new Error("Failed to create Stripe quote");
             }
             return result;
+        },
+    });
+};
+
+//MARK:Create stripe subscription
+export const useCreateStripeSubscription = () => {
+    return useMutation({
+        mutationFn: async (formData: FormData) => {
+            const result = await createSubscriptionAction(formData);
+            if (!result.success) {
+                throw new Error("Failed to create Stripe subscription");
+            }
+            return result;
+        },
+        onSuccess: () => {
+            revalidatePathAction("/billing/manage/subscriptions"); // Assuming a subscriptions management page
         },
     });
 };

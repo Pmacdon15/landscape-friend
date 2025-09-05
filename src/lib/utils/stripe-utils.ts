@@ -150,3 +150,22 @@ export const createNotificationPayloadInvoice = async (invoice: Stripe.Response<
         name: clientName,
     },
 });
+
+
+export async function getStripeCustomerByEmail(email: string): Promise<Stripe.Customer | null> {
+    const stripe = await getStripeInstance();
+    const customers = await stripe.customers.list({ email: email, limit: 1 });
+    return customers.data.length > 0 ? customers.data[0] : null;
+}
+
+export async function createStripeCustomer(customerData: {
+    email: string;
+    name?: string;
+    address?: { line1: string };
+    phone?: string;
+    metadata?: { [key: string]: string };
+}): Promise<Stripe.Customer> {
+    const stripe = await getStripeInstance();
+    const customer = await stripe.customers.create(customerData);
+    return customer;
+}

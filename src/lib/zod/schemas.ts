@@ -126,3 +126,18 @@ export const schemaUpdateStatement = z.object({
     quantity: z.number(),
   }))
 });
+
+export const schemaCreateSubscription = z.object({
+    clientName: z.string().min(1, "Client name is required"),
+    clientEmail: z.email("Invalid email address"),
+    phone_number: z.string().min(1, "Phone number is required"),
+    address: z.string().min(1, "Address is required"),
+    serviceType: z.enum(["weekly", "bi-weekly", "monthly"], {
+        message: "Please select a valid service type",
+    }),
+    price_per_month_grass: z.number().min(0.01, "Price per month must be a positive number"),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().optional(), // Added endDate
+    notes: z.string().optional(),
+    organization_id: z.string(),
+});
