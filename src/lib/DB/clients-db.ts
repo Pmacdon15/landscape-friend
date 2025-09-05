@@ -617,21 +617,21 @@ cws.id,
 }
 
 //MARK: Mark yard cut
-export async function markYardServicedDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string, snow: boolean) {
+export async function markYardServicedDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string, snow: boolean, userId: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
 
   const query = snow
     ? sql`
-        INSERT INTO yards_marked_clear(client_id, clearing_date)
-        SELECT ${data.clientId}, ${data.date}
+        INSERT INTO yards_marked_clear(client_id, clearing_date, assigned_to)
+        SELECT ${data.clientId}, ${data.date}, ${userId}
         FROM clients
         WHERE id = ${data.clientId} AND organization_id = ${organization_id}
         ON CONFLICT(client_id, clearing_date) DO NOTHING
 RETURNING *;
 `
     : sql`
-        INSERT INTO yards_marked_cut(client_id, cutting_date)
-        SELECT ${data.clientId}, ${data.date}
+        INSERT INTO yards_marked_cut(client_id, cutting_date, assigned_to)
+        SELECT ${data.clientId}, ${data.date}, ${userId}
         FROM clients
         WHERE id = ${data.clientId} AND organization_id = ${organization_id}
         ON CONFLICT(client_id, cutting_date) DO NOTHING

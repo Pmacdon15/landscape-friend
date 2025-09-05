@@ -5,6 +5,8 @@ import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
 import { triggerNotificationSendToAdmin } from "../utils/novu";
 
+import { findOrCreateStripeCustomerAndLinkClient } from "../utils/stripe-utils";
+
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
     const organizationId = orgId || userId;
@@ -30,8 +32,14 @@ export async function addClient(formData: FormData) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await addClientDB(validatedFields.data, organizationId)
-        if (!result) throw new Error('Failed to add Client');
+        const customerId = await findOrCreateStripeCustomerAndLinkClient(
+            validatedFields.data.full_name,
+            validatedFields.data.email_address,
+            validatedFields.data.phone_number.toString(),
+            validatedFields.data.address,
+            organizationId
+        );
+
         triggerNotificationSendToAdmin(organizationId, 'client-added', {
             client: {
                 name: validatedFields.data.full_name,
@@ -39,7 +47,7 @@ export async function addClient(formData: FormData) {
             }
         })
 
-        return result;
+        return { success: true, customerId };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         throw new Error(errorMessage);

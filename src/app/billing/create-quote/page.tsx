@@ -8,8 +8,7 @@ export default async function SendQuotePage() {
   const { orgId, userId } = await isOrgAdmin();
   const organizationId = orgId || userId;
 
-  if (!organizationId) {
-    // Handle case where organizationId is not available
+  if (!organizationId) {    
     return <FormContainer><FormHeader text={'Error: Organization ID not found.'} /></FormContainer>;
   }
 
