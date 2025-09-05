@@ -13,7 +13,6 @@ import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
 import ClientListItemAddress from "./client-list-item-address";
 import AssignedTo from "../inputs/AssignedToSelect";
 import AssignedToFallback from "../fallbacks/assigned-to-fallback";
-import ListServices from "../list-services/list-services";
 import { ViewSitePhotoSheet } from "../sheet/view-site-phots-sheet";
 
 export default async function ClientListService({

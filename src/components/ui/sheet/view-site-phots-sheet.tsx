@@ -1,4 +1,3 @@
-import { Label } from "../label"
 import {
     Sheet,
     SheetClose,
@@ -10,7 +9,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "../button"
-import { Input } from "../input"
+
 
 
 export function ViewSitePhotoSheet() {
