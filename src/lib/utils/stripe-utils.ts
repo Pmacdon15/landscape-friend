@@ -218,7 +218,7 @@ export async function createStripeSubscription(subscriptionData: z.infer<typeof 
     const subscription = await stripe.subscriptions.create({
         customer: customerId,
         items: [{ price: price.id }],
-        collection_method: 'charge_automatically',
+        collection_method: 'send_invoice',
         days_until_due: 7, // Example: invoice 7 days before renewal
         metadata: {
             organization_id: organization_id,

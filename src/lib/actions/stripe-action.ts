@@ -503,7 +503,7 @@ export async function createSubscriptionAction(formData: FormData) {
 
     try {
         const subscription = await createStripeSubscription(parsed.data);
-        return { success: true, subscription };
+        return { success: true, subscription: { id: subscription.id, status: subscription.status } };
     } catch (error) {
         console.error("Error creating subscription:", error);
         throw new Error("Failed to create subscription");
