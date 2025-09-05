@@ -1,7 +1,7 @@
 'use server'
-import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/utils/stripe-utils";
+import { createNotificationPayloadInvoice, createNotificationPayloadQuote, createStripeSubscription, findOrCreateStripeCustomerAndLinkClient } from "@/lib/utils/stripe-utils";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
+import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement, schemaCreateSubscription } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
@@ -30,6 +30,7 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
 
 import { createStripeWebhook } from "../utils/stripe-utils";
 import { markPaidDb } from "../DB/clients-db";
+import { auth } from "@clerk/nextjs/server";
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
@@ -432,7 +433,7 @@ async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
     return { updatedQuote, clientName };
 }
 
-
+//MARK: Mark quote
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     const { isAdmin, userId, orgId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
@@ -467,7 +468,44 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     }
 }
 
-
+//MARK: Has stripe api key
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();
+}
+
+
+//Mark:Create Subscription
+export async function createSubscriptionAction(formData: FormData) {
+    const { orgId, userId } = await auth.protect();
+    const organizationId = orgId || userId;
+
+    if (!organizationId) {
+        throw new Error("Unauthorized");
+    }
+
+    const parsed = schemaCreateSubscription.safeParse({
+        clientName: formData.get('clientName'),
+        clientEmail: formData.get('clientEmail'),
+        phone_number: formData.get('phone_number'),
+        address: formData.get('address'),
+        serviceType: formData.get('serviceType'),
+        price_per_month_grass: parseFloat(formData.get('price_per_month_grass') as string),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate') || undefined,
+        notes: formData.get('notes') || undefined,
+        organization_id: organizationId,
+    });
+
+    if (!parsed.success) {
+        console.error("Validation Error:", parsed.error);
+        throw new Error("Invalid form data");
+    }
+
+    try {
+        const subscription = await createStripeSubscription(parsed.data);
+        return { success: true, subscription };
+    } catch (error) {
+        console.error("Error creating subscription:", error);
+        throw new Error("Failed to create subscription");
+    }
 }

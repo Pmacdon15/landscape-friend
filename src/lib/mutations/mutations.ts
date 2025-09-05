@@ -2,14 +2,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePerMonth, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
 import { markYardServiced,assignGrassCutting } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
+import { createStripeQuote, createSubscriptionAction, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
 import { assignSnowClearing } from "@/lib/actions/snow-action";
 import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
 import { MarkQuoteProps } from "@/types/stripe-types";
 import { schemaCreateQuote, schemaUpdateStatement } from '@/lib/zod/schemas';
 import { z } from 'zod';
-import { createSubscriptionAction } from '@/lib/actions/stripe-subscription-action';
+
 //MARK: Add client
 export const useAddClient = () => {
     return useMutation({
