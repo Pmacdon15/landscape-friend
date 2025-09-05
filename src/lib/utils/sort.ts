@@ -18,7 +18,7 @@ export function processClientsResult(clientsResult: ClientResult[], totalCount: 
         email_address: current.email_address,
         address: current.address,
         amount_owing: current.amount_owing,
-        price_per_cut: current.price_per_cut,
+        price_per_month_grass: current.price_per_month_grass,
         price_per_month_snow: current.price_per_month_snow,
         cutting_week: current.cutting_week,
         cutting_day: current.cutting_day,

@@ -1,4 +1,4 @@
-import { schemaAddClient, schemaAssign, schemaAssignSnow, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaUpdateCuttingDay, schemaUpdatePricePerCut } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaAssign, schemaAssignSnow, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaUpdateCuttingDay, schemaUpdatePricePerMonth } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { Account, Client, CustomerName } from "@/types/clients-types";
@@ -159,14 +159,14 @@ export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>,
 }
 
 //MARK: Update price per cut
-export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePricePerCut>, orgId: string) {
+export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePricePerMonth>, orgId: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   let setClause;
   if (data.snow) {
-    setClause = sql`price_per_month_snow = ${data.pricePerCut} `;
+    setClause = sql`price_per_month_snow = ${data.pricePerMonthSnow} `;
   } else {
-    setClause = sql`price_per_cut = ${data.pricePerCut} `;
+    setClause = sql`price_per_month_grass = ${data.pricePerMonthGrass} `;
   }
 
   const result = await sql`
@@ -455,7 +455,7 @@ cws.id,
   cws.email_address,
   cws.address,
   cws.amount_owing,
-  cws.price_per_cut,
+  cws.price_per_month_grass,
   cws.price_per_month_snow,
   cws.cutting_week,
   cws.cutting_day,
@@ -552,7 +552,7 @@ cws.id,
   cws.email_address,
   cws.address,
   cws.amount_owing,
-  cws.price_per_cut,
+  cws.price_per_month_grass,
   cws.price_per_month_snow,
   cws.cutting_week,
   cws.cutting_day,

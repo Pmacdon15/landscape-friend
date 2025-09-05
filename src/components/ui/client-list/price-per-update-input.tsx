@@ -17,17 +17,17 @@ export default function PricePerUpdateInput({ client, snow = false }: { client: 
                     <ReusableNumberInput
                         name="updated_price_per_month_snow"
                         defaultValue={client.price_per_month_snow}
-                        onChange={(value) => debouncedMutate({ clientId: client.id, pricePerCut: value, snow })}
+                        onChange={(value) => debouncedMutate({ clientId: client.id, pricePerMonthGrass: value, snow })}
                         disabled={isPending}
                     />
                 </div>
                 :
                 <div className="flex items-center justify-center">
-                    <p className="my-auto "> Price Per Cut: $ </p>                    
+                    <p className="my-auto "> Price Per Month: $ </p>                    
                     < ReusableNumberInput
-                        name="updated_price_per_cut"
-                        defaultValue={client.price_per_cut || 51.5}
-                        onChange={(value) => debouncedMutate({ clientId: client.id, pricePerCut: value, snow })}
+                        name="updated_price_per_month_grass"
+                        defaultValue={client.price_per_month_grass || 51.5}
+                        onChange={(value) => debouncedMutate({ clientId: client.id, pricePerMonthGrass: value, snow })}
                         disabled={isPending}
                     />
                 </div>

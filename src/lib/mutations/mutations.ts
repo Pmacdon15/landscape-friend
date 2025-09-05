@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
+import { addClient, deleteClient, updateClientPricePerMonth, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
 import { markYardServiced,assignGrassCutting } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
 import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
@@ -86,8 +86,8 @@ export const useUploadDrawing = () => {
 //MARK:Update client price per cut
 export const useUpdateClientPricePer = () => {
     return useMutation({
-        mutationFn: ({ clientId, pricePerCut, snow = false }: { clientId: number, pricePerCut: number, snow: boolean }) => {
-            return updateClientPricePer(clientId, pricePerCut, snow);
+        mutationFn: ({ clientId, pricePerMonthGrass, snow = false }: { clientId: number, pricePerMonthGrass: number, snow: boolean }) => {
+            return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow);
         },
         onError: (error) => {
             console.error('Mutation error:', error);

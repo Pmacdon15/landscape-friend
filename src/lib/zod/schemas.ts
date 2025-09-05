@@ -9,9 +9,10 @@ export const schemaAddClient = z.object({
     organization_id: z.string(),
 })
 
-export const schemaUpdatePricePerCut = z.object({
+export const schemaUpdatePricePerMonth = z.object({
     clientId: z.number(),
-    pricePerCut: z.number(),
+    pricePerMonthGrass: z.number().optional(),
+    pricePerMonthSnow: z.number().optional(),
     snow: z.boolean()
 })
 
