@@ -494,6 +494,7 @@ export async function createSubscriptionAction(formData: FormData) {
         endDate: formData.get('endDate') || undefined,
         notes: formData.get('notes') || undefined,
         organization_id: organizationId,
+        collectionMethod: formData.get('collectionMethod') || undefined, // Add this line
     });
 
     if (!parsed.success) {

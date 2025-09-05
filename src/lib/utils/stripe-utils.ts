@@ -175,7 +175,7 @@ export async function createStripeCustomer(customerData: {
 
 
 export async function createStripeSubscription(subscriptionData: z.infer<typeof schemaCreateSubscription>) {
-    const { clientEmail, clientName, address, phone_number, price_per_month_grass, serviceType, startDate, endDate, organization_id } = subscriptionData;
+    const { clientEmail, clientName, address, phone_number, price_per_month_grass, serviceType, startDate, endDate, organization_id, collectionMethod } = subscriptionData;
 
     stripe = await getStripeInstanceUnprotected(organization_id)
     if(!Stripe) throw new Error("No Stripe Intinastance ")
@@ -215,11 +215,10 @@ export async function createStripeSubscription(subscriptionData: z.infer<typeof 
     });
 
     // 3. Create the Stripe Subscription
-    const subscription = await stripe.subscriptions.create({
+    const subscriptionParams: Stripe.SubscriptionCreateParams = {
         customer: customerId,
         items: [{ price: price.id }],
-        collection_method: 'send_invoice',
-        days_until_due: 7, // Example: invoice 7 days before renewal
+        collection_method: collectionMethod, // Use the new collectionMethod
         metadata: {
             organization_id: organization_id,
             clientEmail: clientEmail,
@@ -227,7 +226,14 @@ export async function createStripeSubscription(subscriptionData: z.infer<typeof 
             startDate: startDate,
             endDate: endDate || '' // Store endDate if available
         },
-    });
+    };
+
+    if (collectionMethod === 'send_invoice') {
+        subscriptionParams.days_until_due = 7; // Set days_until_due if sending invoice
+    }
+
+    const subscription = await stripe.subscriptions.create(subscriptionParams);
+    console.log("subscription: ", subscription)
 
     // TODO: Save subscription details to your local database if needed
 

@@ -140,4 +140,5 @@ export const schemaCreateSubscription = z.object({
     endDate: z.string().optional(), // Added endDate
     notes: z.string().optional(),
     organization_id: z.string(),
+    collectionMethod: z.enum(["charge_automatically", "send_invoice"]).default("charge_automatically"), // New field
 });

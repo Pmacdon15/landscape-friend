@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { fetchClientIdByStripeCustomerId, markPaidDb } from "../DB/clients-db";
 
 
+
 export async function handleInvoicePaid(invoicePaid: Stripe.Invoice, orgId: string) {
   console.log('Payment received for invoice:', invoicePaid.id);
 
