@@ -159,9 +159,9 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                             <li>
                                 <NavigationMenuLink asChild>
                                     <Link href="/settings/stripe-api-key">
-                                        <div className="font-medium">Set Stripe API key</div>
+                                        <div className="font-medium">Manage Settings</div>
                                         <div className="text-muted-foreground">
-                                            Enable invoicing by managing your stripe API key.
+                                            Manage settings such as your stripe API key.
                                         </div>
                                     </Link>
                                 </NavigationMenuLink>

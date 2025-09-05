@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useGetIsAdmin } from "@/lib/hooks/useClerk";
 import { useHasStripeApiKey } from "@/lib/hooks/useStripe";
 import { ChevronDownIcon } from "lucide-react";
-import Image
-    from "next/image";
-import HeaderTitle from "../header/header-title";
+import SheetLogoHeader from "../header/sheet-logo-header";
+
 const CollapsibleSection = ({ title, children }: { title: string, children: React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
@@ -25,17 +24,14 @@ export default function VerticalNav({ userId }: { userId: string }) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const today = `${year}-${month}-${day}`    
+    const today = `${year}-${month}-${day}`
 
     const { data: isAdmin } = useGetIsAdmin();
     const { data: hasStripAPIKey } = useHasStripeApiKey();
 
     return (
         <nav className="flex flex-col gap-2 w-full">
-            <div className="flex flex-col justify-center items-center md:p-4 w-full">
-                <Image src="/logo.png" alt="Lawn Buddy Logo" width={100} height={100} />
-                <HeaderTitle text='Landscape Friend' />
-            </div>
+            <SheetLogoHeader />
             <CollapsibleSection title="List">
                 <Link href="/lists/client" className="p-2 hover:bg-accent rounded-md">Client List</Link>
                 <Link href={{ pathname: '/lists/cutting', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Cutting List</Link>
@@ -60,7 +56,7 @@ export default function VerticalNav({ userId }: { userId: string }) {
             </CollapsibleSection>
 
             <CollapsibleSection title="Settings">
-                <Link href="/settings/stripe-api-key" className="p-2 hover:bg-accent rounded-md">Set Stripe API key</Link>
+                <Link href="/settings" className="p-2 hover:bg-accent rounded-md">Manage settings</Link>
             </CollapsibleSection>
         </nav>
     )

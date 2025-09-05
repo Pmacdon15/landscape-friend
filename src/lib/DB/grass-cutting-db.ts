@@ -21,3 +21,28 @@ export async function assignGrassCuttingDb(data: z.infer<typeof schemaAssign>, o
 
     return result;
 }
+
+export async function getYardsCutLastMonth(organization_id: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const result = await sql`
+        SELECT
+            c.id as client_id,
+            c.stripe_customer_id,
+            c.price_per_cut,
+            COUNT(ymc.id) as cut_count
+        FROM
+            clients c
+        JOIN
+            yards_marked_cut ymc ON c.id = ymc.client_id
+        WHERE
+            c.organization_id = ${organization_id} AND
+            ymc.cutting_date >= ${thirtyDaysAgo.toISOString().split('T')[0]}
+        GROUP BY
+            c.id, c.stripe_customer_id, c.price_per_cut;
+    `;
+
+    return result;
+}

@@ -16,7 +16,7 @@ export async function markYardServiced(clientId: number, date: Date, snow = fals
     if (!validatedFields.success) throw new Error("Invalid input data");
 
     try {
-        const result = await markYardServicedDb(validatedFields.data, (orgId || userId)!, snow)
+        const result = await markYardServicedDb(validatedFields.data, orgId || userId!, snow, userId!)
         if (!result) throw new Error('Failed to update Client cut day');
         return result;
     } catch (e: unknown) {

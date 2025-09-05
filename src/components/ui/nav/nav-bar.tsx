@@ -1,9 +1,9 @@
 'use client'
-import * as React from "react"
+// import * as React from "react"
 import { Button } from "../button"
 import { Suspense } from "react"
 import { Menu } from "lucide-react"
-import NavigationMenuComponent from "./nav-menu-component"
+// import NavigationMenuComponent from "./nav-menu-component"
 import VerticalNav from "./vertical-nav"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 export function NavBar({ userId }: { userId: string }) {
     return (
         <>
-            <div className="lg:hidden">
+            <div >
                 <Sheet>
                     <SheetTrigger asChild>
                         <Button variant="outline" className="p-2 w-9">
@@ -24,8 +24,8 @@ export function NavBar({ userId }: { userId: string }) {
                     </SheetContent>
                 </Sheet>
             </div>
-
-            <div className="hidden lg:flex lg:flex-row lg:justify-start"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div>
+            {/* //TODO fix the desktop nac bar to not be behind the images */}
+            {/* <div className="hidden lg:flex lg:flex-row lg:justify-start"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div> */}
         </>
     )
 }

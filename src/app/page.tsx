@@ -10,14 +10,14 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible">
+      <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible z-10">
         <div className="flex justify-right items-right logo-slide-in">
           <Image
             width={800}
             height={800}
             src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png"
             alt="Landscape Friend Logo"
-            className="w-64 h-auto mx-auto mb-4 z-[-50] "
+            className="w-64 h-auto mx-auto mb-4 "
           />
         </div>
 

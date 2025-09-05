@@ -1,4 +1,3 @@
-'use server'
 import Stripe from 'stripe';
 import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/clients-db';
 import { fetchStripAPIKeyDb, storeWebhookInfoDb, fetchWebhookIdDb, deleteWebhookIdDb } from '@/lib/DB/stripe-db';

@@ -12,6 +12,14 @@ export async function getOrganizationSettings(organization_id: string): Promise<
   return null;
 }
 
+export async function getAllOrganizations() {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const result = await sql`
+        SELECT organization_id FROM organizations;
+    `;
+    return result;
+}
+
 export async function handleOrganizationDeletedDb(orgId: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
   return await sql`

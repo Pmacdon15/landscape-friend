@@ -9,7 +9,7 @@ let stripe: Stripe | null = null;
 
 export async function getStripeInstance(): Promise<Stripe> {
 
-    const apiKeyResponse = await fetchStripAPIKey();
+    const apiKeyResponse = await fetchStripeAPIKey();
     if (apiKeyResponse instanceof Error) {
         throw new Error('Stripe secret key not configured.');
     }
@@ -23,7 +23,7 @@ export async function getStripeInstance(): Promise<Stripe> {
     return stripe;
 }
 
-export async function fetchStripAPIKey(): Promise<APIKey | Error> {
+export async function fetchStripeAPIKey(): Promise<APIKey | Error> {
     const { orgId, userId } = await auth.protect();
     try {
         const result = await fetchStripAPIKeyDb(orgId || userId);
