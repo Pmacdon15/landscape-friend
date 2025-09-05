@@ -33,19 +33,23 @@ const addMonthlyPayment = inngest.createFunction(
                         auto_advance: false, // Create a draft invoice
                     });
 
-                    // Create an invoice item and attach it to the invoice
-                    await stripe.invoiceItems.create({
-                        customer: client.stripe_customer_id,
-                        invoice: invoice.id,
-                        amount: amount,
-                        currency: 'cad',
-                        description: `Lawn mowing service (${client.cut_count} cuts)`,
-                    });
+                    if (invoice.id) {
+                        // Create an invoice item and attach it to the invoice
+                        await stripe.invoiceItems.create({
+                            customer: client.stripe_customer_id,
+                            invoice: invoice.id,
+                            amount: amount,
+                            currency: 'cad',
+                            description: `Lawn mowing service (${client.cut_count} cuts)`,
+                        });
 
-                    // Finalize the invoice
-                    await stripe.invoices.finalizeInvoice(invoice.id, {
-                        auto_advance: true
-                    });
+                        // Finalize the invoice
+                        await stripe.invoices.finalizeInvoice(invoice.id, {
+                            auto_advance: true
+                        });
+                    } else {
+                        console.error(`Failed to create invoice for client ${client.client_id}.`);
+                    }
 
                 } catch (error) {
                     console.error(`Error creating invoice for client ${client.client_id}:`, error);
