@@ -13,7 +13,7 @@ export default function ManageQuoteButton({
 }: MarkQuoteProps) {
   const { mutate, isPending } = useMarkQuote();
 
-  const buttonText = action === "accept" ? <><Check />Mark as Accepted</> : action === "send" ? <><Send />Send</> : <><Ban />Mark Cancel</>
+  const buttonText = action === "accept" ? <><Check />Mark Accepted</> : action === "send" ? <><Send />Send</> : <><Ban />Mark Canceled</>
 
   if (action === "edit") return <EditQuoteLink quoteId={quoteId} />
   return (

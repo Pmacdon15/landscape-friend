@@ -17,7 +17,7 @@ export default function Home() {
             height={800}
             src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png"
             alt="Landscape Friend Logo"
-            className="w-64 h-auto mx-auto mb-4 z-[-50] "
+            className="w-64 h-auto mx-auto mb-4 z-[-9999] "
           />
         </div>
 
