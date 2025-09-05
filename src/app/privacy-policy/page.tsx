@@ -68,7 +68,7 @@ export default function PrivacyPolicy() {
                 <TosSection
                     title="8. Contact"
                     text2={'If you have any questions or concerns about this Privacy Policy, please contact us at'}
-                    email="pmacdonald15@gmail.com"
+                    email="support@landscapefriend.com"
                 />
             </ContentContainer>
             <Link href={'/'}><Button variant={"outline"}>Go Home</Button></Link>

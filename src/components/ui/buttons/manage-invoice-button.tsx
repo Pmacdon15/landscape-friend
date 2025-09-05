@@ -1,12 +1,13 @@
 'use client'
 import { useResendInvoice, useMarkInvoicePaid, useMarkInvoiceVoid } from "@/lib/mutations/mutations";
 import { Button } from "../button";
+import EllipsisSpinner from "../loaders/EllipsisSpinner";
 
 export default function ManageInvoiceButton({
   invoiceId,
   variant,
 }: {
-  invoiceId: string;
+  invoiceId?: string;
   variant: "send" | "resend" | "paid" | "void";
 }) {
   const { mutate: resendMutate, isPending: isResendPending } = useResendInvoice();
@@ -14,6 +15,7 @@ export default function ManageInvoiceButton({
   const { mutate: voidMutate, isPending: isVoidPending } = useMarkInvoiceVoid();
 
   const handleClick = () => {
+    if (!invoiceId) return
     if (variant === "resend" || variant === "send") {
       resendMutate(invoiceId);
     } else if (variant === "paid") {
@@ -23,16 +25,16 @@ export default function ManageInvoiceButton({
     }
   };
 
-  const isPending = 
-    variant === "paid" ? isPaidPending 
-    : variant === "void" ? isVoidPending 
-    : isResendPending;
+  const isPending =
+    variant === "paid" ? isPaidPending
+      : variant === "void" ? isVoidPending
+        : isResendPending;
 
-  const buttonText = 
-    variant === "paid" ? "Mark Paid" 
-    : variant === "void" ? "Mark Void" 
-    : variant === "send" ? "Send" 
-    : "Resend";
+  const buttonText =
+    variant === "paid" ? "Mark Paid"
+      : variant === "void" ? "Mark Void"
+        : variant === "send" ? "Send"
+          : "Resend";
 
   return (
     <Button
@@ -40,7 +42,7 @@ export default function ManageInvoiceButton({
       disabled={isPending}
       onClick={handleClick}
     >
-      {buttonText}
+      {buttonText} {isPending && <EllipsisSpinner />}
     </Button>
   );
 }

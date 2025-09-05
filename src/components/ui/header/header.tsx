@@ -2,8 +2,9 @@
 import { OrganizationSwitcher, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import { NavBar } from '../nav/nav-bar';
 import { useGetNovuId } from '@/lib/hooks/useNovu';
-import { Inbox } from '@novu/nextjs';
-import Spinner from '../spinner';
+import Spinner from '../loaders/spinner';
+import NotificationInbox from '../inbox/inbox';
+// import { dark } from '@novu/react/themes';
 
 export default function Header({ children }: { children: React.ReactNode }) {
     const { user } = useUser();
@@ -21,12 +22,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
                     </SignedIn>
                 </div>
                 {isPending && user && <Spinner variant='notification-menu' />}
-                {novuId && !isPending &&
-                    <Inbox
-                        applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
-                        subscriber={`${novuId.UserNovuId}`}
-                    />
-                }
+                {novuId && !isPending && <NotificationInbox userNovuId={novuId.UserNovuId} />}
                 <SignedOut>
                     <div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
                         <SignInButton />

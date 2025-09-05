@@ -43,15 +43,19 @@ export const schemaMarkYardCut = z.object({
     date: z.date()
 })
 
-export const schemaAssignSnowClearing = z.object({
+export const schemaAssign = z.object({
+    clientId: z.number(),
+    assignedTo: z.string(),
+    cuttingWeek: z.number().nullable(),
+    cuttingDay: z.string().nullable()
+})
+
+export const schemaAssignSnow = z.object({
     clientId: z.number(),
     assignedTo: z.string()
 })
 
 
-export const schemaToggleSnowClient = z.object({
-    clientId: z.number()
-})
 
 export const schemaUpdateAPI = z.object({
     APIKey: z.string()
@@ -59,13 +63,13 @@ export const schemaUpdateAPI = z.object({
 
 export const materialSchema = z.object({
     materialType: z.string().optional().or(z.literal('')),
-    materialCostPerUnit: z.number().optional().default(0),
-    materialUnits: z.number().optional().default(0),
+    materialCostPerUnit: z.number(),
+    materialUnits: z.number(),
 });
 
 export const schemaCreateQuote = z.object({
     clientName: z.string(),
-    clientEmail: z.string(),
+    clientEmail: z.email(),
     phone_number: z.string(),
     address: z.string(),
     labourCostPerUnit: z.number(),
@@ -74,9 +78,21 @@ export const schemaCreateQuote = z.object({
     organization_id: z.string(),
 });
 
+export const lineItemSchema = z.object({
+    description: z.string(),
+    amount: z.coerce.number().min(0, "Amount must be a non-negative number"),
+    quantity: z.coerce.number().min(0, "Quantity must be a non-negative number"),
+});
+
+export const schemaUpdateInvoice = z.object({
+    invoiceId: z.string(),
+    lines: z.array(lineItemSchema),
+    organization_id: z.string().nullable().optional(),
+});
+
 export const AddClientSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email address"),
+    email: z.email("Invalid email address"),
     address: z.string().min(1, "Address is required"),
     notes: z.string().optional(),
     lat: z.number().optional(),
@@ -97,5 +113,15 @@ export const ImageSchema = z.object({
         .refine(
             (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
             "Only .jpg, .jpeg, .png and .webp formats are supported.",
-        ),
+),
+});
+
+
+export const schemaUpdateStatement = z.object({
+  id: z.string(),
+  lines: z.array(z.object({
+    description: z.string().optional(),
+    amount: z.number(),
+    quantity: z.number(),
+  }))
 });

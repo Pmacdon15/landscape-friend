@@ -45,7 +45,6 @@ CREATE TABLE clients (
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
     price_per_cut FLOAT NOT NULL DEFAULT 51.5,
     address VARCHAR(200) NOT NULL,
-    snow_client BOOLEAN NOT NULL DEFAULT false,
     price_per_month_snow FLOAT NOT NULL DEFAULT 100,
     stripe_customer_id VARCHAR(255) NULL
 );
@@ -55,6 +54,7 @@ CREATE TABLE stripe_api_keys (
     api_key VARCHAR(253) NOT NULL,
     organization_id VARCHAR(253) UNIQUE NOT NULL,
     webhook_secret VARCHAR(253) NULL,
+    webhook_id VARCHAR(253) NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE
 );
 
@@ -88,17 +88,21 @@ CREATE TABLE charges (
 
 CREATE TABLE cutting_schedule (
     id SERIAL PRIMARY KEY,
-    cutting_week INT NOT NULL,
-    cutting_day VARCHAR(10) NOT NULL,
+    cutting_week INT NULL,
+    cutting_day VARCHAR(10) NULL,
     client_id INT NOT NULL,
+    assigned_to VARCHAR(100) NULL,
+    organization_id VARCHAR(100) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
-    UNIQUE (client_id, cutting_week)
+    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE SET NULL,
+    UNIQUE (client_id, cutting_week, organization_id)
 );
 
 CREATE TABLE yards_marked_cut (
     id SERIAL PRIMARY KEY,
     cutting_date DATE NOT NULL,
     client_id INT NOT NULL,
+    assigned_to VARCHAR(100) NOT NULL,
     image_url text NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     UNIQUE (client_id, cutting_date)
@@ -108,18 +112,21 @@ CREATE TABLE yards_marked_clear (
     id SERIAL PRIMARY KEY,
     clearing_date DATE NOT NULL,
     client_id INT NOT NULL,
+    assigned_to VARCHAR(100) NOT NULL,
     image_url text NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE CASCADE,
     UNIQUE (client_id, clearing_date)
 );
 
 CREATE TABLE snow_clearing_assignments (
     id SERIAL PRIMARY KEY,
     client_id INT NOT NULL,
-    assigned_to VARCHAR(75) NOT NULL,
+    assigned_to VARCHAR(100) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
+    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE CASCADE,
     UNIQUE (client_id)
 );
 
@@ -134,10 +141,12 @@ CREATE TABLE images (
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
+SELECT * FROM cutting_schedule;
+-- SELECT * FROM clients;
 -- SELECT * FROM cutting_schedule;
-SELECT * FROM clients;
+-- SELECT * FROM clients;
 -- SELECT * FROM users;
-
+-- SELECT * FROM organizations;
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');

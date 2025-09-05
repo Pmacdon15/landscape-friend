@@ -3,22 +3,18 @@ import { useState, useEffect, createContext, useContext, useRef, useCallback } f
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage, Messaging } from 'firebase/messaging';
 import { useUser } from '@clerk/clerk-react';
+import { registerNovuDevice } from '@/lib/actions/novu-action';
+import { FCMContextType } from '@/types/fcm-types';
 
-interface FCMContextType {
-    permissionStatus: NotificationPermission | 'not-supported';
-    fcmToken: string | null;
-    loading: boolean;
-    requestNotificationPermissionAndToken: () => Promise<void>;
-}
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAD_HJcKzLkrYtiBfUFt3a4xICRS3n1Wm0",
-    authDomain: "landscape-friend.firebaseapp.com",
-    projectId: "landscape-friend",
-    storageBucket: "landscape-friend.firebasestorage.app",
-    messagingSenderId: "373141664807",
-    appId: "1:373141664807:web:31bd61502ffd0447c98a02",
-    measurementId: "G-81G4YHH25C"
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 const VAPID_KEY = "BPFSqTStA7Mj1cwUo71zL-1oCgTz6ap4DGGRzEzFpHzA_MYIke8WhKiiHnwg0YBut0Yg3ruXouTNfOvWL3apin4";
@@ -34,19 +30,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
 
     const sendTokenToServer = useCallback(async (token: string, userId: string) => {
         try {
-            await fetch('/api/register-device', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: token, userId: userId }),
-            });
-
-            // if (response.ok) {
-            //     console.log('FCM Token successfully sent to API.');
-            // } else {
-            //     console.error('Failed to send FCM Token to API. Status:', response.status, 'Error:', await response.text());
-            // }
+            await registerNovuDevice(token, userId)
         } catch (error) {
             console.error('Error sending token to server:', error);
         }
@@ -92,10 +76,11 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
     }, [user?.id, sendTokenToServer]);
 
     useEffect(() => {
-        if (user?.id && permissionStatus !== 'granted' && permissionStatus !== 'not-supported') {
+        if (user?.id && permissionStatus === 'default') {
             requestNotificationPermissionAndToken();
         }
-    }, [user?.id, permissionStatus, requestNotificationPermissionAndToken]);
+    }, [user?.id, requestNotificationPermissionAndToken, permissionStatus]);
+
 
     useEffect(() => {
         console.log('FCMProvider useEffect triggered.');
@@ -130,7 +115,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
                                 // console.log('FCM Token retrieved on load:', currentToken);
                                 setFcmToken(currentToken);
                                 sendTokenToServer(currentToken, user.id);
-                            } 
+                            }
                             // else {
                             //     console.log('No FCM token available on load, despite granted permission.');
                             // }
@@ -153,7 +138,7 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, [user?.id, sendTokenToServer]);
+    }, [user?.id, sendTokenToServer, permissionStatus]);
 
     const contextValue = {
         permissionStatus,

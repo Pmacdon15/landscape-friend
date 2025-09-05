@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ImagePlusIcon } from "lucide-react";
-import { ImageListViewProps } from "@/types/types-site-map";
+import { ImageListViewProps } from "@/types/site-map-types";
 
 export default function ImageListView({ client, setView, previewSrc, setPreviewSrc }: ImageListViewProps) {
   return (

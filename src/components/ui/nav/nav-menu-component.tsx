@@ -6,7 +6,6 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { useMediaQuery } from "@/lib/hooks/hooks";
 import { useGetIsAdmin } from "@/lib/hooks/useClerk";
 import { useHasStripeApiKey } from "@/lib/hooks/useStripe";
 import Link from "next/link";
@@ -14,13 +13,15 @@ import Link from "next/link";
 
 export default function NavigationMenuComponent({ userId, }: { userId: string }) {
     const date = new Date();
-    const today = date.toISOString().split('T')[0]; // YYYY-MM-DD in UTC
-    const isMd = useMediaQuery("(min-width: 768px)");
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const today = `${year}-${month}-${day}`    
 
     const { data: isAdmin } = useGetIsAdmin();
     const { data: hasStripAPIKey } = useHasStripeApiKey();
     return (
-        <NavigationMenu viewport={!isMd}>
+        <NavigationMenu viewport={false}>
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>List</NavigationMenuTrigger>
@@ -69,14 +70,14 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                     <NavigationMenuContent>
                         <ul className="grid w-[300px] gap-4">
                             <li>
-                                {isAdmin && <NavigationMenuLink asChild>
+                                {/* {isAdmin && <NavigationMenuLink asChild>
                                     <Link href="/email/news-letter">
                                         <div className="font-medium">Send News Letter</div>
                                         <div className="text-muted-foreground">
                                             Send all clients an update email.
                                         </div>
                                     </Link>
-                                </NavigationMenuLink>}
+                                </NavigationMenuLink>} */}
                                 <NavigationMenuLink asChild>
                                     <Link href="/email/individual">
                                         <div className="font-medium">Send Individual</div>
@@ -97,8 +98,8 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                                 <ul className="grid w-[300px] gap-4">
                                     <li>
                                         <NavigationMenuLink asChild>
-                                            <Link href="/billing/send-quote">
-                                                <div className="font-medium">Send a Quote</div>
+                                            <Link href="/billing/create-quote">
+                                                <div className="font-medium">Create a Quote</div>
                                                 <div className="text-muted-foreground">
                                                     Send an Quote as an Email.
                                                 </div>
@@ -126,6 +127,31 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                         </NavigationMenuItem>
                     </>
                 }
+                <NavigationMenuItem>
+                    <NavigationMenuTrigger>Documentation</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                        <ul className="grid w-[300px] gap-4">
+                            <li>                                
+                                <NavigationMenuLink asChild>
+                                    <Link href="/documentation/plans">
+                                        <div className="font-medium">Plans</div>
+                                        <div className="text-muted-foreground">
+                                         View Information about our Plans.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                                <NavigationMenuLink asChild>
+                                    <Link href="/documentation/stripe">
+                                        <div className="font-medium">Stripe</div>
+                                        <div className="text-muted-foreground">
+                                            View information about how to configure stripe for our service.
+                                        </div>
+                                    </Link>
+                                </NavigationMenuLink>
+                            </li>
+                        </ul>
+                    </NavigationMenuContent>
+                </NavigationMenuItem>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Settings</NavigationMenuTrigger>
                     <NavigationMenuContent>

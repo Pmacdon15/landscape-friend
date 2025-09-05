@@ -2,8 +2,8 @@
 import { CameraIcon, ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import React, { useRef } from "react";
 import { useImageSelector } from "@/lib/hooks/useImageSelector";
-import Spinner from "@/components/ui/spinner";
-import { Client } from "@/types/types-clients";
+import Spinner from "@/components/ui/loaders/spinner";
+import { Client } from "@/types/clients-types";
 
 export default function ImageSelectorMain({
   setView,
@@ -33,11 +33,11 @@ export default function ImageSelectorMain({
   return (
     <div className="relative w-full max-w-md mx-auto h-[300px]">
       {isLoading && (
-        <div className="absolute inset-0 bg-white/30 flex justify-center items-center z-30">
+        <div className="absolute inset-0 bg-white/30 flex justify-center items-center ">
           <Spinner />
         </div>
       )}
-      <div className={`flex flex-nowrap absolute top-2 right-2 z-10 px-4 py-2`}>
+      <div className={`flex flex-nowrap absolute top-2 right-2  px-4 py-2`}>
         <button
           onClick={saveDrawing}
           className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
@@ -56,11 +56,11 @@ export default function ImageSelectorMain({
       <div id="map-container" ref={mapContainerRef} className={`relative w-full h-full `}>
         <div
           ref={mapElementRef}
-          className="w-full h-full absolute top-0 left-0 z-0"
+          className="w-full h-full absolute top-0 left-0"
         />
 
         {showGeocodeSelector && (
-          <div className="absolute top-4 left-4 z-20 bg-white shadow-md rounded max-w-md w-[90%] sm:w-[400px]">
+          <div className="absolute top-4 left-4 bg-white shadow-md rounded max-w-md w-[90%] sm:w-[400px]">
             <h2 className="text-lg font-bold mb-2 px-4 pt-4">
               Select a Location
             </h2>

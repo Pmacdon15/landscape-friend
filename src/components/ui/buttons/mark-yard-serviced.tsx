@@ -3,6 +3,7 @@ import { useMarkYardServiced } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 import { useRef, useState } from "react";
 import imageCompression from "browser-image-compression";
+import Image from "next/image";
 
 export default function MarkYardServiced({
   clientId,
@@ -58,7 +59,12 @@ export default function MarkYardServiced({
       )}
       {image && (
         <>
-          <img width={400} src={image ? new Blob([image]) : undefined} />
+          {image && (
+            <Image
+              width={400}
+              height={400}
+              src={URL.createObjectURL(new Blob([image]))} alt={"Site Serviced Photo"} />
+          )}
 
           <Button
             variant={"outline"}

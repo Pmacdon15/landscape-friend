@@ -1,4 +1,4 @@
-import { Price } from "@/types/types-clients";
+import { Price } from "@/types/clients-types";
 import { InputDiv } from "../containers/input-dev";
 import { InputField } from "../inputs/input";
 import { SettingsLabel } from "./settings-label";

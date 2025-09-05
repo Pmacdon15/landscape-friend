@@ -1,13 +1,14 @@
-import SearchForm from "@/components/ui/client-list/search-form";
+import SearchForm from "@/components/ui/search/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { fetchSnowClearingClients } from "@/lib/dal/clients-dal";
-import { isOrgAdmin } from "@/lib/server-funtions/clerk";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { parseClientListParams } from "@/lib/server-funtions/params";
-import { SearchParams } from "@/types/types-params";
+import { parseClientListParams } from "@/lib/utils/params";
+import { SearchParams } from "@/types/params-types";
+import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
 
 export default async function page({ searchParams }: { searchParams: Promise<SearchParams> }) {
@@ -21,14 +22,24 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
 
     const { page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
     // const searchTermAssignedTo = String(params.assigned_to ?? userId);
+    if (!serviceDate) return (
+        <FormContainer>
+            <FormHeader text={"Clearing List"} />
+            <Suspense fallback={<SearchFormFallBack variant="clearing" />}>
+                <SearchForm variant="clearing" />
+            </Suspense>
 
+            <FormHeader text={"No date query"} />
+        </FormContainer>
+    )
+    
     const clientsPromise = fetchSnowClearingClients(page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo);
 
     return (
         <>
             <FormContainer>
                 <FormHeader text={"Clearing List"} />
-                <Suspense>
+                <Suspense fallback={<SearchFormFallBack variant="clearing" />}>
                     <SearchForm variant="clearing" />
                 </Suspense>
             </FormContainer>

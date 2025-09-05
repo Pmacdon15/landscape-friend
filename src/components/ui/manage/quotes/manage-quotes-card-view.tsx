@@ -1,4 +1,4 @@
-import { StripeQuote } from "@/types/types-stripe";
+import { StripeQuote } from "@/types/stripe-types";
 import ManageQuoteButton from "../../buttons/manage-quote-button";
 
 export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
@@ -25,6 +25,8 @@ export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
                         <span>{quote.expires_at !== null ? new Date(quote.expires_at * 1000).toLocaleDateString() : 'N/A'}</span>
                     </div>
                     <div className="flex flex-wrap justify-center w-full gap-4 ">
+                        {quote.status == "draft" && <ManageQuoteButton action="edit" quoteId={quote.id} />}
+                         {quote.status == "draft" && <ManageQuoteButton action="send" quoteId={quote.id} />}
                         {quote.status == "open" && <ManageQuoteButton action="accept" quoteId={quote.id} />}
                         {quote.status == "open" && <ManageQuoteButton action="cancel" quoteId={quote.id} />}
                     </div>

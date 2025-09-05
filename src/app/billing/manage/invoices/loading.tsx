@@ -2,6 +2,6 @@ import BillingManageFallback from "@/components/ui/fallbacks/billing-manage-fall
 
 export default function Loading() {
     return (
-        <BillingManageFallback text={"Manage Invoices"} />
+        <BillingManageFallback variant={"invoices"} />
     );
 }
