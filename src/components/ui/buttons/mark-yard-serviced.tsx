@@ -48,7 +48,6 @@ export default function MarkYardServiced({
             name="image"
             onChange={handleFileChange}
             className="hidden"
-            capture
             required
           />
           <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
