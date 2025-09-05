@@ -1,10 +1,11 @@
 'use server'
+import { auth } from "@clerk/nextjs/server";
 import { fetchNovuId } from "../dal/user-dal";
 import { Novu } from '@novu/api';
 import { ChatOrPushProviderEnum } from "@novu/api/models/components";
 
 export async function fetchNovuIdAction(userId: string) {
-    return await fetchNovuId(userId);
+  return await fetchNovuId(userId);
 }
 
 const novu = new Novu({
@@ -17,13 +18,12 @@ interface ChannelSettingsDto {
     deviceTokens?: string[];
   };
 }
+
 export async function registerNovuDevice(token: string, userId: string) {
-  // console.log(`Action: registerNovuDevice - Called with token: ${token ? 'present' : 'missing'}`);
+  await auth.protect()
   try {
 
-    // console.log('Action: registerNovuDevice - Fetching Novu ID for user.');
     const subscriberId = await fetchNovuId(userId);
-    // console.log(`Action: registerNovuDevice - Novu subscriberId: ${subscriberId?.UserNovuId}`);
 
     if (!token || !userId) {
       console.warn('Action: registerNovuDevice - Missing token or userId.');
@@ -31,21 +31,17 @@ export async function registerNovuDevice(token: string, userId: string) {
     }
 
     if (subscriberId?.UserNovuId) {
-      // console.log(`Action: registerNovuDevice - Retrieving subscriber with ID: ${subscriberId.UserNovuId}`);
       const subscriber = await novu.subscribers.retrieve(subscriberId.UserNovuId);
-      // console.log('Action: registerNovuDevice - Subscriber retrieved successfully.');
 
       // Get current device tokens for FCM
       const currentTokens = subscriber.result.channels?.find(
         (channel: ChannelSettingsDto) => channel.providerId === ChatOrPushProviderEnum.Fcm
       )?.credentials?.deviceTokens || [];
-      // console.log('Action: registerNovuDevice - Current FCM tokens:', currentTokens);
 
       // Only add the new token if it's not already present
       const updatedTokens = currentTokens.includes(token)
         ? currentTokens
         : [...currentTokens, token];
-      // console.log('Action: registerNovuDevice - Updated FCM tokens:', updatedTokens);
 
       await novu.subscribers.credentials.update(
         {
@@ -56,12 +52,11 @@ export async function registerNovuDevice(token: string, userId: string) {
         },
         subscriberId?.UserNovuId
       );
-      // console.log('Action: registerNovuDevice - Novu API update result:', result);
+
     } else {
-      // console.warn('Action: registerNovuDevice - No Novu subscriber ID found for user.');
+      console.warn('Action: registerNovuDevice - No Novu subscriber ID found for user.');
     }
 
-    // console.log(`Action: registerNovuDevice - Device token ${token} registered for subscriber ${subscriberId?.UserNovuId} with Novu.`);
     return { success: true, message: 'Device registered successfully' };
   } catch (error) {
     console.error('Action: registerNovuDevice - Error registering device with Novu:', error);

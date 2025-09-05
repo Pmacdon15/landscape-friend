@@ -1,8 +1,9 @@
 'use server'
-import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/db-clients";
-import { getOrganizationSettings } from "@/lib/DB/db-org";
-import { isOrgAdmin } from "@/lib/server-funtions/clerk";
+import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/clients-db";
+import { getOrganizationSettings } from "@/lib/DB/org-db";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
+import { triggerNotificationSendToAdmin } from "../utils/novu";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -31,7 +32,12 @@ export async function addClient(formData: FormData) {
     try {
         const result = await addClientDB(validatedFields.data, organizationId)
         if (!result) throw new Error('Failed to add Client');
-
+        triggerNotificationSendToAdmin(organizationId, 'client-added', {
+            client: {
+                name: validatedFields.data.full_name,
+                encodedName: encodeURIComponent(validatedFields.data.full_name)
+            }
+        })
 
         return result;
     } catch (e: unknown) {
@@ -53,6 +59,7 @@ export async function deleteClient(clientId: number) {
     try {
         const result = await deleteClientDB(validatedFields.data, (orgId || userId)!)
         if (!result) throw new Error('Delete Client');
+        triggerNotificationSendToAdmin(orgId || userId!, 'client-deleted')
         return result;
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);

@@ -6,14 +6,15 @@ import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Suspense } from "react";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import SnowClientInput from "../inputs/snow-client-input";
-import SnowClientInputFallback from "../fallbacks/snow-client-input-fallback";
 import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
-import { ClientListServiceProps } from "@/types/types-clients";
+import { ClientListServiceProps } from "@/types/clients-types";
 import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
-import ClientListItemAddress from "./clienit-list-item-address";
+import ClientListItemAddress from "./client-list-item-address";
+import AssignedTo from "../inputs/AssignedToSelect";
+import AssignedToFallback from "../fallbacks/assigned-to-fallback";
 import ListServices from "../list-services/list-services";
+import { ViewSitePhotoSheet } from "../sheet/view-site-phots-sheet";
 
 export default async function ClientListService({
   clientsPromise,
@@ -53,30 +54,30 @@ export default async function ClientListService({
             <li className="border p-4 rounded-sm relative bg-white/70">
               {isAdmin && <DeleteClientButton clientId={client.id} />}
               <FormHeader text={client.full_name} />
-              <div className="flex flex-col flex-wrap gap-4 items-center justify-center mt-8 mb-8  sm:flex-col lg:flex-row w-full">
+              <div className="flex flex-col gap-2 items-center justify-center mt-8 mb-8 lg:flex-row w-full">
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
-                <ClientListItemAddress client={client}>
-                  <Suspense fallback={<FormHeader text="Loading..." />}>
-                    <MapComponent address={client.address} />
-                  </Suspense>
+                <ClientListItemAddress client={client} >
+                  <MapComponent address={client.address} />
                 </ClientListItemAddress>
               </div>
-              {isAdmin && (
+              {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
-                  <PricePerUpdateInput client={client} />
                   <p>Amount owing: ${client.amount_owing} </p>
-                  <Suspense fallback={<SnowClientInputFallback />}>
-                    <SnowClientInput
-                      client={client}
-                      orgMembersPromise={orgMembersPromise}
-                    />
+                  <PricePerUpdateInput client={client} />
+                  <PricePerUpdateInput client={client} snow={true} />
+                  <Suspense fallback={<AssignedToFallback />}>
+                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
+                  </Suspense>
+                  <Suspense fallback={<AssignedToFallback />}>
+                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} snow />
                   </Suspense>
                 </div>
-              )}
+              }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <ImageList isAdmin={isAdmin} client={client} />
-              <ListServices client={client}/>
+              <ListServices client={client} />
+              <ViewSitePhotoSheet />
             </li>
           </FormContainer>
         ))}

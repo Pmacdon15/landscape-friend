@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { fetchGeocode } from '@/lib/server-funtions/geocode';
+import { fetchGeocode } from '@/lib/utils/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/types-google-map-iframe';
-import { MaterialField } from '@/types/types-components';
+import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/google-map-iframe-types';
+
+import { UseFormReset } from 'react-hook-form';
+import React from 'react';
+import { MaterialField } from '@/types/components-types';
 
 export const useDebouncedMutation = <TData>(
   mutate: (data: TData) => void,
@@ -184,23 +187,34 @@ export function useServiceStatusSearch() {
   return { currentServiceStatus, setServiceStatus };
 }
 
-export function useSearchInput(delay: number = 500) {
+export function useSearchInput(delay: number = 300) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialSearchTerm = searchParams.get('search') || '';
+  const urlSearchTerm = searchParams.get('search') || '';
 
-  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
-  const debouncedSearchTerm = useDebouncedValue(searchTerm, delay);
+  const [searchTerm, setSearchTerm] = useState(urlSearchTerm);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (debouncedSearchTerm) {
-      params.set('search', debouncedSearchTerm);
-    } else {
-      params.delete('search');
-    }
-    router.replace(`?${params.toString()}`, { scroll: false });
-  }, [debouncedSearchTerm, router, searchParams]);
+    setSearchTerm(urlSearchTerm);
+  }, [urlSearchTerm]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (searchTerm !== urlSearchTerm) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (searchTerm) {
+          params.set('search', searchTerm);
+        } else {
+          params.delete('search');
+        }
+        router.replace(`?${params.toString()}`, { scroll: false });
+      }
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, urlSearchTerm, delay, router, searchParams]);
 
   return { searchTerm, setSearchTerm };
 }
@@ -217,4 +231,16 @@ export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuc
       append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 });
     }
   }, [fields.length, append]);
+}
+
+export function useResetFormOnSuccess<T extends object>(
+    isSuccess: boolean,
+    submittedData: React.MutableRefObject<T | null>,
+    reset: UseFormReset<T>
+) {
+    useEffect(() => {
+        if (isSuccess && submittedData.current) {
+            reset(submittedData.current);
+        }
+    }, [isSuccess, reset, submittedData]);
 }

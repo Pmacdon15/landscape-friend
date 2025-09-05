@@ -1,7 +1,9 @@
 import { neon } from "@neondatabase/serverless"
-import { addNovuSubscriber, removeNovuSubscriber, triggerNotificationSendToAdmin } from "../server-funtions/novu";
+import { addNovuSubscriber, deleteNovuSubscriber, triggerNotificationSendToAdmin } from "../utils/novu";
 import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
+import { handleOrganizationDeletedDb } from "../DB/org-db";
+import { deleteStripeWebhookRoute } from "../utils/stripe-utils";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);
@@ -41,7 +43,7 @@ export async function handleUserDeleted(userId: string) {
         // Remove the user from Novu
         const user = deleteResult[0];
         if (user.novu_subscriber_id) {
-            const result = await removeNovuSubscriber(user.novu_subscriber_id);
+            const result = await deleteNovuSubscriber(user.novu_subscriber_id);
             if (!result) {
                 console.error(`Failed to remove user ${userId} from Novu.`);
             }
@@ -60,11 +62,8 @@ export async function handleOrganizationCreated(orgId: string, orgName: string) 
 }
 
 export async function handleOrganizationDeleted(orgId: string) {
-    const sql = neon(`${process.env.DATABASE_URL}`);
-    await sql`
-        DELETE FROM organizations
-        WHERE organization_id = ${orgId}        
-    `;
+    await deleteStripeWebhookRoute(orgId)
+    await handleOrganizationDeletedDb(orgId)
 }
 
 export async function handleSubscriptionUpdate(orgId: string, plan: string) {

@@ -2,18 +2,18 @@
 import { useDebouncedMutation } from "@/lib/hooks/hooks";
 import { useUpdateClientPricePer } from "@/lib/mutations/mutations";
 import ReusableNumberInput from "../inputs/reusable-number-input";
-import { Client } from "@/types/types-clients";
+import { Client } from "@/types/clients-types";
 
 export default function PricePerUpdateInput({ client, snow = false }: { client: Client, snow?: boolean }) {
     const { mutate, isPending, isError } = useUpdateClientPricePer();
     const debouncedMutate = useDebouncedMutation(mutate);
-    
+
     return (
         <div className="flex">
 
             {snow ?
-                <div className="flex">
-                    <p className=" my-auto w-40"> Snow service Price: $  </p>
+                <div className="flex items-center justify-center">
+                    <p className=" my-auto"> Snow service Price: $ </p>                   
                     <ReusableNumberInput
                         name="updated_price_per_month_snow"
                         defaultValue={client.price_per_month_snow}
@@ -22,8 +22,8 @@ export default function PricePerUpdateInput({ client, snow = false }: { client: 
                     />
                 </div>
                 :
-                <div className="flex">
-                    <p className=" my-auto w-40"> Price Per Cut: ${" "} </p>
+                <div className="flex items-center justify-center">
+                    <p className="my-auto "> Price Per Cut: $ </p>                    
                     < ReusableNumberInput
                         name="updated_price_per_cut"
                         defaultValue={client.price_per_cut || 51.5}

@@ -5,7 +5,7 @@ export default function ImageUploader({ clientId, setView }: { clientId: number,
   
   return (
     <form className="w-[45%]">
-      <label className="cursor-pointer relative flex flex-col w-full gap-2">
+      <label className="cursor-pointer flex flex-col w-full gap-2">
         <ImageUploadInput />
         <UploadImageButton clientId={clientId} setView={setView } />
       </label>

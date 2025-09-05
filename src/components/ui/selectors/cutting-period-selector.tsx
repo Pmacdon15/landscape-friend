@@ -9,17 +9,18 @@ export function CuttingPeriodSelector({
 }: {
   variant: 'week' | 'day';
 }) {
+  
   const { currentPeriod, setCuttingPeriod } = useCuttingPeriodSearch(variant);
 
   const label = variant === 'week' ? 'Cutting Week' : 'Cutting Day';
   const options = variant === 'week' ? weeks : days;
 
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-1  ">
       <label className="flex items-center">{label} </label>
       <select
         name={variant}
-        className="w-fit border rounded-sm text-center"
+        className="w-fit border rounded-sm text-center py-2"
         value={currentPeriod}
         onChange={(e) => setCuttingPeriod(e.target.value)}
       >

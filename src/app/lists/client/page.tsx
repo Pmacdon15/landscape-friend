@@ -1,15 +1,16 @@
 import AddClientFormClientComponent from "@/components/ui/client-list/add-client-form-client-component";
 import { AddClientFormServerComponent } from "@/components/ui/client-list/add-client-form-server-component";
 import ClientListAll from "@/components/ui/client-list/client-list-all";
-import SearchForm from "@/components/ui/client-list/search-form";
+import SearchForm from "@/components/ui/search/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { fetchOrgMembers } from "@/lib/dal/dal-org";
-import { isOrgAdmin } from "@/lib/server-funtions/clerk";
+import { isOrgAdmin } from "@/lib/utils/clerk";
 import { Suspense } from "react";
-import { parseClientListParams } from "@/lib/server-funtions/params";
+import { parseClientListParams } from "@/lib/utils/params";
 import { fetchAllClients } from "@/lib/dal/clients-dal";
-import { SearchParams } from "@/types/types-params";
+import { SearchParams } from "@/types/params-types";
+import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
 export default async function page({
     searchParams,
@@ -29,7 +30,7 @@ export default async function page({
         <>
             <FormContainer>
                 <FormHeader text={"Client List"} />
-                <Suspense>
+                <Suspense fallback={<SearchFormFallBack />}>
                     <SearchForm />
                 </Suspense >
             </FormContainer >

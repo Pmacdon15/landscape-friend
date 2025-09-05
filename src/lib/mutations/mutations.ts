@@ -1,13 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
-import { markYardServiced } from "@/lib/actions/cuts-action";
+import { markYardServiced,assignGrassCutting } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey } from "@/lib/actions/stripe-action";
+import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
-import { assignSnowClearing, toggleSnowClient } from "@/lib/actions/snow-action";
+import { assignSnowClearing } from "@/lib/actions/snow-action";
 import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
-import { MarkQuoteProps } from "@/types/types-stripe";
-
+import { MarkQuoteProps } from "@/types/stripe-types";
+import { schemaCreateQuote, schemaUpdateStatement } from '@/lib/zod/schemas';
+import { z } from 'zod';
 //MARK: Add client
 export const useAddClient = () => {
     return useMutation({
@@ -112,10 +113,15 @@ export const useAssignSnowClearing = () => {
     return useMutation({
         mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
             return assignSnowClearing(clientId, assignedTo);
-        },
-        onSuccess: () => { revalidatePathAction("/lists/client") },
-        onError: (error) => {
-            console.error('Mutation error:', error);
+        }
+    });
+};
+
+//MARK: Assign grass cutting
+export const useAssignGrassCutting = () => {
+    return useMutation({
+        mutationFn: ({ clientId, assignedTo, cuttingWeek, cuttingDay }: { clientId: number, assignedTo: string, cuttingWeek?: number | null, cuttingDay?: string | null }) => {
+            return assignGrassCutting(clientId, assignedTo, cuttingWeek ?? null, cuttingDay ?? null);
         }
     });
 };
@@ -131,18 +137,7 @@ export const useMarkYardServiced = () => {
         }
     });
 };
-//MARK:Toggle snow client
-export const useToggleSnowClient = () => {
-    return useMutation({
-        mutationFn: ({ clientId }: { clientId: number }) => {
-            return toggleSnowClient(clientId);
-        },
-        onSuccess: () => { revalidatePathAction("/lists/client") },
-        onError: (error) => {
-            console.error('Mutation error:', error);
-        }
-    });
-};
+
 
 //MARK: Send email with template
 export const useSendEmailWithTemplate = ({
@@ -177,13 +172,29 @@ export const useSendNewsLetter = () => {
     });
 };
 
+
+
+
 //MARK:Create stripe quote
 export const useCreateStripeQuote = () => {
     return useMutation({
-        mutationFn: async (formData: FormData) => {
-            const result = await createStripeQuote(formData);
+        mutationFn: async (quoteData: z.infer<typeof schemaCreateQuote>) => {
+            const result = await createStripeQuote(quoteData);
             if (!result.success) {
                 throw new Error("Failed to create Stripe quote");
+            }
+            return result;
+        },
+    });
+};
+
+//MARK:Update stripe document
+export const useUpdateStripeDocument = () => {
+    return useMutation({
+        mutationFn: async (documentData: z.infer<typeof schemaUpdateStatement>) => {
+            const result = await updateStripeDocument(documentData);
+            if (!result.success) {
+                throw new Error("Failed to update Stripe document");
             }
             return result;
         },
@@ -243,7 +254,7 @@ export const useMarkInvoiceVoid = () => {
     });
 };
 
-//MARK: Accecpt quote
+//MARK: Accept quote
 export const useMarkQuote = () => {
     return useMutation({
         mutationFn: async ({ action, quoteId }: MarkQuoteProps) => {

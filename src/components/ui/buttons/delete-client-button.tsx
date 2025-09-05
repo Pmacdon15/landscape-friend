@@ -5,7 +5,7 @@ export default function DeleteClientButton({ clientId }: { clientId: number }) {
   const { mutate } = useDeleteClient();
   return (
     <div className="absolute top-1 right-1">
-      <Alert text={"X"} functionAction={() => mutate(clientId)} />
+      <Alert variant={'remove-client'} functionAction={() => mutate(clientId)} />
     </div>
   );
 }
