@@ -1,12 +1,12 @@
 "use client";
 import { useState } from "react";
 import { Button } from "../button";
-import { Edit } from "lucide-react";
 import { EditSettingSheet } from "../sheets/edit-settings-sheet";
 import SettingsForm from "../forms/settings-form";
 import UpdateStripeApiKeyButton from "../buttons/update-stripe-api-key-button";
 import { InputField } from "../inputs/input";
 import SettingsDisplayItem from "./settings-display-item";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
     const [showKey, setShowKey] = useState(false);
@@ -21,7 +21,7 @@ export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
             actions={
                 <div className="flex gap-2">
                     <Button onClick={toggleShowKey}>
-                        {showKey ? "Hide" : "Show"}
+                        {showKey ? <><EyeOff className="w-4 h-4" /> Show</> : <><Eye className="w-4 h-4" />Hide</>}
                     </Button>
                     <EditSettingSheet
                         prompt={"Edit Stripe API Key"}

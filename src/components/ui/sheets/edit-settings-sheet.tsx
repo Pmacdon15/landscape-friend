@@ -1,22 +1,20 @@
 import { Button } from "@/components/ui/button"
-// import { Label } from "@/components/ui/label"
 import {
     Sheet,
     SheetClose,
     SheetContent,
     SheetDescription,
-    SheetFooter,
     SheetHeader,
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
 import SheetLogoHeader from "../header/sheet-logo-header"
-
+import { Edit } from "lucide-react";
 export function EditSettingSheet({ prompt, children }: { prompt: string, children: React.ReactNode }) {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline">Edit</Button>
+                <Button variant="outline"><><Edit />Edit</></Button>
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>
