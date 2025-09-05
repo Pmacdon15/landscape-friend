@@ -8,17 +8,14 @@ import { fetchStripeAPIKey } from "@/lib/dal/stripe-dal";
 
 
 export default async function Settings() {
-    const apiKeyResult = await fetchStripeAPIKey();
-
-    const apiKey = apiKeyResult instanceof Error ? '' : apiKeyResult.apk_key;
+    
     return (
         <ContentContainer>
             <h1>Settings</h1>
             <InputDiv >
                 <SettingsLabel text={"Stripe API Key"} />
                 <SettingsForm>
-                    <InputField name={"api_key"} type={"text"} placeholder={"Your Stripe API Key"} defaultValue={apiKey} />
-                    <UpdateStripeApiKeyButton />
+                    <h1>test</h1>
                 </SettingsForm>
             </InputDiv>
         </ContentContainer>
