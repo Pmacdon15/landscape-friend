@@ -15,6 +15,7 @@ export default function DisplayWinterMonths({
             label="Winter Months"
             actions={
                 <EditSettingSheet
+                    title="Edit Setting"
                     prompt={"Edit Winter Months"}
                 >
                     <SettingsForm>
