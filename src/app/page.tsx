@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible z-10">
+      <div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible z-[-10]">
         <div className="flex justify-right items-right logo-slide-in">
           <Image
             width={800}
