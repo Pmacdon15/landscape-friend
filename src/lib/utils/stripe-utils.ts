@@ -176,14 +176,15 @@ export async function createStripeCustomer(customerData: {
 
 export async function createStripeSubscriptionQuote(
     subscriptionData: z.infer<typeof schemaCreateSubscription>,
-    sessionClaims: JwtPayload
+    sessionClaims: JwtPayload,
+    snow: boolean
 ) {
     const {
         clientEmail,
         clientName,
         address,
         phone_number,
-        price_per_month_grass,
+        price_per_month,
         serviceType,
         startDate,
         endDate,
@@ -206,14 +207,14 @@ export async function createStripeSubscriptionQuote(
     }
 
     // 2. Create product + recurring price
-    const productName = `Lawn Mowing - ${serviceType} for ${clientName}`;
+    const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${clientName}`;
     const product = await stripe.products.create({
         name: productName,
         metadata: { organization_id, serviceType },
     });
 
     const price = await stripe.prices.create({
-        unit_amount: Math.round(price_per_month_grass * 100),
+        unit_amount: Math.round(price_per_month * 100),
         currency: "cad",
         recurring: { interval: "month" },
         product: product.id,
@@ -237,8 +238,8 @@ export async function createStripeSubscriptionQuote(
             endDate: endDate || "",
         },
     });
-    
-    const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);    
+
+    const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
     await sendQuote(quote.id, stripe, sessionClaims);
     return finalizedQuote;
 }

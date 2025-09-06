@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addClient, deleteClient, updateClientPricePerMonth, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
-import { markYardServiced,assignGrassCutting } from "@/lib/actions/cuts-action";
+import { markYardServiced, assignGrassCutting } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
 import { createStripeQuote, createSubscriptionQuoteAction, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
@@ -190,10 +190,10 @@ export const useCreateStripeQuote = () => {
 };
 
 //MARK:Create stripe subscription
-export const useCreateStripeSubscriptionQuote = () => {
+export const useCreateStripeSubscriptionQuote = (snow: boolean) => {
     return useMutation({
         mutationFn: async (formData: FormData) => {
-            const result = await createSubscriptionQuoteAction(formData);
+            const result = await createSubscriptionQuoteAction(formData, snow);
             if (!result.success) {
                 throw new Error("Failed to create Stripe subscription");
             }

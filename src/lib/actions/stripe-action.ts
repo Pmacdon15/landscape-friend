@@ -425,7 +425,7 @@ export async function hasStripeApiKeyAction(): Promise<boolean> {
 
 
 //Mark:Create Subscription
-export async function createSubscriptionQuoteAction(formData: FormData) {
+export async function createSubscriptionQuoteAction(formData: FormData, snow: boolean) {
     const { orgId, userId, sessionClaims } = await auth.protect();
     const organizationId = orgId || userId;
 
@@ -439,7 +439,7 @@ export async function createSubscriptionQuoteAction(formData: FormData) {
         phone_number: formData.get('phone_number'),
         address: formData.get('address'),
         serviceType: formData.get('serviceType'),
-        price_per_month_grass: parseFloat(formData.get('price_per_month_grass') as string),
+        price_per_month: parseFloat(formData.get('price_per_month') as string),
         startDate: formData.get('startDate'),
         endDate: formData.get('endDate') || undefined,
         notes: formData.get('notes') || undefined,
@@ -453,7 +453,7 @@ export async function createSubscriptionQuoteAction(formData: FormData) {
     }
 
     try {
-        const subscription = await createStripeSubscriptionQuote(parsed.data, sessionClaims);
+        const subscription = await createStripeSubscriptionQuote(parsed.data, sessionClaims, snow);
         return { success: true, subscription: { id: subscription.id, status: subscription.status } };
     } catch (error) {
         console.error("Error creating subscription:", error);

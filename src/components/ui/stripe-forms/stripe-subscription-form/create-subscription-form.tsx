@@ -3,22 +3,25 @@ import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations';
 import Spinner from '@/components/ui/loaders/spinner';
 import { schemaCreateSubscription } from '@/lib/zod/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import z from 'zod';
 import InputField from '../shared/input';
 
 type CreateSubscriptionFormValues = z.infer<typeof schemaCreateSubscription>;
 import { AlertMessage } from '../shared/alert-message';
 import { Button } from '../../button';
+import { useState, useEffect } from 'react';
 
 interface CreateSubscriptionFormProps {
   organizationId: string;
 }
 
 export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationId }) => {
-  const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscriptionQuote();
+  const [snow, setSnow] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof schemaCreateSubscription>>({
+  const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscriptionQuote(snow);
+
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<z.infer<typeof schemaCreateSubscription>>({
     resolver: zodResolver(schemaCreateSubscription),
     mode: 'onBlur',
     defaultValues: {
@@ -27,7 +30,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
       phone_number: '',
       address: '',
       serviceType: 'weekly', // Default value
-      price_per_month_grass: 0,
+      price_per_month: 0,
       startDate: '',
       endDate: '',
       notes: '',
@@ -35,6 +38,12 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
       collectionMethod: 'charge_automatically',
     } as z.infer<typeof schemaCreateSubscription>, // Explicitly cast defaultValues
   });
+
+  const serviceType = watch('serviceType');
+
+  useEffect(() => {
+    setSnow(serviceType === 'snow-as-needed');
+  }, [serviceType]);
 
   const onSubmit = (formData: z.infer<typeof schemaCreateSubscription>) => {
     const form = new FormData();
@@ -76,10 +85,11 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
               <option value="weekly">Weekly</option>
               <option value="bi-weekly">Bi-Weekly</option>
               <option value="monthly">Monthly</option>
+              <option value="snow-as-needed">Snow as needed</option>
             </select>
             {errors.serviceType && <p className="text-red-500 text-xs mt-1">{errors.serviceType.message}</p>}
           </div>
-          <InputField label="Price Per Month Grass" id="price_per_month_grass" type="number" register={register} errors={errors} className={inputClassName} min="0.01" step="0.01" valueAsNumber />
+          <InputField label="Price Per Month" id="price_per_month" type="number" register={register} errors={errors} className={inputClassName} min="0.01" step="0.01" valueAsNumber />
           <InputField label="Start Date" id="startDate" type="date" register={register} errors={errors} className={inputClassName} />
           <InputField label="End Date" id="endDate" type="date" register={register} errors={errors} className={inputClassName} />
           <InputField label="Notes" id="notes" type="textarea" register={register} errors={errors} className={inputClassName} />

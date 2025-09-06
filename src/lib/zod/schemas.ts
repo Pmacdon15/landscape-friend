@@ -114,17 +114,17 @@ export const ImageSchema = z.object({
         .refine(
             (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
             "Only .jpg, .jpeg, .png and .webp formats are supported.",
-),
+        ),
 });
 
 
 export const schemaUpdateStatement = z.object({
-  id: z.string(),
-  lines: z.array(z.object({
-    description: z.string().optional(),
-    amount: z.number(),
-    quantity: z.number(),
-  }))
+    id: z.string(),
+    lines: z.array(z.object({
+        description: z.string().optional(),
+        amount: z.number(),
+        quantity: z.number(),
+    }))
 });
 
 export const schemaCreateSubscription = z.object({
@@ -132,10 +132,10 @@ export const schemaCreateSubscription = z.object({
     clientEmail: z.email("Invalid email address"),
     phone_number: z.string().min(1, "Phone number is required"),
     address: z.string().min(1, "Address is required"),
-    serviceType: z.enum(["weekly", "bi-weekly", "monthly"], {
+    serviceType: z.enum(["snow-as-needed", "weekly", "bi-weekly", "monthly"], {
         message: "Please select a valid service type",
     }),
-    price_per_month_grass: z.number().min(0.01, "Price per month must be a positive number"),
+    price_per_month: z.number().min(0.01, "Price per month must be a positive number"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().optional(), // Added endDate
     notes: z.string().optional(),
