@@ -19,7 +19,7 @@ export function EditSettingSheet({ title, prompt, children }: { title: string | 
             <SheetContent>
                 <SheetHeader>
                     <SheetLogoHeader />
-                    <SheetTitle>Edit Setting</SheetTitle>
+                    <SheetTitle>Update Form</SheetTitle>
                     <SheetDescription>
                         {prompt}
                     </SheetDescription>

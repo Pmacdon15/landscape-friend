@@ -15,6 +15,7 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
                             {subscription.status}
                         </span>
                     </div>
+                    <p className="text-sm text-gray-500">{subscription.customer.name}</p>
                     <p className="text-sm text-gray-500">{subscription.customer.email}</p>
                     <CancelSubscriptionButton subscriptionId={subscription.id} />
                     <div className="mt-4">

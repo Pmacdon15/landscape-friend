@@ -397,6 +397,7 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             }
         }
 
+        console.log("Client Names Map:", clientNamesMap);
         const strippedSubscriptions = paginatedSubscriptions.map((subscription) => ({
             id: subscription.id,
             object: subscription.object,
