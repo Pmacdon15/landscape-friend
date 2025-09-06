@@ -30,7 +30,7 @@ export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
                             {quote.lines?.data && quote.lines.data.length > 0 ? (
                                 quote.lines.data.map((item, index) => (
                                     <li key={index}>
-                                        {item.description} - ${(item.amount ).toFixed(2)}
+                                        {item.description} - ${(item.amount * item.quantity).toFixed(2)}
                                     </li>
                                 ))
                             ) : (

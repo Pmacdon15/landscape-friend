@@ -33,7 +33,7 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
               {invoice.lines?.data && invoice.lines.data.length > 0 ? (
                 invoice.lines.data.map((item, index) => (
                   <li key={index}>
-                    {item.description} - ${(item.amount / 100).toFixed(2)}
+                    {item.description} - ${(item.amount ).toFixed(2)}
                   </li>
                 ))
               ) : (
