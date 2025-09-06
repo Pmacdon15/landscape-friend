@@ -27,10 +27,11 @@ export async function markYardServiced(
 
   if (!validatedFields.success) throw new Error("Invalid input data");
 
-  let images_url = [];
+  const images_url = [];
+  const result_upload = [];
   /// Try upload Image to Vercel Blob
   try {
-    var result_upload = [];
+    // var result_upload = [];
 
     for (let i = 0; i < images.length; i++) {
       result_upload[i] = await uploadImageBlobServiceDone(
@@ -55,7 +56,7 @@ export async function markYardServiced(
       userId!
     );
 
-    var result_url = []
+    const result_url = []
     for (let i = 0; i < images.length; i++) {
       result_url[i] = await saveUrlImagesServices(
         snow,

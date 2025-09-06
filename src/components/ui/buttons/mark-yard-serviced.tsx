@@ -95,7 +95,7 @@ export default function MarkYardServiced({
         compressedFile = await imageCompression(selectedFile, options);
       }
 
-      let imageWithTimeStamp = await addTimestampToImage(compressedFile)
+      const imageWithTimeStamp = await addTimestampToImage(compressedFile)
 
       setImages([...images, imageWithTimeStamp]);
     }
