@@ -396,6 +396,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         const notificationType = {
             accept: 'quote-accepted',
             send: "quote-sent",
+            cancel: "quote-cancelled",
         };
 
         if (action === "accept") {
@@ -403,7 +404,10 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
-        } else {
+        } else if (action === "cancel") {
+            await stripe.quotes.cancel(quoteId);
+        }
+        else {
             throw new Error("Invalid action for quote operation.");
         }
 
