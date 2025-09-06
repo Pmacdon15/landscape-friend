@@ -7,6 +7,7 @@ export default function Error({ error, reset }: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
+    //TODO: make this look like the other error pages
     return (
         <FormContainer>
             <FormHeader text={"Manage Subscriptions"} />

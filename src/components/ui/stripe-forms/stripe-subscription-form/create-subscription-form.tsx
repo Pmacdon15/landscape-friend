@@ -36,7 +36,6 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
 
   const serviceType = watch('serviceType');
   const snow = useIsSnowService(serviceType);
-  console.log("snow: ", snow)
 
   const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscriptionQuote(snow);
 

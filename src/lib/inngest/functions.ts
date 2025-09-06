@@ -10,7 +10,6 @@ const addMonthlyPayment = inngest.createFunction(
         const organizations = await getAllOrganizations();
 
         for (const org of organizations) {
-            console.log('Processing organization:', org);
 
             const stripe = await getStripeInstanceUnprotected(org.organization_id);
 

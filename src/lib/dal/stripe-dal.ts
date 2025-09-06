@@ -385,8 +385,9 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             cancel_at_period_end: subscription.cancel_at_period_end,
             canceled_at: subscription.canceled_at,
             created: subscription.created,
-            current_period_end: subscription.current_period_end,
-            current_period_start: subscription.current_period_start,
+           //TODO fix current period 
+            // current_period_end: subscription.current_period_end,
+            // current_period_start: subscription.current_period_start,
             customer: {
                 id: (subscription.customer as Stripe.Customer).id,
                 name: (subscription.customer as Stripe.Customer).name || undefined,

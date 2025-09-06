@@ -8,7 +8,6 @@ import { auth } from "@clerk/nextjs/server";
 
 export default async function Page() {
     const { orgId } = await auth()
-    console.log(orgId)
     return (
         <FormContainer>
             <FillFormContainer>
