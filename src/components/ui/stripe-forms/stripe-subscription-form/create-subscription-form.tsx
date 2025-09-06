@@ -6,20 +6,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import z from 'zod';
 import InputField from '../shared/input';
-
-type CreateSubscriptionFormValues = z.infer<typeof schemaCreateSubscription>;
 import { AlertMessage } from '../shared/alert-message';
 import { Button } from '../../button';
-import { useState, useEffect } from 'react';
+import { useIsSnowService } from '@/lib/hooks/useStripe';
+import BackToLink from '../../links/back-to-link';
 
 interface CreateSubscriptionFormProps {
   organizationId: string;
 }
 
 export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationId }) => {
-  const [snow, setSnow] = useState(false);
 
-  const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscriptionQuote(snow);
+
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm<z.infer<typeof schemaCreateSubscription>>({
     resolver: zodResolver(schemaCreateSubscription),
@@ -40,10 +38,10 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
   });
 
   const serviceType = watch('serviceType');
+  const snow = useIsSnowService(serviceType);
+  console.log("snow: ", snow)
 
-  useEffect(() => {
-    setSnow(serviceType === 'snow-as-needed');
-  }, [serviceType]);
+  const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscriptionQuote(snow);
 
   const onSubmit = (formData: z.infer<typeof schemaCreateSubscription>) => {
     const form = new FormData();
@@ -60,7 +58,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
         <input type="hidden" {...register('organization_id')} value={organizationId} />
 
         {/* Client Info */}
@@ -96,12 +94,11 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
         </section>
 
         <div>
-          <Button type="submit" disabled={isPending} className="bg-background">
+          <Button variant="outline" type="submit" disabled={isPending}>
             {isPending ? <>Creating Subscription...<Spinner /></> : 'Create Subscription'}
           </Button>
         </div>
-      </form>
-
+      </form>      
       {isSuccess && data && <AlertMessage type="success" message="Subscription Quote created successfully!" />}
       {isError && error && <AlertMessage type="error" message={`Error creating subscription: ${error.message}`} />}
     </>

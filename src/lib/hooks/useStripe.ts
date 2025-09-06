@@ -7,3 +7,9 @@ export const useHasStripeApiKey = () => {
         queryFn: () => hasStripeApiKeyAction(),
     });
 };
+
+
+
+export const useIsSnowService = (serviceType: string) => {
+  return serviceType === 'snow-as-needed';
+};
