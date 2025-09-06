@@ -7,7 +7,7 @@ export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
         <div className="flex flex-wrap justify-between ">
             {quotes && quotes !== undefined && quotes.map((quote) => (
                 <div key={quote.id} className={cardClassName}>
-                    <div className="font-bold text-lg mb-2">Quote #{quote.id}</div>
+                    <div className="font-bold text-lg mb-2 break-words">Quote #{quote.id}</div>
                     <div className="flex justify-between mb-1">
                         <span className="font-bold">Customer:</span>
                         <span>{quote.client_name}</span>
