@@ -42,10 +42,8 @@ CREATE TABLE clients (
     phone_number VARCHAR(50) NOT NULL,
     email_address VARCHAR(75) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
-    price_per_month_grass FLOAT NOT NULL DEFAULT 103,
-    address VARCHAR(200) NOT NULL,
-    price_per_month_snow FLOAT NOT NULL DEFAULT 103,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,    
+    address VARCHAR(200) NOT NULL,   
     stripe_customer_id VARCHAR(255) NULL
 );
 

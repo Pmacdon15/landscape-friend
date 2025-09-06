@@ -6,7 +6,7 @@ import SettingsForm from "../forms/settings-form";
 import UpdateStripeApiKeyButton from "../buttons/update-stripe-api-key-button";
 import { InputField } from "../inputs/input";
 import SettingsDisplayItem from "./settings-display-item";
-import { Eye, EyeOff } from "lucide-react";
+import { Edit, Eye, EyeOff } from "lucide-react";
 
 export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
     const [showKey, setShowKey] = useState(false);
@@ -24,6 +24,7 @@ export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
                         {showKey ? <><EyeOff className="w-4 h-4" /> Show</> : <><Eye className="w-4 h-4" />Hide</>}
                     </Button>
                     <EditSettingSheet
+                        title={<><Edit />Edit Setting</>}
                         prompt={"Edit Stripe API Key"}
                     >
                         <SettingsForm>

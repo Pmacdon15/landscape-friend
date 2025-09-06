@@ -15,9 +15,7 @@ export interface Client {
     phone_number: string;
     email_address: string;
     address: string;
-    amount_owing: number;
-    price_per_month_grass: number;
-    price_per_month_snow: number;
+    amount_owing: number;    
     cutting_week: number;
     cutting_day: string;
     cutting_schedules: CuttingSchedule[];

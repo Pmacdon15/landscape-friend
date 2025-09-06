@@ -1,5 +1,3 @@
-import AddClientFormClientComponent from "@/components/ui/client-list/add-client-form-client-component";
-import { AddClientFormServerComponent } from "@/components/ui/client-list/add-client-form-server-component";
 import ClientListAll from "@/components/ui/client-list/client-list-all";
 import SearchForm from "@/components/ui/search/search-form";
 import FormContainer from "@/components/ui/containers/form-container";
@@ -11,6 +9,7 @@ import { parseClientListParams } from "@/lib/utils/params";
 import { fetchAllClients } from "@/lib/dal/clients-dal";
 import { SearchParams } from "@/types/params-types";
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
+import AddClientForm from "@/components/ui/client-list/add-client-form";
 
 export default async function page({
     searchParams,
@@ -35,9 +34,7 @@ export default async function page({
                 </Suspense >
             </FormContainer >
             {isAdmin &&
-                <AddClientFormClientComponent>
-                    <AddClientFormServerComponent />
-                </AddClientFormClientComponent>
+                <AddClientForm/>
             }
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListAll

@@ -9,12 +9,12 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import SheetLogoHeader from "../header/sheet-logo-header"
-import { Edit } from "lucide-react";
-export function EditSettingSheet({ prompt, children }: { prompt: string, children: React.ReactNode }) {
+
+export function EditSettingSheet({ title, prompt, children }: { title: string | React.ReactNode, prompt: string, children: React.ReactNode }) {
     return (
         <Sheet>
             <SheetTrigger asChild>
-                <Button variant="outline"><><Edit />Edit</></Button>
+                <Button variant="outline">{title}</Button>
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader>
