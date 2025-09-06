@@ -420,6 +420,23 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     }
 }
 
+import { cancelStripeSubscription } from "@/lib/utils/stripe-utils";
+
+//MARK: Cancel Subscription
+export async function cancelSubscription(subscriptionId: string) {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    try {
+        await cancelStripeSubscription(subscriptionId);
+        return { success: true };
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Error canceling subscription:", errorMessage);
+        return { success: false, message: errorMessage };
+    }
+}
+
 //MARK: Has stripe api key
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();

@@ -18,6 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     return (
         <FormContainer>
             <FormHeader text={"Manage Subscriptions"} />
+            
             <Suspense fallback={<SearchFormFallBack variant="subscriptions" />}>
                 <SearchForm variant="subscriptions" />
             </Suspense>

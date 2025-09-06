@@ -121,6 +121,14 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                                                 </div>
                                             </Link>
                                         </NavigationMenuLink>
+                                        <NavigationMenuLink asChild>
+                                            <Link href="/billing/manage/subscription">
+                                                <div className="font-medium">Manage Subscriptions</div>
+                                                <div className="text-muted-foreground">
+                                                    Manage your active subscriptions.
+                                                </div>
+                                            </Link>
+                                        </NavigationMenuLink>
                                     </li>
                                 </ul>
                             </NavigationMenuContent>

@@ -299,6 +299,12 @@ export async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: 
 
 
 //MARK: Helper function to convert ReadableStream to Buffer
+export async function cancelStripeSubscription(subscriptionId: string): Promise<void> {
+    const stripe = await getStripeInstance();
+    await stripe.subscriptions.cancel(subscriptionId);
+}
+
+//MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
         const chunks: Buffer[] = [];

@@ -1,8 +1,13 @@
 'use client'
 import { Subscription } from "@/types/subscription-types";
 import { DateDisplay } from "../../date-display";
+import { Button } from "@/components/ui/button";
+import { useCancelSubscription } from "@/lib/mutations/mutations";
+import EllipsisSpinner from "../../loaders/EllipsisSpinner";
+import CancelSubscriptionButton from "../../buttons/cancel-subscription-button";
 
 export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
+
     return (
         <div className="grid grid-cols-1 gap-4">
             {subscriptions.map((subscription) => (
@@ -14,6 +19,7 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
                         </span>
                     </div>
                     <p className="text-sm text-gray-500">{subscription.customer.email}</p>
+                    <CancelSubscriptionButton subscriptionId={subscription.id} />
                     <div className="mt-4">
                         <p className="text-sm font-medium text-gray-700">Subscription Details</p>
                         <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
