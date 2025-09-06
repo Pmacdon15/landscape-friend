@@ -72,7 +72,8 @@ export interface StripeQuote {
     client_name?: string;
     lines?: {
         data: StripeLineItem[];
-    };
+    };    
+    
 }
 
 

@@ -2,7 +2,7 @@ import { StripeQuote } from "@/types/stripe-types";
 import ManageQuoteButton from "../../buttons/manage-quote-button";
 
 export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
-    const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white w-full md:w-[48%] lg:w-[30%] xl:w-[30%] mx-auto";    
+    const cardClassName = "p-4 border rounded-lg shadow-md mb-4 bg-white w-full md:w-[48%] lg:w-[30%] xl:w-[30%] mx-auto";
     return (
         <div className="flex flex-wrap justify-between ">
             {quotes && quotes !== undefined && quotes.map((quote) => (
@@ -24,9 +24,23 @@ export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
                         <span className="font-bold">Expires At:</span>
                         <span>{quote.expires_at !== null ? new Date(quote.expires_at * 1000).toLocaleDateString() : 'N/A'}</span>
                     </div>
+                    <div className="mb-2">
+                        <span className="font-bold">Line Items:</span>
+                        <ul className="list-disc list-inside">
+                            {quote.lines?.data && quote.lines.data.length > 0 ? (
+                                quote.lines.data.map((item, index) => (
+                                    <li key={index}>
+                                        {item.description} - ${(item.amount ).toFixed(2)}
+                                    </li>
+                                ))
+                            ) : (
+                                <li>No line items</li>
+                            )}
+                        </ul>
+                    </div>
                     <div className="flex flex-wrap justify-center w-full gap-4 ">
                         {quote.status == "draft" && <ManageQuoteButton action="edit" quoteId={quote.id} />}
-                         {quote.status == "draft" && <ManageQuoteButton action="send" quoteId={quote.id} />}
+                        {quote.status == "draft" && <ManageQuoteButton action="send" quoteId={quote.id} />}
                         {quote.status == "open" && <ManageQuoteButton action="accept" quoteId={quote.id} />}
                         {quote.status == "open" && <ManageQuoteButton action="cancel" quoteId={quote.id} />}
                     </div>
