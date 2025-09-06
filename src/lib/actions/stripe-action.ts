@@ -4,7 +4,6 @@ import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement, schemaCreateSubscription } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
-import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/utils/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/stripe-db";
 import { MarkQuoteProps } from "@/types/stripe-types";
@@ -14,23 +13,22 @@ import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
 import { hasStripAPIKey } from "../dal/stripe-dal";
 import { fetchClientNamesByStripeIds } from "../dal/clients-dal";
 import { z } from 'zod';
-import { JwtPayload } from '@clerk/types';
 import { triggerNotificationSendToAdmin } from "../utils/novu";
-
-
-//MARK: Helper function to convert ReadableStream to Buffer
-const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
-    return new Promise((resolve, reject) => {
-        const chunks: Buffer[] = [];
-        stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-        stream.on('end', () => resolve(Buffer.concat(chunks)));
-        stream.on('error', reject);
-    });
-};
-
 import { createStripeWebhook } from "../utils/stripe-utils";
 import { markPaidDb } from "../DB/clients-db";
 import { auth } from "@clerk/nextjs/server";
+
+
+//MARK: Helper function to convert ReadableStream to Buffer
+// const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
+//     return new Promise((resolve, reject) => {
+//         const chunks: Buffer[] = [];
+//         stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+//         stream.on('end', () => resolve(Buffer.concat(chunks)));
+//         stream.on('error', reject);
+//     });
+// };
+
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
