@@ -16,7 +16,7 @@ export interface Client {
     email_address: string;
     address: string;
     amount_owing: number;
-    price_per_cut: number;
+    price_per_month_grass: number;
     price_per_month_snow: number;
     cutting_week: number;
     cutting_day: string;
@@ -39,7 +39,7 @@ export interface ClientResult {
     email_address: string;
     address: string;
     amount_owing: number;
-    price_per_cut: number;
+    price_per_month_grass: number;
     price_per_month_snow: number;
     cutting_week: number;
     cutting_day: string;

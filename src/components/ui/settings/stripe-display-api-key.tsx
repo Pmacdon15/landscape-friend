@@ -25,18 +25,17 @@ export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
                     </Button>
                     <EditSettingSheet
                         prompt={"Edit Stripe API Key"}
-                        children={
-                            <SettingsForm>
-                                <InputField
-                                    name={"api_key"}
-                                    type={"textarea"}
-                                    placeholder={"Your Stripe API Key"}
-                                    defaultValue={apiKey}
-                                />
-                                <UpdateStripeApiKeyButton />
-                            </SettingsForm>
-                        }
-                    />
+                    >
+                        <SettingsForm>
+                            <InputField
+                                name={"api_key"}
+                                type={"textarea"}
+                                placeholder={"Your Stripe API Key"}
+                                defaultValue={apiKey}
+                            />
+                            <UpdateStripeApiKeyButton />
+                        </SettingsForm>
+                    </EditSettingSheet>
                 </div>
             }>
             <p className="break-all">

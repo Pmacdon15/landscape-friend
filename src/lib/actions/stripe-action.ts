@@ -1,7 +1,7 @@
 'use server'
-import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/utils/stripe-utils";
+import { createNotificationPayloadInvoice, createNotificationPayloadQuote, createStripeSubscriptionQuote, findOrCreateStripeCustomerAndLinkClient, sendQuote } from "@/lib/utils/stripe-utils";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
+import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement, schemaCreateSubscription } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
 import { Buffer } from 'buffer';
@@ -30,6 +30,7 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
 
 import { createStripeWebhook } from "../utils/stripe-utils";
 import { markPaidDb } from "../DB/clients-db";
+import { auth } from "@clerk/nextjs/server";
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
@@ -231,7 +232,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                 }
             }
             triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', await createNotificationPayloadInvoice(updatedInvoice, clientName));
-            //MARK:look here TODO
+
         } else if (id.startsWith('qt_')) {
             // Quote update logic
             const line_items = await Promise.all(lines.map(async (line) => {
@@ -368,56 +369,6 @@ export async function markInvoiceVoid(invoiceId: string) {
     }
 }
 
-async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayload) {
-    try {
-        const quote = await stripe.quotes.retrieve(quoteId);
-        if (!quote) throw new Error("Quote not found");
-
-        const customerId = typeof quote.customer === 'string' ? quote.customer : quote.customer?.id;
-        if (!customerId) throw new Error("Customer ID not found for quote.");
-
-        const customer = await stripe.customers.retrieve(customerId);
-        if (customer.deleted) throw new Error("Customer has been deleted.");
-
-        const customerEmail = customer.email;
-        const customerName = customer.name || 'Valued Customer';
-
-        if (!customerEmail) throw new Error("Customer email not found.");
-
-        const pdfStream = await stripe.quotes.pdf(quoteId);
-        const pdfContent = await streamToBuffer(pdfStream);
-
-        const attachments = [{
-            filename: `quote_${quoteId}.pdf`,
-            content: pdfContent,
-        }];
-
-        const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string });
-
-        const emailSubject = `Your Quote from ${companyName}`;
-        const emailBody = `Dear ${customerName},
-
-                            Please find your quote attached and reply to this email to let us know you accept.
-                        
-                            Thank you for your business!`;
-
-        const formDataForEmail = new FormData();
-        formDataForEmail.append('title', emailSubject);
-        formDataForEmail.append('message', emailBody);
-
-        const emailResult = await sendEmailWithTemplate(formDataForEmail, customerEmail, attachments);
-
-        if (!emailResult) {
-            throw new Error("Failed to send quote email.");
-        }
-
-        // console.log("Quote re-sent and email sent successfully:", quoteId);
-        return { success: true, message: "Quote sent successfully." };
-    } catch (error) {
-        console.error(error);
-        throw new Error(`Failed to resend quote ${quoteId}: ${error instanceof Error ? error.message : String(error)}`);
-    }
-}
 
 async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
     const updatedQuote = await stripe.quotes.retrieve(quoteId);
@@ -432,7 +383,7 @@ async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
     return { updatedQuote, clientName };
 }
 
-
+//MARK: Mark quote
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     const { isAdmin, userId, orgId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
@@ -467,7 +418,45 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     }
 }
 
-
+//MARK: Has stripe api key
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();
+}
+
+
+//Mark:Create Subscription
+export async function createSubscriptionQuoteAction(formData: FormData, snow: boolean) {
+    const { orgId, userId, sessionClaims } = await auth.protect();
+    const organizationId = orgId || userId;
+
+    if (!organizationId) {
+        throw new Error("Unauthorized");
+    }
+
+    const parsed = schemaCreateSubscription.safeParse({
+        clientName: formData.get('clientName'),
+        clientEmail: formData.get('clientEmail'),
+        phone_number: formData.get('phone_number'),
+        address: formData.get('address'),
+        serviceType: formData.get('serviceType'),
+        price_per_month: parseFloat(formData.get('price_per_month') as string),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate') || undefined,
+        notes: formData.get('notes') || undefined,
+        organization_id: organizationId,
+        collectionMethod: formData.get('collectionMethod') || undefined, // Add this line
+    });
+
+    if (!parsed.success) {
+        console.error("Validation Error:", parsed.error);
+        throw new Error("Invalid form data");
+    }
+
+    try {
+        const subscription = await createStripeSubscriptionQuote(parsed.data, sessionClaims, snow);
+        return { success: true, subscription: { id: subscription.id, status: subscription.status } };
+    } catch (error) {
+        console.error("Error creating subscription:", error);
+        throw new Error("Failed to create subscription");
+    }
 }

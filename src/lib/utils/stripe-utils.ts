@@ -2,7 +2,11 @@ import Stripe from 'stripe';
 import { addClientDB, updateClientStripeCustomerIdDb } from '@/lib/DB/clients-db';
 import { fetchStripAPIKeyDb, storeWebhookInfoDb, fetchWebhookIdDb, deleteWebhookIdDb } from '@/lib/DB/stripe-db';
 import { getStripeInstance } from '../dal/stripe-dal';
-
+import { schemaCreateSubscription } from '../zod/schemas';
+import z from 'zod';
+import { sendEmailWithTemplate } from '../actions/sendEmails-action';
+import { JwtPayload } from '@clerk/types';
+import { formatCompanyName } from './resend';
 let stripe: Stripe | null = null;
 
 export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {
@@ -57,7 +61,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
             }
         } catch (error) {
             console.error("Error in updateClientStripeCustomerIdDb or subsequent addClientDB:", error);
-            throw error; 
+            throw error;
         }
     } else {
         console.log("No existing Stripe customer found, creating new one.");
@@ -79,7 +83,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
             await addClientDB(newClientData, effectiveOrgId as string);
         } catch (error) {
             console.error("Error in creating Stripe customer or addClientDB:", error);
-            throw error; 
+            throw error;
         }
     }
     return customerId;
@@ -150,3 +154,156 @@ export const createNotificationPayloadInvoice = async (invoice: Stripe.Response<
         name: clientName,
     },
 });
+
+
+export async function getStripeCustomerByEmail(email: string): Promise<Stripe.Customer | null> {
+    const stripe = await getStripeInstance();
+    const customers = await stripe.customers.list({ email: email, limit: 1 });
+    return customers.data.length > 0 ? customers.data[0] : null;
+}
+
+export async function createStripeCustomer(customerData: {
+    email: string;
+    name?: string;
+    address?: { line1: string };
+    phone?: string;
+    metadata?: { [key: string]: string };
+}): Promise<Stripe.Customer> {
+    const stripe = await getStripeInstance();
+    const customer = await stripe.customers.create(customerData);
+    return customer;
+}
+
+export async function createStripeSubscriptionQuote(
+    subscriptionData: z.infer<typeof schemaCreateSubscription>,
+    sessionClaims: JwtPayload,
+    snow: boolean
+) {
+    const {
+        clientEmail,
+        clientName,
+        address,
+        phone_number,
+        price_per_month,
+        serviceType,
+        startDate,
+        endDate,
+        organization_id,
+    } = subscriptionData;
+
+    const stripe = await getStripeInstanceUnprotected(organization_id);
+    if (!stripe) throw new Error("No Stripe instance");
+
+    // 1. Ensure customer exists
+    let customer = await getStripeCustomerByEmail(clientEmail);
+    if (!customer) {
+        customer = await stripe.customers.create({
+            email: clientEmail,
+            name: clientName,
+            address: { line1: address },
+            phone: phone_number,
+            metadata: { organization_id },
+        });
+    }
+
+    // 2. Create product + recurring price
+    const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${clientName}`;
+    const product = await stripe.products.create({
+        name: productName,
+        metadata: { organization_id, serviceType },
+    });
+
+    const price = await stripe.prices.create({
+        unit_amount: Math.round(price_per_month * 100),
+        currency: "cad",
+        recurring: { interval: "month" },
+        product: product.id,
+        metadata: { organization_id, serviceType },
+    });
+
+    // 3. Create a Quote with subscription line items
+    const quote = await stripe.quotes.create({
+        customer: customer.id,
+        line_items: [
+            {
+                price: price.id,
+                quantity: 1,
+            },
+        ],
+        metadata: {
+            organization_id,
+            clientEmail,
+            serviceType,
+            startDate,
+            endDate: endDate || "",
+        },
+    });
+
+    const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id);
+    await sendQuote(quote.id, stripe, sessionClaims);
+    return finalizedQuote;
+}
+
+
+
+export async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayload) {
+    try {
+        const quote = await stripe.quotes.retrieve(quoteId);
+        if (!quote) throw new Error("Quote not found");
+
+        const customerId = typeof quote.customer === 'string' ? quote.customer : quote.customer?.id;
+        if (!customerId) throw new Error("Customer ID not found for quote.");
+
+        const customer = await stripe.customers.retrieve(customerId);
+        if (customer.deleted) throw new Error("Customer has been deleted.");
+
+        const customerEmail = customer.email;
+        const customerName = customer.name || 'Valued Customer';
+
+        if (!customerEmail) throw new Error("Customer email not found.");
+
+        const pdfStream = await stripe.quotes.pdf(quoteId);
+        const pdfContent = await streamToBuffer(pdfStream);
+
+        const attachments = [{
+            filename: `quote_${quoteId}.pdf`,
+            content: pdfContent,
+        }];
+
+        const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string });
+
+        const emailSubject = `Your Quote from ${companyName}`;
+        const emailBody = `Dear ${customerName},
+
+                            Please find your quote attached and reply to this email to let us know you accept.
+                        
+                            Thank you for your business!`;
+
+        const formDataForEmail = new FormData();
+        formDataForEmail.append('title', emailSubject);
+        formDataForEmail.append('message', emailBody);
+
+        const emailResult = await sendEmailWithTemplate(formDataForEmail, customerEmail, attachments);
+
+        if (!emailResult) {
+            throw new Error("Failed to send quote email.");
+        }
+
+        // console.log("Quote re-sent and email sent successfully:", quoteId);
+        return { success: true, message: "Quote sent successfully." };
+    } catch (error) {
+        console.error(error);
+        throw new Error(`Failed to resend quote ${quoteId}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+}
+
+
+//MARK: Helper function to convert ReadableStream to Buffer
+const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
+    return new Promise((resolve, reject) => {
+        const chunks: Buffer[] = [];
+        stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+        stream.on('end', () => resolve(Buffer.concat(chunks)));
+        stream.on('error', reject);
+    });
+};

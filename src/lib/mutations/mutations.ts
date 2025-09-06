@@ -1,14 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addClient, deleteClient, updateClientPricePer, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
-import { markYardServiced,assignGrassCutting } from "@/lib/actions/cuts-action";
+import { addClient, deleteClient, updateClientPricePerMonth, updateCuttingDay, deleteSiteMap } from "@/lib/actions/clients-action";
+import { markYardServiced, assignGrassCutting } from "@/lib/actions/cuts-action";
 import { sendEmailWithTemplate, sendNewsLetter } from "@/lib/actions/sendEmails-action";
-import { createStripeQuote, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
+import { createStripeQuote, createSubscriptionQuoteAction, markInvoicePaid, markInvoiceVoid, markQuote, resendInvoice, updateStripeAPIKey, updateStripeDocument } from "@/lib/actions/stripe-action";
 import revalidatePathAction from "@/lib/actions/revalidatePath-action";
 import { assignSnowClearing } from "@/lib/actions/snow-action";
 import { uploadDrawing, uploadImage } from "@/lib/actions/blobs-action";
 import { MarkQuoteProps } from "@/types/stripe-types";
 import { schemaCreateQuote, schemaUpdateStatement } from '@/lib/zod/schemas';
 import { z } from 'zod';
+
 //MARK: Add client
 export const useAddClient = () => {
     return useMutation({
@@ -86,8 +87,8 @@ export const useUploadDrawing = () => {
 //MARK:Update client price per cut
 export const useUpdateClientPricePer = () => {
     return useMutation({
-        mutationFn: ({ clientId, pricePerCut, snow = false }: { clientId: number, pricePerCut: number, snow: boolean }) => {
-            return updateClientPricePer(clientId, pricePerCut, snow);
+        mutationFn: ({ clientId, pricePerMonthGrass, snow = false }: { clientId: number, pricePerMonthGrass: number, snow: boolean }) => {
+            return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow);
         },
         onError: (error) => {
             console.error('Mutation error:', error);
@@ -184,6 +185,22 @@ export const useCreateStripeQuote = () => {
                 throw new Error("Failed to create Stripe quote");
             }
             return result;
+        },
+    });
+};
+
+//MARK:Create stripe subscription
+export const useCreateStripeSubscriptionQuote = (snow: boolean) => {
+    return useMutation({
+        mutationFn: async (formData: FormData) => {
+            const result = await createSubscriptionQuoteAction(formData, snow);
+            if (!result.success) {
+                throw new Error("Failed to create Stripe subscription");
+            }
+            return result;
+        },
+        onSuccess: () => {
+            revalidatePathAction("/billing/manage/subscriptions"); // Assuming a subscriptions management page
         },
     });
 };

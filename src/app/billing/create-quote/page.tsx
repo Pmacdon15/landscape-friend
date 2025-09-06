@@ -1,7 +1,7 @@
 import FillFormContainer from '@/components/ui/containers/fill-form-container';
 import FormContainer from '@/components/ui/containers/form-container';
+import { FormSelector } from '@/components/ui/forms/form-selector'; // Import the new component
 import FormHeader from '@/components/ui/header/form-header';
-import { CreateQuoteForm } from '@/components/ui/stripe-forms/stripe-quote-form/create-quote-form';
 import { isOrgAdmin } from "@/lib/utils/clerk";
 
 export default async function SendQuotePage() {
@@ -15,10 +15,7 @@ export default async function SendQuotePage() {
   return (
     <FormContainer>
       <FillFormContainer>
-        <FormHeader text={'Create Stripe Quote'} />
-        <div className="p-4 border rounded-md shadow-sm">
-          <CreateQuoteForm organizationId={organizationId} />
-        </div>
+        <FormSelector organizationId={organizationId} />
       </FillFormContainer>
     </FormContainer >
   );

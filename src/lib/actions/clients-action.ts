@@ -2,7 +2,7 @@
 import { countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/clients-db";
 import { getOrganizationSettings } from "@/lib/DB/org-db";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerMonth, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
 import { triggerNotificationSendToAdmin } from "../utils/novu";
 
 import { findOrCreateStripeCustomerAndLinkClient } from "../utils/stripe-utils";
@@ -75,14 +75,15 @@ export async function deleteClient(clientId: number) {
     }
 }
 
-export async function updateClientPricePer(clientId: number, pricePerCut: number, snow: boolean) {
+export async function updateClientPricePerMonth(clientId: number, price: number, snow: boolean) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
-    const validatedFields = schemaUpdatePricePerCut.safeParse({
+    const validatedFields = schemaUpdatePricePerMonth.safeParse({
         clientId: clientId,
-        pricePerCut: pricePerCut,
+        pricePerMonthGrass: snow ? undefined : price,
+        pricePerMonthSnow: snow ? price : undefined,
         snow: snow
     });
 

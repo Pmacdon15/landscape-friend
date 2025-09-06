@@ -163,7 +163,11 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         }
 
         while (hasMore) {
-            const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({ ...params, starting_after: startingAfter });
+            const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({
+                ...params,
+                starting_after: startingAfter,
+                expand: ['data.line_items']
+            });
             allQuotes = allQuotes.concat(quoteBatch.data);
             hasMore = quoteBatch.has_more;
             if (hasMore) {
@@ -200,16 +204,25 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
 
         const strippedQuotes = paginatedQuotes.map((quote) => ({
-            id: quote.id,
-            object: quote.object,
-            amount_total: quote.amount_total,
-            customer: quote.customer,
-            status: quote.status as string,
-            expires_at: quote.expires_at,
-            created: quote.created,
-            client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
-        }));
-
+    id: quote.id,
+    object: quote.object,
+    amount_total: quote.amount_total,
+    customer: quote.customer,
+    status: quote.status as string,
+    expires_at: quote.expires_at,
+    created: quote.created,
+    client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
+    lines: {
+        data: (quote.line_items?.data || []).map((lineItem) => ({
+            id: lineItem.id,
+            object: lineItem.object,
+            amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
+            currency: lineItem.currency,
+            description: lineItem.description,
+            quantity: lineItem.quantity || 0,
+        })),
+    },
+}));
         return { quotes: strippedQuotes as StripeQuote[], totalPages };
     } catch (error) {
         console.error(error);
@@ -253,7 +266,7 @@ export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
                 id: lineItem.id,
                 object: lineItem.object,
                 // Use unit_amount if available, fallback to amount / quantity
-               amount: ((lineItem.amount / (lineItem.quantity || 1)) / 100),
+                amount: ((lineItem.amount / (lineItem.quantity || 1)) / 100),
                 currency: lineItem.currency,
                 description: lineItem.description,
                 quantity: lineItem.quantity || 0,
@@ -299,17 +312,3 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
 
     return plainQuote;
 }
-
-// export async function createOrgWebhook() {
-//     const { isAdmin, orgId, userId } = await isOrgAdmin();
-
-//     if (!orgId && !userId) throw new Error("Must be logged in.");
-//     if (!isAdmin) throw new Error("Only admins can create webhooks.");
-
-//     const apiKeyResponse = await fetchStripAPIKeyDb(orgId || userId!);
-//     if (!apiKeyResponse || !apiKeyResponse.api_key) {
-//         throw new Error("Stripe API key not found.");
-//     }
-
-//     await createStripeWebhook(apiKeyResponse.api_key, orgId || userId!);
-// }
