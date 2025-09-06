@@ -1,9 +1,14 @@
 import { fetchStripAPIKeyDb } from "@/lib/DB/stripe-db";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/stripe-types";
+import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote, FetchSubscriptionsResponse } from "@/types/stripe-types";
+import { Subscription } from "@/types/subscription-types";
+
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { fetchClientNamesByStripeIds } from "./clients-dal";
+
+
+
 
 let stripe: Stripe | null = null;
 
@@ -311,4 +316,101 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
     };
 
     return plainQuote;
+}
+
+export async function fetchSubscriptions(typesOfSubscriptions: string, page: number, searchTerm: string): Promise<FetchSubscriptionsResponse> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const stripe = await getStripeInstance();
+    const pageSize = Number(process.env.PAGE_SIZE) || 10;
+
+    try {
+        let allSubscriptions: Stripe.Subscription[] = [];
+        let hasMore = true;
+        let startingAfter: string | undefined = undefined;
+
+        const params: Stripe.SubscriptionListParams = { limit: 100, expand: ['data.customer'] };
+        if (typesOfSubscriptions && ['active', 'canceled', 'incomplete', 'trialing'].includes(typesOfSubscriptions)) {
+            params.status = typesOfSubscriptions as 'active' | 'canceled' | 'incomplete' | 'trialing';
+        }
+
+        while (hasMore) {
+            const subscriptionBatch: Stripe.ApiList<Stripe.Subscription> = await stripe.subscriptions.list({ ...params, starting_after: startingAfter });
+            allSubscriptions = allSubscriptions.concat(subscriptionBatch.data);
+            hasMore = subscriptionBatch.has_more;
+            if (hasMore) {
+                startingAfter = subscriptionBatch.data[subscriptionBatch.data.length - 1].id;
+            }
+        }
+
+        let filteredSubscriptions = allSubscriptions;
+        if (searchTerm) {
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            filteredSubscriptions = allSubscriptions.filter(subscription => {
+                const customer = subscription.customer as Stripe.Customer;
+                return (customer.name && customer.name.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (customer.email && customer.email.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (subscription.id && subscription.id.toLowerCase().includes(lowerCaseSearchTerm))
+            }
+            );
+        }
+
+        const totalSubscriptions = filteredSubscriptions.length;
+        const totalPages = Math.ceil(totalSubscriptions / pageSize);
+        const offset = (page - 1) * pageSize;
+        const paginatedSubscriptions = filteredSubscriptions.slice(offset, offset + pageSize);
+
+        const customerIds = paginatedSubscriptions.map(subscription => (subscription.customer as Stripe.Customer).id);
+        const clientNamesResult = await fetchClientNamesByStripeIds(customerIds);
+
+        if (clientNamesResult instanceof Error) {
+            throw clientNamesResult;
+        }
+
+        const clientNamesMap = new Map<string, string>();
+        clientNamesResult.forEach(client => {
+            if (client.stripe_customer_id && client.full_name) {
+                clientNamesMap.set(client.stripe_customer_id, client.full_name);
+            }
+        });
+
+        const strippedSubscriptions = paginatedSubscriptions.map((subscription) => ({
+            id: subscription.id,
+            object: subscription.object,
+            status: subscription.status,
+            start_date: subscription.start_date,
+            cancel_at_period_end: subscription.cancel_at_period_end,
+            canceled_at: subscription.canceled_at,
+            created: subscription.created,
+            current_period_end: subscription.current_period_end,
+            current_period_start: subscription.current_period_start,
+            customer: {
+                id: (subscription.customer as Stripe.Customer).id,
+                name: (subscription.customer as Stripe.Customer).name || undefined,
+                email: (subscription.customer as Stripe.Customer).email || undefined,
+                client_name: clientNamesMap.get((subscription.customer as Stripe.Customer).id),
+            },
+            items: {
+                data: subscription.items.data.map((item) => ({
+                    id: item.id,
+                    object: item.object,
+                    quantity: item.quantity || 0,
+                    price: {
+                        id: item.price.id,
+                        object: item.price.object,
+                        active: item.price.active,
+                        currency: item.price.currency,
+                        product: typeof item.price.product === 'string' ? item.price.product : item.price.product.id,
+                        unit_amount: item.price.unit_amount || 0,
+                    }
+                }))
+            }
+        }));
+
+        return { subscriptions: strippedSubscriptions as Subscription[], totalPages };
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch subscriptions');
+    }
 }

@@ -1,3 +1,10 @@
+import { Subscription } from "./subscription-types";
+
+export interface FetchSubscriptionsResponse {
+    subscriptions: Subscription[];
+    totalPages: number;
+}
+
 export interface FetchInvoicesResponse {
     invoices: StripeInvoice[];
     totalPages: number;

@@ -34,6 +34,9 @@ export default function SearchForm({ variant = 'default' }: { variant?: SearchFo
       {variant === 'quotes' &&
         <BillingStatusSelector variant='quotes' />
       }
+      {variant === 'subscriptions' &&
+        <BillingStatusSelector variant='subscriptions' />
+      }
     </div>
   );
 }
