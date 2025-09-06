@@ -1,5 +1,5 @@
 'use client';
-import { useCreateStripeSubscription } from '@/lib/mutations/mutations';
+import { useCreateStripeSubscription, useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations';
 import Spinner from '@/components/ui/loaders/spinner';
 import { schemaCreateSubscription } from '@/lib/zod/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +14,7 @@ interface CreateSubscriptionFormProps {
 }
 
 export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationId }) => {
-  const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscription();
+  const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscriptionQuote();
 
   const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof schemaCreateSubscription>>({
     resolver: zodResolver(schemaCreateSubscription),
