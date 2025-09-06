@@ -1,9 +1,6 @@
 'use client'
 import { Subscription } from "@/types/subscription-types";
 import { DateDisplay } from "../../date-display";
-import { Button } from "@/components/ui/button";
-import { useCancelSubscription } from "@/lib/mutations/mutations";
-import EllipsisSpinner from "../../loaders/EllipsisSpinner";
 import CancelSubscriptionButton from "../../buttons/cancel-subscription-button";
 
 export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {

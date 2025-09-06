@@ -377,6 +377,26 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             }
         });
 
+        const uniqueProductIds = new Set<string>();
+        allSubscriptions.forEach(subscription => {
+            subscription.items.data.forEach(item => {
+                if (typeof item.price.product === 'string') {
+                    uniqueProductIds.add(item.price.product);
+                }
+            });
+        });
+
+        const productNamesMap = new Map<string, string>();
+        for (const productId of uniqueProductIds) {
+            try {
+                const product = await stripe.products.retrieve(productId);
+                productNamesMap.set(productId, product.name);
+            } catch (error) {
+                console.error(`Error fetching product ${productId}:`, error);
+                productNamesMap.set(productId, 'Unknown Product'); // Fallback
+            }
+        }
+
         const strippedSubscriptions = paginatedSubscriptions.map((subscription) => ({
             id: subscription.id,
             object: subscription.object,
@@ -404,7 +424,7 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
                         object: item.price.object,
                         active: item.price.active,
                         currency: item.price.currency,
-                        product: typeof item.price.product === 'string' ? item.price.product : item.price.product.id,
+                        product: productNamesMap.get(item.price.product as string) || 'Unknown Product',
                         unit_amount: item.price.unit_amount || 0,
                     }
                 }))
