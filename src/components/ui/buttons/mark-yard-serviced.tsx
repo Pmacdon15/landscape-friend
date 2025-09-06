@@ -15,8 +15,66 @@ export default function MarkYardServiced({
   snow?: boolean;
 }) {
   const { mutate, isError, isPending } = useMarkYardServiced();
-  const [image, setImage] = useState<File | null>(null);
+  const [images, setImages] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const addTimestampToImage = async (file: File): Promise<File> => {
+  const img = document.createElement("img");
+  const url = URL.createObjectURL(file);
+
+  return new Promise<File>((resolve, reject) => {
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas context not available"));
+        return;
+      }
+
+      // Draw the image
+      ctx.drawImage(img, 0, 0);
+      //Draw rectangle (bakgroung)
+      ctx.fillStyle = "black";
+      ctx.fillRect(0,0,560,68)
+      
+      // Add timestamp text
+      const timestamp = new Date().toLocaleString();
+      ctx.font = "48px Arial";
+      ctx.fillStyle = "red";
+      // ctx.strokeStyle = "white";
+      ctx.lineWidth = 2;
+      ctx.textBaseline = "top";
+
+      const padding = 10;
+      const x = padding;
+      const y =  padding;
+      
+      // ctx.strokeText(timestamp, x, y);
+      ctx.fillText(timestamp, x, y);
+
+      // Convert canvas back to Blob
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const newFile = new File([blob], file.name, { type: file.type });
+          resolve(newFile);
+        } else {
+          reject(new Error("Failed to convert canvas to Blob"));
+        }
+      }, file.type);
+    };
+
+    img.onerror = () => {
+      reject(new Error("Failed to load image"));
+    };
+
+    img.src = url;
+  });
+
+  
+};
 
   function isMobileDevice() {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -36,7 +94,10 @@ export default function MarkYardServiced({
       if (selectedFile.size / 1024 / 1024 > 1) {
         compressedFile = await imageCompression(selectedFile, options);
       }
-      setImage(compressedFile);
+
+      let imageWithTimeStamp = await addTimestampToImage(compressedFile)
+
+      setImages([...images, imageWithTimeStamp]);
     }
   }
   if (!isMobileDevice())
@@ -45,45 +106,47 @@ export default function MarkYardServiced({
         <h1>Device not supported for complete services</h1>
       </div>
     );
+
   return (
     <>
       {isError && <p className="text-red-500">Error Marking Cut</p>}
-      {!image && (
-        <label>
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept="image/*"
-            name="image"
-            onChange={handleFileChange}
-            className="hidden"
-            capture
-            required
-          />
-          <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
-            <div className="text-6xl">📸</div>
-            <div className="px-2 max-w-full truncate">
-              Take a photo to complete the service
-            </div>
+      <label>
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept="image/*"
+          name="image"
+          onChange={handleFileChange}
+          className="hidden"
+          capture
+          required
+        />
+        <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
+          <div className="text-6xl">📸</div>
+          <div className="px-2 max-w-full truncate">
+            {images.length == 0
+              ? "Take a photo to complete the service"
+              : "Add more photos"}
           </div>
-        </label>
-      )}
-      {image && (
+        </div>
+      </label>
+      {images.length > 0 && (
         <>
-          {image && (
+          {images.map((img, index) => (
             <Image
+              key={index}
               width={400}
               height={400}
-              src={URL.createObjectURL(new Blob([image]))}
+              src={URL.createObjectURL(new Blob([img]))}
               alt={"Site Serviced Photo"}
             />
-          )}
+          ))}
 
           <Button
             variant={"outline"}
             onClick={() =>
-              image
-                ? mutate({ clientId, date: serviceDate, snow, image })
+              images
+                ? mutate({ clientId, date: serviceDate, snow, images })
                 : null
             }
             disabled={isPending}

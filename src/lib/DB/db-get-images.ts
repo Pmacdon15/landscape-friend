@@ -1,22 +1,28 @@
 import { neon } from "@neondatabase/serverless";
 
 //MARK: Get Servided URLs
-export async function getServicedImagesUrls(clientId:number): Promise<{ date:Date, image_url: string}[]> {
+export async function getServicedImagesUrls(clientId:number): Promise<{ date:Date, imageurl: string}[]> {
  
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
-    const result = await (sql`
-    (
-      SELECT cutting_date AS date, image_url
-      FROM yards_marked_cut
-      WHERE client_id = ${clientId}
+    const result = await (sql` 
+      (
+      SELECT 
+        ymc.cutting_date AS date,
+        img.imageurl
+        FROM yards_marked_cut ymc
+        JOIN images_serviced img ON img.fk_cut_id = ymc.id
+        WHERE ymc.client_id = ${clientId}
       UNION
-      SELECT clearing_date AS date, image_url
-      FROM yards_marked_clear
-      WHERE client_id = ${clientId}
-    )
-    ORDER BY date DESC
-    `) as { date: Date, image_url: string}[];
+      SELECT 
+      ymc.clearing_date AS date,
+      img.imageurl
+        FROM yards_marked_clear ymc
+        JOIN images_serviced img ON img.fk_clear_id = ymc.id
+        WHERE ymc.client_id = ${clientId}
+      )
+      ORDER BY date DESC
+    `) as { date: Date, imageurl: string}[];
     console.log(result)
     return result;
   } catch (error) {

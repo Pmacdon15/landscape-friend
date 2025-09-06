@@ -22,6 +22,10 @@ DROP TABLE IF EXISTS users CASCADE;
 
 DROP TABLE IF EXISTS images CASCADE;
 
+DROP TABLE IF EXISTS images_serviced CASCADE;
+
+
+
 CREATE TABLE users (
     id VARCHAR(100) UNIQUE PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -103,7 +107,6 @@ CREATE TABLE yards_marked_cut (
     cutting_date DATE NOT NULL,
     client_id INT NOT NULL,
     assigned_to VARCHAR(100) NOT NULL,
-    image_url text NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     UNIQUE (client_id, cutting_date)
 );
@@ -113,7 +116,6 @@ CREATE TABLE yards_marked_clear (
     clearing_date DATE NOT NULL,
     client_id INT NOT NULL,
     assigned_to VARCHAR(100) NOT NULL,
-    image_url text NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE CASCADE,
     UNIQUE (client_id, clearing_date)
@@ -132,10 +134,24 @@ CREATE TABLE snow_clearing_assignments (
 
 CREATE TABLE images (
     id SERIAL PRIMARY KEY,
-    customerID VARCHAR(255) NOT NULL,
+    customerID INT NOT NULL,
     imageURL TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    isActive BOOLEAN
+    isActive BOOLEAN,
+    Foreign Key (customerID) REFERENCES clients (id) ON DELETE CASCADE
+);
+
+CREATE TABLE images_serviced (
+    id SERIAL PRIMARY KEY,
+    imageURL TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    fk_cut_id INT,
+    fk_clear_id INT,
+    CONSTRAINT fk_cut FOREIGN KEY (fk_cut_id) REFERENCES yards_marked_cut (id) ON DELETE CASCADE,
+    CONSTRAINT fk_clear FOREIGN KEY (fk_clear_id) REFERENCES yards_marked_clear (id) ON DELETE CASCADE,
+    CONSTRAINT at_least_one_fk CHECK (
+        fk_cut_id IS NOT NULL OR fk_clear_id IS NOT NULL
+    )
 );
 
 -- SELECT * FROM images;

@@ -18,6 +18,7 @@ import Image from "next/image";
 export async function ViewSitePhotoSheet({client}:{client:Client}) {
 
     const imagesUrls = await getServicedImagesUrls(client.id);
+    console.log(`imagesUrls`)
     console.log(imagesUrls)
 
     return (
@@ -25,16 +26,16 @@ export async function ViewSitePhotoSheet({client}:{client:Client}) {
             <SheetTrigger asChild>
                 <button className="text-blue-500 underline w-full ">View Site Service Photos</button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="overflow-y-scroll">
                 <SheetHeader>
                     <SheetTitle>Site Serviced Photos</SheetTitle>
                     <SheetDescription>
-                        View phots of the serviced sites.
+                        View photos of the serviced sites.
                     </SheetDescription>
                 </SheetHeader>
                 {imagesUrls.map((imageUrl)=>(
-                    <div key={imageUrl.image_url}>
-                        <Image height={400} width={400} src={imageUrl.image_url} alt="photoServiced"/>
+                    <div className="my-2" key={imageUrl.imageurl}>
+                        <Image height={400} width={400} src={imageUrl.imageurl} alt="photoServiced"/>
                     </div>
 
                 ))}
