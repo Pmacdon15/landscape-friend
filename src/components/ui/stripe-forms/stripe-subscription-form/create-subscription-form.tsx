@@ -1,11 +1,13 @@
 'use client';
-import { useCreateStripeSubscription, useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations';
+import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations';
 import Spinner from '@/components/ui/loaders/spinner';
 import { schemaCreateSubscription } from '@/lib/zod/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 import InputField from '../shared/input';
+
+type CreateSubscriptionFormValues = z.infer<typeof schemaCreateSubscription>;
 import { AlertMessage } from '../shared/alert-message';
 import { Button } from '../../button';
 
@@ -30,13 +32,17 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
       endDate: '',
       notes: '',
       organization_id: organizationId,
-    },
+      collectionMethod: 'charge_automatically',
+    } as z.infer<typeof schemaCreateSubscription>, // Explicitly cast defaultValues
   });
 
   const onSubmit = (formData: z.infer<typeof schemaCreateSubscription>) => {
     const form = new FormData();
     for (const key in formData) {
-      form.append(key, (formData as any)[key]);
+      const value = formData[key as keyof typeof formData];
+      if (value !== undefined && value !== null) {
+        form.append(key, String(value));
+      }
     }
     mutate(form);
   };
@@ -86,7 +92,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
         </div>
       </form>
 
-      {isSuccess && data && <AlertMessage type="success" message="Subscription created successfully!" />}
+      {isSuccess && data && <AlertMessage type="success" message="Subscription Quote created successfully!" />}
       {isError && error && <AlertMessage type="error" message={`Error creating subscription: ${error.message}`} />}
     </>
   );

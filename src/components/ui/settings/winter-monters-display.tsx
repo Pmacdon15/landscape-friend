@@ -16,12 +16,11 @@ export default function DisplayWinterMonths({
             actions={
                 <EditSettingSheet
                     prompt={"Edit Winter Months"}
-                    children={
-                        <SettingsForm>
-                            <h1>test</h1>
-                        </SettingsForm>
-                    }
-                />
+                >
+                    <SettingsForm>
+                        <h1>test</h1>
+                    </SettingsForm>
+                </EditSettingSheet>
             }
         >
             <p>Starting: {startingMonth}</p>
