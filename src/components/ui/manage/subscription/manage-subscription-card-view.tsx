@@ -28,7 +28,6 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
                                 <li key={item.id} className="flex justify-between">
                                     <span>{item.price.product} (x{item.quantity})</span>
                                     <span>${(item.price.unit_amount / 100).toFixed(2)}</span>
-                                    <span>${(item.price.unit_amount / 100).toFixed(2)}</span>
                                 </li>
                             ))}
                         </ul>

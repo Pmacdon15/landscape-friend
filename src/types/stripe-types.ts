@@ -76,6 +76,8 @@ export interface StripeQuote {
     status: string;
     expires_at: number | null;
     created: number;
+    customer_name?: string;
+    customer_email?: string;
     client_name?: string;
     lines?: {
         data: StripeLineItem[];

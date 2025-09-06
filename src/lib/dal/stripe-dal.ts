@@ -171,7 +171,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({
                 ...params,
                 starting_after: startingAfter,
-                expand: ['data.line_items']
+                expand: ['data.line_items', 'data.customer']
             });
             allQuotes = allQuotes.concat(quoteBatch.data);
             hasMore = quoteBatch.has_more;
@@ -216,6 +216,8 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
     status: quote.status as string,
     expires_at: quote.expires_at,
     created: quote.created,
+    customer_name: typeof quote.customer === 'object' && quote.customer !== null && 'name' in quote.customer ? quote.customer.name : undefined,
+    customer_email: typeof quote.customer === 'object' && quote.customer !== null && 'email' in quote.customer ? quote.customer.email : undefined,
     client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
     lines: {
         data: (quote.line_items?.data || []).map((lineItem) => ({
