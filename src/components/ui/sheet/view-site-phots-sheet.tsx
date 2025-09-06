@@ -9,10 +9,17 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "../button"
+import { Client } from "@/types/clients-types"
+import { getServicedImagesUrls } from "@/lib/DB/db-get-images"
+import Image from "next/image";
 
 
 
-export function ViewSitePhotoSheet() {
+export async function ViewSitePhotoSheet({client}:{client:Client}) {
+
+    const imagesUrls = await getServicedImagesUrls(client.id);
+    console.log(imagesUrls)
+
     return (
         <Sheet>
             <SheetTrigger asChild>
@@ -25,7 +32,12 @@ export function ViewSitePhotoSheet() {
                         View phots of the serviced sites.
                     </SheetDescription>
                 </SheetHeader>
-                {/* Images here */}
+                {imagesUrls.map((imageUrl)=>(
+                    <div key={imageUrl.image_url}>
+                        <Image height={400} width={400} src={imageUrl.image_url} alt="photoServiced"/>
+                    </div>
+
+                ))}
                 <SheetFooter>
                     <SheetClose asChild>
                         <Button variant="outline">Close</Button>

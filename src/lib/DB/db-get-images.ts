@@ -16,7 +16,6 @@ export async function getServicedImagesUrls(clientId:number): Promise<{ date:Dat
       WHERE client_id = ${clientId}
     )
     ORDER BY date DESC
-    LIMIT 1;
     `) as { date: Date, image_url: string}[];
     console.log(result)
     return result;

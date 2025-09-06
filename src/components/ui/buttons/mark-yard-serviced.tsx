@@ -18,6 +18,10 @@ export default function MarkYardServiced({
   const [image, setImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  function isMobileDevice() {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -35,7 +39,12 @@ export default function MarkYardServiced({
       setImage(compressedFile);
     }
   }
-
+  if (!isMobileDevice())
+    return (
+      <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
+        <h1>Device not supported for complete services</h1>
+      </div>
+    );
   return (
     <>
       {isError && <p className="text-red-500">Error Marking Cut</p>}
@@ -48,11 +57,14 @@ export default function MarkYardServiced({
             name="image"
             onChange={handleFileChange}
             className="hidden"
+            capture
             required
           />
           <div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
             <div className="text-6xl">📸</div>
-            <div className="px-2 max-w-full truncate">Take a photo to complete the service</div>
+            <div className="px-2 max-w-full truncate">
+              Take a photo to complete the service
+            </div>
           </div>
         </label>
       )}
@@ -62,7 +74,9 @@ export default function MarkYardServiced({
             <Image
               width={400}
               height={400}
-              src={URL.createObjectURL(new Blob([image]))} alt={"Site Serviced Photo"} />
+              src={URL.createObjectURL(new Blob([image]))}
+              alt={"Site Serviced Photo"}
+            />
           )}
 
           <Button
