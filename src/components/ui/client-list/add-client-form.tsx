@@ -2,7 +2,9 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import SubmitAddClientToList from "../buttons/submit-add-client-to-list";
+import { useAddClient } from "@/lib/mutations/mutations";
+import { Button } from "../button";
+import EllipsisSpinner from "../loaders/EllipsisSpinner";
 import FormHeader from "../header/form-header";
 import { InputField } from "../inputs/input";
 import { AddClientFormSchema, AddClientFormValues } from '@/lib/zod/client-schemas';
@@ -16,10 +18,14 @@ export function AddClientForm() {
         resolver: zodResolver(AddClientFormSchema),
     });
 
+    const { mutate, isPending, isError } = useAddClient();
+
     const onSubmit = (data: AddClientFormValues) => {
-        console.log(data);
-        // Here you would typically call your server action or API to add the client
-        // For example: await addClientAction(data);
+        const formData = new FormData();
+        for (const key in data) {
+            formData.append(key, data[key as keyof AddClientFormValues] as string);
+        }
+        mutate(formData);
     };
 
     return (
@@ -53,7 +59,12 @@ export function AddClientForm() {
                 />
             </div>
             <div className="flex justify-end">
-                <SubmitAddClientToList />
+                <Button
+                    variant={"outline"}
+                    type="submit"
+                    disabled={isPending}
+                >{!isPending ? "Submit" : <div className="flex gap-4 justify-center"> Submitting <EllipsisSpinner /></div>}</Button>
+                {isError && <p className="text-red-500">Error Submitting</p>}
             </div>
         </form>
     );
