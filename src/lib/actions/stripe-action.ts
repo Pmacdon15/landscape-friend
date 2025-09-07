@@ -446,7 +446,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
                 const result = await stripe.subscriptionSchedules.create({
                     customer: customerId,
                     start_date: startDateTimestamp,
-                    end_behavior: 'release',
+                    end_behavior: 'cancel',
                     phases: [
                         {
                             items: [
