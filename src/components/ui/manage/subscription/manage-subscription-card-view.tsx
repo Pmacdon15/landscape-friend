@@ -46,7 +46,7 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
                                 ))}
                             </div>
                             :
-                            <p className="font-semibold">Keep this subscription as it will invoice for the client's first month</p>
+                            <p className="font-semibold">Keep this subscription as it will invoice for the client&apos;s first month</p>
                         }
                     </div>
                 );
