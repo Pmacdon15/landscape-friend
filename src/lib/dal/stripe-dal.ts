@@ -209,27 +209,27 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
 
         const strippedQuotes = paginatedQuotes.map((quote) => ({
-    id: quote.id,
-    object: quote.object,
-    amount_total: quote.amount_total,
-    customer: quote.customer,
-    status: quote.status as string,
-    expires_at: quote.expires_at,
-    created: quote.created,
-    customer_name: typeof quote.customer === 'object' && quote.customer !== null && 'name' in quote.customer ? quote.customer.name : undefined,
-    customer_email: typeof quote.customer === 'object' && quote.customer !== null && 'email' in quote.customer ? quote.customer.email : undefined,
-    client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
-    lines: {
-        data: (quote.line_items?.data || []).map((lineItem) => ({
-            id: lineItem.id,
-            object: lineItem.object,
-            amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
-            currency: lineItem.currency,
-            description: lineItem.description,
-            quantity: lineItem.quantity || 0,
-        })),
-    },
-}));
+            id: quote.id,
+            object: quote.object,
+            amount_total: quote.amount_total,
+            customer: quote.customer,
+            status: quote.status as string,
+            expires_at: quote.expires_at,
+            created: quote.created,
+            customer_name: typeof quote.customer === 'object' && quote.customer !== null && 'name' in quote.customer ? quote.customer.name : undefined,
+            customer_email: typeof quote.customer === 'object' && quote.customer !== null && 'email' in quote.customer ? quote.customer.email : undefined,
+            client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
+            lines: {
+                data: (quote.line_items?.data || []).map((lineItem) => ({
+                    id: lineItem.id,
+                    object: lineItem.object,
+                    amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
+                    currency: lineItem.currency,
+                    description: lineItem.description,
+                    quantity: lineItem.quantity || 0,
+                })),
+            },
+        }));
         return { quotes: strippedQuotes as StripeQuote[], totalPages };
     } catch (error) {
         console.error(error);
@@ -370,12 +370,6 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             throw clientNamesResult;
         }
 
-        const clientNamesMap = new Map<string, string>();
-        clientNamesResult.forEach(client => {
-            if (client.stripe_customer_id && client.full_name) {
-                clientNamesMap.set(client.stripe_customer_id, client.full_name);
-            }
-        });
 
         const uniqueProductIds = new Set<string>();
         allSubscriptions.forEach(subscription => {
@@ -397,7 +391,7 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             }
         }
 
-        console.log("Client Names Map:", clientNamesMap);
+
         const strippedSubscriptions = paginatedSubscriptions.map((subscription) => ({
             id: subscription.id,
             object: subscription.object,
@@ -406,14 +400,13 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             cancel_at_period_end: subscription.cancel_at_period_end,
             canceled_at: subscription.canceled_at,
             created: subscription.created,
-           //TODO fix current period 
+            //TODO fix current period 
             // current_period_end: subscription.current_period_end,
             // current_period_start: subscription.current_period_start,
             customer: {
                 id: (subscription.customer as Stripe.Customer).id,
                 name: (subscription.customer as Stripe.Customer).name || undefined,
-                email: (subscription.customer as Stripe.Customer).email || undefined,
-                client_name: clientNamesMap.get((subscription.customer as Stripe.Customer).id),
+                email: (subscription.customer as Stripe.Customer).email || undefined,                
             },
             items: {
                 data: subscription.items.data.map((item) => ({

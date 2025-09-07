@@ -4,7 +4,7 @@ import { DateDisplay } from "../../date-display";
 import CancelSubscriptionButton from "../../buttons/cancel-subscription-button";
 
 export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
-
+    console.log(subscriptions)
     return (
         <div className="grid grid-cols-1 gap-4">
             {subscriptions.map((subscription) => (
@@ -22,6 +22,7 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
                         <p className="text-sm font-medium text-gray-700">Subscription Details</p>
                         <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                             <p><span className="font-semibold">Created:</span> <DateDisplay timestamp={subscription.created} /></p>
+                            <p><span className="font-semibold">Ends:</span> <DateDisplay timestamp={subscription.canceled_at||0} /></p>
                             <p><span className="font-semibold">Current Period:</span> <DateDisplay timestamp={subscription.current_period_start} /> - <DateDisplay timestamp={subscription.current_period_end} /></p>
                         </div>
                     </div>
