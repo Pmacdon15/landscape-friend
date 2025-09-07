@@ -173,7 +173,6 @@ export async function createStripeCustomer(customerData: {
     const customer = await stripe.customers.create(customerData);
     return customer;
 }
-
 export async function createStripeSubscriptionQuote(
     subscriptionData: z.infer<typeof schemaCreateSubscription>,
     sessionClaims: JwtPayload,
@@ -191,10 +190,14 @@ export async function createStripeSubscriptionQuote(
         organization_id,
     } = subscriptionData;
 
+    if (!endDate) {
+        throw new Error("End date is required");
+    }
+
     const stripe = await getStripeInstanceUnprotected(organization_id);
     if (!stripe) throw new Error("No Stripe instance");
 
-    // 1. Ensure customer exists
+ 
     let customer = await getStripeCustomerByEmail(clientEmail);
     if (!customer) {
         customer = await stripe.customers.create({
@@ -206,7 +209,7 @@ export async function createStripeSubscriptionQuote(
         });
     }
 
-    // 2. Create product + recurring price
+   
     const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${clientName}`;
     const product = await stripe.products.create({
         name: productName,
@@ -221,7 +224,9 @@ export async function createStripeSubscriptionQuote(
         metadata: { organization_id, serviceType },
     });
 
-    // 3. Create a Quote with subscription line items
+    
+
+   
     const quote = await stripe.quotes.create({
         customer: customer.id,
         line_items: [
@@ -235,7 +240,7 @@ export async function createStripeSubscriptionQuote(
             clientEmail,
             serviceType,
             startDate,
-            endDate: endDate || "",
+            endDate,
         },
     });
 

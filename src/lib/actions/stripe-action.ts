@@ -369,7 +369,7 @@ export async function markInvoiceVoid(invoiceId: string) {
 
 
 async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
-    const updatedQuote = await stripe.quotes.retrieve(quoteId);
+    const updatedQuote = await stripe.quotes.retrieve(quoteId, { expand: ['line_items'] });
     const customerId = typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer?.id;
     let clientName = '';
     if (customerId) {
@@ -402,19 +402,46 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         if (action === "accept") {
             const result = await stripe.quotes.accept(quoteId);
             const subId = result.subscription;
-            const endDate = result.metadata.endDate;
+            const endDate = updatedQuote.metadata.endDate;
+            const customerId = updatedQuote.customer ? (typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer.id) : null;
 
-            console.log('Quote Acceptance Result:', result);
-            console.log('Subscription ID:', subId);
-            console.log('End Date:', endDate);
-
-            // Set the trial end to the end date
-            const subscription = await stripe.subscriptions.update(subId, {
-                trial_end: Math.floor(new Date(endDate).getTime() / 1000),
+            // Cancel the existing subscription
+            await stripe.subscriptions.update(subId, {
+                cancel_at_period_end: true,
             });
 
-            console.log('Updated Subscription:', subscription);
+            console.log("updatedQuote.line_items:", updatedQuote.line_items);
+            if (updatedQuote.line_items && updatedQuote.line_items.data && updatedQuote.line_items.data.length > 0 && updatedQuote.line_items.data[0].price) {
+                const priceId = updatedQuote.line_items.data[0].price.id;
+                const startDate = Math.floor(Date.now() / 1000);
 
+                // Calculate the number of iterations
+                const iterations = Math.ceil((new Date(endDate).getTime() / 1000 - startDate) / (30 * 24 * 60 * 60));
+
+                if (!customerId) {
+                    throw new Error("Customer ID is missing for subscription schedule.");
+                }
+
+                // Create a new subscription schedule with a final phase
+                const subscriptionSchedule = await stripe.subscriptionSchedules.create({
+                    customer: customerId,
+                    start_date: startDate,
+                    end_behavior: 'cancel',
+                    phases: [
+                        {
+                            items: [
+                                {
+                                    price: priceId,
+                                    quantity: 1,
+                                },
+                            ],
+                            iterations: iterations,
+                        },
+                    ],
+                });
+            } else {
+                throw new Error('Invalid quote line items');
+            }
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
