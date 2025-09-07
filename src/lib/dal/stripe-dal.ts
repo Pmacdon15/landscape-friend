@@ -67,7 +67,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.InvoiceListParams = { };
+        const params: Stripe.InvoiceListParams = {};
         if (typesOfInvoices && ['draft', 'paid', 'open', 'void'].includes(typesOfInvoices)) {
             params.status = typesOfInvoices as 'draft' | 'paid' | 'open' | 'void';
         }
@@ -333,8 +333,8 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
         let startingAfter: string | undefined = undefined;
 
         const params: Stripe.SubscriptionListParams = { expand: ['data.customer'] };
-        if (typesOfSubscriptions && ['active', 'canceled', 'incomplete', 'trialing'].includes(typesOfSubscriptions)) {
-            params.status = typesOfSubscriptions as 'active' | 'canceled' | 'incomplete' | 'trialing';
+        if (typesOfSubscriptions && [ 'active', 'canceled', 'incomplete',].includes(typesOfSubscriptions)) {
+            params.status = typesOfSubscriptions as |'active' | 'canceled', 'incomplete';
         }
 
         while (hasMore) {

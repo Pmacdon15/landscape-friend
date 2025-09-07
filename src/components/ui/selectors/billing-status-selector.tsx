@@ -8,7 +8,7 @@ export function BillingStatusSelector({ variant = "invoices" }: { variant?: Vari
     ? ["all", "draft", "open", "paid", "void"]
     : variant === "quotes"
     ? ["all", "draft", "open", "accepted", "canceled"]
-    : ["all", "active", "canceled", "incomplete", "trialing"];
+    : ["active", "canceled", "incomplete",];
 
   return (
     <select

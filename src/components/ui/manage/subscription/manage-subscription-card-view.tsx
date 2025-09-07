@@ -2,14 +2,13 @@
 import { Subscription } from "@/types/subscription-types";
 import { DateDisplay } from "../../date-display";
 import CancelSubscriptionButton from "../../buttons/cancel-subscription-button";
+import FormHeader from "../../header/form-header";
 export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
-    console.log('Subscriptions:', subscriptions);
 
     return (
         <div className="grid grid-cols-1 gap-4">
+            {subscriptions.length < 1 && <FormHeader text={"No Subscriptions"} />}
             {subscriptions.map((subscription) => {
-                console.log('Subscription:', subscription);
-
                 return (
                     <div key={subscription.id} className="bg-white shadow-md rounded-lg p-4">
                         <div className="flex justify-between items-center">
@@ -38,15 +37,13 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
                                 ))}
                             </ul>
                         </div>
-                        {subscription.subscription_schedule ?
+                        {subscription.subscription_schedule &&
                             <div className="mt-4">
                                 <p className="text-sm font-medium text-gray-700">Subscription Schedule</p>
                                 {subscription.subscription_schedule.phases.map((phase, index) => (
                                     <p key={index}><DateDisplay timestamp={phase.start_date} /> - <DateDisplay timestamp={phase.end_date} /></p>
                                 ))}
                             </div>
-                            :
-                            <p className="font-semibold">Keep this subscription as it will invoice for the client&apos;s first month</p>
                         }
                     </div>
                 );
