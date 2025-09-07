@@ -14,11 +14,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     const params = await searchParams
     const { searchTermStatus, page, searchTerm } = parseClientListParams(params);
     const { subscriptions, totalPages } = await fetchSubscriptions(searchTermStatus, page, searchTerm)
-
+   
     return (
         <FormContainer>
             <FormHeader text={"Manage Subscriptions"} />
-            
+
             <Suspense fallback={<SearchFormFallBack variant="subscriptions" />}>
                 <SearchForm variant="subscriptions" />
             </Suspense>

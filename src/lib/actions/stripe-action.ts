@@ -90,7 +90,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
 
         // 2. Handle Labour Product and Price
         let labourPriceId: string;
-        const labourProducts = await stripe.products.list({ limit: 100 });
+        const labourProducts = await stripe.products.list({});
         let labourProduct = labourProducts.data.find(product => product.name === 'Labour');
         if (!labourProduct) {
             labourProduct = await stripe.products.create({
@@ -98,7 +98,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             });
         }
 
-        const labourPrices = await stripe.prices.list({ limit: 100 });
+        const labourPrices = await stripe.prices.list({});
         const labourPrice = labourPrices.data.find(
             price => price.product === labourProduct.id &&
                 price.unit_amount === Math.round(validatedFields.data.labourCostPerUnit * 100) &&
@@ -126,7 +126,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             }
 
             let materialPriceId: string;
-            const materialProducts = await stripe.products.list({ limit: 100 });
+            const materialProducts = await stripe.products.list({});
             let materialProduct = materialProducts.data.find(product => product.name === material.materialType);
             if (!materialProduct) {
                 materialProduct = await stripe.products.create({
@@ -134,7 +134,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
                 });
             }
 
-            const materialPrices = await stripe.prices.list({ limit: 100 });
+            const materialPrices = await stripe.prices.list({});
             const materialPrice = materialPrices.data.find(
                 price => price.product === materialProduct.id &&
                     price.unit_amount === Math.round((material.materialCostPerUnit ?? 0) * 100) &&
@@ -401,69 +401,34 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 
         if (action === "accept") {
             const result = await stripe.quotes.accept(quoteId);
-            const subId = result.subscription;
-            const endDateString = updatedQuote.metadata.endDate;
-            const startDateString = updatedQuote.metadata.startDate;
-            const customerId = updatedQuote.customer ? (typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer.id) : null;
+            const subId = result.subscription as string;
 
-            const parsedEndDate = new Date(endDateString);
-            const parsedStartDate = new Date(startDateString);
+            const subscription = await stripe.subscriptions.retrieve(subId);
+            const priceId = subscription.items.data[0].price.id;
+            const customerId = subscription.customer as string;
 
-            if (isNaN(parsedEndDate.getTime()) || isNaN(parsedStartDate.getTime())) {
-                throw new Error("Invalid start or end date in quote metadata.");
-            }
+            await stripe.subscriptions.cancel(subId);
 
-            const endDateTimestamp = parsedEndDate.getTime() / 1000;
-            const startDateTimestamp = parsedStartDate.getTime() / 1000;
+            const startDateUnix = Math.floor(new Date(result.metadata.startDate).getTime() / 1000);
+            const endDateUnix = Math.floor(new Date(result.metadata.endDate).getTime() / 1000);
+            const intervalCount = Math.ceil((endDateUnix - startDateUnix) / (30 * 24 * 60 * 60)); // assuming 30 days in a month
 
-            if (typeof subId !== 'string') {
-                throw new Error("Subscription ID is missing or invalid after accepting the quote.");
-            }
-
-            // Cancel the existing subscription
-            await stripe.subscriptions.update(subId, {
-                cancel_at_period_end: true,
+            const schedule = await stripe.subscriptionSchedules.create({
+                customer: customerId,
+                start_date: startDateUnix,
+                phases: [
+                    {
+                        items: [
+                            {
+                                price: priceId,
+                                quantity: subscription.items.data[0].quantity,
+                            },
+                        ],
+                        iterations: intervalCount,
+                    },
+                ],
+                end_behavior: 'cancel',
             });
-
-            console.log("updatedQuote.line_items:", updatedQuote.line_items);
-            if (updatedQuote.line_items && updatedQuote.line_items.data && updatedQuote.line_items.data.length > 0 && updatedQuote.line_items.data[0].price) {
-                const priceId = updatedQuote.line_items.data[0].price.id;
-
-                console.log("priceId:", priceId);
-                console.log("customerId:", customerId);
-                console.log("startDateTimestamp:", startDateTimestamp);
-                console.log("endDateTimestamp:", endDateTimestamp);
-
-                // Calculate the number of iterations
-                const iterations = Math.ceil((endDateTimestamp - startDateTimestamp) / (30 * 24 * 60 * 60));
-                console.log("iterations:", iterations);
-
-                if (!customerId) {
-                    throw new Error("Customer ID is missing for subscription schedule.");
-                }
-
-                // Create a new subscription schedule with a final phase
-                const result = await stripe.subscriptionSchedules.create({
-                    customer: customerId,
-                    start_date: startDateTimestamp,
-                    end_behavior: 'cancel',
-                    phases: [
-                        {
-                            items: [
-                                {
-                                    price: priceId,
-                                    quantity: 1,
-                                },
-                            ],
-                            iterations: iterations,
-                        },
-                    ],
-                });
-                console.log("Result: ", result)
-            } else {
-                throw new Error('Invalid quote line items');
-            }
-
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);

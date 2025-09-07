@@ -3,7 +3,7 @@ import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations';
 import Spinner from '@/components/ui/loaders/spinner';
 import { schemaCreateSubscription } from '@/lib/zod/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import z from 'zod';
 import InputField from '../shared/input';
 import { AlertMessage } from '../shared/alert-message';
@@ -30,7 +30,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
       endDate: '',
       notes: '',
       organization_id: organizationId,
-      collectionMethod: 'charge_automatically',
+      collectionMethod: 'send_invoice',
     } as z.infer<typeof schemaCreateSubscription>, // Explicitly cast defaultValues
   });
 
@@ -94,7 +94,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
             {isPending ? <>Creating Subscription...<Spinner /></> : 'Create Subscription'}
           </Button>
         </div>
-      </form>      
+      </form>
       {isSuccess && data && <AlertMessage type="success" message="Subscription Quote created successfully!" />}
       {isError && error && <AlertMessage type="error" message={`Error creating subscription: ${error.message}`} />}
     </>
