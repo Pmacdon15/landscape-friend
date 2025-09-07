@@ -391,38 +391,55 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             }
         }
 
-
-        const strippedSubscriptions = paginatedSubscriptions.map((subscription) => ({
-            id: subscription.id,
-            object: subscription.object,
-            status: subscription.status,
-            start_date: subscription.start_date,
-            cancel_at_period_end: subscription.cancel_at_period_end,
-            canceled_at: subscription.canceled_at,
-            created: subscription.created,            
-            //TODO fix current period 
-            // current_period_end: subscription.current_period_end,
-            // current_period_start: subscription.current_period_start,
-            customer: {
-                id: (subscription.customer as Stripe.Customer).id,
-                name: (subscription.customer as Stripe.Customer).name || undefined,
-                email: (subscription.customer as Stripe.Customer).email || undefined,
-            },
-            items: {
-                data: subscription.items.data.map((item) => ({
-                    id: item.id,
-                    object: item.object,
-                    quantity: item.quantity || 0,
-                    price: {
-                        id: item.price.id,
-                        object: item.price.object,
-                        active: item.price.active,
-                        currency: item.price.currency,
-                        product: productNamesMap.get(item.price.product as string) || 'Unknown Product',
-                        unit_amount: item.price.unit_amount || 0,
-                    }
-                }))
+        const strippedSubscriptions = await Promise.all(paginatedSubscriptions.map(async (subscription) => {
+            let schedule = null;
+            if (subscription.schedule) {
+                try {
+                    const scheduleId = typeof subscription.schedule === 'string' ? subscription.schedule : subscription.schedule.id;
+                    schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+                    schedule = {
+                        id: schedule.id,
+                        status: schedule.status,
+                        phases: schedule.phases.map(phase => ({
+                            start_date: phase.start_date,
+                            end_date: phase.end_date,
+                        })),
+                    };
+                } catch (error) {
+                    console.error(`Error retrieving subscription schedule for ${subscription.id}:`, error);
+                }
             }
+
+            return {
+                id: subscription.id,
+                object: subscription.object,
+                status: subscription.status,
+                start_date: subscription.start_date,
+                cancel_at_period_end: subscription.cancel_at_period_end,
+                canceled_at: subscription.canceled_at,
+                created: subscription.created,
+                subscription_schedule: schedule,
+                customer: {
+                    id: (subscription.customer as Stripe.Customer).id,
+                    name: (subscription.customer as Stripe.Customer).name || undefined,
+                    email: (subscription.customer as Stripe.Customer).email || undefined,
+                },
+                items: {
+                    data: subscription.items.data.map((item) => ({
+                        id: item.id,
+                        object: item.object,
+                        quantity: item.quantity || 0,
+                        price: {
+                            id: item.price.id,
+                            object: item.price.object,
+                            active: item.price.active,
+                            currency: item.price.currency,
+                            product: productNamesMap.get(item.price.product as string) || 'Unknown Product',
+                            unit_amount: item.price.unit_amount || 0,
+                        }
+                    }))
+                }
+            };
         }));
 
         return { subscriptions: strippedSubscriptions as Subscription[], totalPages };

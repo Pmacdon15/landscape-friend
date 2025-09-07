@@ -17,8 +17,15 @@ export interface Subscription {
     items: {
         data: SubscriptionItem[];
     };
+    subscription_schedule: {
+        id: string;
+        status: string;
+        phases: {
+            start_date: number;
+            end_date: number;
+        }[];
+    } | null;
 }
-
 export interface SubscriptionItem {
     id: string;
     object: string;

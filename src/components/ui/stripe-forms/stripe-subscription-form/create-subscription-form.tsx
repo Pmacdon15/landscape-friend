@@ -79,7 +79,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
               <option value="weekly">Weekly</option>
               <option value="bi-weekly">Bi-Weekly</option>
               <option value="monthly">Monthly</option>
-              <option value="snow-as-needed">Snow as needed</option>
+              <option value="as-needed">Snow as needed</option>
             </select>
             {errors.serviceType && <p className="text-red-500 text-xs mt-1">{errors.serviceType.message}</p>}
           </div>
