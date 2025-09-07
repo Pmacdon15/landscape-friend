@@ -399,8 +399,7 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
             start_date: subscription.start_date,
             cancel_at_period_end: subscription.cancel_at_period_end,
             canceled_at: subscription.canceled_at,
-            created: subscription.created,
-            trail_end: subscription.trial_end,
+            created: subscription.created,            
             //TODO fix current period 
             // current_period_end: subscription.current_period_end,
             // current_period_start: subscription.current_period_start,

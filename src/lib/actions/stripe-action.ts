@@ -404,6 +404,11 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
             const subId = result.subscription;
             const endDate = updatedQuote.metadata.endDate;
             const customerId = updatedQuote.customer ? (typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer.id) : null;
+            const startDate = Math.floor(new Date(updatedQuote.metadata.startDate).getTime() / 1000);
+
+            if (typeof subId !== 'string') {
+                throw new Error("Subscription ID is missing or invalid after accepting the quote.");
+            }
 
             // Cancel the existing subscription
             await stripe.subscriptions.update(subId, {
@@ -413,7 +418,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
             console.log("updatedQuote.line_items:", updatedQuote.line_items);
             if (updatedQuote.line_items && updatedQuote.line_items.data && updatedQuote.line_items.data.length > 0 && updatedQuote.line_items.data[0].price) {
                 const priceId = updatedQuote.line_items.data[0].price.id;
-                const startDate = Math.floor(Date.now() / 1000);
+                // const startDate = Math.floor(Date.now() / 1000);
 
                 // Calculate the number of iterations
                 const iterations = Math.ceil((new Date(endDate).getTime() / 1000 - startDate) / (30 * 24 * 60 * 60));
@@ -423,7 +428,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
                 }
 
                 // Create a new subscription schedule with a final phase
-                const subscriptionSchedule = await stripe.subscriptionSchedules.create({
+                await stripe.subscriptionSchedules.create({
                     customer: customerId,
                     start_date: startDate,
                     end_behavior: 'cancel',
