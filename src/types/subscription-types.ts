@@ -6,6 +6,7 @@ export interface Subscription {
     cancel_at_period_end: boolean;
     canceled_at: number | null;
     created: number;
+    trail_end: string;
     current_period_end: number;
     current_period_start: number;
     customer: {

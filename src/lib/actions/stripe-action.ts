@@ -400,7 +400,21 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         };
 
         if (action === "accept") {
-            await stripe.quotes.accept(quoteId);
+            const result = await stripe.quotes.accept(quoteId);
+            const subId = result.subscription;
+            const endDate = result.metadata.endDate;
+
+            console.log('Quote Acceptance Result:', result);
+            console.log('Subscription ID:', subId);
+            console.log('End Date:', endDate);
+
+            // Set the trial end to the end date
+            const subscription = await stripe.subscriptions.update(subId, {
+                trial_end: Math.floor(new Date(endDate).getTime() / 1000),
+            });
+
+            console.log('Updated Subscription:', subscription);
+
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);

@@ -21,7 +21,7 @@ export interface StripeInvoice {
     currency: string;
     customer: string;
     customer_email: string;
-    customer_name: string;
+    customer_name: string;    
     due_date: number;
     hosted_invoice_url: string;
     invoice_pdf: string;
@@ -81,8 +81,8 @@ export interface StripeQuote {
     client_name?: string;
     lines?: {
         data: StripeLineItem[];
-    };    
-    
+    };
+
 }
 
 
