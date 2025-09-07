@@ -38,14 +38,16 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
                                 ))}
                             </ul>
                         </div>
-                        {subscription.subscription_schedule && (
+                        {subscription.subscription_schedule ?
                             <div className="mt-4">
                                 <p className="text-sm font-medium text-gray-700">Subscription Schedule</p>
                                 {subscription.subscription_schedule.phases.map((phase, index) => (
                                     <p key={index}><DateDisplay timestamp={phase.start_date} /> - <DateDisplay timestamp={phase.end_date} /></p>
                                 ))}
                             </div>
-                        )}
+                            :
+                            <p className="font-semibold">Keep this subscription as it will invoice for the client's first month</p>
+                        }
                     </div>
                 );
             })}
