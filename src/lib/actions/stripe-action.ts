@@ -400,35 +400,48 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         };
 
         if (action === "accept") {
-            const result = await stripe.quotes.accept(quoteId);
-            const subId = result.subscription as string;
+            const quote = await stripe.quotes.retrieve(quoteId);
 
-            const subscription = await stripe.subscriptions.retrieve(subId);
-            const priceId = subscription.items.data[0].price.id;
-            const customerId = subscription.customer as string;
+            const startDateUnix = Math.floor(new Date(quote.metadata.startDate).getTime() / 1000);
+            const endDateUnix = Math.floor(new Date(quote.metadata.endDate).getTime() / 1000);
+           
 
-            await stripe.subscriptions.cancel(subId);
+            // Update quote to set a future effective date
+            await stripe.quotes.update(quoteId, {
+                subscription_data: {
+                    effective_date: startDateUnix,
+                },
+            });
 
-            const startDateUnix = Math.floor(new Date(result.metadata.startDate).getTime() / 1000);
-            const endDateUnix = Math.floor(new Date(result.metadata.endDate).getTime() / 1000);
-            const intervalCount = Math.ceil((endDateUnix - startDateUnix) / (30 * 24 * 60 * 60)); // assuming 30 days in a month
+            // Accept the quote — will create a subscription schedule, not a subscription
+            const acceptedQuote = await stripe.quotes.accept(quoteId);
 
-            const schedule = await stripe.subscriptionSchedules.create({
-                customer: customerId,
-                start_date: startDateUnix,
+            // ✅ Handle schedule, not subscription
+            const scheduleId = acceptedQuote.subscription_schedule as string;
+            if (!scheduleId) {
+                throw new Error("Quote did not create a subscription schedule");
+            }
+
+            const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+
+            // If you want to enforce an end date/iterations on the schedule:
+            await stripe.subscriptionSchedules.update(scheduleId, {
+                end_behavior: "cancel",
                 phases: [
                     {
-                        items: [
-                            {
-                                price: priceId,
-                                quantity: subscription.items.data[0].quantity,
-                            },
-                        ],
-                        iterations: intervalCount,
+                        start_date: startDateUnix,
+                        end_date: endDateUnix, // 👈 sets the end
+                        items: schedule.phases[0].items.map(item => ({
+                            price: item.price as string,
+                            quantity: item.quantity ?? 1,
+                        })),
+                        // reuse items Stripe already attached
                     },
                 ],
-                end_behavior: 'cancel',
             });
+
+            
+
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
