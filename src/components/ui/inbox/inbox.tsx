@@ -27,6 +27,9 @@ export default function NotificationInbox({ userNovuId }: { userNovuId: string }
             notificationList: "bg-[url('/lawn2.jpg')] bg-cover bg-center ",
             notification: 'backdrop-blur-md bg-white/70  nt-border nt-border-white/30 rounded-xl shadow-sm my-1 hover:nt-bg-white',
             notificationBody: "nt-text-black text-bold ",
+            notificationDot: {
+                backgroundColor: '#138b10', // Custom dot color
+            },
         }
     }
     return (
