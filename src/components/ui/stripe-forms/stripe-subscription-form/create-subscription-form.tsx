@@ -3,7 +3,7 @@ import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations';
 import Spinner from '@/components/ui/loaders/spinner';
 import { schemaCreateSubscription } from '@/lib/zod/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import z from 'zod';
 import InputField from '../shared/input';
 import { AlertMessage } from '../shared/alert-message';
@@ -30,13 +30,12 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
       endDate: '',
       notes: '',
       organization_id: organizationId,
-      collectionMethod: 'charge_automatically',
+      collectionMethod: 'send_invoice',
     } as z.infer<typeof schemaCreateSubscription>, // Explicitly cast defaultValues
   });
 
   const serviceType = watch('serviceType');
   const snow = useIsSnowService(serviceType);
-  console.log("snow: ", snow)
 
   const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeSubscriptionQuote(snow);
 
@@ -80,7 +79,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
               <option value="weekly">Weekly</option>
               <option value="bi-weekly">Bi-Weekly</option>
               <option value="monthly">Monthly</option>
-              <option value="snow-as-needed">Snow as needed</option>
+              <option value="as-needed">Snow as needed</option>
             </select>
             {errors.serviceType && <p className="text-red-500 text-xs mt-1">{errors.serviceType.message}</p>}
           </div>
@@ -95,7 +94,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
             {isPending ? <>Creating Subscription...<Spinner /></> : 'Create Subscription'}
           </Button>
         </div>
-      </form>      
+      </form>
       {isSuccess && data && <AlertMessage type="success" message="Subscription Quote created successfully!" />}
       {isError && error && <AlertMessage type="error" message={`Error creating subscription: ${error.message}`} />}
     </>

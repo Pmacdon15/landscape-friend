@@ -11,7 +11,7 @@ export default function Error({ error, reset }: {
     //TODO: make this look like the other error pages
     return (
         <FormContainer>
-            <FormHeader text={"Manage Invoices"} />
+            <FormHeader text={"Manage Subscriptions"} />
             <div className="flex flex-col items-center justify-center gap-4 p-4 bg-white/70 shadow-lg rounded-sm">
                 <h2 className="text-lg font-semibold text-red-500">Something went wrong!</h2>
                 <p className="text-sm text-gray-600">{error.message}</p>

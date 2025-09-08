@@ -7,6 +7,7 @@ import z from 'zod';
 import { sendEmailWithTemplate } from '../actions/sendEmails-action';
 import { JwtPayload } from '@clerk/types';
 import { formatCompanyName } from './resend';
+import { StripeQuote } from '@/types/stripe-types';
 let stripe: Stripe | null = null;
 
 export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {
@@ -173,7 +174,6 @@ export async function createStripeCustomer(customerData: {
     const customer = await stripe.customers.create(customerData);
     return customer;
 }
-
 export async function createStripeSubscriptionQuote(
     subscriptionData: z.infer<typeof schemaCreateSubscription>,
     sessionClaims: JwtPayload,
@@ -191,10 +191,14 @@ export async function createStripeSubscriptionQuote(
         organization_id,
     } = subscriptionData;
 
+    if (!endDate) {
+        throw new Error("End date is required");
+    }
+
     const stripe = await getStripeInstanceUnprotected(organization_id);
     if (!stripe) throw new Error("No Stripe instance");
 
-    // 1. Ensure customer exists
+
     let customer = await getStripeCustomerByEmail(clientEmail);
     if (!customer) {
         customer = await stripe.customers.create({
@@ -206,7 +210,7 @@ export async function createStripeSubscriptionQuote(
         });
     }
 
-    // 2. Create product + recurring price
+
     const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${clientName}`;
     const product = await stripe.products.create({
         name: productName,
@@ -221,7 +225,9 @@ export async function createStripeSubscriptionQuote(
         metadata: { organization_id, serviceType },
     });
 
-    // 3. Create a Quote with subscription line items
+
+
+
     const quote = await stripe.quotes.create({
         customer: customer.id,
         line_items: [
@@ -235,7 +241,7 @@ export async function createStripeSubscriptionQuote(
             clientEmail,
             serviceType,
             startDate,
-            endDate: endDate || "",
+            endDate,
         },
     });
 
@@ -299,6 +305,12 @@ export async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: 
 
 
 //MARK: Helper function to convert ReadableStream to Buffer
+export async function cancelStripeSubscription(subscriptionId: string): Promise<void> {
+    const stripe = await getStripeInstance();
+    await stripe.subscriptions.cancel(subscriptionId);
+}
+
+//MARK: Helper function to convert ReadableStream to Buffer
 const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
         const chunks: Buffer[] = [];
@@ -307,3 +319,52 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
         stream.on('error', reject);
     });
 };
+
+export async function acceptAndScheduleQuote(
+    stripe: Stripe,
+    updatedQuote: Stripe.Quote
+) {
+
+    // Fetch the quote with metadata  
+
+    const startDateUnix = Math.floor(
+        new Date(updatedQuote.metadata.startDate).getTime() / 1000
+    );
+    const endDateUnix = Math.floor(
+        new Date(updatedQuote.metadata.endDate).getTime() / 1000
+    );
+
+    // Update quote to set a future effective date
+    await stripe.quotes.update(updatedQuote.id, {
+        subscription_data: {
+            effective_date: startDateUnix,
+        },
+    });
+
+    // Accept the quote — this creates a subscription schedule
+    const acceptedQuote = await stripe.quotes.accept(updatedQuote.id);
+
+    const scheduleId = acceptedQuote.subscription_schedule as string;
+    if (!scheduleId) {
+        throw new Error("Quote did not create a subscription schedule");
+    }
+
+    const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+
+    // Update the schedule to enforce an end date
+    const updatedSchedule = await stripe.subscriptionSchedules.update(scheduleId, {
+        end_behavior: "cancel",
+        phases: [
+            {
+                start_date: startDateUnix,
+                end_date: endDateUnix,
+                items: schedule.phases[0].items.map(item => ({
+                    price: item.price as string,
+                    quantity: item.quantity ?? 1,
+                })),
+            },
+        ],
+    });
+
+    return updatedSchedule;
+}

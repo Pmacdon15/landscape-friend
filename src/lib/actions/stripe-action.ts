@@ -1,5 +1,5 @@
 'use server'
-import { createNotificationPayloadInvoice, createNotificationPayloadQuote, createStripeSubscriptionQuote, findOrCreateStripeCustomerAndLinkClient, sendQuote } from "@/lib/utils/stripe-utils";
+import { acceptAndScheduleQuote, createNotificationPayloadInvoice, createNotificationPayloadQuote, createStripeSubscriptionQuote, findOrCreateStripeCustomerAndLinkClient, sendQuote } from "@/lib/utils/stripe-utils";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement, schemaCreateSubscription } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
@@ -90,7 +90,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
 
         // 2. Handle Labour Product and Price
         let labourPriceId: string;
-        const labourProducts = await stripe.products.list({ limit: 100 });
+        const labourProducts = await stripe.products.list({});
         let labourProduct = labourProducts.data.find(product => product.name === 'Labour');
         if (!labourProduct) {
             labourProduct = await stripe.products.create({
@@ -98,7 +98,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             });
         }
 
-        const labourPrices = await stripe.prices.list({ limit: 100 });
+        const labourPrices = await stripe.prices.list({});
         const labourPrice = labourPrices.data.find(
             price => price.product === labourProduct.id &&
                 price.unit_amount === Math.round(validatedFields.data.labourCostPerUnit * 100) &&
@@ -126,7 +126,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             }
 
             let materialPriceId: string;
-            const materialProducts = await stripe.products.list({ limit: 100 });
+            const materialProducts = await stripe.products.list({});
             let materialProduct = materialProducts.data.find(product => product.name === material.materialType);
             if (!materialProduct) {
                 materialProduct = await stripe.products.create({
@@ -134,7 +134,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
                 });
             }
 
-            const materialPrices = await stripe.prices.list({ limit: 100 });
+            const materialPrices = await stripe.prices.list({});
             const materialPrice = materialPrices.data.find(
                 price => price.product === materialProduct.id &&
                     price.unit_amount === Math.round((material.materialCostPerUnit ?? 0) * 100) &&
@@ -369,7 +369,7 @@ export async function markInvoiceVoid(invoiceId: string) {
 
 
 async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
-    const updatedQuote = await stripe.quotes.retrieve(quoteId);
+    const updatedQuote = await stripe.quotes.retrieve(quoteId, { expand: ['line_items'] });
     const customerId = typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer?.id;
     let clientName = '';
     if (customerId) {
@@ -400,7 +400,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         };
 
         if (action === "accept") {
-            await stripe.quotes.accept(quoteId);
+            await acceptAndScheduleQuote(stripe, updatedQuote);
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
@@ -417,6 +417,23 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 
     } catch (e) {
         throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`);
+    }
+}
+
+import { cancelStripeSubscription } from "@/lib/utils/stripe-utils";
+
+//MARK: Cancel Subscription
+export async function cancelSubscription(subscriptionId: string) {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    try {
+        await cancelStripeSubscription(subscriptionId);
+        return { success: true };
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Error canceling subscription:", errorMessage);
+        return { success: false, message: errorMessage };
     }
 }
 
@@ -462,3 +479,4 @@ export async function createSubscriptionQuoteAction(formData: FormData, snow: bo
         throw new Error("Failed to create subscription");
     }
 }
+

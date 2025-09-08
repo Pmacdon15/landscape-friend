@@ -54,6 +54,7 @@ export default function VerticalNav({ userId }: { userId: string }) {
                     <Link href="/billing/create-quote" className="p-2 hover:bg-accent rounded-md">Create a Quote</Link>
                     <Link href="/billing/manage/quotes" className="p-2 hover:bg-accent rounded-md">Manage Quotes</Link>
                     <Link href="/billing/manage/invoices" className="p-2 hover:bg-accent rounded-md">Manage Invoices</Link>
+                    <Link href="/billing/manage/subscriptions" className="p-2 hover:bg-accent rounded-md">Manage Subscriptions</Link>
                 </CollapsibleSection>
             )}
 

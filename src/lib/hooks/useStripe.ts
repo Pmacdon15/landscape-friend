@@ -8,8 +8,6 @@ export const useHasStripeApiKey = () => {
     });
 };
 
-
-
 export const useIsSnowService = (serviceType: string) => {
   return serviceType === 'snow-as-needed';
 };

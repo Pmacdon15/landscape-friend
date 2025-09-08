@@ -30,7 +30,7 @@ export async function removeNovuSubscriber(subscriberId: string) {
         });
 
         if (response.ok) {
-            console.log(`Subscriber ${subscriberId} removed from Novu.`);
+            // console.log(`Subscriber ${subscriberId} removed from Novu.`);
             return true;
         } else {
             console.error(`Failed to remove subscriber ${subscriberId} from Novu.`);

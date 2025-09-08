@@ -1,9 +1,14 @@
 import { fetchStripAPIKeyDb } from "@/lib/DB/stripe-db";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/stripe-types";
+import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote, FetchSubscriptionsResponse } from "@/types/stripe-types";
+import { Subscription } from "@/types/subscription-types";
+
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { fetchClientNamesByStripeIds } from "./clients-dal";
+
+
+
 
 let stripe: Stripe | null = null;
 
@@ -62,7 +67,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.InvoiceListParams = { limit: 100 };
+        const params: Stripe.InvoiceListParams = {};
         if (typesOfInvoices && ['draft', 'paid', 'open', 'void'].includes(typesOfInvoices)) {
             params.status = typesOfInvoices as 'draft' | 'paid' | 'open' | 'void';
         }
@@ -166,7 +171,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({
                 ...params,
                 starting_after: startingAfter,
-                expand: ['data.line_items']
+                expand: ['data.line_items', 'data.customer']
             });
             allQuotes = allQuotes.concat(quoteBatch.data);
             hasMore = quoteBatch.has_more;
@@ -204,25 +209,27 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         const paginatedQuotes = filteredQuotes.slice(offset, offset + pageSize);
 
         const strippedQuotes = paginatedQuotes.map((quote) => ({
-    id: quote.id,
-    object: quote.object,
-    amount_total: quote.amount_total,
-    customer: quote.customer,
-    status: quote.status as string,
-    expires_at: quote.expires_at,
-    created: quote.created,
-    client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
-    lines: {
-        data: (quote.line_items?.data || []).map((lineItem) => ({
-            id: lineItem.id,
-            object: lineItem.object,
-            amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
-            currency: lineItem.currency,
-            description: lineItem.description,
-            quantity: lineItem.quantity || 0,
-        })),
-    },
-}));
+            id: quote.id,
+            object: quote.object,
+            amount_total: quote.amount_total,
+            customer: quote.customer,
+            status: quote.status as string,
+            expires_at: quote.expires_at,
+            created: quote.created,
+            customer_name: typeof quote.customer === 'object' && quote.customer !== null && 'name' in quote.customer ? quote.customer.name : undefined,
+            customer_email: typeof quote.customer === 'object' && quote.customer !== null && 'email' in quote.customer ? quote.customer.email : undefined,
+            client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
+            lines: {
+                data: (quote.line_items?.data || []).map((lineItem) => ({
+                    id: lineItem.id,
+                    object: lineItem.object,
+                    amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
+                    currency: lineItem.currency,
+                    description: lineItem.description,
+                    quantity: lineItem.quantity || 0,
+                })),
+            },
+        }));
         return { quotes: strippedQuotes as StripeQuote[], totalPages };
     } catch (error) {
         console.error(error);
@@ -311,4 +318,134 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
     };
 
     return plainQuote;
+}
+
+export async function fetchSubscriptions(typesOfSubscriptions: string, page: number, searchTerm: string): Promise<FetchSubscriptionsResponse> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    const stripe = await getStripeInstance();
+    const pageSize = Number(process.env.PAGE_SIZE) || 10;
+
+    try {
+        let allSubscriptions: Stripe.Subscription[] = [];
+        let hasMore = true;
+        let startingAfter: string | undefined = undefined;
+
+        const params: Stripe.SubscriptionListParams = { expand: ['data.customer'] };
+        if (typesOfSubscriptions && [ 'active', 'canceled', 'incomplete',].includes(typesOfSubscriptions)) {
+            params.status = typesOfSubscriptions as |'active' | 'canceled', 'incomplete';
+        }
+
+        while (hasMore) {
+            const subscriptionBatch: Stripe.ApiList<Stripe.Subscription> = await stripe.subscriptions.list({ ...params, starting_after: startingAfter });
+            allSubscriptions = allSubscriptions.concat(subscriptionBatch.data);
+            hasMore = subscriptionBatch.has_more;
+            if (hasMore) {
+                startingAfter = subscriptionBatch.data[subscriptionBatch.data.length - 1].id;
+            }
+            console.log("Sub: ", subscriptionBatch)
+        }
+
+        let filteredSubscriptions = allSubscriptions;
+        if (searchTerm) {
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            filteredSubscriptions = allSubscriptions.filter(subscription => {
+                const customer = subscription.customer as Stripe.Customer;
+                return (customer.name && customer.name.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (customer.email && customer.email.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (subscription.id && subscription.id.toLowerCase().includes(lowerCaseSearchTerm))
+            }
+            );
+        }
+
+        const totalSubscriptions = filteredSubscriptions.length;
+        const totalPages = Math.ceil(totalSubscriptions / pageSize);
+        const offset = (page - 1) * pageSize;
+        const paginatedSubscriptions = filteredSubscriptions.slice(offset, offset + pageSize);
+
+        const customerIds = paginatedSubscriptions.map(subscription => (subscription.customer as Stripe.Customer).id);
+        const clientNamesResult = await fetchClientNamesByStripeIds(customerIds);
+
+        if (clientNamesResult instanceof Error) {
+            throw clientNamesResult;
+        }
+
+
+        const uniqueProductIds = new Set<string>();
+        allSubscriptions.forEach(subscription => {
+            subscription.items.data.forEach(item => {
+                if (typeof item.price.product === 'string') {
+                    uniqueProductIds.add(item.price.product);
+                }
+            });
+        });
+
+        const productNamesMap = new Map<string, string>();
+        for (const productId of uniqueProductIds) {
+            try {
+                const product = await stripe.products.retrieve(productId);
+                productNamesMap.set(productId, product.name);
+            } catch (error) {
+                console.error(`Error fetching product ${productId}:`, error);
+                productNamesMap.set(productId, 'Unknown Product'); // Fallback
+            }
+        }
+
+        const strippedSubscriptions = await Promise.all(paginatedSubscriptions.map(async (subscription) => {
+            let schedule = null;
+            if (subscription.schedule) {
+                try {
+                    const scheduleId = typeof subscription.schedule === 'string' ? subscription.schedule : subscription.schedule.id;
+                    schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+                    schedule = {
+                        id: schedule.id,
+                        status: schedule.status,
+                        phases: schedule.phases.map(phase => ({
+                            start_date: phase.start_date,
+                            end_date: phase.end_date,
+                        })),
+                    };
+                } catch (error) {
+                    console.error(`Error retrieving subscription schedule for ${subscription.id}:`, error);
+                }
+            }
+
+            return {
+                id: subscription.id,
+                object: subscription.object,
+                status: subscription.status,
+                start_date: subscription.start_date,
+                cancel_at_period_end: subscription.cancel_at_period_end,
+                canceled_at: subscription.canceled_at,
+                created: subscription.created,
+                subscription_schedule: schedule,
+                customer: {
+                    id: (subscription.customer as Stripe.Customer).id,
+                    name: (subscription.customer as Stripe.Customer).name || undefined,
+                    email: (subscription.customer as Stripe.Customer).email || undefined,
+                },
+                items: {
+                    data: subscription.items.data.map((item) => ({
+                        id: item.id,
+                        object: item.object,
+                        quantity: item.quantity || 0,
+                        price: {
+                            id: item.price.id,
+                            object: item.price.object,
+                            active: item.price.active,
+                            currency: item.price.currency,
+                            product: productNamesMap.get(item.price.product as string) || 'Unknown Product',
+                            unit_amount: item.price.unit_amount || 0,
+                        }
+                    }))
+                }
+            };
+        }));
+
+        return { subscriptions: strippedSubscriptions as Subscription[], totalPages };
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch subscriptions');
+    }
 }
