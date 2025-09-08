@@ -1,32 +1,26 @@
-'use client' // Error boundaries must be Client Components
+'use client'
 
-import { Button } from '@/components/ui/button'
-import ContentContainer from '@/components/ui/containers/content-container'
-import { useEffect } from 'react'
+import { Button } from "@/components/ui/button";
+import FormContainer from "@/components/ui/containers/form-container";
+import FormHeader from "@/components/ui/header/form-header";
 
-export default function Error({
-    error,
-    reset,
-}: {
+export default function Error({ error, reset }: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    useEffect(() => {
-        // Log the error to an error reporting service
-        console.error(error)
-    }, [error])
-
     return (
-        <ContentContainer>
-            <h2>Something went wrong!</h2>
-            <Button variant={"outline"}
-                onClick={
-                    // Attempt to recover by trying to re-render the segment
-                    () => reset()
-                }
-            >
-                Try again
-            </Button>
-        </ContentContainer>
-    )
+        <FormContainer>
+            <FormHeader text={"Landscape Friend"} />
+            <div className="flex flex-col items-center justify-center gap-4 p-4 bg-white/70 shadow-lg rounded-sm">
+                <h2 className="text-lg font-semibold text-red-500">Something went wrong!</h2>
+                <p className="text-sm text-gray-600">{error.message}</p>
+                <Button variant="outline"
+                    className="px-4 py-2 text-sm font-medium text-white rounded-md hover:bg-background/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                    onClick={() => reset()}
+                >
+                    Try again
+                </Button>
+            </div>
+        </FormContainer>
+    );
 }
