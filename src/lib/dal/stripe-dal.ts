@@ -2,11 +2,10 @@ import { fetchStripAPIKeyDb } from "@/lib/DB/stripe-db";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote, FetchSubscriptionsResponse } from "@/types/stripe-types";
 import { Subscription } from "@/types/subscription-types";
-
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { fetchClientNamesByStripeIds } from "./clients-dal";
-import { metadata } from "@/app/layout";
+
 
 
 
@@ -222,7 +221,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             filteredQuotes = allQuotes.filter(quote => {
                 const customerId = typeof quote.customer === 'string' ? quote.customer : quote.customer?.id;
                 const clientName = customerId ? clientNamesMap.get(customerId) : undefined;
-                const stripeCustomerName = typeof quote.customer === 'object' && quote.customer?.name;
+                const stripeCustomerName = typeof quote.customer === 'object' && quote.customer && 'name' in quote.customer ? quote.customer.name : undefined;
 
                 const amountTotalStr = (quote.amount_total / 100).toString(); // convert cents → dollars
                 const lineItemAmounts = (quote.line_items?.data || [])
@@ -372,8 +371,8 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
         let startingAfter: string | undefined = undefined;
 
         const params: Stripe.SubscriptionListParams = { expand: ['data.customer'] };
-        if (typesOfSubscriptions && ['active', 'canceled', 'incomplete',].includes(typesOfSubscriptions)) {
-            params.status = typesOfSubscriptions as | 'active' | 'canceled', 'incomplete';
+        if (typesOfSubscriptions && ['active', 'canceled', 'incomplete'].includes(typesOfSubscriptions)) {
+            params.status = typesOfSubscriptions as 'active' | 'canceled' | 'incomplete';
         }
 
         while (hasMore) {

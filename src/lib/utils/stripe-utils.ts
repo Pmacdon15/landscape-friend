@@ -7,7 +7,6 @@ import z from 'zod';
 import { sendEmailWithTemplate } from '../actions/sendEmails-action';
 import { JwtPayload } from '@clerk/types';
 import { formatCompanyName } from './resend';
-import { StripeQuote } from '@/types/stripe-types';
 let stripe: Stripe | null = null;
 
 export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {

@@ -76,7 +76,7 @@ export interface StripeQuote {
     status: string;
     expires_at: number | null;
     created: number;
-    metadata: Record<string, any>;
+   metadata: Record<string, string | number>;
     customer_name?: string;
     customer_email?: string;
     client_name?: string;
