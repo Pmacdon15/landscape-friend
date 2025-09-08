@@ -85,12 +85,28 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         let filteredInvoices = allInvoices;
         if (searchTerm) {
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            filteredInvoices = allInvoices.filter(invoice =>
-                (invoice.customer_name && invoice.customer_name.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.id && invoice.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.number && invoice.number.toLowerCase().includes(lowerCaseSearchTerm))
-            );
+
+            filteredInvoices = allInvoices.filter(invoice => {
+                if (
+                    (invoice.customer_name && invoice.customer_name.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (invoice.id && invoice.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (invoice.number && invoice.number.toLowerCase().includes(lowerCaseSearchTerm))
+                ) {
+                    return true;
+                }
+
+                if (!isNaN(parseFloat(lowerCaseSearchTerm))) {
+                    if (invoice.total !== null && (invoice.total / 100).toString().startsWith(lowerCaseSearchTerm)) {
+                        return true;
+                    }
+                    if (invoice.amount_due !== null && (invoice.amount_due / 100).toString().startsWith(lowerCaseSearchTerm)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
         }
 
         const totalInvoices = filteredInvoices.length;
@@ -181,7 +197,14 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             }
         }
 
-        const uniqueCustomerIds = [...new Set(allQuotes.map(quote => quote.customer).filter((customer): customer is string => typeof customer === 'string'))];
+        const uniqueCustomerIds = [
+            ...new Set(
+                allQuotes
+                    .map(quote => (typeof quote.customer === "string" ? quote.customer : quote.customer?.id))
+                    .filter((id): id is string => Boolean(id)) // type guard ensures it's string
+            ),
+        ];
+
         const clientNamesResult = await fetchClientNamesByStripeIds(uniqueCustomerIds);
         if (clientNamesResult instanceof Error) {
             throw clientNamesResult;
@@ -197,11 +220,24 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         if (searchTerm) {
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
             filteredQuotes = allQuotes.filter(quote => {
-                const clientName = typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined;
-                return (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                const customerId = typeof quote.customer === 'string' ? quote.customer : quote.customer?.id;
+                const clientName = customerId ? clientNamesMap.get(customerId) : undefined;
+                const stripeCustomerName = typeof quote.customer === 'object' && quote.customer?.name;
+
+                const amountTotalStr = (quote.amount_total / 100).toString(); // convert cents → dollars
+                const lineItemAmounts = (quote.line_items?.data || [])
+                    .map(li => ((li.amount_subtotal / (li.quantity || 1)) / 100).toString());
+
+                return (
+                    (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
                     (quote.id && quote.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                    (clientName && clientName.toLowerCase().includes(lowerCaseSearchTerm));
+                    (clientName && clientName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (stripeCustomerName && stripeCustomerName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    amountTotalStr.includes(lowerCaseSearchTerm) ||
+                    lineItemAmounts.some(amount => amount.includes(lowerCaseSearchTerm))
+                );
             });
+
         }
 
         const totalQuotes = filteredQuotes.length;
