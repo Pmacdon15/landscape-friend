@@ -400,48 +400,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         };
 
         if (action === "accept") {
-            const quote = await stripe.quotes.retrieve(quoteId);
-
-            const startDateUnix = Math.floor(new Date(quote.metadata.startDate).getTime() / 1000);
-            const endDateUnix = Math.floor(new Date(quote.metadata.endDate).getTime() / 1000);
-           
-
-            // Update quote to set a future effective date
-            await stripe.quotes.update(quoteId, {
-                subscription_data: {
-                    effective_date: startDateUnix,
-                },
-            });
-
-            // Accept the quote — will create a subscription schedule, not a subscription
-            const acceptedQuote = await stripe.quotes.accept(quoteId);
-
-            // ✅ Handle schedule, not subscription
-            const scheduleId = acceptedQuote.subscription_schedule as string;
-            if (!scheduleId) {
-                throw new Error("Quote did not create a subscription schedule");
-            }
-
-            const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
-
-            // If you want to enforce an end date/iterations on the schedule:
-            await stripe.subscriptionSchedules.update(scheduleId, {
-                end_behavior: "cancel",
-                phases: [
-                    {
-                        start_date: startDateUnix,
-                        end_date: endDateUnix, // 👈 sets the end
-                        items: schedule.phases[0].items.map(item => ({
-                            price: item.price as string,
-                            quantity: item.quantity ?? 1,
-                        })),
-                        // reuse items Stripe already attached
-                    },
-                ],
-            });
-
-            
-
+           await acceptAndScheduleQuote(stripe, quoteId);
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
@@ -520,3 +479,7 @@ export async function createSubscriptionQuoteAction(formData: FormData, snow: bo
         throw new Error("Failed to create subscription");
     }
 }
+function acceptAndScheduleQuote(stripe: Stripe, quoteId: string) {
+    throw new Error("Function not implemented.");
+}
+

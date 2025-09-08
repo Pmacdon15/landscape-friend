@@ -318,3 +318,49 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
         stream.on('error', reject);
     });
 };
+
+async function acceptAndScheduleQuote(stripe: Stripe, quoteId: string) {
+  // Fetch the quote with metadata
+  const quote = await stripe.quotes.retrieve(quoteId);
+
+  const startDateUnix = Math.floor(
+    new Date(quote.metadata.startDate).getTime() / 1000
+  );
+  const endDateUnix = Math.floor(
+    new Date(quote.metadata.endDate).getTime() / 1000
+  );
+
+  // Update quote to set a future effective date
+  await stripe.quotes.update(quoteId, {
+    subscription_data: {
+      effective_date: startDateUnix,
+    },
+  });
+
+  // Accept the quote — this creates a subscription schedule
+  const acceptedQuote = await stripe.quotes.accept(quoteId);
+
+  const scheduleId = acceptedQuote.subscription_schedule as string;
+  if (!scheduleId) {
+    throw new Error("Quote did not create a subscription schedule");
+  }
+
+  const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+
+  // Update the schedule to enforce an end date
+  const updatedSchedule = await stripe.subscriptionSchedules.update(scheduleId, {
+    end_behavior: "cancel",
+    phases: [
+      {
+        start_date: startDateUnix,
+        end_date: endDateUnix,
+        items: schedule.phases[0].items.map(item => ({
+          price: item.price as string,
+          quantity: item.quantity ?? 1,
+        })),
+      },
+    ],
+  });
+
+  return updatedSchedule;
+}
