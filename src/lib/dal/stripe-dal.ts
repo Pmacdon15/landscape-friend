@@ -6,6 +6,7 @@ import { Subscription } from "@/types/subscription-types";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { fetchClientNamesByStripeIds } from "./clients-dal";
+import { metadata } from "@/app/layout";
 
 
 
@@ -216,6 +217,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             status: quote.status as string,
             expires_at: quote.expires_at,
             created: quote.created,
+            metadata: quote.metadata,
             customer_name: typeof quote.customer === 'object' && quote.customer !== null && 'name' in quote.customer ? quote.customer.name : undefined,
             customer_email: typeof quote.customer === 'object' && quote.customer !== null && 'email' in quote.customer ? quote.customer.email : undefined,
             client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
@@ -305,6 +307,7 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
         status: quote.status,
         expires_at: quote.expires_at,
         created: quote.created,
+        metadata: quote.metadata,
         lines: {
             data: (quote.line_items?.data || []).map((lineItem) => ({
                 id: lineItem.id,
@@ -333,8 +336,8 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
         let startingAfter: string | undefined = undefined;
 
         const params: Stripe.SubscriptionListParams = { expand: ['data.customer'] };
-        if (typesOfSubscriptions && [ 'active', 'canceled', 'incomplete',].includes(typesOfSubscriptions)) {
-            params.status = typesOfSubscriptions as |'active' | 'canceled', 'incomplete';
+        if (typesOfSubscriptions && ['active', 'canceled', 'incomplete',].includes(typesOfSubscriptions)) {
+            params.status = typesOfSubscriptions as | 'active' | 'canceled', 'incomplete';
         }
 
         while (hasMore) {

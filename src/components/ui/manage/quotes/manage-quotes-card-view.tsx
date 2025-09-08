@@ -18,8 +18,9 @@ export function ManageQuoteCardView({ quotes }: { quotes: StripeQuote[] }) {
                         <p className="text-sm font-medium text-gray-700">Quote Details</p>
                         <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                             <p><span className="font-semibold">Amount Total:</span> ${quote.amount_total !== null ? (quote.amount_total / 100).toFixed(2) : 'N/A'}</p>
-                            <p><span className="font-semibold">Expires At:</span> {quote.expires_at !== null ? <DateDisplay timestamp={quote.expires_at} /> : 'N/A'}</p>
                             <p><span className="font-semibold">Created At:</span> {quote.created !== null ? <DateDisplay timestamp={quote.created} /> : 'N/A'}</p>
+                            <p><span className="font-semibold">Start Date:</span> {quote.metadata.startDate ? <DateDisplay timestamp={quote.metadata.startDate} /> : 'N/A'}</p>
+                            <p><span className="font-semibold">End Date:</span> {quote.metadata.endDate ? <DateDisplay timestamp={quote.metadata.endDate} /> : 'N/A'}</p>
                         </div>
                     </div>
                     <div className="mt-4">
