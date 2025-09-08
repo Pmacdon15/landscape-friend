@@ -1,5 +1,5 @@
 'use server'
-import { createNotificationPayloadInvoice, createNotificationPayloadQuote, createStripeSubscriptionQuote, findOrCreateStripeCustomerAndLinkClient, sendQuote } from "@/lib/utils/stripe-utils";
+import { acceptAndScheduleQuote, createNotificationPayloadInvoice, createNotificationPayloadQuote, createStripeSubscriptionQuote, findOrCreateStripeCustomerAndLinkClient, sendQuote } from "@/lib/utils/stripe-utils";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement, schemaCreateSubscription } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
@@ -400,7 +400,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         };
 
         if (action === "accept") {
-           await acceptAndScheduleQuote(stripe, quoteId);
+            await acceptAndScheduleQuote(stripe, updatedQuote);
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
@@ -478,8 +478,5 @@ export async function createSubscriptionQuoteAction(formData: FormData, snow: bo
         console.error("Error creating subscription:", error);
         throw new Error("Failed to create subscription");
     }
-}
-function acceptAndScheduleQuote(stripe: Stripe, quoteId: string) {
-    throw new Error("Function not implemented.");
 }
 

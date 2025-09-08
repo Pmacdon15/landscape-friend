@@ -7,6 +7,7 @@ import z from 'zod';
 import { sendEmailWithTemplate } from '../actions/sendEmails-action';
 import { JwtPayload } from '@clerk/types';
 import { formatCompanyName } from './resend';
+import { StripeQuote } from '@/types/stripe-types';
 let stripe: Stripe | null = null;
 
 export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {
@@ -197,7 +198,7 @@ export async function createStripeSubscriptionQuote(
     const stripe = await getStripeInstanceUnprotected(organization_id);
     if (!stripe) throw new Error("No Stripe instance");
 
- 
+
     let customer = await getStripeCustomerByEmail(clientEmail);
     if (!customer) {
         customer = await stripe.customers.create({
@@ -209,7 +210,7 @@ export async function createStripeSubscriptionQuote(
         });
     }
 
-   
+
     const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${clientName}`;
     const product = await stripe.products.create({
         name: productName,
@@ -224,9 +225,9 @@ export async function createStripeSubscriptionQuote(
         metadata: { organization_id, serviceType },
     });
 
-    
 
-   
+
+
     const quote = await stripe.quotes.create({
         customer: customer.id,
         line_items: [
@@ -319,48 +320,51 @@ const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
     });
 };
 
-async function acceptAndScheduleQuote(stripe: Stripe, quoteId: string) {
-  // Fetch the quote with metadata
-  const quote = await stripe.quotes.retrieve(quoteId);
+export async function acceptAndScheduleQuote(
+    stripe: Stripe,
+    updatedQuote: Stripe.Quote
+) {
 
-  const startDateUnix = Math.floor(
-    new Date(quote.metadata.startDate).getTime() / 1000
-  );
-  const endDateUnix = Math.floor(
-    new Date(quote.metadata.endDate).getTime() / 1000
-  );
+    // Fetch the quote with metadata  
 
-  // Update quote to set a future effective date
-  await stripe.quotes.update(quoteId, {
-    subscription_data: {
-      effective_date: startDateUnix,
-    },
-  });
+    const startDateUnix = Math.floor(
+        new Date(updatedQuote.metadata.startDate).getTime() / 1000
+    );
+    const endDateUnix = Math.floor(
+        new Date(updatedQuote.metadata.endDate).getTime() / 1000
+    );
 
-  // Accept the quote — this creates a subscription schedule
-  const acceptedQuote = await stripe.quotes.accept(quoteId);
+    // Update quote to set a future effective date
+    await stripe.quotes.update(updatedQuote.id, {
+        subscription_data: {
+            effective_date: startDateUnix,
+        },
+    });
 
-  const scheduleId = acceptedQuote.subscription_schedule as string;
-  if (!scheduleId) {
-    throw new Error("Quote did not create a subscription schedule");
-  }
+    // Accept the quote — this creates a subscription schedule
+    const acceptedQuote = await stripe.quotes.accept(updatedQuote.id);
 
-  const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+    const scheduleId = acceptedQuote.subscription_schedule as string;
+    if (!scheduleId) {
+        throw new Error("Quote did not create a subscription schedule");
+    }
 
-  // Update the schedule to enforce an end date
-  const updatedSchedule = await stripe.subscriptionSchedules.update(scheduleId, {
-    end_behavior: "cancel",
-    phases: [
-      {
-        start_date: startDateUnix,
-        end_date: endDateUnix,
-        items: schedule.phases[0].items.map(item => ({
-          price: item.price as string,
-          quantity: item.quantity ?? 1,
-        })),
-      },
-    ],
-  });
+    const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
 
-  return updatedSchedule;
+    // Update the schedule to enforce an end date
+    const updatedSchedule = await stripe.subscriptionSchedules.update(scheduleId, {
+        end_behavior: "cancel",
+        phases: [
+            {
+                start_date: startDateUnix,
+                end_date: endDateUnix,
+                items: schedule.phases[0].items.map(item => ({
+                    price: item.price as string,
+                    quantity: item.quantity ?? 1,
+                })),
+            },
+        ],
+    });
+
+    return updatedSchedule;
 }
