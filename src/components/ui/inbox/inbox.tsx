@@ -1,5 +1,5 @@
 import { Inbox } from "@novu/nextjs"
-import { Bell, OctagonX } from "lucide-react";
+import { Bell, Settings } from "lucide-react";
 import Image from "next/image";
 
 export default function NotificationInbox({ userNovuId }: { userNovuId: string }) {
@@ -25,7 +25,8 @@ export default function NotificationInbox({ userNovuId }: { userNovuId: string }
 
     const appearance = {
         icons: {
-              bell: () => <Bell size={20} />
+            bell: () => <Bell size={20} />,
+            cogs: () => <Settings size={18}/>,
         },
         elements: {
             notificationList: "bg-[url('/lawn2.jpg')] bg-cover bg-center ",
