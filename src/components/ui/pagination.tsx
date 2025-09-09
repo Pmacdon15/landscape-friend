@@ -42,19 +42,16 @@ type PaginationLinkProps = {
   className?: string;
   isActive?: boolean;
   size?: "icon" | "default";
-  href: string;
-} & Omit<React.ComponentProps<typeof Link>, 'href'>;
+} & React.ComponentProps<typeof Link>;
 
 const PaginationLink = ({
   className,
   isActive,
   size = "icon",
-  href,
   ...props
 }: PaginationLinkProps) => {
   return (
     <Link
-      href={href}
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}

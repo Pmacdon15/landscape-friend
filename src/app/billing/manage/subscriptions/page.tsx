@@ -21,9 +21,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
             <Suspense fallback={<SearchFormFallBack variant="subscriptions" />}>
                 <SearchForm variant="subscriptions" />
             </Suspense>
-            <PaginationTabs path={"/billing/manage/subscription"} page={page} totalPages={totalPages} fullWidth />
+            <PaginationTabs path={"/billing/manage/subscriptions"} page={page} totalPages={totalPages} fullWidth />
             <CardView subscriptions={subscriptions} />
-            <PaginationTabs path={"/billing/manage/subscription"} page={page} totalPages={totalPages} fullWidth />
+            <PaginationTabs path={"/billing/manage/subscriptions"} page={page} totalPages={totalPages} fullWidth />
         </FormContainer>
     );
 }

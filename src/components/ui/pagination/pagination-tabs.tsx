@@ -7,6 +7,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import { Route } from "next";
 
 export function PaginationTabs({
   fullWidth = false,
@@ -15,7 +16,7 @@ export function PaginationTabs({
   totalPages,
 }: {
   fullWidth?: boolean;
-  path: string;
+  path: Route;
   page: number;
   totalPages: number;
 }) {
@@ -29,12 +30,12 @@ export function PaginationTabs({
         <PaginationContent>
           {page > 1 &&
             <PaginationItem>
-              <PaginationPrevious href={`${path}?page=${page - 1}`} />
+              <PaginationPrevious href={{ pathname: path, query: { page: page - 1 } }} />
             </PaginationItem>
           }
           {page > 2 &&
             <PaginationItem>
-              <PaginationLink href={`${path}?page=1`}>
+              <PaginationLink href={{ pathname: path, query: { page: 1 } }}>
                 1
               </PaginationLink>
             </PaginationItem>
@@ -47,7 +48,7 @@ export function PaginationTabs({
           {Array.from({ length: Math.min(totalPages, page + 1) - Math.max(1, page - 1) + 1 }, (_, i) => Math.max(1, page - 1) + i).map((p) =>
             <PaginationItem key={p}>
               <PaginationLink
-                href={`${path}?page=${p}`}
+                href={{ pathname: path, query: { page: p } }}
                 isActive={p === page}
               >
                 {p}
@@ -61,14 +62,14 @@ export function PaginationTabs({
           }
           {page < totalPages - 1 &&
             <PaginationItem>
-              <PaginationLink href={`${path}?page=${totalPages}`}>
+              <PaginationLink href={{ pathname: path, query: { page: totalPages } }}>
                 {totalPages}
               </PaginationLink>
             </PaginationItem>
           }
           {page < totalPages &&
             <PaginationItem>
-              <PaginationNext href={`${path}?page=${page + 1}`} />
+              <PaginationNext href={{ pathname: path, query: { page: page + 1 } }} />
             </PaginationItem>}
         </PaginationContent>
       </Pagination>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+
 import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
 import { ClientListItemProps } from "@/types/clients-types";
 
@@ -16,9 +16,9 @@ const ClientListItemHeader = ({ client }: ClientListItemProps) => {
       />
       <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
         <p className="text-sm">Phone Number:</p>
-        <Link className="cursor-pointer hover:underline text-center" href={`tel:${client.phone_number}`}>
+        <a className="cursor-pointer hover:underline text-center" href={`tel:${client.phone_number}`}>
           {client.phone_number}
-        </Link>
+        </a>
       </div>
     </div>
   );

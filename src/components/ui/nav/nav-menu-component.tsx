@@ -122,7 +122,7 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                                             </Link>
                                         </NavigationMenuLink>
                                         <NavigationMenuLink asChild>
-                                            <Link href="/billing/manage/subscription">
+                                            <Link href="/billing/manage/subscriptions">
                                                 <div className="font-medium">Manage Subscriptions</div>
                                                 <div className="text-muted-foreground">
                                                     Manage your active subscriptions.
@@ -166,7 +166,7 @@ export default function NavigationMenuComponent({ userId, }: { userId: string })
                         <ul className="grid w-[300px] gap-4">
                             <li>
                                 <NavigationMenuLink asChild>
-                                    <Link href="/settings/stripe-api-key">
+                                    <Link href="/settings">
                                         <div className="font-medium">Manage Settings</div>
                                         <div className="text-muted-foreground">
                                             Manage settings such as your stripe API key.

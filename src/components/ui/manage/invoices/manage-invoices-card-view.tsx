@@ -1,7 +1,7 @@
 'use client'
 import { StripeInvoice } from "@/types/stripe-types";
 import { DateDisplay } from "../../date-display";
-import Link from "next/link";
+
 import ManageInvoiceButton from "../../buttons/manage-invoice-button";
 import EditInvoiceLink from "../../links/edit-invoice-link";
 
@@ -38,14 +38,14 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
                     </div>
                     {invoice.hosted_invoice_url &&
                         <div className="mt-4">
-                            <Link
+                            <a
                                 href={invoice.hosted_invoice_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-500 hover:underline"
                             >
                                 View Invoice
-                            </Link>
+                            </a>
                         </div>
                     }
                     <div className="flex flex-wrap justify-center w-full gap-4 mt-4">
