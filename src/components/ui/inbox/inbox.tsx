@@ -26,7 +26,10 @@ export default function NotificationInbox({ userNovuId }: { userNovuId: string }
     const appearance = {
         icons: {
             bell: () => <Bell size={20} />,
-            cogs: () => <Settings size={18}/>,
+            cogs: () => <Settings size={18} />,
+        },
+        variables: {
+            colorPrimary: '#138b10', 
         },
         elements: {
             notificationList: "bg-[url('/lawn2.jpg')] bg-cover bg-center ",
