@@ -32,6 +32,7 @@ interface CutsPayload {
     cuts: {
         amount: number;
     };
+    date: string;
 }
 
 
