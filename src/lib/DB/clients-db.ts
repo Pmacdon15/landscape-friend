@@ -226,9 +226,9 @@ export async function fetchClientsClearingGroupsDb(
       clients_with_assignments AS(
         SELECT 
         cwb.*,
-        sca.assigned_to
+        sca.user_id as assigned_to
       FROM clients_with_balance cwb
-      INNER JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
+      INNER JOIN assignments sca ON cwb.id = sca.client_id AND sca.service_type = 'snow'
       )
         `;
 
@@ -305,9 +305,9 @@ FROM(${selectQuery}) AS client_ids
   clients_with_assignments AS(
     SELECT 
         cwb.*,
-    sca.assigned_to
+    sca.user_id as assigned_to
       FROM clients_with_balance cwb
-      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
+      LEFT JOIN assignments sca ON cwb.id = sca.client_id AND sca.service_type = 'snow'
   )
 SELECT
 cwa.id,
@@ -351,15 +351,16 @@ export async function fetchClientsWithSchedules(
       WHERE c.organization_id = ${orgId}
   ),
   clients_with_schedules AS(
-    SELECT 
+    SELECT
         cwb.*,
     COALESCE(cs.cutting_week, 0) AS cutting_week,
     COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-    sca.assigned_to AS snow_assigned_to,
-    cs.assigned_to AS grass_assigned_to
+    grass_assign.user_id AS grass_assigned_to,
+    snow_assign.user_id AS snow_assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
+      LEFT JOIN assignments grass_assign ON cwb.id = grass_assign.client_id AND grass_assign.service_type = 'grass'
+      LEFT JOIN assignments snow_assign ON cwb.id = snow_assign.client_id AND snow_assign.service_type = 'snow'
   )
     `;
 
@@ -437,15 +438,16 @@ FROM(${selectQuery}) AS client_ids
       WHERE c.organization_id = ${orgId}
 ),
   clients_with_schedules AS(
-    SELECT 
+    SELECT
         cwb.*,
     COALESCE(cs.cutting_week, 0) AS cutting_week,
     COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-    cs.assigned_to as grass_assigned_to,
-    sca.assigned_to as snow_assigned_to
+    grass_assign.user_id as grass_assigned_to,
+    snow_assign.user_id as snow_assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-      LEFT JOIN snow_clearing_assignments sca ON cwb.id = sca.client_id
+      LEFT JOIN assignments grass_assign ON cwb.id = grass_assign.client_id AND grass_assign.service_type = 'grass'
+      LEFT JOIN assignments snow_assign ON cwb.id = snow_assign.client_id AND snow_assign.service_type = 'snow'
       WHERE cwb.id = ANY(${paginatedClientIds})
   )
 SELECT
@@ -648,20 +650,18 @@ RETURNING *;
 
 
 //MARK: Unassign grass cutting
-export async function unassignGrassCuttingDb(clientId: number, organization_id: string, cuttingWeek: number | null) {
+export async function unassignGrassCuttingDb(clientId: number, organization_id: string) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const result = await sql`
-    UPDATE cutting_schedule
-    SET assigned_to = NULL
-    WHERE client_id = ${clientId} AND organization_id = ${organization_id} AND cutting_week = ${cuttingWeek}
+    DELETE FROM assignments
+    WHERE client_id = ${clientId}
+      AND service_type = 'grass'
+      AND client_id IN (SELECT id FROM clients WHERE organization_id = ${organization_id})
     RETURNING *;
   `;
 
-  if (!result || result.length === 0) {
-    throw new Error('Unassignment Failed');
-  }
-
+  // Does not throw error if no rows are deleted, because that means it's already unassigned.
   return result;
 }
 
@@ -704,18 +704,27 @@ RETURNING *;
 export async function assignGrassCuttingDb(data: z.infer<typeof schemaAssign>, organization_id: string) {
   const sql = neon(`${process.env.DATABASE_URL} `);
 
-  const result = await sql`
-    INSERT INTO cutting_schedule(client_id, assigned_to, organization_id, cutting_week, cutting_day)
-    SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}, ${data.cuttingWeek}, ${data.cuttingDay}
+  await sql`
+    INSERT INTO cutting_schedule(client_id, cutting_week, cutting_day, organization_id)
+    SELECT ${data.clientId}, ${data.cuttingWeek}, ${data.cuttingDay}, ${organization_id}
     FROM clients
     WHERE id = ${data.clientId} AND organization_id = ${organization_id}
     ON CONFLICT(client_id, cutting_week, organization_id) DO UPDATE
-    SET assigned_to = EXCLUDED.assigned_to, cutting_day = EXCLUDED.cutting_day
+    SET cutting_day = EXCLUDED.cutting_day;
+  `;
+
+  const result = await sql`
+    INSERT INTO assignments(client_id, user_id, service_type)
+    SELECT ${data.clientId}, ${data.assignedTo}, 'grass'
+    FROM clients
+    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+    ON CONFLICT(client_id, service_type) DO UPDATE
+    SET user_id = EXCLUDED.user_id
     RETURNING *;
-    `;
+  `;
 
   if (!result || result.length === 0) {
-    throw new Error('Assignment Failed');
+    throw new Error('Assignment Failed. Client may not exist in the organization.');
   }
 
   return result;
