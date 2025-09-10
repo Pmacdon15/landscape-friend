@@ -80,7 +80,16 @@ export async function triggerNovuEvent(workFlow: string, recipient: string, payl
         to: {
             subscriberId: recipient
         },
-        payload: payload
+        payload: payload,
+        overrides: {
+            providers: {
+                fcm: {
+                    type: "data",
+                    // URL of an image to be displayed in the notification.
+                    imageUrl: "https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png",
+                }
+            }
+        }
     });
 }
 

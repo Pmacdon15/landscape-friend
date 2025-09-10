@@ -22,15 +22,3 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage((payload) => {
-  console.log('[firebase-messaging-sw.js] Received background message ', payload);
-
-  const notificationTitle = payload.notification?.title || 'Background Message Title';
-  const notificationOptions = {
-    body: payload.notification?.body || 'Background Message body.',
-    icon: '/lawn-mower.png', // Specify your icon path here
-    // image: '/path/to/your/larger-image.jpg' // Optional: for a larger image within the notification
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
