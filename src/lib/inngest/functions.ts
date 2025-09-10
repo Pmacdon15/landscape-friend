@@ -20,7 +20,7 @@ function getWeekOfYear(date: Date): number {
 
 const cutReminders = inngest.createFunction(
     { id: "cut-reminders", retries: 2 },
-    { cron: "0 8 * * *" },
+    { cron: "0 12 * * *" },
     async ({ step }) => {
         console.log('Running cut reminders function');
         const now = new Date();
