@@ -530,9 +530,9 @@ export async function fetchClientsCuttingSchedules(
       snow_assignments AS(
         SELECT
         sca.client_id,
-        sca.assigned_to
-      FROM snow_clearing_assignments sca
-      WHERE sca.organization_id = ${orgId}
+        sca.user_id as assigned_to
+      FROM assignments sca
+      WHERE sca.service_type = 'snow'
       )
         `;
 
@@ -670,8 +670,10 @@ export async function unassignSnowClearingDb(clientId: number, organization_id: 
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const result = await sql`
-    DELETE FROM snow_clearing_assignments
-    WHERE client_id = ${clientId} AND organization_id = ${organization_id}
+    DELETE FROM assignments
+    WHERE client_id = ${clientId}
+      AND service_type = 'snow'
+      AND client_id IN (SELECT id FROM clients WHERE organization_id = ${organization_id})
     RETURNING *;
   `;
 
@@ -684,14 +686,14 @@ export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow
   const sql = neon(`${process.env.DATABASE_URL} `);
 
   const result = await sql`
-    INSERT INTO snow_clearing_assignments(client_id, assigned_to, organization_id)
-    SELECT ${data.clientId}, ${data.assignedTo}, ${organization_id}
+    INSERT INTO assignments(client_id, user_id, service_type)
+    SELECT ${data.clientId}, ${data.assignedTo}, 'snow'
     FROM clients
     WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-    ON CONFLICT(client_id) DO UPDATE
-    SET assigned_to = EXCLUDED.assigned_to
-RETURNING *;
-`;
+    ON CONFLICT(client_id, service_type) DO UPDATE
+    SET user_id = EXCLUDED.user_id
+    RETURNING *;
+  `;
 
   if (!result || result.length === 0) {
     throw new Error('Assignment Failed');
