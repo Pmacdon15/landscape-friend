@@ -74,6 +74,17 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
 
 
 
+export async function triggerNovuEvent(workFlow: string, recipient: string, payload: PayloadType) {
+    await novu.trigger({
+        workflowId: workFlow,
+        to: {
+            subscriberId: recipient
+        },
+        payload: payload
+    });
+}
+
+
 export async function sayHello(novuId: string, email?: string, userName?: string) {
     try {
         const firstName = userName?.split(" ")[0]
