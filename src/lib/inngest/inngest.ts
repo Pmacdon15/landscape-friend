@@ -1,4 +1,4 @@
 import { Inngest } from "inngest"
 
 
-export const inngest = new Inngest({ id: "monthly-payment" });
+export const inngest = new Inngest({ id: "landscape-friend" });
