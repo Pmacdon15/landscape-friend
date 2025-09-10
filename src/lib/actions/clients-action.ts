@@ -16,7 +16,7 @@ export async function addClient(formData: FormData) {
     if (!orgSettings) throw new Error("Organization not found.");
 
     const clientCount = await countClientsByOrgId(organizationId);
-    if (clientCount >= orgSettings.max_allowed_clinents) {
+    if (clientCount >= orgSettings.max_allowed_clients) {
         throw new Error("Maximum number of clients reached for this organization.");
     }
 

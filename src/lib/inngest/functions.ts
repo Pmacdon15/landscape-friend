@@ -1,65 +1,59 @@
 import { inngest } from "./inngest";
-import { getAllOrganizations } from "../DB/org-db";
-import { getYardsCutLastMonth } from "../DB/grass-cutting-db";
-import { getStripeInstanceUnprotected } from "../utils/stripe-utils";
+import { getTodaysCuts } from "../DB/grass-cutting-db";
+import { triggerNovuEvent } from "../utils/novu";
 
-const addMonthlyPayment = inngest.createFunction(
-    { id: "add-monthly-cost", retries: 2 },
-    { cron: "0 0 1 * *" }, // runs on the 1st of every month at 00:00
-    async () => {
-        const organizations = await getAllOrganizations();
+const daysOfWeek = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
 
-        for (const org of organizations) {
+function getWeekOfYear(date: Date): number {
+    const start = new Date(date.getFullYear(), 0, 1);
+    const diff = (date.getTime() - start.getTime() + start.getTimezoneOffset() * 60000) / 86400000;
+    return Math.floor(diff / 7) + 1;
+}
 
-            const stripe = await getStripeInstanceUnprotected(org.organization_id);
+const cutReminders = inngest.createFunction(
+    { id: "cut-reminders", retries: 2 },
+    { cron: "0 8 * * *" },
+    async ({ step }) => {
+        console.log('Running cut reminders function');
+        const now = new Date();
+        const cuttingWeek = (getWeekOfYear(now) % 4) + 1;
+        const cuttingDay = daysOfWeek[now.getDay()];
+        console.log(`Today is ${cuttingDay}, week ${cuttingWeek}`);
 
-            const clientsToCharge = await getYardsCutLastMonth(org.organization_id);
+        const cuts = await step.run("fetch-todays-cuts", async () => {
+            return await getTodaysCuts(cuttingWeek, cuttingDay);
+        });
 
-            for (const client of clientsToCharge) {
-                if (!client.stripe_customer_id) {
-                    console.warn(`Client ${client.client_id} has no stripe_customer_id. Skipping.`);
-                    continue;
-                }
+        console.log(`Found ${cuts.length} cuts for today`);
 
-                const amount = client.cut_count * client.price_per_cut * 100; // amount in cents
-
-                try {
-                    // Create a draft invoice
-                    const invoice = await stripe.invoices.create({
-                        customer: client.stripe_customer_id,
-                        collection_method: 'send_invoice',
-                        days_until_due: 30,
-                        auto_advance: false, // Create a draft invoice
-                    });
-
-                    if (invoice.id) {
-                        // Create an invoice item and attach it to the invoice
-                        await stripe.invoiceItems.create({
-                            customer: client.stripe_customer_id,
-                            invoice: invoice.id,
-                            amount: amount,
-                            currency: 'cad',
-                            description: `Lawn mowing service (${client.cut_count} cuts)`,
-                        });
-
-                        // Finalize the invoice
-                        await stripe.invoices.finalizeInvoice(invoice.id, {
-                            auto_advance: true
-                        });
-                    } else {
-                        console.error(`Failed to create invoice for client ${client.client_id}.`);
-                    }
-
-                } catch (error) {
-                    console.error(`Error creating invoice for client ${client.client_id}:`, error);
-                }
+        const cutsByUser = cuts.reduce((acc, cut) => {
+            if (!acc[cut.user_id]) {
+                acc[cut.user_id] = {
+                    novu_subscriber_id: cut.novu_subscriber_id,
+                    cuts: 0
+                };
             }
+            acc[cut.user_id].cuts++;
+            return acc;
+        }, {} as Record<string, { novu_subscriber_id: string; cuts: number }>);
+
+        for (const userId in cutsByUser) {
+            const userData = cutsByUser[userId];
+            await step.run(`trigger-novu-event-for-${userId}`, async () => {
+                console.log(`Triggering Novu event for user ${userId} for ${userData.cuts} cuts`);
+                await triggerNovuEvent('cut-reminder', userData.novu_subscriber_id, { cuts: { amount: userData.cuts }, date: now.toISOString() });
+            });
         }
 
-        return { success: true };
+        console.log('Finished cut reminders function');
     }
-);
-
-export const functions = [addMonthlyPayment];
-
-
+)
+export const functions = [cutReminders];

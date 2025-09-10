@@ -46,3 +46,24 @@ export async function getYardsCutLastMonth(organization_id: string) {
 
     return result;
 }
+
+export async function getTodaysCuts(cuttingWeek: number, cuttingDay: string) {
+    const sql = neon(`${process.env.DATABASE_URL}`);
+    const result = await sql`
+        SELECT
+            c.full_name as client_name,
+            u.id as user_id,
+            u.novu_subscriber_id
+        FROM
+            cutting_schedule cs
+        JOIN
+            clients c ON cs.client_id = c.id
+        JOIN
+            assignments a ON c.id = a.client_id AND a.service_type = 'grass'
+        JOIN
+            users u ON a.user_id = u.id
+        WHERE
+            cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay};
+    `;
+    return result;
+}
