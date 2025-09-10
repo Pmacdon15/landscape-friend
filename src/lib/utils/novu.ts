@@ -87,8 +87,8 @@ export async function triggerNovuEvent(workFlow: string, recipient: string, payl
 
 export async function sayHello(novuId: string, email?: string, userName?: string) {
     try {
-        const firstName = userName?.split(" ")[0]
-        const lastName = userName?.split(" ")[1]
+        const firstName = userName?.split(" ")[0] || email?.split("@")[0] || 'New';
+        const lastName = userName?.split(" ")[1] || '';
         await novu.trigger({
             workflowId: 'hello-from-landscape-friend',
             to: {

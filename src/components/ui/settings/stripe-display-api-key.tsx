@@ -20,9 +20,10 @@ export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
             label="Stripe API Key"
             actions={
                 <div className="flex gap-2">
-                    <Button onClick={toggleShowKey}>
+                    {apiKey && <Button onClick={toggleShowKey}>
                         {showKey ? <><EyeOff className="w-4 h-4" /> Show</> : <><Eye className="w-4 h-4" />Hide</>}
                     </Button>
+                    }
                     <EditSettingSheet
                         title={<><Edit />Edit Setting</>}
                         prompt={"Edit Stripe API Key"}
@@ -40,7 +41,7 @@ export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
                 </div>
             }>
             <p className="break-all">
-                {showKey ? apiKey : "********************************"}
+                {showKey ? apiKey : apiKey ? "********************************" : ""}
             </p>
         </SettingsDisplayItem>
     );
