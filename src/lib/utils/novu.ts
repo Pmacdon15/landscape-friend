@@ -64,17 +64,7 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
         await novu.trigger({
             workflowId: workflow,
             to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
-            payload: payload,
-            overrides: {
-                providers: {
-                    fcm: {
-                        notification: {                            
-                            icon: 'https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/lawn-mower.png'
-                        }
-                    }
-                }
-            }
-
+            payload: payload
         });
         // console.log("Result for send notification: ", result)
     } catch (error) {
