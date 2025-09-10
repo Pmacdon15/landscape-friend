@@ -65,6 +65,16 @@ export async function triggerNotificationSendToAdmin(orgId: string, workflow: st
             workflowId: workflow,
             to: adminSubscriberIds.map((subscriberId) => ({ subscriberId })),
             payload: payload,
+            overrides: {
+                providers: {
+                    fcm: {
+                        notification: {                            
+                            icon: 'https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/lawn-mower.png'
+                        }
+                    }
+                }
+            }
+
         });
         // console.log("Result for send notification: ", result)
     } catch (error) {
@@ -80,16 +90,7 @@ export async function triggerNovuEvent(workFlow: string, recipient: string, payl
         to: {
             subscriberId: recipient
         },
-        payload: payload,
-        overrides: {
-            providers: {
-                fcm: {
-                    type: "data",
-                    // URL of an image to be displayed in the notification.
-                    imageUrl: "https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png",
-                }
-            }
-        }
+        payload: payload
     });
 }
 
