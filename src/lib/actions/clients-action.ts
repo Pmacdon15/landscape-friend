@@ -47,7 +47,7 @@ export async function addClient(formData: FormData) {
             }
         })
 
-        return { success: true, customerId };
+        return { success: true, customerId: customerId || null };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         throw new Error(errorMessage);
