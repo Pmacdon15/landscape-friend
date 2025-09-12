@@ -9,16 +9,16 @@ import { JwtPayload } from '@clerk/types';
 import { formatCompanyName } from './resend';
 let stripe: Stripe | null = null;
 
-export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe> {
+export async function getStripeInstanceUnprotected(orgId: string): Promise<Stripe | null> {
 
     const apiKeyResponse = await fetchStripAPIKeyDb(orgId);
     if (apiKeyResponse instanceof Error) {
-        throw new Error('Stripe secret key not configured.');
+        return null;
     }
 
     const apiKey = apiKeyResponse.api_key;
     if (!apiKey) {
-        throw new Error('Stripe secret key not configured.');
+        return null;
     }
 
     stripe = new Stripe(apiKey);
@@ -32,17 +32,31 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     phoneNumber: string,
     address: string,
     organization_id: string | undefined
-): Promise<string> {
+): Promise<string | null> {
 
-    const stripe = getStripeInstance();
+    const stripe = await getStripeInstance();
 
     const effectiveOrgId = organization_id;
     if (!effectiveOrgId) {
         throw new Error("Organization ID is missing.");
     }
 
+    if (!stripe) {
+        // If Stripe is not configured, add client to DB with null stripe_customer_id
+        const newClientData = {
+            full_name: clientName,
+            phone_number: Number(phoneNumber),
+            email_address: clientEmail,
+            address: address,
+            stripe_customer_id: null,
+            organization_id: effectiveOrgId as string,
+        };
+        await addClientDB(newClientData, effectiveOrgId as string);
+        return null;
+    }
+
     let customerId: string;
-    const existingCustomers = await (await stripe).customers.list({ email: clientEmail, limit: 1 });
+    const existingCustomers = await stripe.customers.list({ email: clientEmail, limit: 1 });
 
     if (existingCustomers.data.length > 0) {
         customerId = existingCustomers.data[0].id;
@@ -66,7 +80,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
     } else {
         console.log("No existing Stripe customer found, creating new one.");
         try {
-            const newCustomer = await (await stripe).customers.create({
+            const newCustomer = await stripe.customers.create({
                 name: clientName,
                 email: clientEmail,
             });
@@ -158,6 +172,7 @@ export const createNotificationPayloadInvoice = async (invoice: Stripe.Response<
 
 export async function getStripeCustomerByEmail(email: string): Promise<Stripe.Customer | null> {
     const stripe = await getStripeInstance();
+    if (!stripe) return null;
     const customers = await stripe.customers.list({ email: email, limit: 1 });
     return customers.data.length > 0 ? customers.data[0] : null;
 }
@@ -168,8 +183,9 @@ export async function createStripeCustomer(customerData: {
     address?: { line1: string };
     phone?: string;
     metadata?: { [key: string]: string };
-}): Promise<Stripe.Customer> {
+}): Promise<Stripe.Customer | null> {
     const stripe = await getStripeInstance();
+    if (!stripe) return null;
     const customer = await stripe.customers.create(customerData);
     return customer;
 }
@@ -306,6 +322,7 @@ export async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: 
 //MARK: Helper function to convert ReadableStream to Buffer
 export async function cancelStripeSubscription(subscriptionId: string): Promise<void> {
     const stripe = await getStripeInstance();
+    if (!stripe) return;
     await stripe.subscriptions.cancel(subscriptionId);
 }
 

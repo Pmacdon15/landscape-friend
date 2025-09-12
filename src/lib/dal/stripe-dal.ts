@@ -12,16 +12,16 @@ import { fetchClientNamesByStripeIds } from "./clients-dal";
 
 let stripe: Stripe | null = null;
 
-export async function getStripeInstance(): Promise<Stripe> {
+export async function getStripeInstance(): Promise<Stripe | null> {
 
     const apiKeyResponse = await fetchStripeAPIKey();
     if (apiKeyResponse instanceof Error) {
-        throw new Error('Stripe secret key not configured.');
+        return null;
     }
 
     const apiKey = apiKeyResponse.apk_key;
     if (!apiKey) {
-        throw new Error('Stripe secret key not configured.');
+        return null;
     }
 
     stripe = new Stripe(apiKey);
