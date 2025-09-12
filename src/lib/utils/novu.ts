@@ -10,7 +10,22 @@ export async function addNovuSubscriber(
     userName?: string
 ) {
     console.log('addNovuSubscriber called with:', { subscriberId, email, userName });
-    await sayHello(subscriberId, email, userName)
+    const firstName = userName?.split(" ")[0] || email?.split("@")[0] || 'New';
+    const lastName = userName?.split(" ")[1] || '';
+
+    try {
+        await novu.subscribers.create({
+            subscriberId,
+            email,
+            firstName,
+            lastName,
+        });
+    } catch (error) {
+        // console.error('Error creating novu subscriber:', error);
+        // It might be that the subscriber already exists, which is fine.
+    }
+
+    await sendWelcomeNotification(subscriberId)
     return true
 };
 
@@ -85,25 +100,18 @@ export async function triggerNovuEvent(workFlow: string, recipient: string, payl
 }
 
 
-export async function sayHello(novuId: string, email?: string, userName?: string) {
+export async function sendWelcomeNotification(novuId: string) {
     try {
-        const firstName = userName?.split(" ")[0] || email?.split("@")[0] || 'New';
-        const lastName = userName?.split(" ")[1] || '';
         await novu.trigger({
             workflowId: 'hello-from-landscape-friend',
             to: {
                 subscriberId: novuId,
-                email,
-                firstName,
-                lastName,
-                timezone: 'America/Edmonton',
             },
             payload: {},
         });
 
     } catch (error) {
         console.error(error);
-        // return NextResponse.json({ error: 'Failed to trigger Novu workflow' }, { status: 500 });
     }
 }
 
