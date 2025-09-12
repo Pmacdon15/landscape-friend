@@ -60,6 +60,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+     if (!stripe) throw new Error('Failed to get Stripe instance');
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {
@@ -171,6 +172,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {
@@ -279,6 +281,7 @@ export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const invoice = await stripe.invoices.retrieve(invoiceId, {
         expand: ['lines.data'],
     });
@@ -326,6 +329,7 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const quote = await stripe.quotes.retrieve(quoteId, {
         expand: ['line_items.data'],
     });
@@ -363,6 +367,7 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {

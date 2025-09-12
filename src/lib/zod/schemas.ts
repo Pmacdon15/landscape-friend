@@ -5,7 +5,7 @@ export const schemaAddClient = z.object({
     phone_number: z.number(),
     email_address: z.email(),
     address: z.string(),
-    stripe_customer_id: z.string().optional(),
+    stripe_customer_id: z.string().optional().nullable(),
     organization_id: z.string(),
 })
 

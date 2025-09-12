@@ -21,7 +21,7 @@ export async function addNovuSubscriber(
             lastName,
         });
     } catch (error) {
-        // console.error('Error creating novu subscriber:', error);
+        console.error('Error creating novu subscriber:', error);
         // It might be that the subscriber already exists, which is fine.
     }
 

@@ -77,7 +77,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
     try {
         if (!isAdmin) throw new Error("Not Admin")
         const stripe = await getStripeInstance();
-
+        if (!stripe) throw new Error('Failed to get Stripe instance');
         // 1. Find or Create Customer
         const customerId = await findOrCreateStripeCustomerAndLinkClient(
             validatedFields.data.clientName,
@@ -86,6 +86,10 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             validatedFields.data.address,
             validatedFields.data.organization_id
         );
+
+        if (!customerId) {
+            throw new Error("Could not create or find customer.");
+        }
 
 
         // 2. Handle Labour Product and Price
@@ -163,7 +167,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             customer: customerId,
             line_items: line_items,
             collection_method: 'send_invoice',
-            invoice_settings: { days_until_due: 30 },
+            invoice_settings: { days_until_due: 10 },
         });
         await triggerNotificationSendToAdmin(orgId || userId!, 'quote-created', {
             quote: {
@@ -203,7 +207,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
 
     try {
         const stripe = await getStripeInstance();
-
+        if (!stripe) throw new Error('Failed to get Stripe instance');
         if (id.startsWith('in_')) {
             // Invoice update logic
             const existingInvoice = await getInvoiceDAL(id);
@@ -282,6 +286,7 @@ export async function resendInvoice(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
     if (!orgId && !userId) throw new Error("Not logged in.")
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     //TODO: when in Prod there is not need for use to send the email strip will do that
 
     try {
@@ -328,6 +333,7 @@ export async function markInvoicePaid(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         await stripe.invoices.pay(invoiceId, {
             paid_out_of_band: true,
@@ -345,6 +351,7 @@ export async function markInvoiceVoid(invoiceId: string) {
     if (!userId) throw new Error("No user")
 
     const stripe = await getStripeInstance();
+     if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         const invoice = await stripe.invoices.voidInvoice(invoiceId);
 
@@ -389,6 +396,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     if (!sessionClaims) throw new Error("Session claims are missing.");
 
     const stripe = await getStripeInstance();
+     if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         // let resultQuote: Stripe.Response<Stripe.Quote>;
         const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
