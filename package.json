@@ -54,6 +54,7 @@
     "uuid": "^11.1.0",
     "zod": "^4.0.5"
   },
+  "type": "module",
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/cli": "^4.1.11",
