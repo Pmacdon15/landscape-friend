@@ -1,16 +1,18 @@
 'use client';
-
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import FormHeader from '@/components/ui/header/form-header'; // Import FormHeader
 import { CreateQuoteForm } from '@/components/ui/stripe-forms/stripe-quote-form/create-quote-form';
 import { CreateSubscriptionForm } from '@/components/ui/stripe-forms/stripe-subscription-form/create-subscription-form';
 import BackToLink from '../links/back-to-link';
+import { CreateSubscriptionFormProps } from '@/types/forms-types';
+import { CreateQuoteFormFallback } from '../fallbacks/create-quote-form-fallback';
+import CreateSubscriptionFormFallback from '../fallbacks/create-subscription-form-fallback';
 
-interface FormSelectorProps {
-  organizationId: string;
-}
 
-export const FormSelector: React.FC<FormSelectorProps> = ({ organizationId }) => {
+
+
+
+export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise }) => {
   const [formType, setFormType] = useState<'quote' | 'subscription'>('quote');
 
   return (
@@ -30,12 +32,16 @@ export const FormSelector: React.FC<FormSelectorProps> = ({ organizationId }) =>
           Create Subscription
         </button>
       </div>
-      <div className="p-4 border rounded-md shadow-sm">
-        {formType === 'quote' ? (
-          <CreateQuoteForm organizationId={organizationId} />
-        ) : (
-          <CreateSubscriptionForm organizationId={organizationId} />
-        )}
+      <div className="p-4 border rounded-md shadow-sm">        
+        {formType === 'quote' ?
+          <Suspense fallback={<CreateQuoteFormFallback />}>
+            <CreateQuoteForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} />
+          </Suspense>
+          :
+          <Suspense fallback={<CreateSubscriptionFormFallback />}>
+            <CreateSubscriptionForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} />
+          </Suspense>
+        }
       </div>
       <BackToLink path={'/billing/manage/quotes'} place={'Quotes'} />
     </>

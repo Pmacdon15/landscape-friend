@@ -15,7 +15,7 @@ export interface Client {
     phone_number: string;
     email_address: string;
     address: string;
-    amount_owing: number;    
+    amount_owing: number;
     cutting_week: number;
     cutting_day: string;
     cutting_schedules: CuttingSchedule[];
@@ -27,6 +27,14 @@ export interface Client {
 export interface ClientListItemProps {
     client: Client;
     children?: React.ReactNode;
+}
+
+export interface ClientInfoList {
+    id: number,
+    full_name: string,
+    phone_number: string,
+    email_address: string,
+    address: string
 }
 
 

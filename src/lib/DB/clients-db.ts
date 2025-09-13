@@ -1,7 +1,7 @@
 import { schemaAddClient, schemaAssign, schemaAssignSnow, schemaDeleteClient, schemaDeleteSiteMap, schemaMarkYardCut, schemaUpdateCuttingDay, schemaUpdatePricePerMonth } from "@/lib/zod/schemas";
 import { neon } from "@neondatabase/serverless";
 import z from "zod";
-import { Account, Client, CustomerName } from "@/types/clients-types";
+import { Account, Client, ClientInfoList, CustomerName } from "@/types/clients-types";
 import { NovuSubscriberIds } from "@/types/novu-types";
 
 //MARK: Add clients
@@ -196,6 +196,23 @@ export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCut
     `;
   return result;
 }
+//MARK: Fetch client list
+// MARK: Fetch client list
+export async function fetchClientListDb(orgId: string): Promise<ClientInfoList[]> {
+  const sql = neon(`${process.env.DATABASE_URL}`);
+  const result = await sql`
+    SELECT
+      id,
+      full_name,
+      phone_number,
+      email_address,
+      address
+    FROM clients
+    WHERE organization_id = ${orgId};
+  `;
+  return result as ClientInfoList[];
+}
+
 
 //MARK: Fetch clients snow clearing
 export async function fetchClientsClearingGroupsDb(
@@ -578,7 +595,7 @@ cws.id,
     OR cws.address ILIKE ${`%${searchTerm}%`})
     `);
   }
-//TODO: Maybe remove if as there should never not be assigned to and we dont want to return data to just anyone
+  //TODO: Maybe remove if as there should never not be assigned to and we dont want to return data to just anyone
   if (searchTermAssignedTo !== "") {
     whereClauses.push(sql`ga.assigned_to = ${searchTermAssignedTo}`);
   }

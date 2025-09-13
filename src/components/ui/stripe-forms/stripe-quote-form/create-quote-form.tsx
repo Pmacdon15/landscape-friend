@@ -10,11 +10,15 @@ import InputField from '../shared/input';
 import { DynamicFields } from '../shared/dynamic-fields';
 import Spinner from '../../loaders/spinner';
 import { AlertMessage } from '../shared/alert-message';
+import { ClientInfoList } from '@/types/clients-types';
+import { use, useEffect } from 'react';
 
-export function CreateQuoteForm({ organizationId }: { organizationId: string }) {
+export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { organizationIdPromise: Promise<string | null>, clientsPromise: Promise<ClientInfoList[]> }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
+    const organizationId = use(organizationIdPromise)
+    const clients = use(clientsPromise)
 
-    const { register, watch, control, reset, handleSubmit, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
+    const { register, watch, control, reset, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
         resolver: zodResolver(schemaCreateQuote),
         mode: 'onBlur',
         defaultValues: {
@@ -25,7 +29,7 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
             labourCostPerUnit: 0,
             labourUnits: 0,
             materials: [{ materialType: '', materialCostPerUnit: 0, materialUnits: 0 }],
-            organization_id: organizationId,
+            organization_id: organizationId || "",
         },
     });
 
@@ -33,6 +37,22 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
         control,
         name: "materials",
     });
+
+    const watchedValues = watch();
+    const clientName = watchedValues.clientName;
+
+    useEffect(() => {
+        const selectedClient = clients.find(client => client.full_name === clientName);
+        if (selectedClient) {
+            setValue('clientEmail', selectedClient.email_address);
+            setValue('phone_number', selectedClient.phone_number);
+            setValue('address', selectedClient.address);
+        } else {
+            setValue('clientEmail', '');
+            setValue('phone_number', '');
+            setValue('address', '');
+        }
+    }, [clientName, clients, setValue]);
 
     useCreateQuoteForm({ isSuccess, reset, fields, append });
 
@@ -42,7 +62,6 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
 
     const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
 
-    const watchedValues = watch();
     const total = (watchedValues.labourCostPerUnit * watchedValues.labourUnits) +
         (watchedValues.materials?.reduce((acc, item) => {
             const cost = item.materialCostPerUnit ?? 0;
@@ -50,18 +69,28 @@ export function CreateQuoteForm({ organizationId }: { organizationId: string }) 
             return acc + (cost * units);
         }, 0) ?? 0);
 
+    const isClientSelected = clients.some(client => client.full_name === clientName);
+
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <input type="hidden" {...register('organization_id')} value={organizationId} />
+                <input type="hidden" {...register('organization_id')} value={organizationId || ""} />
 
                 {/* Client Info */}
                 <section>
                     <h3 className="text-md font-semibold mb-2">Client Information</h3>
-                    <InputField label="Client Name" id="clientName" type="text" register={register} errors={errors} className={inputClassName} />
-                    <InputField label="Client Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} />
-                    <InputField label="Phone Number" id="phone_number" type="text" register={register} errors={errors} className={inputClassName} />
-                    <InputField label="Address" id="address" type="text" register={register} errors={errors} className={inputClassName} />
+                    <div>
+                        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
+                        <input id="clientName" {...register('clientName')} list="clients-list" className={inputClassName} />
+                        <datalist id="clients-list">
+                            {clients.map(client => (
+                                <option key={client.id} value={client.full_name} />
+                            ))}
+                        </datalist>
+                    </div>
+                    <InputField label="Client Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
+                    <InputField label="Phone Number" id="phone_number" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
+                    <InputField label="Address" id="address" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
                 </section>
 
                 {/* Labour Details */}
