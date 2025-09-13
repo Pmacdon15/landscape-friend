@@ -5,12 +5,14 @@ import FormHeader from '@/components/ui/header/form-header'; // Import FormHeade
 import { CreateQuoteForm } from '@/components/ui/stripe-forms/stripe-quote-form/create-quote-form';
 import { CreateSubscriptionForm } from '@/components/ui/stripe-forms/stripe-subscription-form/create-subscription-form';
 import BackToLink from '../links/back-to-link';
+import { ClientInfoList } from '@/types/clients-types';
 
 interface FormSelectorProps {
   organizationId: string;
+  clientsPromise: Promise<ClientInfoList[]>
 }
 
-export const FormSelector: React.FC<FormSelectorProps> = ({ organizationId }) => {
+export const FormSelector: React.FC<FormSelectorProps> = ({ organizationId, clientsPromise }) => {
   const [formType, setFormType] = useState<'quote' | 'subscription'>('quote');
 
   return (
@@ -31,8 +33,9 @@ export const FormSelector: React.FC<FormSelectorProps> = ({ organizationId }) =>
         </button>
       </div>
       <div className="p-4 border rounded-md shadow-sm">
+        {/* TODO:Wrap in suspense */}
         {formType === 'quote' ? (
-          <CreateQuoteForm organizationId={organizationId} />
+          <CreateQuoteForm organizationId={organizationId} clientsPromise={clientsPromise} />
         ) : (
           <CreateSubscriptionForm organizationId={organizationId} />
         )}

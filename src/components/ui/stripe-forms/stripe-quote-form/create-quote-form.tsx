@@ -10,9 +10,14 @@ import InputField from '../shared/input';
 import { DynamicFields } from '../shared/dynamic-fields';
 import Spinner from '../../loaders/spinner';
 import { AlertMessage } from '../shared/alert-message';
+import { ClientInfoList } from '@/types/clients-types';
+import { use } from 'react';
 
-export function CreateQuoteForm({ organizationId }: { organizationId: string }) {
+export function CreateQuoteForm({ organizationId, clientsPromise }: { organizationId: string, clientsPromise: Promise<ClientInfoList[]> }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
+
+    const clients = use(clientsPromise)
+    console.log("Clients: ", clients)
 
     const { register, watch, control, reset, handleSubmit, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
         resolver: zodResolver(schemaCreateQuote),

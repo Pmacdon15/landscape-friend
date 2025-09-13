@@ -1,9 +1,10 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB } from "@/lib/DB/clients-db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB, fetchClientListDb } from "@/lib/DB/clients-db";
 import { fetchClientNamesAndEmailsDb } from "@/lib/DB/resend-db";
 import { processClientsResult } from "@/lib/utils/sort";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName } from "@/types/clients-types";
+import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName, ClientInfoList } from "@/types/clients-types";
 import { auth } from "@clerk/nextjs/server";
+import { unknown } from "zod";
 
 
 export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
@@ -19,9 +20,22 @@ export async function fetchAllClients(clientPageNumber: number, searchTerm: stri
   const { clients, totalPages } = processClientsResult(result.clientsResult as ClientResult[], result.totalCount, pageSize);
   return { clients, totalPages };
 }
-
-
-
+//TODO: Abstract this 
+export async function fetchClientList(): Promise<ClientInfoList[]> {
+  const { orgId, userId } = await isOrgAdmin();
+  if (!orgId && !userId) {
+    throw new Error("Organization ID or User ID is missing.");
+  }
+  const organizationId = orgId || userId;
+  if (!organizationId) {
+    throw new Error("Organization ID or User ID is missing.");
+  }
+  const result = await fetchClientListDb(organizationId);
+  if (!result) {
+    throw new Error("Failed to fetch client list.");
+  }
+  return result;
+}
 export async function fetchCuttingClients(
   clientPageNumber: number,
   searchTerm: string,
