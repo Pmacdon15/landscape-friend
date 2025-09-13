@@ -8,8 +8,8 @@ export default clerkMiddleware(async (auth, req) => {
 
   const { userId, orgId, sessionClaims } = await auth()
 
- 
-  if (isAdminRoute(req) && (sessionClaims?.orgRole !== 'org:admin' && orgId )) {
+
+  if (isAdminRoute(req) && ((sessionClaims?.orgRole !== 'org:admin' && orgId) || userId !== orgId)) {
     const url = req.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
