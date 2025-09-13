@@ -38,6 +38,7 @@ export default async function ClientListService({
               }
               <FormHeader text={client.full_name} />
               <div className="flex flex-col gap-2 items-center justify-center mt-8 mb-8 lg:flex-row w-full">
+                {/* //TODO: only pass the part of client need */}
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
                 <ClientListItemAddress client={client} >

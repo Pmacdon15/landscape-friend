@@ -578,7 +578,7 @@ cws.id,
     OR cws.address ILIKE ${`%${searchTerm}%`})
     `);
   }
-
+//TODO: Maybe remove if as there should never not be assigned to and we dont want to return data to just anyone
   if (searchTermAssignedTo !== "") {
     whereClauses.push(sql`ga.assigned_to = ${searchTermAssignedTo}`);
   }
