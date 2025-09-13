@@ -52,7 +52,7 @@ const cutReminders = inngest.createFunction(
             const userData = cutsByUser[userId];
             await step.run(`trigger-novu-event-for-${userId}`, async () => {
                 console.log(`Triggering Novu event for user ${userId} for ${userData.cuts} cuts`);
-                await triggerNovuEvent('cut-reminder', userData.novu_subscriber_id, { services: { amount: userData.services }, date: now.toISOString() });
+                await triggerNovuEvent('cut-reminder', userData.novu_subscriber_id, { services: { amount: userData.cuts }, date: now.toISOString() });
             });
         }
 

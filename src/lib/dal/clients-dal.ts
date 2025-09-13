@@ -26,19 +26,31 @@ export async function fetchCuttingClients(
   clientPageNumber: number,
   searchTerm: string,
   cuttingDate: Date,
-  searchTermIsCut: boolean
+  searchTermIsCut: boolean,
+  searchTermAssignedTo: string
 ): Promise<PaginatedClients | null> {
-  const { orgId, userId } = await auth.protect();
+  const { orgId, userId, isAdmin } = await isOrgAdmin()
+
+  if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+  if (!isAdmin && userId !== searchTermAssignedTo) throw new Error("Not admin can not view other coworkers list")
+
+  let assignedTo
+  if (searchTermAssignedTo === "") assignedTo = userId
+  else assignedTo = searchTermAssignedTo
+
+  if (!assignedTo) throw new Error("Can not search with no one assigned.")
+
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
   const result = await fetchClientsCuttingSchedules(
-    orgId || userId,
+    (orgId || userId)!,
     pageSize,
     offset,
     searchTerm,
     cuttingDate,
-    searchTermIsCut
+    searchTermIsCut,
+    searchTermAssignedTo
   );
 
   if (!result.clientsResult) return null;
