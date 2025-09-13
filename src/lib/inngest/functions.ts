@@ -1,6 +1,9 @@
 import { inngest } from "./inngest";
 import { getTodaysCuts } from "../DB/grass-cutting-db";
 import { triggerNovuEvent } from "../utils/novu";
+import { getSnowClients } from "../DB/snow-clearing-db";
+import { fetchGeocode } from "../utils/geocode";
+import { isSnowing } from "../utils/weather";
 
 const daysOfWeek = [
     "Sunday",
@@ -56,4 +59,39 @@ const cutReminders = inngest.createFunction(
         console.log('Finished cut reminders function');
     }
 )
-export const functions = [cutReminders];
+
+const snowfallCheck = inngest.createFunction(
+    { id: "snowfall-check", retries: 2 },
+    { cron: "0 */4 * * *" },
+    async ({ step }) => {
+        console.log('Running snowfall check function');
+
+        const clients = await step.run("fetch-snow-clients", async () => {
+            return await getSnowClients();
+        });
+
+        console.log(`Found ${clients.length} clients for snow clearing`);
+
+        for (const client of clients) {
+            await step.run(`process-snow-client-${client.client_id}`, async () => {
+                const geocodeResult = await fetchGeocode(client.address);
+
+                if (!geocodeResult.error && geocodeResult.coordinates) {
+                    const { lat, lng } = geocodeResult.coordinates;
+                    const snowing = await isSnowing(lat, lng);
+
+                    if (snowing) {
+                        console.log(`Snowfall predicted for client ${client.client_id}. Triggering notification.`);
+                        await triggerNovuEvent('snow-reminder', client.novu_subscriber_id, { client: { name: client.client_id } });
+                    }
+                } else {
+                    console.error(`Could not get geocode for client ${client.client_id}: ${geocodeResult.error}`);
+                }
+            });
+        }
+
+        console.log('Finished snowfall check function');
+    }
+);
+
+export const functions = [cutReminders, snowfallCheck];
