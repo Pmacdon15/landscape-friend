@@ -5,6 +5,24 @@ import { getSnowClients } from "../DB/snow-clearing-db";
 import { fetchGeocode } from "../utils/geocode";
 import { isSnowing } from "../utils/weather";
 
+type GeocodeSuccess = {
+    coordinates: {
+        lat: number;
+        lng: number;
+    };
+    zoom: number;
+    error: false;
+};
+
+type GeocodeError = {
+    coordinates?: never;
+    zoom?: never;
+    error: string | true;
+}
+
+type GeocodeResult = GeocodeSuccess | GeocodeError;
+
+
 const daysOfWeek = [
     "Sunday",
     "Monday",
@@ -85,7 +103,7 @@ const snowfallCheck = inngest.createFunction(
             return acc;
         }, {});
 
-        const geocodeResults: Record<string, any> = {};
+        const geocodeResults: Record<string, GeocodeResult> = {};
         for (const userId in snowClientsByUser) {
             if (snowClientsByUser.hasOwnProperty(userId)) {
                 const address = snowClientsByUser[userId].address;
