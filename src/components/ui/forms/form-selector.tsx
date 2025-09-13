@@ -9,9 +9,6 @@ import { CreateQuoteFormFallback } from '../fallbacks/create-quote-form-fallback
 import CreateSubscriptionFormFallback from '../fallbacks/create-subscription-form-fallback';
 
 
-
-
-
 export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise }) => {
   const [formType, setFormType] = useState<'quote' | 'subscription'>('quote');
 
