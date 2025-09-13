@@ -5,23 +5,14 @@ import { getSnowClients } from "../DB/snow-clearing-db";
 import { fetchGeocode } from "../utils/geocode";
 import { isSnowing } from "../utils/weather";
 
-type GeocodeSuccess = {
-    coordinates: {
+type GeocodeResult = {
+    coordinates?: {
         lat: number;
         lng: number;
     };
-    zoom: number;
-    error: false;
+    zoom?: number;
+    error: string | boolean;
 };
-
-type GeocodeError = {
-    coordinates?: never;
-    zoom?: never;
-    error: string | true;
-}
-
-type GeocodeResult = GeocodeSuccess | GeocodeError;
-
 
 const daysOfWeek = [
     "Sunday",

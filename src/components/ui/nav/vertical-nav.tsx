@@ -26,7 +26,7 @@ const CollapsibleSection = ({ title, children }: { title: string | React.ReactNo
         </div>
     )
 }
-export default function VerticalNav({ userId }: { userId: string }) {
+export default function VerticalNav() {
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
