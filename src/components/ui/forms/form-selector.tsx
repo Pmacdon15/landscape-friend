@@ -9,7 +9,7 @@ import { CreateQuoteFormFallback } from '../fallbacks/create-quote-form-fallback
 import CreateSubscriptionFormFallback from '../fallbacks/create-subscription-form-fallback';
 
 
-export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise }) => {
+export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise, productsPromise }) => {
   const [formType, setFormType] = useState<'quote' | 'subscription'>('quote');
 
   return (
@@ -29,14 +29,14 @@ export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({ organizati
           Create Subscription
         </button>
       </div>
-      <div className="p-4 border rounded-md shadow-sm">        
+      <div className="p-4 border rounded-md shadow-sm">
         {formType === 'quote' ?
           <Suspense fallback={<CreateQuoteFormFallback />}>
-            <CreateQuoteForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} />
+            <CreateQuoteForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} productsPromise={productsPromise} />
           </Suspense>
           :
           <Suspense fallback={<CreateSubscriptionFormFallback />}>
-            <CreateSubscriptionForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} />
+            <CreateSubscriptionForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} productsPromise={productsPromise} />
           </Suspense>
         }
       </div>

@@ -7,9 +7,6 @@ import Stripe from "stripe";
 import { fetchClientNamesByStripeIds } from "./clients-dal";
 
 
-
-
-
 let stripe: Stripe | null = null;
 
 export async function getStripeInstance(): Promise<Stripe | null> {
@@ -41,6 +38,27 @@ export async function fetchStripeAPIKey(): Promise<APIKey | Error> {
     }
 }
 
+export async function fetchProducts(): Promise<Stripe.Product[]> {
+    await auth.protect();
+    const stripe = await getStripeInstance();
+    if (!stripe) {
+        throw new Error('Failed to initialize Stripe instance');
+    }
+
+    try {
+        const products = await stripe.products.list({
+            // You can add options here to filter or limit the products
+            limit: 50,
+        });
+        return products.data;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('An unknown error occurred');
+    }
+}
+
 export async function hasStripAPIKey(): Promise<boolean> {
     const { orgId, userId } = await auth.protect();
     try {
@@ -60,7 +78,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
-     if (!stripe) throw new Error('Failed to get Stripe instance');
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {

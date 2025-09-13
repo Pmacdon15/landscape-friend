@@ -12,11 +12,14 @@ import Spinner from '../../loaders/spinner';
 import { AlertMessage } from '../shared/alert-message';
 import { ClientInfoList } from '@/types/clients-types';
 import { use, useEffect } from 'react';
+import Stripe from 'stripe';
+import { CreateSubscriptionFormProps } from '@/types/forms-types';
 
-export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { organizationIdPromise: Promise<string | null>, clientsPromise: Promise<ClientInfoList[]> }) {
+export function CreateQuoteForm({ organizationIdPromise, clientsPromise, productsPromise }: CreateSubscriptionFormProps) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
     const organizationId = use(organizationIdPromise)
     const clients = use(clientsPromise)
+    const products = use(productsPromise)
 
     const { register, watch, control, reset, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
         resolver: zodResolver(schemaCreateQuote),

@@ -13,9 +13,10 @@ import { use, useEffect } from 'react';
 import { CreateSubscriptionFormProps } from '@/types/forms-types';
 
 
-export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise }) => {
+export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise, productsPromise }) => {
   const clients = use(clientsPromise);
   const organizationId = use(organizationIdPromise)
+  const products = use(productsPromise)
 
   const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<z.infer<typeof schemaCreateSubscription>>({
     resolver: zodResolver(schemaCreateSubscription),
