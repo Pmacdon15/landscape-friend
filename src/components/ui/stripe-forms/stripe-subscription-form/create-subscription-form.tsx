@@ -9,16 +9,13 @@ import InputField from '../shared/input';
 import { AlertMessage } from '../shared/alert-message';
 import { Button } from '../../button';
 import { useIsSnowService } from '@/lib/hooks/useStripe';
-import { ClientInfoList } from '@/types/clients-types';
 import { use, useEffect } from 'react';
+import { CreateSubscriptionFormProps } from '@/types/forms-types';
 
-interface CreateSubscriptionFormProps {
-  organizationId: string;
-  clientsPromise: Promise<ClientInfoList[]>;
-}
 
-export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationId, clientsPromise }) => {
+export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise }) => {
   const clients = use(clientsPromise);
+  const organizationId = use(organizationIdPromise)
 
   const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<z.infer<typeof schemaCreateSubscription>>({
     resolver: zodResolver(schemaCreateSubscription),
@@ -45,13 +42,13 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
   useEffect(() => {
     const selectedClient = clients.find(client => client.full_name === clientName);
     if (selectedClient) {
-        setValue('clientEmail', selectedClient.email_address);
-        setValue('phone_number', selectedClient.phone_number);
-        setValue('address', selectedClient.address);
+      setValue('clientEmail', selectedClient.email_address);
+      setValue('phone_number', selectedClient.phone_number);
+      setValue('address', selectedClient.address);
     } else {
-        setValue('clientEmail', '');
-        setValue('phone_number', '');
-        setValue('address', '');
+      setValue('clientEmail', '');
+      setValue('phone_number', '');
+      setValue('address', '');
     }
   }, [clientName, clients, setValue]);
 
@@ -74,19 +71,19 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
-        <input type="hidden" {...register('organization_id')} value={organizationId} />
+        <input type="hidden" {...register('organization_id')} value={organizationId || ""} />
 
         {/* Client Info */}
         <section>
           <h3 className="text-md font-semibold mb-2">Client Information</h3>
           <div>
-              <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
-              <input id="clientName" {...register('clientName')} list="clients-list" className={inputClassName} />
-              <datalist id="clients-list">
-                  {clients.map(client => (
-                      <option key={client.id} value={client.full_name} />
-                  ))}
-              </datalist>
+            <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
+            <input id="clientName" {...register('clientName')} list="clients-list" className={inputClassName} />
+            <datalist id="clients-list">
+              {clients.map(client => (
+                <option key={client.id} value={client.full_name} />
+              ))}
+            </datalist>
           </div>
           <InputField label="Client Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
           <InputField label="Phone Number" id="phone_number" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />

@@ -13,9 +13,9 @@ import { AlertMessage } from '../shared/alert-message';
 import { ClientInfoList } from '@/types/clients-types';
 import { use, useEffect } from 'react';
 
-export function CreateQuoteForm({ organizationId, clientsPromise }: { organizationId: string, clientsPromise: Promise<ClientInfoList[]> }) {
+export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { organizationIdPromise: Promise<string | null>, clientsPromise: Promise<ClientInfoList[]> }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
-
+    const organizationId = use(organizationIdPromise)
     const clients = use(clientsPromise)
 
     const { register, watch, control, reset, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
@@ -29,7 +29,7 @@ export function CreateQuoteForm({ organizationId, clientsPromise }: { organizati
             labourCostPerUnit: 0,
             labourUnits: 0,
             materials: [{ materialType: '', materialCostPerUnit: 0, materialUnits: 0 }],
-            organization_id: organizationId,
+            organization_id: organizationId || "",
         },
     });
 
@@ -74,7 +74,7 @@ export function CreateQuoteForm({ organizationId, clientsPromise }: { organizati
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <input type="hidden" {...register('organization_id')} value={organizationId} />
+                <input type="hidden" {...register('organization_id')} value={organizationId || ""} />
 
                 {/* Client Info */}
                 <section>

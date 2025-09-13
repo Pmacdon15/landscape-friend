@@ -5,8 +5,7 @@ const isAdminRoute = createRouteMatcher(['/billing(.*)'])
 
 export default clerkMiddleware(async (auth, req) => {
 
-  const { userId, orgId, sessionClaims } = await auth()
-
+  const { orgId, sessionClaims } = await auth()
 
   if (isAdminRoute(req) && sessionClaims?.orgRole !== 'org:admin' && orgId) {
     const url = req.nextUrl.clone()

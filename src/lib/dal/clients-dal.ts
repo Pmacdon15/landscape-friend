@@ -4,8 +4,6 @@ import { processClientsResult } from "@/lib/utils/sort";
 import { isOrgAdmin } from "@/lib/utils/clerk";
 import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName, ClientInfoList } from "@/types/clients-types";
 import { auth } from "@clerk/nextjs/server";
-import { unknown } from "zod";
-
 
 export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
   Promise<PaginatedClients | null> {
