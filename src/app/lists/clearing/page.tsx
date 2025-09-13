@@ -32,7 +32,7 @@ export default async function page({ searchParams }: { searchParams: Promise<Sea
             <FormHeader text={"No date query"} />
         </FormContainer>
     )
-    
+
     const clientsPromise = fetchSnowClearingClients(page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo);
 
     return (

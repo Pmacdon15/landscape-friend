@@ -28,12 +28,12 @@ interface ClientPayload {
 
 }
 
-interface CutsPayload {
-    cuts: {
-        amount: number;
+interface ServicesPayload {
+    services: {
+        amount: number;        
     };
     date: string;
 }
 
 
-export type PayloadType = InvoicePayload | QuotePayload | ClientPayload | CutsPayload;
+export type PayloadType = InvoicePayload | QuotePayload | ClientPayload | ServicesPayload;

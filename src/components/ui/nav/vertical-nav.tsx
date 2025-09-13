@@ -26,7 +26,7 @@ const CollapsibleSection = ({ title, children }: { title: string | React.ReactNo
         </div>
     )
 }
-export default function VerticalNav({ userId }: { userId: string }) {
+export default function VerticalNav() {
     const date = new Date();
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -42,7 +42,7 @@ export default function VerticalNav({ userId }: { userId: string }) {
             <CollapsibleSection title={<><ScrollText />List</>}>
                 <Link href="/lists/client" className="p-2 hover:bg-accent rounded-md">Client List</Link>
                 <Link href={{ pathname: '/lists/cutting', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Cutting List</Link>
-                <Link href={{ pathname: '/lists/clearing', query: { date: today, assigned: userId } }} className="p-2 hover:bg-accent rounded-md">Clearing List</Link>
+                <Link href={{ pathname: '/lists/clearing', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Clearing List</Link>
             </CollapsibleSection>
 
             <CollapsibleSection title={<><Mails />Email</>}>

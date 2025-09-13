@@ -8,7 +8,7 @@ import VerticalNav from "./vertical-nav"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 
-export function NavBar({ userId }: { userId: string }) {
+export function NavBar() {
     return (
         <>
             <div >
@@ -20,7 +20,7 @@ export function NavBar({ userId }: { userId: string }) {
                     </SheetTrigger>
                     <SheetContent side="left">
                         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
-                        <Suspense><VerticalNav userId={userId} /></Suspense>
+                        <Suspense><VerticalNav  /></Suspense>
                     </SheetContent>
                 </Sheet>
             </div>

@@ -482,7 +482,8 @@ export async function fetchClientsCuttingSchedules(
   offset: number,
   searchTerm: string,
   cuttingDate: Date,
-  searchTermIsCut: boolean
+  searchTermIsCut: boolean,
+  searchTermAssignedTo: string
 ) {
   const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1);
   const daysSinceStart = Math.floor(
@@ -527,12 +528,12 @@ export async function fetchClientsCuttingSchedules(
       FROM yards_marked_cut ymc
       WHERE ymc.cutting_date = ${cuttingDate}
     ),
-      snow_assignments AS(
+      grass_assignments AS(
         SELECT
         sca.client_id,
         sca.user_id as assigned_to
       FROM assignments sca
-      WHERE sca.service_type = 'snow'
+      WHERE sca.service_type = 'grass'
       )
         `;
 
@@ -540,7 +541,7 @@ export async function fetchClientsCuttingSchedules(
   SELECT COUNT(DISTINCT cws.id) AS total_count
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-  LEFT JOIN snow_assignments sa ON cws.id = sa.client_id
+  LEFT JOIN grass_assignments ga ON cws.id = ga.client_id
   WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
 
@@ -554,11 +555,11 @@ cws.id,
   cws.amount_owing,
   cws.cutting_week,
   cws.cutting_day,
-  sa.assigned_to,
+  ga.assigned_to,
   COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
   FROM clients_with_schedules cws
   LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-  LEFT JOIN snow_assignments sa ON cws.id = sa.client_id
+  LEFT JOIN grass_assignments ga ON cws.id = ga.client_id
   LEFT JOIN LATERAL(
     SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
     FROM images i
@@ -578,10 +579,14 @@ cws.id,
     `);
   }
 
+  if (searchTermAssignedTo !== "") {
+    whereClauses.push(sql`ga.assigned_to = ${searchTermAssignedTo}`);
+  }
+
   if (whereClauses.length > 0) {
-    let whereClause = sql`AND ${whereClauses[0]} `;
-    if (whereClauses.length > 1) {
-      whereClause = sql`${whereClause} AND ${whereClauses[1]} `;
+    let whereClause = sql`AND ${whereClauses[0]}`;
+    for (let i = 1; i < whereClauses.length; i++) {
+      whereClause = sql`${whereClause} AND ${whereClauses[i]}`;
     }
 
     countQuery = sql`
