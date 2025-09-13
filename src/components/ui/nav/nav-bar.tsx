@@ -5,7 +5,7 @@ import { Suspense } from "react"
 import { Menu } from "lucide-react"
 // import NavigationMenuComponent from "./nav-menu-component"
 import VerticalNav from "./vertical-nav"
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 
 export function NavBar() {
@@ -20,6 +20,7 @@ export function NavBar() {
                     </SheetTrigger>
                     <SheetContent side="left">
                         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                        <SheetDescription className="sr-only">A list of navigation links.</SheetDescription>
                         <Suspense><VerticalNav  /></Suspense>
                     </SheetContent>
                 </Sheet>
