@@ -50,7 +50,7 @@ export async function fetchCuttingClients(
     searchTerm,
     cuttingDate,
     searchTermIsCut,
-    searchTermAssignedTo
+    assignedTo
   );
 
   if (!result.clientsResult) return null;
