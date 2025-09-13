@@ -12,6 +12,7 @@ import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
 import ClientListItemAddress from "./client-list-item-address";
 import AssignedTo from "../inputs/AssignedToSelect";
 import AssignedToFallback from "../fallbacks/assigned-to-fallback";
+import React from "react";
 
 export default async function ClientListService({
   clientsPromise,

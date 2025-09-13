@@ -41,8 +41,8 @@ export default function VerticalNav() {
             <SheetLogoHeader />
             <CollapsibleSection title={<><ScrollText />List</>}>
                 <Link href="/lists/client" className="p-2 hover:bg-accent rounded-md">Client List</Link>
-                <Link href={{ pathname: '/lists/cutting', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Cutting List</Link>
-                <Link href={{ pathname: '/lists/clearing', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Clearing List</Link>
+                <Link as="font" href={{ pathname: '/lists/cutting', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Cutting List</Link>
+                <Link as="font" href={{ pathname: '/lists/clearing', query: { date: today } }} className="p-2 hover:bg-accent rounded-md">Clearing List</Link>
             </CollapsibleSection>
 
             <CollapsibleSection title={<><Mails />Email</>}>

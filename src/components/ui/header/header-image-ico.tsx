@@ -9,7 +9,7 @@ export default function HeaderImageIco() {
                 }}
                 className="p-2 border rounded-sm bg-background w-[50px] md:w-[75px]"
             >
-                <Image src='https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png' height={100} width={100} alt={"logo"} />
+                <Image loading="eager" src='https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png' height={100} width={100} alt={"logo"} />
             </div>
         </div>
     );
