@@ -68,6 +68,12 @@ export async function fetchSnowClearingClients(
   if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
   if (!isAdmin && userId !== searchTermAssignedTo) throw new Error("Not admin can not view other coworkers list")
 
+  let assignedTo
+  if (searchTermAssignedTo === "") assignedTo = userId
+  else assignedTo = searchTermAssignedTo
+
+  if (!assignedTo) throw new Error("Can not search with no one assigned.")
+
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
@@ -78,7 +84,7 @@ export async function fetchSnowClearingClients(
     searchTerm,
     clearingDate,
     searchTermIsServiced,
-    searchTermAssignedTo
+    assignedTo
   );
 
   if (!result.clientsResult) return null;
