@@ -37,7 +37,7 @@ export const FormSelector: React.FC<FormSelectorProps> = ({ organizationId, clie
         {formType === 'quote' ? (
           <CreateQuoteForm organizationId={organizationId} clientsPromise={clientsPromise} />
         ) : (
-          <CreateSubscriptionForm organizationId={organizationId} />
+          <CreateSubscriptionForm organizationId={organizationId} clientsPromise={clientsPromise} />
         )}
       </div>
       <BackToLink path={'/billing/manage/quotes'} place={'Quotes'} />
