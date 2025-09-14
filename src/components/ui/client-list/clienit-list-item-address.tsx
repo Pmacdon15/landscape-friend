@@ -1,9 +1,8 @@
 'use client'
-import { ClientListItemProps } from "@/types/clients-types";
 import Image from "next/image";
 import { useState } from "react";
 
-export default function ClientListItemAddress({ client, children }: ClientListItemProps) {
+export default function ClientListItemAddress({ clientAddress, children }: { clientAddress: string; children: React.ReactNode }) {
     const [showMap, setShowMap] = useState(false)
     return (
         <div className="flex flex-col gap-2 items-center w-full">
@@ -17,7 +16,7 @@ export default function ClientListItemAddress({ client, children }: ClientListIt
                 />
                 <div className="flex flex-col ">
                     <p className="text-sm">Address:</p>
-                    <p>{client.address}</p>
+                    <p>{clientAddress}</p>
                 </div>
             </button>
             <div className={showMap ? "flex flex-col" : "hidden"}>

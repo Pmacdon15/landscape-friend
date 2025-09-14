@@ -1,13 +1,13 @@
 import React from 'react';
 import Image from 'next/image';
-import { Client } from '@/types/clients-types'; // Assuming Client type is needed
 import { ClientEmailPopover } from '../../popovers/client-email-popover';
 
 interface ClientEmailProps {
-  client: Client;
+  clientEmailAddress: string;
+  clientFullName: string;
 }
 
-const ClientEmail: React.FC<ClientEmailProps> = ({ client }) => {
+const ClientEmail: React.FC<ClientEmailProps> = ({ clientEmailAddress, clientFullName }) => {
   return (
     <div className="flex w-full gap-2 items-center justify-center">
       <Image
@@ -18,7 +18,7 @@ const ClientEmail: React.FC<ClientEmailProps> = ({ client }) => {
         height={512}
       />
       <p className="my-auto">Email:</p>
-      <ClientEmailPopover client={client} />
+      <ClientEmailPopover clientFullName={clientFullName} clientEmailAddress={clientEmailAddress} />
     </div>
   );
 };
