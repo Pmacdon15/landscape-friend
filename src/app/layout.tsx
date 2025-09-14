@@ -42,20 +42,31 @@ export default async function RootLayout({
           <html lang="en">
             <body
               style={{
-                backgroundImage: 'url(/lawn3.jpg)',
-                backgroundSize: 'cover',
-                backgroundAttachment: 'fixed',
-                backgroundRepeat: 'no-repeat',
+                margin: 0,
+                padding: 0,
+                minHeight: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
               }}
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-              <Header>
-                <HeaderHeader />
-              </Header>
-              <PageContainer>
-                {children}
-              </PageContainer>
-              <Footer />
+              <div 
+                style={{
+                  flex: 1,
+                  backgroundImage: 'url(/lawn3.jpg)',
+                  backgroundSize: 'cover',
+                  backgroundAttachment: 'fixed',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              >
+                <Header>
+                  <HeaderHeader />
+                </Header>
+                <PageContainer>
+                  {children}
+                </PageContainer>
+              </div>
+              <Footer  />
               <Toaster />
             </body>
           </html >

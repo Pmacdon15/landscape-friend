@@ -2,9 +2,9 @@
 import { useMarkQuote } from "@/lib/mutations/mutations";
 import { Button } from "../button";
 import { MarkQuoteProps } from "@/types/stripe-types";
-import EditQuoteLink from "../links/edit-quote-link";
-// import Spinner from "../loaders/spinner";
 import EllipsisSpinner from "../loaders/EllipsisSpinner";
+import { Ban, Check,  Send } from "lucide-react";
+import EditQuoteLink from "../links/edit-quote-link";
 
 export default function ManageQuoteButton({
   quoteId,
@@ -12,7 +12,7 @@ export default function ManageQuoteButton({
 }: MarkQuoteProps) {
   const { mutate, isPending } = useMarkQuote();
 
-  const buttonText = action === "accept" ? "Mark as Accepted" : action === "send" ? "Send" : action === "edit" ? "Edit" : 'Cancel'
+  const buttonText = action === "accept" ? <><Check />Mark Accepted</> : action === "send" ? <><Send />Send</> : <><Ban />Mark Canceled</>
 
   if (action === "edit") return <EditQuoteLink quoteId={quoteId} />
   return (

@@ -29,15 +29,20 @@ export async function POST(
 
     try {
         const stripe = await getStripeInstanceUnprotected(orgId)
+        if (!stripe) {
+            throw new Error('Failed to get Stripe instance');
+        }
         event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+
     } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error(`Stripe Webhook Error: ${errorMessage}`); // Added detailed logging
         return new NextResponse(`Webhook Error: ${errorMessage}`, { status: 400 });
     }
-
+    
     console.log("event type: ", event)
     try {
+
         switch (event.type) {
             case 'invoice.paid':
                 const invoicePaid = event.data.object as Stripe.Invoice;

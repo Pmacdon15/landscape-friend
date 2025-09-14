@@ -1,29 +1,31 @@
 import { fetchStripAPIKeyDb } from "@/lib/DB/stripe-db";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote } from "@/types/stripe-types";
+import { APIKey, FetchInvoicesResponse, StripeInvoice, FetchQuotesResponse, StripeQuote, FetchSubscriptionsResponse } from "@/types/stripe-types";
+import { Subscription } from "@/types/subscription-types";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { fetchClientNamesByStripeIds } from "./clients-dal";
 
+
 let stripe: Stripe | null = null;
 
-export async function getStripeInstance(): Promise<Stripe> {
+export async function getStripeInstance(): Promise<Stripe | null> {
 
-    const apiKeyResponse = await fetchStripAPIKey();
+    const apiKeyResponse = await fetchStripeAPIKey();
     if (apiKeyResponse instanceof Error) {
-        throw new Error('Stripe secret key not configured.');
+        return null;
     }
 
     const apiKey = apiKeyResponse.apk_key;
     if (!apiKey) {
-        throw new Error('Stripe secret key not configured.');
+        return null;
     }
 
     stripe = new Stripe(apiKey);
     return stripe;
 }
 
-export async function fetchStripAPIKey(): Promise<APIKey | Error> {
+export async function fetchStripeAPIKey(): Promise<APIKey | Error> {
     const { orgId, userId } = await auth.protect();
     try {
         const result = await fetchStripAPIKeyDb(orgId || userId);
@@ -33,6 +35,43 @@ export async function fetchStripAPIKey(): Promise<APIKey | Error> {
         if (e instanceof Error)
             return e;
         return new Error('An unknown error occurred');
+    }
+}
+
+export async function fetchProducts(): Promise<Stripe.Product[]> {
+    await auth.protect();
+    const stripe = await getStripeInstance();
+    if (!stripe) {
+        throw new Error('Failed to initialize Stripe instance');
+    }
+
+    try {
+        let products: Stripe.Product[] = [];
+        let hasMore = true;
+        let startingAfter: string | undefined = undefined;
+
+        while (hasMore) {
+            const response: Stripe.ApiList<Stripe.Product> = await stripe.products.list({
+                active: true,
+                limit: 100,
+                starting_after: startingAfter,
+            });
+
+            products = products.concat(response.data);
+            hasMore = response.has_more;
+            if (hasMore) {
+                startingAfter = response.data[response.data.length - 1].id;
+            }
+        }
+
+        const filteredProducts = products.filter(product => !product.metadata.serviceType);
+
+        return filteredProducts;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('An unknown error occurred');
     }
 }
 
@@ -55,6 +94,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {
@@ -79,12 +119,28 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         let filteredInvoices = allInvoices;
         if (searchTerm) {
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
-            filteredInvoices = allInvoices.filter(invoice =>
-                (invoice.customer_name && invoice.customer_name.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.id && invoice.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                (invoice.number && invoice.number.toLowerCase().includes(lowerCaseSearchTerm))
-            );
+
+            filteredInvoices = allInvoices.filter(invoice => {
+                if (
+                    (invoice.customer_name && invoice.customer_name.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (invoice.customer_email && invoice.customer_email.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (invoice.id && invoice.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (invoice.number && invoice.number.toLowerCase().includes(lowerCaseSearchTerm))
+                ) {
+                    return true;
+                }
+
+                if (!isNaN(parseFloat(lowerCaseSearchTerm))) {
+                    if (invoice.total !== null && (invoice.total / 100).toString().startsWith(lowerCaseSearchTerm)) {
+                        return true;
+                    }
+                    if (invoice.amount_due !== null && (invoice.amount_due / 100).toString().startsWith(lowerCaseSearchTerm)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
         }
 
         const totalInvoices = filteredInvoices.length;
@@ -150,6 +206,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {
@@ -157,13 +214,17 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.QuoteListParams = {};
+        const params: Stripe.QuoteListParams = { limit: 100 };
         if (typesOfQuotes && ['draft', 'open', 'accepted', 'canceled'].includes(typesOfQuotes)) {
             params.status = typesOfQuotes as 'draft' | 'open' | 'accepted' | 'canceled';
         }
 
         while (hasMore) {
-            const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({ ...params, starting_after: startingAfter });
+            const quoteBatch: Stripe.ApiList<Stripe.Quote> = await stripe.quotes.list({
+                ...params,
+                starting_after: startingAfter,
+                expand: ['data.line_items', 'data.customer']
+            });
             allQuotes = allQuotes.concat(quoteBatch.data);
             hasMore = quoteBatch.has_more;
             if (hasMore) {
@@ -171,7 +232,14 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             }
         }
 
-        const uniqueCustomerIds = [...new Set(allQuotes.map(quote => quote.customer).filter((customer): customer is string => typeof customer === 'string'))];
+        const uniqueCustomerIds = [
+            ...new Set(
+                allQuotes
+                    .map(quote => (typeof quote.customer === "string" ? quote.customer : quote.customer?.id))
+                    .filter((id): id is string => Boolean(id)) // type guard ensures it's string
+            ),
+        ];
+
         const clientNamesResult = await fetchClientNamesByStripeIds(uniqueCustomerIds);
         if (clientNamesResult instanceof Error) {
             throw clientNamesResult;
@@ -187,11 +255,24 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         if (searchTerm) {
             const lowerCaseSearchTerm = searchTerm.toLowerCase();
             filteredQuotes = allQuotes.filter(quote => {
-                const clientName = typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined;
-                return (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                const customerId = typeof quote.customer === 'string' ? quote.customer : quote.customer?.id;
+                const clientName = customerId ? clientNamesMap.get(customerId) : undefined;
+                const stripeCustomerName = typeof quote.customer === 'object' && quote.customer && 'name' in quote.customer ? quote.customer.name : undefined;
+
+                const amountTotalStr = (quote.amount_total / 100).toString(); // convert cents → dollars
+                const lineItemAmounts = (quote.line_items?.data || [])
+                    .map(li => ((li.amount_subtotal / (li.quantity || 1)) / 100).toString());
+
+                return (
+                    (quote.description && quote.description.toLowerCase().includes(lowerCaseSearchTerm)) ||
                     (quote.id && quote.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
-                    (clientName && clientName.toLowerCase().includes(lowerCaseSearchTerm));
+                    (clientName && clientName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (stripeCustomerName && stripeCustomerName.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    amountTotalStr.includes(lowerCaseSearchTerm) ||
+                    lineItemAmounts.some(amount => amount.includes(lowerCaseSearchTerm))
+                );
             });
+
         }
 
         const totalQuotes = filteredQuotes.length;
@@ -207,9 +288,21 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
             status: quote.status as string,
             expires_at: quote.expires_at,
             created: quote.created,
+            metadata: quote.metadata,
+            customer_name: typeof quote.customer === 'object' && quote.customer !== null && 'name' in quote.customer ? quote.customer.name : undefined,
+            customer_email: typeof quote.customer === 'object' && quote.customer !== null && 'email' in quote.customer ? quote.customer.email : undefined,
             client_name: typeof quote.customer === 'string' ? clientNamesMap.get(quote.customer) : undefined,
+            lines: {
+                data: (quote.line_items?.data || []).map((lineItem) => ({
+                    id: lineItem.id,
+                    object: lineItem.object,
+                    amount: ((lineItem.amount_subtotal / (lineItem.quantity || 1)) / 100),
+                    currency: lineItem.currency,
+                    description: lineItem.description,
+                    quantity: lineItem.quantity || 0,
+                })),
+            },
         }));
-
         return { quotes: strippedQuotes as StripeQuote[], totalPages };
     } catch (error) {
         console.error(error);
@@ -222,6 +315,7 @@ export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const invoice = await stripe.invoices.retrieve(invoiceId, {
         expand: ['lines.data'],
     });
@@ -253,7 +347,7 @@ export async function getInvoiceDAL(invoiceId: string): Promise<StripeInvoice> {
                 id: lineItem.id,
                 object: lineItem.object,
                 // Use unit_amount if available, fallback to amount / quantity
-               amount: ((lineItem.amount / (lineItem.quantity || 1)) / 100),
+                amount: ((lineItem.amount / (lineItem.quantity || 1)) / 100),
                 currency: lineItem.currency,
                 description: lineItem.description,
                 quantity: lineItem.quantity || 0,
@@ -269,6 +363,7 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const quote = await stripe.quotes.retrieve(quoteId, {
         expand: ['line_items.data'],
     });
@@ -285,6 +380,7 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
         status: quote.status,
         expires_at: quote.expires_at,
         created: quote.created,
+        metadata: quote.metadata,
         lines: {
             data: (quote.line_items?.data || []).map((lineItem) => ({
                 id: lineItem.id,
@@ -300,16 +396,160 @@ export async function getQuoteDAL(quoteId: string): Promise<StripeQuote> {
     return plainQuote;
 }
 
-// export async function createOrgWebhook() {
-//     const { isAdmin, orgId, userId } = await isOrgAdmin();
+export async function fetchSubscriptions(typesOfSubscriptions: string, page: number, searchTerm: string): Promise<FetchSubscriptionsResponse> {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
 
-//     if (!orgId && !userId) throw new Error("Must be logged in.");
-//     if (!isAdmin) throw new Error("Only admins can create webhooks.");
+    const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
+    const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
-//     const apiKeyResponse = await fetchStripAPIKeyDb(orgId || userId!);
-//     if (!apiKeyResponse || !apiKeyResponse.api_key) {
-//         throw new Error("Stripe API key not found.");
-//     }
+    try {
+        let allSubscriptions: Stripe.Subscription[] = [];
+        let hasMore = true;
+        let startingAfter: string | undefined = undefined;
 
-//     await createStripeWebhook(apiKeyResponse.api_key, orgId || userId!);
-// }
+        const params: Stripe.SubscriptionListParams = { limit: 100, expand: ['data.customer'] };
+        if (typesOfSubscriptions && ['active', 'canceled', 'incomplete'].includes(typesOfSubscriptions)) {
+            params.status = typesOfSubscriptions as 'active' | 'canceled' | 'incomplete';
+        }
+
+        while (hasMore) {
+            const subscriptionBatch: Stripe.ApiList<Stripe.Subscription> = await stripe.subscriptions.list({ ...params, starting_after: startingAfter });
+            allSubscriptions = allSubscriptions.concat(subscriptionBatch.data);
+            hasMore = subscriptionBatch.has_more;
+            if (hasMore) {
+                startingAfter = subscriptionBatch.data[subscriptionBatch.data.length - 1].id;
+            }
+            console.log("Sub: ", subscriptionBatch)
+        }
+
+        let filteredSubscriptions = allSubscriptions;
+        if (searchTerm) {
+            const lowerCaseSearchTerm = searchTerm.toLowerCase();
+            filteredSubscriptions = allSubscriptions.filter(subscription => {
+                const customer = subscription.customer as Stripe.Customer;
+                return (customer.name && customer.name.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (customer.email && customer.email.toLowerCase().includes(lowerCaseSearchTerm)) ||
+                    (subscription.id && subscription.id.toLowerCase().includes(lowerCaseSearchTerm))
+            }
+            );
+        }
+
+        const totalSubscriptions = filteredSubscriptions.length;
+        const totalPages = Math.ceil(totalSubscriptions / pageSize);
+        const offset = (page - 1) * pageSize;
+        const paginatedSubscriptions = filteredSubscriptions.slice(offset, offset + pageSize);
+
+        const customerIds = paginatedSubscriptions.map(subscription => (subscription.customer as Stripe.Customer).id);
+        const clientNamesResult = await fetchClientNamesByStripeIds(customerIds);
+
+        if (clientNamesResult instanceof Error) {
+            throw clientNamesResult;
+        }
+
+
+        const uniqueProductIds = new Set<string>();
+        allSubscriptions.forEach(subscription => {
+            subscription.items.data.forEach(item => {
+                if (typeof item.price.product === 'string') {
+                    uniqueProductIds.add(item.price.product);
+                }
+            });
+        });
+
+        const productNamesMap = new Map<string, string>();
+        for (const productId of uniqueProductIds) {
+            try {
+                const product = await stripe.products.retrieve(productId);
+                productNamesMap.set(productId, product.name);
+            } catch (error) {
+                console.error(`Error fetching product ${productId}:`, error);
+                productNamesMap.set(productId, 'Unknown Product'); // Fallback
+            }
+        }
+
+        const strippedSubscriptions = await Promise.all(paginatedSubscriptions.map(async (subscription) => {
+            let schedule = null;
+            if (subscription.schedule) {
+                try {
+                    const scheduleId = typeof subscription.schedule === 'string' ? subscription.schedule : subscription.schedule.id;
+                    schedule = await stripe.subscriptionSchedules.retrieve(scheduleId);
+                    schedule = {
+                        id: schedule.id,
+                        status: schedule.status,
+                        phases: schedule.phases.map(phase => ({
+                            start_date: phase.start_date,
+                            end_date: phase.end_date,
+                        })),
+                    };
+                } catch (error) {
+                    console.error(`Error retrieving subscription schedule for ${subscription.id}:`, error);
+                }
+            }
+
+            return {
+                id: subscription.id,
+                object: subscription.object,
+                status: subscription.status,
+                start_date: subscription.start_date,
+                cancel_at_period_end: subscription.cancel_at_period_end,
+                canceled_at: subscription.canceled_at,
+                created: subscription.created,
+                subscription_schedule: schedule,
+                customer: {
+                    id: (subscription.customer as Stripe.Customer).id,
+                    name: (subscription.customer as Stripe.Customer).name || undefined,
+                    email: (subscription.customer as Stripe.Customer).email || undefined,
+                },
+                items: {
+                    data: subscription.items.data.map((item) => ({
+                        id: item.id,
+                        object: item.object,
+                        quantity: item.quantity || 0,
+                        price: {
+                            id: item.price.id,
+                            object: item.price.object,
+                            active: item.price.active,
+                            currency: item.price.currency,
+                            product: productNamesMap.get(item.price.product as string) || 'Unknown Product',
+                            unit_amount: item.price.unit_amount || 0,
+                        }
+                    }))
+                }
+            };
+        }));
+
+        return { subscriptions: strippedSubscriptions as Subscription[], totalPages };
+    } catch (error) {
+        console.error(error);
+        throw new Error('Failed to fetch subscriptions');
+    }
+}
+
+export async function fetchProductPrice(productId: string): Promise<Stripe.Price | null> {
+    await auth.protect();
+    const stripe = await getStripeInstance();
+    if (!stripe) {
+        throw new Error('Failed to initialize Stripe instance');
+    }
+
+    try {
+        const prices = await stripe.prices.list({
+            product: productId,
+            active: true,
+            limit: 1,
+        });
+
+        if (prices.data.length > 0) {
+            return prices.data[0];
+        }
+
+        return null;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('An unknown error occurred while fetching product price.');
+    }
+}

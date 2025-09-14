@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  typedRoutes: true,
   experimental: {
     ppr: "incremental",
     serverActions: {

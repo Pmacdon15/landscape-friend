@@ -18,7 +18,7 @@ export default function Page() {
             info: "Learn how to set up Stripe to enable billing features",
             icon: <CreditCardIcon className="h-5 w-5 text-gray-500" />
         },
-    ];
+    ] as const;
 
     return (
         <FormContainer>

@@ -6,7 +6,6 @@ import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Suspense } from "react";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
 import { ClientListServiceProps } from "@/types/clients-types";
 import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
@@ -54,6 +53,7 @@ export default async function ClientListService({
               {isAdmin && <DeleteClientButton clientId={client.id} />}
               <FormHeader text={client.full_name} />
               <div className="flex flex-col gap-2 items-center justify-center mt-8 mb-8 lg:flex-row w-full">
+                {/* //TODO: only pass the part of client need */}
                 <ClientListItemHeader client={client} />
                 <ClientListItemEmail client={client} />
                 <ClientListItemAddress client={client} >
@@ -63,8 +63,8 @@ export default async function ClientListService({
               {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
                   <p>Amount owing: ${client.amount_owing} </p>
-                  <PricePerUpdateInput client={client} />
-                  <PricePerUpdateInput client={client} snow={true} />
+                  {/* <PricePerUpdateInput client={client} />
+                  <PricePerUpdateInput client={client} snow={true} /> */}
                   <Suspense fallback={<AssignedToFallback />}>
                     <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>

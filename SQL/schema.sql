@@ -4,8 +4,6 @@ DROP TABLE IF EXISTS yards_marked_cut CASCADE;
 
 DROP TABLE IF EXISTS yards_marked_clear CASCADE;
 
-DROP TABLE IF EXISTS snow_clearing_assignments CASCADE;
-
 DROP TABLE IF EXISTS cutting_schedule CASCADE;
 
 DROP TABLE IF EXISTS charges CASCADE;
@@ -22,6 +20,8 @@ DROP TABLE IF EXISTS users CASCADE;
 
 DROP TABLE IF EXISTS images CASCADE;
 
+DROP TABLE IF EXISTS assignments CASCADE;
+
 DROP TABLE IF EXISTS images_serviced CASCADE;
 
 
@@ -37,7 +37,7 @@ CREATE TABLE organizations (
     id SERIAL PRIMARY KEY,
     organization_id VARCHAR(253) NOT NULL UNIQUE,
     organization_name VARCHAR(253) NOT NULL,
-    max_allowed_clinents INT NOT NULL DEFAULT 50
+    max_allowed_clients INT NOT NULL DEFAULT 50
 );
 
 CREATE TABLE clients (
@@ -46,10 +46,8 @@ CREATE TABLE clients (
     phone_number VARCHAR(50) NOT NULL,
     email_address VARCHAR(75) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
-    price_per_cut FLOAT NOT NULL DEFAULT 51.5,
-    address VARCHAR(200) NOT NULL,
-    price_per_month_snow FLOAT NOT NULL DEFAULT 100,
+    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,    
+    address VARCHAR(200) NOT NULL,   
     stripe_customer_id VARCHAR(255) NULL
 );
 
@@ -95,10 +93,8 @@ CREATE TABLE cutting_schedule (
     cutting_week INT NULL,
     cutting_day VARCHAR(10) NULL,
     client_id INT NOT NULL,
-    assigned_to VARCHAR(100) NULL,
     organization_id VARCHAR(100) NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
-    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE SET NULL,
     UNIQUE (client_id, cutting_week, organization_id)
 );
 
@@ -121,15 +117,14 @@ CREATE TABLE yards_marked_clear (
     UNIQUE (client_id, clearing_date)
 );
 
-CREATE TABLE snow_clearing_assignments (
+CREATE TABLE assignments (
     id SERIAL PRIMARY KEY,
     client_id INT NOT NULL,
-    assigned_to VARCHAR(100) NOT NULL,
-    organization_id VARCHAR(253) NOT NULL,
+    user_id VARCHAR(100) NOT NULL,
+    service_type VARCHAR(10) NOT NULL CHECK (service_type IN ('grass', 'snow')),
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
-    FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,
-    FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE CASCADE,
-    UNIQUE (client_id)
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    UNIQUE (client_id, service_type)
 );
 
 CREATE TABLE images (
@@ -154,10 +149,11 @@ CREATE TABLE images_serviced (
     )
 );
 
+-- SELECT* FROM users;
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
-SELECT * FROM cutting_schedule;
+-- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;

@@ -22,5 +22,3 @@ firebase.initializeApp(firebaseConfig);
 // Retrieve an instance of Firebase Messaging so that it can handle background messages.
 const messaging = firebase.messaging();
 
-// The onBackgroundMessage callback is removed to allow Novu to handle all notifications.
-// No explicit background message handling in the service worker.

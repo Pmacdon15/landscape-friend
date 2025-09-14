@@ -1,3 +1,10 @@
+import { Subscription } from "./subscription-types";
+
+export interface FetchSubscriptionsResponse {
+    subscriptions: Subscription[];
+    totalPages: number;
+}
+
 export interface FetchInvoicesResponse {
     invoices: StripeInvoice[];
     totalPages: number;
@@ -69,10 +76,14 @@ export interface StripeQuote {
     status: string;
     expires_at: number | null;
     created: number;
+   metadata: Record<string, string | number>;
+    customer_name?: string;
+    customer_email?: string;
     client_name?: string;
     lines?: {
         data: StripeLineItem[];
     };
+
 }
 
 

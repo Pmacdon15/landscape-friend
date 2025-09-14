@@ -3,6 +3,7 @@ import React from 'react';
 import { Control, FieldErrors, FieldValues, UseFormRegister } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import InputField from './input'; // adjust path if needed
+import Stripe from 'stripe';
 
 type FieldWithId<T> = T & { id: string };
 
@@ -16,6 +17,7 @@ interface DynamicFieldsProps<T, TFieldValues extends FieldValues> {
   control: Control<TFieldValues>;
   labels: { description: string; amount: string; quantity: string }; // customizable labels
   newItem: () => T;
+  products?: Stripe.Product[];
 }
 
 export function DynamicFields<T extends { description?: string; amount?: number | unknown; quantity?: number | unknown; materialType?: string; materialCostPerUnit?: number; materialUnits?: number }, TFieldValues extends FieldValues>({
@@ -28,7 +30,8 @@ export function DynamicFields<T extends { description?: string; amount?: number 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   control,
   labels,
-  newItem
+  newItem,
+  products
 }: DynamicFieldsProps<T, TFieldValues>) {
   return (
     <section>
@@ -46,14 +49,22 @@ export function DynamicFields<T extends { description?: string; amount?: number 
             />
           )}
           {item.materialType !== undefined && (
-            <InputField
-              label={labels.description}
-              id={`${name}.${index}.materialType`}
-              type="text"
-              register={register}
-              errors={errors}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-            />
+            <div>
+              <InputField
+                label={labels.description}
+                id={`${name}.${index}.materialType`}
+                type="text"
+                register={register}
+                errors={errors}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                list={`${name}-list-${index}`}
+              />
+              <datalist id={`${name}-list-${index}`}>
+                {products?.map(product => (
+                  <option key={product.id} value={product.name} />
+                ))}
+              </datalist>
+            </div>
           )}
 
           <InputField

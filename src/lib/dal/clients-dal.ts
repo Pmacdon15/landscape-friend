@@ -1,10 +1,9 @@
-import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB } from "@/lib/DB/clients-db";
+import { fetchClientsWithSchedules, fetchClientsCuttingSchedules, fetchClientsClearingGroupsDb, fetchStripeCustomerNamesDB, fetchClientListDb } from "@/lib/DB/clients-db";
 import { fetchClientNamesAndEmailsDb } from "@/lib/DB/resend-db";
 import { processClientsResult } from "@/lib/utils/sort";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName } from "@/types/clients-types";
+import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName, ClientInfoList } from "@/types/clients-types";
 import { auth } from "@clerk/nextjs/server";
-
 
 export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
   Promise<PaginatedClients | null> {
@@ -19,26 +18,51 @@ export async function fetchAllClients(clientPageNumber: number, searchTerm: stri
   const { clients, totalPages } = processClientsResult(result.clientsResult as ClientResult[], result.totalCount, pageSize);
   return { clients, totalPages };
 }
-
-
-
+//TODO: Abstract this 
+export async function fetchClientList(): Promise<ClientInfoList[]> {
+  const { orgId, userId } = await isOrgAdmin();
+  if (!orgId && !userId) {
+    throw new Error("Organization ID or User ID is missing.");
+  }
+  const organizationId = orgId || userId;
+  if (!organizationId) {
+    throw new Error("Organization ID or User ID is missing.");
+  }
+  const result = await fetchClientListDb(organizationId);
+  if (!result) {
+    throw new Error("Failed to fetch client list.");
+  }
+  return result;
+}
 export async function fetchCuttingClients(
   clientPageNumber: number,
   searchTerm: string,
   cuttingDate: Date,
-  searchTermIsCut: boolean
+  searchTermIsCut: boolean,
+  searchTermAssignedTo: string
 ): Promise<PaginatedClients | null> {
-  const { orgId, userId } = await auth.protect();
+  const { orgId, userId, isAdmin } = await isOrgAdmin()
+
+  if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+  if (!isAdmin && userId !== searchTermAssignedTo) throw new Error("Not admin can not view other coworkers list")
+
+  let assignedTo
+  if (searchTermAssignedTo === "") assignedTo = userId
+  else assignedTo = searchTermAssignedTo
+
+  if (!assignedTo) throw new Error("Can not search with no one assigned.")
+
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
   const result = await fetchClientsCuttingSchedules(
-    orgId || userId,
+    (orgId || userId)!,
     pageSize,
     offset,
     searchTerm,
     cuttingDate,
-    searchTermIsCut
+    searchTermIsCut,
+    assignedTo
   );
 
   if (!result.clientsResult) return null;
@@ -68,6 +92,12 @@ export async function fetchSnowClearingClients(
   if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
   if (!isAdmin && userId !== searchTermAssignedTo) throw new Error("Not admin can not view other coworkers list")
 
+  let assignedTo
+  if (searchTermAssignedTo === "") assignedTo = userId
+  else assignedTo = searchTermAssignedTo
+
+  if (!assignedTo) throw new Error("Can not search with no one assigned.")
+
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
@@ -78,7 +108,7 @@ export async function fetchSnowClearingClients(
     searchTerm,
     clearingDate,
     searchTermIsServiced,
-    searchTermAssignedTo
+    assignedTo
   );
 
   if (!result.clientsResult) return null;

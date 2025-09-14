@@ -12,6 +12,8 @@ interface InputFieldProps<TFieldValues extends FieldValues> {
   min?: string | number;
   step?: string | number;
   valueAsNumber?: boolean;
+  disabled?: boolean;
+  list?: string;
 }
 
 const InputField = <TFieldValues extends FieldValues>({
@@ -24,6 +26,8 @@ const InputField = <TFieldValues extends FieldValues>({
   min,
   step,
   valueAsNumber,
+  disabled,
+  list,
 }: InputFieldProps<TFieldValues>) => {
   const error = get(errors, id);
 
@@ -38,6 +42,8 @@ const InputField = <TFieldValues extends FieldValues>({
         min={min}
         step={step}
         aria-invalid={error ? 'true' : 'false'}
+        disabled={disabled}
+        list={list}
       />
       {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
     </div>

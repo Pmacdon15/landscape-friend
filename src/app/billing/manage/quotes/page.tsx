@@ -13,7 +13,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     const params = await searchParams
     const { searchTermStatus, page, searchTerm } = parseClientListParams(params);
     const { quotes, totalPages } = await fetchQuotes(searchTermStatus, page, searchTerm)
-
     return (
         <FormContainer>
             <FormHeader text={"Manage Quotes"} />

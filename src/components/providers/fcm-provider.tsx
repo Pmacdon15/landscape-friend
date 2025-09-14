@@ -84,61 +84,66 @@ export default function FCMProvider({ children }: { children: React.ReactNode })
 
     useEffect(() => {
         console.log('FCMProvider useEffect triggered.');
-        if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-            const app = initializeApp(firebaseConfig);
-            messagingInstance.current = getMessaging(app);
+        if (typeof window !== 'undefined' && 'serviceWorker' in navigator && navigator.serviceWorker) {
+            try {
+                const app = initializeApp(firebaseConfig);
+                messagingInstance.current = getMessaging(app);
 
-            navigator.serviceWorker.register('/firebase-messaging-sw.js')
-                .then((registration) => {
-                    console.log('Service Worker registered successfully:', registration.scope);
-                    if (registration.waiting) {
-                        registration.waiting.postMessage('SKIP_WAITING');
-                    }
-                })
-                .catch((error) => {
-                    console.error('Service Worker registration failed:', error);
+                navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                        if (registration.waiting) {
+                            registration.waiting.postMessage('SKIP_WAITING');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+
+                onMessage(messagingInstance.current, (payload) => {
+                    console.log('[FCMProvider] Received foreground message:', payload);
+                    alert(`New Message: ${payload.notification?.title || ''} - ${payload.notification?.body || ''}`);
                 });
 
-            onMessage(messagingInstance.current, (payload) => {
-                console.log('[FCMProvider] Received foreground message:', payload);
-                alert(`New Message: ${payload.notification?.title || ''} - ${payload.notification?.body || ''}`);
-            });
+                const initialPermission = Notification.permission;
+                setPermissionStatus(initialPermission);
 
-            const initialPermission = Notification.permission;
-            setPermissionStatus(initialPermission);
-
-            if (initialPermission === 'granted') {
-                if (messagingInstance.current) {
-                    getToken(messagingInstance.current, { vapidKey: VAPID_KEY })
-                        .then((currentToken) => {
-                            if (currentToken && user?.id) {
-                                // console.log('FCM Token retrieved on load:', currentToken);
-                                setFcmToken(currentToken);
-                                sendTokenToServer(currentToken, user.id);
-                            }
-                            // else {
-                            //     console.log('No FCM token available on load, despite granted permission.');
-                            // }
-                        })
-                        .catch((err) => {
-                            console.error('Error retrieving FCM token on load:', err);
-                        })
-                        .finally(() => {
-                            setLoading(false);
-                        });
+                if (initialPermission === 'granted') {
+                    if (messagingInstance.current) {
+                        getToken(messagingInstance.current, { vapidKey: VAPID_KEY })
+                            .then((currentToken) => {
+                                if (currentToken && user?.id) {
+                                    // console.log('FCM Token retrieved on load:', currentToken);
+                                    setFcmToken(currentToken);
+                                    sendTokenToServer(currentToken, user.id);
+                                }
+                                // else {
+                                //     console.log('No FCM token available on load, despite granted permission.');
+                                // }
+                            })
+                            .catch((err) => {
+                                console.error('Error retrieving FCM token on load:', err);
+                            })
+                            .finally(() => {
+                                setLoading(false);
+                            });
+                    } else {
+                        setLoading(false);
+                    }
                 } else {
                     setLoading(false);
                 }
-            } else {
+            } catch (error) {
+                console.error('Error registering Service Worker:', error);
                 setLoading(false);
+                setPermissionStatus('not-supported');
             }
-
         } else {
-            // console.log('Conditions not met for SW registration or notifications: window defined:', typeof window !== 'undefined', 'serviceWorker in navigator:', 'serviceWorker' in navigator);
+            console.log('Service Workers not supported in this environment.');
             setLoading(false);
             setPermissionStatus('not-supported');
         }
-    }, [user?.id, sendTokenToServer, permissionStatus]);
+    }, [user?.id, sendTokenToServer]);
 
     const contextValue = {
         permissionStatus,

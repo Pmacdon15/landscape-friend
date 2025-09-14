@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.31.6",
+    "@clerk/nextjs": "^6.32.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -56,6 +56,7 @@
     "uuid": "^11.1.0",
     "zod": "^4.0.5"
   },
+  "type": "module",
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/cli": "^4.1.11",

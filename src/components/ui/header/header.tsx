@@ -14,7 +14,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
             {children}
             <div className='flex flex-wrap justify-between border-t w-full pt-2'>
-                {user?.id && <NavBar userId={user.id} />}
+                {user?.id && <NavBar  />}
                 <div className="flex ml-auto items-center gap-2">
                     <SignedIn>
                         <UserButton />
