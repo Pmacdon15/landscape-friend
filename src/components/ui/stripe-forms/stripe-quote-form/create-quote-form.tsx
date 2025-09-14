@@ -7,17 +7,23 @@ import { schemaCreateQuote } from '@/lib/zod/schemas';
 import { useCreateQuoteForm } from '@/lib/hooks/hooks';
 import { z } from 'zod';
 import InputField from '../shared/input';
-import { DynamicFields } from '../shared/dynamic-fields';
+
 import Spinner from '../../loaders/spinner';
 import { AlertMessage } from '../shared/alert-message';
-import { ClientInfoList } from '@/types/clients-types';
-import { use, useEffect } from 'react';
 
-export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { organizationIdPromise: Promise<string | null>, clientsPromise: Promise<ClientInfoList[]> }) {
+import { use, useEffect } from 'react';
+import Stripe from 'stripe';
+import { CreateSubscriptionFormProps } from '@/types/forms-types';
+import { inputClassName } from '@/lib/values';
+import { QuoteLineItem } from './quote-line-item';
+
+export function CreateQuoteForm({ organizationIdPromise, clientsPromise, productsPromise }: CreateSubscriptionFormProps) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
     const organizationId = use(organizationIdPromise)
     const clients = use(clientsPromise)
-
+    let products: Stripe.Product[]
+    if (productsPromise) products = use(productsPromise)
+    // console.log("Products: ", products)
     const { register, watch, control, reset, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
         resolver: zodResolver(schemaCreateQuote),
         mode: 'onBlur',
@@ -60,7 +66,6 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { org
         mutate(formData);
     };
 
-    const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
 
     const total = (watchedValues.labourCostPerUnit * watchedValues.labourUnits) +
         (watchedValues.materials?.reduce((acc, item) => {
@@ -80,7 +85,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { org
                 <section>
                     <h3 className="text-md font-semibold mb-2">Client Information</h3>
                     <div>
-                        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
+                        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Name</label>
                         <input id="clientName" {...register('clientName')} list="clients-list" className={inputClassName} />
                         <datalist id="clients-list">
                             {clients.map(client => (
@@ -88,7 +93,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { org
                             ))}
                         </datalist>
                     </div>
-                    <InputField label="Client Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
+                    <InputField label="Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
                     <InputField label="Phone Number" id="phone_number" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
                     <InputField label="Address" id="address" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
                 </section>
@@ -101,17 +106,33 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise }: { org
                 </section>
 
                 {/* Dynamic Materials Section */}
-                <DynamicFields
-                    name="materials"
-                    fields={fields}
-                    append={append}
-                    remove={remove}
-                    register={register}
-                    control={control}
-                    errors={errors}
-                    labels={{ description: 'Material', amount: 'Material Cost (per unit)', quantity: 'Material Units' }}
-                    newItem={() => ({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 })}
-                />
+                <section>
+                    <h3 className="text-md font-semibold mb-2">Materials</h3>
+                    {fields.map((item, index) => (
+                        <div key={item.id}>
+                            <QuoteLineItem
+                                index={index}
+                                control={control}
+                                register={register}
+                                errors={errors}
+                                setValue={setValue}
+                                products={products}
+                            />
+                            {fields.length > 1 && (
+                                <Button type="button" onClick={() => remove(index)} className="mt-2">
+                                    Remove Material
+                                </Button>
+                            )}
+                        </div>
+                    ))}
+                    <Button
+                        type="button"
+                        onClick={() => append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 })}
+                        className="mt-2"
+                    >
+                        Add Material
+                    </Button>
+                </section>
 
                 <p className="font-bold mt-2">Total: ${total.toFixed(2)}</p>
                 <div>

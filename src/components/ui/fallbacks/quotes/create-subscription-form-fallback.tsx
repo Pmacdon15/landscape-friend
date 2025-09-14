@@ -1,4 +1,5 @@
-import { Button } from "../button";
+import { Button } from "../../button";
+import QuoteHeader from "./header";
 
 export default function CreateSubscriptionFormFallback() {
     const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
@@ -7,19 +8,7 @@ export default function CreateSubscriptionFormFallback() {
             <input type="hidden" />
 
             {/* Client Info */}
-            <section>
-                <h3 className="text-md font-semibold mb-2">Client Information</h3>
-                <div>
-                    <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
-                    <input id="clientName" list="clients-list" className={inputClassName} />
-                    <datalist id="clients-list">
-
-                    </datalist>
-                </div>
-                <input id="clientEmail" type="text" className={inputClassName} />
-                <input id="phone_number" type="text" className={inputClassName} />
-                <input id="address" type="text" className={inputClassName} />
-            </section>
+            <QuoteHeader />
 
             {/* Subscription Details */}
             <section>
@@ -36,9 +25,13 @@ export default function CreateSubscriptionFormFallback() {
                         <option value="as-needed">Snow as needed</option>
                     </select>
                 </div>
-                <input id="price_per_month" type="number" className={inputClassName} min="0.01" step="0.01" />
+                <label htmlFor="price_per_month" className="block text-sm font-medium text-gray-700">Price Per Month</label>
+                <input id="price_per_month" type="number" className={inputClassName} min="0.01" step="0.01" defaultValue={0} />
+                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
                 <input id="startDate" type="date" className={inputClassName} />
+                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
                 <input id="endDate" type="date" className={inputClassName} />
+                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notes</label>
                 <input id="notes" type="textarea" className={inputClassName} />
             </section>
 

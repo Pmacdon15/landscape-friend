@@ -11,12 +11,13 @@ import { Button } from '../../button';
 import { useIsSnowService } from '@/lib/hooks/useStripe';
 import { use, useEffect } from 'react';
 import { CreateSubscriptionFormProps } from '@/types/forms-types';
+import { inputClassName } from '@/lib/values';
 
 
-export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise }) => {
+export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise, }) => {
   const clients = use(clientsPromise);
   const organizationId = use(organizationIdPromise)
-
+  
   const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<z.infer<typeof schemaCreateSubscription>>({
     resolver: zodResolver(schemaCreateSubscription),
     mode: 'onBlur',
@@ -65,7 +66,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
     mutate(form);
   };
 
-  const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
+  
   const isClientSelected = clients.some(client => client.full_name === clientName);
 
   return (
@@ -77,7 +78,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
         <section>
           <h3 className="text-md font-semibold mb-2">Client Information</h3>
           <div>
-            <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
+            <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Name</label>
             <input id="clientName" {...register('clientName')} list="clients-list" className={inputClassName} />
             <datalist id="clients-list">
               {clients.map(client => (
@@ -85,7 +86,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({ 
               ))}
             </datalist>
           </div>
-          <InputField label="Client Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
+          <InputField label="Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
           <InputField label="Phone Number" id="phone_number" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
           <InputField label="Address" id="address" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
         </section>

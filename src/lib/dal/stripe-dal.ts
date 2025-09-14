@@ -7,9 +7,6 @@ import Stripe from "stripe";
 import { fetchClientNamesByStripeIds } from "./clients-dal";
 
 
-
-
-
 let stripe: Stripe | null = null;
 
 export async function getStripeInstance(): Promise<Stripe | null> {
@@ -41,6 +38,43 @@ export async function fetchStripeAPIKey(): Promise<APIKey | Error> {
     }
 }
 
+export async function fetchProducts(): Promise<Stripe.Product[]> {
+    await auth.protect();
+    const stripe = await getStripeInstance();
+    if (!stripe) {
+        throw new Error('Failed to initialize Stripe instance');
+    }
+
+    try {
+        let products: Stripe.Product[] = [];
+        let hasMore = true;
+        let startingAfter: string | undefined = undefined;
+
+        while (hasMore) {
+            const response: Stripe.ApiList<Stripe.Product> = await stripe.products.list({
+                active: true,
+                limit: 100,
+                starting_after: startingAfter,
+            });
+
+            products = products.concat(response.data);
+            hasMore = response.has_more;
+            if (hasMore) {
+                startingAfter = response.data[response.data.length - 1].id;
+            }
+        }
+
+        const filteredProducts = products.filter(product => !product.metadata.serviceType);
+
+        return filteredProducts;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('An unknown error occurred');
+    }
+}
+
 export async function hasStripAPIKey(): Promise<boolean> {
     const { orgId, userId } = await auth.protect();
     try {
@@ -60,7 +94,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
     if (!isAdmin) throw new Error("Not Admin");
 
     const stripe = await getStripeInstance();
-     if (!stripe) throw new Error('Failed to get Stripe instance');
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     const pageSize = Number(process.env.PAGE_SIZE) || 10;
 
     try {
@@ -490,5 +524,32 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
     } catch (error) {
         console.error(error);
         throw new Error('Failed to fetch subscriptions');
+    }
+}
+
+export async function fetchProductPrice(productId: string): Promise<Stripe.Price | null> {
+    await auth.protect();
+    const stripe = await getStripeInstance();
+    if (!stripe) {
+        throw new Error('Failed to initialize Stripe instance');
+    }
+
+    try {
+        const prices = await stripe.prices.list({
+            product: productId,
+            active: true,
+            limit: 1,
+        });
+
+        if (prices.data.length > 0) {
+            return prices.data[0];
+        }
+
+        return null;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('An unknown error occurred while fetching product price.');
     }
 }
