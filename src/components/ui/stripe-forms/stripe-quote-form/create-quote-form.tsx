@@ -14,6 +14,7 @@ import { ClientInfoList } from '@/types/clients-types';
 import { use, useEffect } from 'react';
 import Stripe from 'stripe';
 import { CreateSubscriptionFormProps } from '@/types/forms-types';
+import { inputClassName } from '@/lib/values';
 
 export function CreateQuoteForm({ organizationIdPromise, clientsPromise, productsPromise }: CreateSubscriptionFormProps) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
@@ -21,7 +22,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
     const clients = use(clientsPromise)
     let products
     if (productsPromise) products = use(productsPromise)
-    console.log("Products: ", products)
+    // console.log("Products: ", products)
     const { register, watch, control, reset, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
         resolver: zodResolver(schemaCreateQuote),
         mode: 'onBlur',
@@ -64,8 +65,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
         mutate(formData);
     };
 
-    const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
-
+   
     const total = (watchedValues.labourCostPerUnit * watchedValues.labourUnits) +
         (watchedValues.materials?.reduce((acc, item) => {
             const cost = item.materialCostPerUnit ?? 0;
@@ -84,7 +84,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
                 <section>
                     <h3 className="text-md font-semibold mb-2">Client Information</h3>
                     <div>
-                        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
+                        <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Name</label>
                         <input id="clientName" {...register('clientName')} list="clients-list" className={inputClassName} />
                         <datalist id="clients-list">
                             {clients.map(client => (
@@ -92,7 +92,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
                             ))}
                         </datalist>
                     </div>
-                    <InputField label="Client Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
+                    <InputField label="Email" id="clientEmail" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
                     <InputField label="Phone Number" id="phone_number" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
                     <InputField label="Address" id="address" type="text" register={register} errors={errors} className={inputClassName} disabled={isClientSelected} />
                 </section>

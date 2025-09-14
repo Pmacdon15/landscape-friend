@@ -5,8 +5,9 @@ import { CreateQuoteForm } from '@/components/ui/stripe-forms/stripe-quote-form/
 import { CreateSubscriptionForm } from '@/components/ui/stripe-forms/stripe-subscription-form/create-subscription-form';
 import BackToLink from '../links/back-to-link';
 import { CreateSubscriptionFormProps } from '@/types/forms-types';
-import { CreateQuoteFormFallback } from '../fallbacks/create-quote-form-fallback';
-import CreateSubscriptionFormFallback from '../fallbacks/create-subscription-form-fallback';
+import { CreateQuoteFormFallback } from '../fallbacks/quotes/create-quote-form-fallback';
+import CreateSubscriptionFormFallback from '../fallbacks/quotes/create-subscription-form-fallback';
+
 
 
 export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({ organizationIdPromise, clientsPromise, productsPromise }) => {

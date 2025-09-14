@@ -1,4 +1,5 @@
-import { Button } from "../button";
+import { Button } from "../../button";
+import QuoteHeader from "./header";
 
 export default function CreateSubscriptionFormFallback() {
     const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
@@ -7,19 +8,7 @@ export default function CreateSubscriptionFormFallback() {
             <input type="hidden" />
 
             {/* Client Info */}
-            <section>
-                <h3 className="text-md font-semibold mb-2">Client Information</h3>
-                <div>
-                    <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Client Name</label>
-                    <input id="clientName" list="clients-list" className={inputClassName} />
-                    <datalist id="clients-list">
-
-                    </datalist>
-                </div>
-                <input id="clientEmail" type="text" className={inputClassName} />
-                <input id="phone_number" type="text" className={inputClassName} />
-                <input id="address" type="text" className={inputClassName} />
-            </section>
+            <QuoteHeader />
 
             {/* Subscription Details */}
             <section>

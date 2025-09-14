@@ -13,3 +13,5 @@ export const days = [
     { value: 'Saturday', label: 'Saturday' },
     { value: 'Sunday', label: 'Sunday' },
 ]
+
+export const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
