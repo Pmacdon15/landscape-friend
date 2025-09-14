@@ -25,9 +25,13 @@ export default function CreateSubscriptionFormFallback() {
                         <option value="as-needed">Snow as needed</option>
                     </select>
                 </div>
-                <input id="price_per_month" type="number" className={inputClassName} min="0.01" step="0.01" />
+                <label htmlFor="price_per_month" className="block text-sm font-medium text-gray-700">Price Per Month</label>
+                <input id="price_per_month" type="number" className={inputClassName} min="0.01" step="0.01" defaultValue={0} />
+                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
                 <input id="startDate" type="date" className={inputClassName} />
+                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
                 <input id="endDate" type="date" className={inputClassName} />
+                <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notes</label>
                 <input id="notes" type="textarea" className={inputClassName} />
             </section>
 
