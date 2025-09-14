@@ -19,65 +19,65 @@ export default function MarkYardServiced({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addTimestampToImage = async (file: File): Promise<File> => {
-  const img = document.createElement("img");
-  const url = URL.createObjectURL(file);
+    const img = document.createElement("img");
+    const url = URL.createObjectURL(file);
 
-  return new Promise<File>((resolve, reject) => {
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+    return new Promise<File>((resolve, reject) => {
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
 
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Canvas context not available"));
-        return;
-      }
-
-      // Draw the image
-      ctx.drawImage(img, 0, 0);
-      //Draw rectangle (bakgroung)
-      ctx.fillStyle = "black";
-      ctx.fillRect(0,0,560,68)
-      
-      // Add timestamp text
-      const timestamp = new Date().toLocaleString();
-      ctx.font = "48px Arial";
-      ctx.fillStyle = "red";
-      // ctx.strokeStyle = "white";
-      ctx.lineWidth = 2;
-      ctx.textBaseline = "top";
-
-      const padding = 10;
-      const x = padding;
-      const y =  padding;
-      
-      // ctx.strokeText(timestamp, x, y);
-      ctx.fillText(timestamp, x, y);
-
-      // Convert canvas back to Blob
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const newFile = new File([blob], file.name, { type: file.type });
-          resolve(newFile);
-        } else {
-          reject(new Error("Failed to convert canvas to Blob"));
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Canvas context not available"));
+          return;
         }
-      }, file.type);
-    };
 
-    img.onerror = () => {
-      reject(new Error("Failed to load image"));
-    };
+        // Draw the image
+        ctx.drawImage(img, 0, 0);
+        //Draw rectangle (bakgroung)
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, 560, 68)
 
-    img.src = url;
-  });
+        // Add timestamp text
+        const timestamp = new Date().toLocaleString();
+        ctx.font = "48px Arial";
+        ctx.fillStyle = "red";
+        // ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.textBaseline = "top";
 
-  
-};
+        const padding = 10;
+        const x = padding;
+        const y = padding;
+
+        // ctx.strokeText(timestamp, x, y);
+        ctx.fillText(timestamp, x, y);
+
+        // Convert canvas back to Blob
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const newFile = new File([blob], file.name, { type: file.type });
+            resolve(newFile);
+          } else {
+            reject(new Error("Failed to convert canvas to Blob"));
+          }
+        }, file.type);
+      };
+
+      img.onerror = () => {
+        reject(new Error("Failed to load image"));
+      };
+
+      img.src = url;
+    });
+
+
+  };
 
   function isMobileDevice() {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
