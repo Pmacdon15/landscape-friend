@@ -4,7 +4,7 @@ import SendEmailComponent from "@/components/ui/emails/send-email-component";
 import { useState } from 'react';
 import { Client } from '@/types/clients-types';
 
-export const ClientEmailPopover = ({ client }: { client: Client }) => {
+export const ClientEmailPopover = ({ clientFullName, clientEmailAddress }: { clientFullName: string, clientEmailAddress: string }) => {
     const [open, setOpen] = useState(false);
     // const [emailSent, setEmailSent] = useState(false);
 
@@ -24,19 +24,19 @@ export const ClientEmailPopover = ({ client }: { client: Client }) => {
         <Popover.Root open={open} onOpenChange={setOpen}>
             <Popover.Trigger asChild>
                 <button className="cursor-pointer text-blue-600 hover:underline">
-                    {client.email_address}
+                    {clientEmailAddress}
                 </button>
             </Popover.Trigger>
             <Popover.Content
-                                className="w-[90vw] md:w-5/6 max-h-[90vh] p-4 z-[9999]"
+                className="w-[90vw] md:w-5/6 max-h-[90vh] p-4 z-[9999]"
                 sideOffset={4}
             >
                 <div className='flex flex-col gap-4 '>
 
                     <SendEmailComponent
                         popover={true}
-                        clientEmail={client.email_address}
-                        clientName={client.full_name}
+                        clientEmail={clientEmailAddress}
+                        clientName={clientFullName}
                         onEmailSent={closePopOver}
                     />
                 </div>

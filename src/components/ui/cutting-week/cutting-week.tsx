@@ -52,11 +52,16 @@ function CuttingWeekDropDown({
   );
 }
 
+interface CuttingWeekClient {
+  id: number;
+  cutting_schedules: CuttingSchedule[];
+}
+
 export function CuttingWeekDropDownContainer({
   client,
   isAdmin,
 }: {
-  client: Client;
+  client: CuttingWeekClient;
   isAdmin: boolean;
 }) {
   // Ensure all weeks (1–4) have a schedule, defaulting to "No cut" if missing
