@@ -102,7 +102,7 @@ export async function fetchInvoices(typesOfInvoices: string, page: number, searc
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.InvoiceListParams = {};
+        const params: Stripe.InvoiceListParams = { limit: 100 };
         if (typesOfInvoices && ['draft', 'paid', 'open', 'void'].includes(typesOfInvoices)) {
             params.status = typesOfInvoices as 'draft' | 'paid' | 'open' | 'void';
         }
@@ -214,7 +214,7 @@ export async function fetchQuotes(typesOfQuotes: string, page: number, searchTer
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.QuoteListParams = {};
+        const params: Stripe.QuoteListParams = { limit: 100 };
         if (typesOfQuotes && ['draft', 'open', 'accepted', 'canceled'].includes(typesOfQuotes)) {
             params.status = typesOfQuotes as 'draft' | 'open' | 'accepted' | 'canceled';
         }
@@ -409,7 +409,7 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
         let hasMore = true;
         let startingAfter: string | undefined = undefined;
 
-        const params: Stripe.SubscriptionListParams = { expand: ['data.customer'] };
+        const params: Stripe.SubscriptionListParams = { limit: 100, expand: ['data.customer'] };
         if (typesOfSubscriptions && ['active', 'canceled', 'incomplete'].includes(typesOfSubscriptions)) {
             params.status = typesOfSubscriptions as 'active' | 'canceled' | 'incomplete';
         }
