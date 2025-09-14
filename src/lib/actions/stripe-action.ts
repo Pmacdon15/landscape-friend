@@ -9,7 +9,7 @@ import { updatedStripeAPIKeyDb } from "@/lib/DB/stripe-db";
 import { MarkQuoteProps } from "@/types/stripe-types";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotification } from "../dal/novu-dal";
-import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
+import { getInvoiceDAL, getStripeInstance, fetchProductPrice } from "../dal/stripe-dal";
 import { hasStripAPIKey } from "../dal/stripe-dal";
 import { fetchClientNamesByStripeIds } from "../dal/clients-dal";
 import { z } from 'zod';
@@ -485,6 +485,20 @@ export async function createSubscriptionQuoteAction(formData: FormData, snow: bo
     } catch (error) {
         console.error("Error creating subscription:", error);
         throw new Error("Failed to create subscription");
+    }
+}
+
+on getProductPrice(productId: string) {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    try {
+        const price = await fetchProductPrice(productId);
+        return price;
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Error fetching product price:", errorMessage);
+        return null;
     }
 }
 

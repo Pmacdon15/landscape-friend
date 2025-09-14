@@ -526,3 +526,30 @@ export async function fetchSubscriptions(typesOfSubscriptions: string, page: num
         throw new Error('Failed to fetch subscriptions');
     }
 }
+
+export async function fetchProductPrice(productId: string): Promise<Stripe.Price | null> {
+    await auth.protect();
+    const stripe = await getStripeInstance();
+    if (!stripe) {
+        throw new Error('Failed to initialize Stripe instance');
+    }
+
+    try {
+        const prices = await stripe.prices.list({
+            product: productId,
+            active: true,
+            limit: 1,
+        });
+
+        if (prices.data.length > 0) {
+            return prices.data[0];
+        }
+
+        return null;
+    } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
+        throw new Error('An unknown error occurred while fetching product price.');
+    }
+}
