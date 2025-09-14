@@ -62,9 +62,7 @@ export default async function ClientListService({
               </div>
               {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
-                  <p>Amount owing: ${client.amount_owing} </p>
-                  {/* <PricePerUpdateInput client={client} />
-                  <PricePerUpdateInput client={client} snow={true} /> */}
+                  <p>Amount owing: ${client.amount_owing} </p>                  
                   <Suspense fallback={<AssignedToFallback />}>
                     <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>
@@ -75,8 +73,7 @@ export default async function ClientListService({
               }
               <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
               <ViewSitePhotoSheet clientId={client.id} />
-              <ImageList isAdmin={isAdmin} client={client} />
-              {/* <ListServices client={client} /> */}
+              <ImageList isAdmin={isAdmin} client={client} />             
             </li>
           </FormContainer>
         ))}
