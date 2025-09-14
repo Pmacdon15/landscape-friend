@@ -19,16 +19,6 @@ import { markPaidDb } from "../DB/clients-db";
 import { auth } from "@clerk/nextjs/server";
 
 
-//MARK: Helper function to convert ReadableStream to Buffer
-// const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
-//     return new Promise((resolve, reject) => {
-//         const chunks: Buffer[] = [];
-//         stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-//         stream.on('end', () => resolve(Buffer.concat(chunks)));
-//         stream.on('error', reject);
-//     });
-// };
-
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
@@ -351,7 +341,7 @@ export async function markInvoiceVoid(invoiceId: string) {
     if (!userId) throw new Error("No user")
 
     const stripe = await getStripeInstance();
-     if (!stripe) throw new Error('Failed to get Stripe instance');
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         const invoice = await stripe.invoices.voidInvoice(invoiceId);
 
@@ -396,7 +386,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     if (!sessionClaims) throw new Error("Session claims are missing.");
 
     const stripe = await getStripeInstance();
-     if (!stripe) throw new Error('Failed to get Stripe instance');
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         // let resultQuote: Stripe.Response<Stripe.Quote>;
         const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
@@ -488,7 +478,7 @@ export async function createSubscriptionQuoteAction(formData: FormData, snow: bo
     }
 }
 
-on getProductPrice(productId: string) {
+export async function getProductPrice(productId: string) {
     const { isAdmin } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
 

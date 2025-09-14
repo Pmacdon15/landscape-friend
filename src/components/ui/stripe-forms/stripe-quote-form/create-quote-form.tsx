@@ -7,20 +7,21 @@ import { schemaCreateQuote } from '@/lib/zod/schemas';
 import { useCreateQuoteForm } from '@/lib/hooks/hooks';
 import { z } from 'zod';
 import InputField from '../shared/input';
-import { DynamicFields } from '../shared/dynamic-fields';
+
 import Spinner from '../../loaders/spinner';
 import { AlertMessage } from '../shared/alert-message';
-import { ClientInfoList } from '@/types/clients-types';
+
 import { use, useEffect } from 'react';
 import Stripe from 'stripe';
 import { CreateSubscriptionFormProps } from '@/types/forms-types';
 import { inputClassName } from '@/lib/values';
+import { QuoteLineItem } from './quote-line-item';
 
 export function CreateQuoteForm({ organizationIdPromise, clientsPromise, productsPromise }: CreateSubscriptionFormProps) {
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
     const organizationId = use(organizationIdPromise)
     const clients = use(clientsPromise)
-    let products
+    let products: Stripe.Product[]
     if (productsPromise) products = use(productsPromise)
     // console.log("Products: ", products)
     const { register, watch, control, reset, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
@@ -65,7 +66,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
         mutate(formData);
     };
 
-   
+
     const total = (watchedValues.labourCostPerUnit * watchedValues.labourUnits) +
         (watchedValues.materials?.reduce((acc, item) => {
             const cost = item.materialCostPerUnit ?? 0;
@@ -105,18 +106,33 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
                 </section>
 
                 {/* Dynamic Materials Section */}
-                <DynamicFields
-                    name="materials"
-                    fields={fields}
-                    append={append}
-                    remove={remove}
-                    register={register}
-                    control={control}
-                    errors={errors}
-                    labels={{ description: 'Material', amount: 'Material Cost (per unit)', quantity: 'Material Units' }}
-                    newItem={() => ({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 })}
-                    products={products}
-                />
+                <section>
+                    <h3 className="text-md font-semibold mb-2">Materials</h3>
+                    {fields.map((item, index) => (
+                        <div key={item.id}>
+                            <QuoteLineItem
+                                index={index}
+                                control={control}
+                                register={register}
+                                errors={errors}
+                                setValue={setValue}
+                                products={products}
+                            />
+                            {fields.length > 1 && (
+                                <Button type="button" onClick={() => remove(index)} className="mt-2">
+                                    Remove Material
+                                </Button>
+                            )}
+                        </div>
+                    ))}
+                    <Button
+                        type="button"
+                        onClick={() => append({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 })}
+                        className="mt-2"
+                    >
+                        Add Material
+                    </Button>
+                </section>
 
                 <p className="font-bold mt-2">Total: ${total.toFixed(2)}</p>
                 <div>
