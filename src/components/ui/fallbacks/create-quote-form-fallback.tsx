@@ -2,7 +2,7 @@ import { Button } from "../button";
 
 export function CreateQuoteFormFallback() {
 
-    const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2";
+    const inputClassName = "mt-1 block w-full border border-gray-300 rounded-md shadow-lg p-2";
 
     return (
         <>
@@ -19,6 +19,7 @@ export function CreateQuoteFormFallback() {
 
                         </datalist>
                     </div>
+                    <label htmlFor='clientEmail' className="block text-sm font-medium text-gray-700"> Client Email</label>
                     <input id="clientEmail" type="text" className={inputClassName} />
                     <input id="phone_number" type="text" className={inputClassName} />
                     <input id="address" type="text" className={inputClassName} />

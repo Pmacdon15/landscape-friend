@@ -19,8 +19,9 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
     const { mutate, isPending, isSuccess, isError, data, error } = useCreateStripeQuote();
     const organizationId = use(organizationIdPromise)
     const clients = use(clientsPromise)
-    const products = use(productsPromise)
-
+    let products
+    if (productsPromise) products = use(productsPromise)
+    console.log("Products: ", products)
     const { register, watch, control, reset, handleSubmit, setValue, formState: { errors } } = useForm<z.infer<typeof schemaCreateQuote>>({
         resolver: zodResolver(schemaCreateQuote),
         mode: 'onBlur',
@@ -114,6 +115,7 @@ export function CreateQuoteForm({ organizationIdPromise, clientsPromise, product
                     errors={errors}
                     labels={{ description: 'Material', amount: 'Material Cost (per unit)', quantity: 'Material Units' }}
                     newItem={() => ({ materialType: '', materialCostPerUnit: 0, materialUnits: 0 })}
+                    products={products}
                 />
 
                 <p className="font-bold mt-2">Total: ${total.toFixed(2)}</p>

@@ -46,11 +46,27 @@ export async function fetchProducts(): Promise<Stripe.Product[]> {
     }
 
     try {
-        const products = await stripe.products.list({
-            // You can add options here to filter or limit the products
-            limit: 50,
-        });
-        return products.data;
+        let products: Stripe.Product[] = [];
+        let hasMore = true;
+        let startingAfter: string | undefined = undefined;
+
+        while (hasMore) {
+            const response: Stripe.ApiList<Stripe.Product> = await stripe.products.list({
+                active: true,
+                limit: 100,
+                starting_after: startingAfter,
+            });
+
+            products = products.concat(response.data);
+            hasMore = response.has_more;
+            if (hasMore) {
+                startingAfter = response.data[response.data.length - 1].id;
+            }
+        }
+
+        const filteredProducts = products.filter(product => !product.metadata.serviceType);
+
+        return filteredProducts;
     } catch (error) {
         if (error instanceof Error) {
             throw error;

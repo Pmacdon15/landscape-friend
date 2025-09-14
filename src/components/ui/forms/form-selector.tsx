@@ -36,7 +36,7 @@ export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({ organizati
           </Suspense>
           :
           <Suspense fallback={<CreateSubscriptionFormFallback />}>
-            <CreateSubscriptionForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} productsPromise={productsPromise} />
+            <CreateSubscriptionForm organizationIdPromise={organizationIdPromise} clientsPromise={clientsPromise} />
           </Suspense>
         }
       </div>
