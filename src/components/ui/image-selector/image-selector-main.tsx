@@ -40,14 +40,14 @@ export default function ImageSelectorMain({
       <div className={`flex flex-nowrap absolute top-2 right-2  px-4 py-2`}>
         <button
           onClick={saveDrawing}
-          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
+          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
           disabled={isLoading}
         >
           <CameraIcon className="w-5 h-5 text-white" />
         </button>
         <button
           onClick={backButton}
-          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
+          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
         >
           <ArrowLeftCircleIcon className="w-5 h-5 text-white" />
         </button>
