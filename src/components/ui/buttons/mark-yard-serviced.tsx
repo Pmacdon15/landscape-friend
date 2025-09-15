@@ -19,20 +19,20 @@ export default function MarkYardServiced({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addTimestampToImage = async (file: File): Promise<File> => {
-  const img = document.createElement("img");
-  const url = URL.createObjectURL(file);
+    const img = document.createElement("img");
+    const url = URL.createObjectURL(file);
 
-  return new Promise<File>((resolve, reject) => {
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+    return new Promise<File>((resolve, reject) => {
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
 
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Canvas context not available"));
-        return;
-      }
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Canvas context not available"));
+          return;
+        }
 
       // Draw the image
       ctx.drawImage(img, 0, 0);
@@ -56,29 +56,29 @@ export default function MarkYardServiced({
       // ctx.strokeText(timestamp, x, y);
       ctx.fillText(serviced +timestamp, x, y);
 
-      // Convert canvas back to Blob
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const newFile = new File([blob], file.name, { type: file.type });
-          resolve(newFile);
-        } else {
-          reject(new Error("Failed to convert canvas to Blob"));
-        }
-      }, file.type);
-    };
+        // Convert canvas back to Blob
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const newFile = new File([blob], file.name, { type: file.type });
+            resolve(newFile);
+          } else {
+            reject(new Error("Failed to convert canvas to Blob"));
+          }
+        }, file.type);
+      };
 
-    img.onerror = () => {
-      reject(new Error("Failed to load image"));
-    };
+      img.onerror = () => {
+        reject(new Error("Failed to load image"));
+      };
 
-    img.src = url;
-  });
+      img.src = url;
+    });
 
-  
-};
+
+  };
 
   function isMobileDevice() {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -96,7 +96,7 @@ export default function MarkYardServiced({
         compressedFile = await imageCompression(selectedFile, options);
       }
 
-      let imageWithTimeStamp = await addTimestampToImage(compressedFile)
+      const imageWithTimeStamp = await addTimestampToImage(compressedFile)
 
       setImages([...images, imageWithTimeStamp]);
     }
