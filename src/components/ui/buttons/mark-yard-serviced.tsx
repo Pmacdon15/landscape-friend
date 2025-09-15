@@ -38,10 +38,11 @@ export default function MarkYardServiced({
       ctx.drawImage(img, 0, 0);
       //Draw rectangle (bakgroung)
       ctx.fillStyle = "black";
-      ctx.fillRect(0,0,560,68)
+      ctx.fillRect(0,0,img.width,68)
       
       // Add timestamp text
       const timestamp = new Date().toLocaleString();
+      const serviced = snow? "SNOW REMOVAL - ":"GRASS CUT - "
       ctx.font = "48px Arial";
       ctx.fillStyle = "red";
       // ctx.strokeStyle = "white";
@@ -53,7 +54,7 @@ export default function MarkYardServiced({
       const y =  padding;
       
       // ctx.strokeText(timestamp, x, y);
-      ctx.fillText(timestamp, x, y);
+      ctx.fillText(serviced +timestamp, x, y);
 
       // Convert canvas back to Blob
       canvas.toBlob((blob) => {
