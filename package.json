@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.31.6",
+    "@clerk/nextjs": "^6.32.0",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -24,6 +24,7 @@
     "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-slot": "^1.2.3",
     "@react-email/components": "^0.3.2",
+    "@shadcn/ui": "^0.0.4",
     "@tanstack/react-query": "^5.83.0",
     "@vercel/blob": "^1.1.1",
     "@vercel/postgres": "^0.10.0",
@@ -31,6 +32,7 @@
     "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
     "firebase": "^12.1.0",
     "firebase-admin": "^13.4.0",
     "google-map-react": "^2.2.5",
@@ -56,6 +58,7 @@
     "uuid": "^11.1.0",
     "zod": "^4.0.5"
   },
+  "type": "module",
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/cli": "^4.1.11",

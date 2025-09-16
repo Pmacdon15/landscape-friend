@@ -1,35 +1,24 @@
 'use server'
-import { createNotificationPayloadInvoice, createNotificationPayloadQuote, findOrCreateStripeCustomerAndLinkClient } from "@/lib/utils/stripe-utils";
+import { acceptAndScheduleQuote, createNotificationPayloadInvoice, createNotificationPayloadQuote, createStripeSubscriptionQuote, findOrCreateStripeCustomerAndLinkClient, sendQuote } from "@/lib/utils/stripe-utils";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement } from "@/lib/zod/schemas";
+import { schemaUpdateAPI, schemaCreateQuote, schemaUpdateStatement, schemaCreateSubscription } from "@/lib/zod/schemas";
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action';
 import Stripe from 'stripe';
-import { Buffer } from 'buffer';
 import { formatCompanyName } from "@/lib/utils/resend";
 import { updatedStripeAPIKeyDb } from "@/lib/DB/stripe-db";
 import { MarkQuoteProps } from "@/types/stripe-types";
 import { fetchNovuId } from "../dal/user-dal";
 import { triggerNotification } from "../dal/novu-dal";
-import { getInvoiceDAL, getStripeInstance } from "../dal/stripe-dal";
+import { getInvoiceDAL, getStripeInstance, fetchProductPrice } from "../dal/stripe-dal";
 import { hasStripAPIKey } from "../dal/stripe-dal";
 import { fetchClientNamesByStripeIds } from "../dal/clients-dal";
 import { z } from 'zod';
-import { JwtPayload } from '@clerk/types';
 import { triggerNotificationSendToAdmin } from "../utils/novu";
-
-
-//MARK: Helper function to convert ReadableStream to Buffer
-const streamToBuffer = (stream: NodeJS.ReadableStream): Promise<Buffer> => {
-    return new Promise((resolve, reject) => {
-        const chunks: Buffer[] = [];
-        stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-        stream.on('end', () => resolve(Buffer.concat(chunks)));
-        stream.on('error', reject);
-    });
-};
-
 import { createStripeWebhook } from "../utils/stripe-utils";
 import { markPaidDb } from "../DB/clients-db";
+import { auth } from "@clerk/nextjs/server";
+
+
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
@@ -78,7 +67,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
     try {
         if (!isAdmin) throw new Error("Not Admin")
         const stripe = await getStripeInstance();
-
+        if (!stripe) throw new Error('Failed to get Stripe instance');
         // 1. Find or Create Customer
         const customerId = await findOrCreateStripeCustomerAndLinkClient(
             validatedFields.data.clientName,
@@ -88,10 +77,14 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             validatedFields.data.organization_id
         );
 
+        if (!customerId) {
+            throw new Error("Could not create or find customer.");
+        }
+
 
         // 2. Handle Labour Product and Price
         let labourPriceId: string;
-        const labourProducts = await stripe.products.list({ limit: 100 });
+        const labourProducts = await stripe.products.list({});
         let labourProduct = labourProducts.data.find(product => product.name === 'Labour');
         if (!labourProduct) {
             labourProduct = await stripe.products.create({
@@ -99,7 +92,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             });
         }
 
-        const labourPrices = await stripe.prices.list({ limit: 100 });
+        const labourPrices = await stripe.prices.list({});
         const labourPrice = labourPrices.data.find(
             price => price.product === labourProduct.id &&
                 price.unit_amount === Math.round(validatedFields.data.labourCostPerUnit * 100) &&
@@ -127,7 +120,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             }
 
             let materialPriceId: string;
-            const materialProducts = await stripe.products.list({ limit: 100 });
+            const materialProducts = await stripe.products.list({});
             let materialProduct = materialProducts.data.find(product => product.name === material.materialType);
             if (!materialProduct) {
                 materialProduct = await stripe.products.create({
@@ -135,7 +128,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
                 });
             }
 
-            const materialPrices = await stripe.prices.list({ limit: 100 });
+            const materialPrices = await stripe.prices.list({});
             const materialPrice = materialPrices.data.find(
                 price => price.product === materialProduct.id &&
                     price.unit_amount === Math.round((material.materialCostPerUnit ?? 0) * 100) &&
@@ -164,7 +157,7 @@ export async function createStripeQuote(quoteData: z.infer<typeof schemaCreateQu
             customer: customerId,
             line_items: line_items,
             collection_method: 'send_invoice',
-            invoice_settings: { days_until_due: 30 },
+            invoice_settings: { days_until_due: 10 },
         });
         await triggerNotificationSendToAdmin(orgId || userId!, 'quote-created', {
             quote: {
@@ -204,7 +197,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
 
     try {
         const stripe = await getStripeInstance();
-
+        if (!stripe) throw new Error('Failed to get Stripe instance');
         if (id.startsWith('in_')) {
             // Invoice update logic
             const existingInvoice = await getInvoiceDAL(id);
@@ -231,7 +224,7 @@ export async function updateStripeDocument(documentData: z.infer<typeof schemaUp
                 }
             }
             triggerNotificationSendToAdmin(orgId || userId!, 'invoice-edited', await createNotificationPayloadInvoice(updatedInvoice, clientName));
-            //MARK:look here TODO
+
         } else if (id.startsWith('qt_')) {
             // Quote update logic
             const line_items = await Promise.all(lines.map(async (line) => {
@@ -283,6 +276,7 @@ export async function resendInvoice(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
     if (!orgId && !userId) throw new Error("Not logged in.")
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     //TODO: when in Prod there is not need for use to send the email strip will do that
 
     try {
@@ -329,6 +323,7 @@ export async function markInvoicePaid(invoiceId: string) {
     if (!isAdmin) throw new Error("Not Admin")
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         await stripe.invoices.pay(invoiceId, {
             paid_out_of_band: true,
@@ -346,6 +341,7 @@ export async function markInvoiceVoid(invoiceId: string) {
     if (!userId) throw new Error("No user")
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         const invoice = await stripe.invoices.voidInvoice(invoiceId);
 
@@ -368,59 +364,9 @@ export async function markInvoiceVoid(invoiceId: string) {
     }
 }
 
-async function sendQuote(quoteId: string, stripe: Stripe, sessionClaims: JwtPayload) {
-    try {
-        const quote = await stripe.quotes.retrieve(quoteId);
-        if (!quote) throw new Error("Quote not found");
-
-        const customerId = typeof quote.customer === 'string' ? quote.customer : quote.customer?.id;
-        if (!customerId) throw new Error("Customer ID not found for quote.");
-
-        const customer = await stripe.customers.retrieve(customerId);
-        if (customer.deleted) throw new Error("Customer has been deleted.");
-
-        const customerEmail = customer.email;
-        const customerName = customer.name || 'Valued Customer';
-
-        if (!customerEmail) throw new Error("Customer email not found.");
-
-        const pdfStream = await stripe.quotes.pdf(quoteId);
-        const pdfContent = await streamToBuffer(pdfStream);
-
-        const attachments = [{
-            filename: `quote_${quoteId}.pdf`,
-            content: pdfContent,
-        }];
-
-        const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string });
-
-        const emailSubject = `Your Quote from ${companyName}`;
-        const emailBody = `Dear ${customerName},
-
-                            Please find your quote attached and reply to this email to let us know you accept.
-                        
-                            Thank you for your business!`;
-
-        const formDataForEmail = new FormData();
-        formDataForEmail.append('title', emailSubject);
-        formDataForEmail.append('message', emailBody);
-
-        const emailResult = await sendEmailWithTemplate(formDataForEmail, customerEmail, attachments);
-
-        if (!emailResult) {
-            throw new Error("Failed to send quote email.");
-        }
-
-        // console.log("Quote re-sent and email sent successfully:", quoteId);
-        return { success: true, message: "Quote sent successfully." };
-    } catch (error) {
-        console.error(error);
-        throw new Error(`Failed to resend quote ${quoteId}: ${error instanceof Error ? error.message : String(error)}`);
-    }
-}
 
 async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
-    const updatedQuote = await stripe.quotes.retrieve(quoteId);
+    const updatedQuote = await stripe.quotes.retrieve(quoteId, { expand: ['line_items'] });
     const customerId = typeof updatedQuote.customer === 'string' ? updatedQuote.customer : updatedQuote.customer?.id;
     let clientName = '';
     if (customerId) {
@@ -432,7 +378,7 @@ async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
     return { updatedQuote, clientName };
 }
 
-
+//MARK: Mark quote
 export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     const { isAdmin, userId, orgId, sessionClaims } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
@@ -440,6 +386,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     if (!sessionClaims) throw new Error("Session claims are missing.");
 
     const stripe = await getStripeInstance();
+    if (!stripe) throw new Error('Failed to get Stripe instance');
     try {
         // let resultQuote: Stripe.Response<Stripe.Quote>;
         const { updatedQuote, clientName } = await getQuoteDetailsAndClientName(quoteId, stripe);
@@ -447,14 +394,18 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
         const notificationType = {
             accept: 'quote-accepted',
             send: "quote-sent",
+            cancel: "quote-cancelled",
         };
 
         if (action === "accept") {
-            await stripe.quotes.accept(quoteId);
+            await acceptAndScheduleQuote(stripe, updatedQuote);
         } else if (action === "send") {
             await stripe.quotes.finalizeQuote(quoteId);
             await sendQuote(quoteId, stripe, sessionClaims);
-        } else {
+        } else if (action === "cancel") {
+            await stripe.quotes.cancel(quoteId);
+        }
+        else {
             throw new Error("Invalid action for quote operation.");
         }
 
@@ -467,7 +418,77 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
     }
 }
 
+import { cancelStripeSubscription } from "@/lib/utils/stripe-utils";
 
+//MARK: Cancel Subscription
+export async function cancelSubscription(subscriptionId: string) {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    try {
+        await cancelStripeSubscription(subscriptionId);
+        return { success: true };
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Error canceling subscription:", errorMessage);
+        return { success: false, message: errorMessage };
+    }
+}
+
+//MARK: Has stripe api key
 export async function hasStripeApiKeyAction(): Promise<boolean> {
     return await hasStripAPIKey();
 }
+
+
+//Mark:Create Subscription
+export async function createSubscriptionQuoteAction(formData: FormData, snow: boolean) {
+    const { orgId, userId, sessionClaims } = await auth.protect();
+    const organizationId = orgId || userId;
+
+    if (!organizationId) {
+        throw new Error("Unauthorized");
+    }
+
+    const parsed = schemaCreateSubscription.safeParse({
+        clientName: formData.get('clientName'),
+        clientEmail: formData.get('clientEmail'),
+        phone_number: formData.get('phone_number'),
+        address: formData.get('address'),
+        serviceType: formData.get('serviceType'),
+        price_per_month: parseFloat(formData.get('price_per_month') as string),
+        startDate: formData.get('startDate'),
+        endDate: formData.get('endDate') || undefined,
+        notes: formData.get('notes') || undefined,
+        organization_id: organizationId,
+        collectionMethod: formData.get('collectionMethod') || undefined, // Add this line
+    });
+
+    if (!parsed.success) {
+        console.error("Validation Error:", parsed.error);
+        throw new Error("Invalid form data");
+    }
+
+    try {
+        const subscription = await createStripeSubscriptionQuote(parsed.data, sessionClaims, snow);
+        return { success: true, subscription: { id: subscription.id, status: subscription.status } };
+    } catch (error) {
+        console.error("Error creating subscription:", error);
+        throw new Error("Failed to create subscription");
+    }
+}
+
+export async function getProductPrice(productId: string) {
+    const { isAdmin } = await isOrgAdmin();
+    if (!isAdmin) throw new Error("Not Admin");
+
+    try {
+        const price = await fetchProductPrice(productId);
+        return price;
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Error fetching product price:", errorMessage);
+        return null;
+    }
+}
+

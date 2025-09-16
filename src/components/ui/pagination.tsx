@@ -1,7 +1,7 @@
 import * as React from "react"
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
+  ArrowLeft,
+  ArrowRight,  
   MoreHorizontalIcon,
 } from "lucide-react"
 
@@ -42,19 +42,16 @@ type PaginationLinkProps = {
   className?: string;
   isActive?: boolean;
   size?: "icon" | "default";
-  href: string;
-} & Omit<React.ComponentProps<typeof Link>, 'href'>;
+} & React.ComponentProps<typeof Link>;
 
 const PaginationLink = ({
   className,
   isActive,
   size = "icon",
-  href,
   ...props
 }: PaginationLinkProps) => {
   return (
     <Link
-      href={href}
       aria-current={isActive ? "page" : undefined}
       data-slot="pagination-link"
       data-active={isActive}
@@ -81,7 +78,8 @@ function PaginationPrevious({
       className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
       {...props}
     >
-      <ChevronLeftIcon />
+      {/* <ChevronLeftIcon /> */}
+      <ArrowLeft/>
       <span className="hidden sm:block">Previous</span>
     </PaginationLink>
   )
@@ -99,7 +97,7 @@ function PaginationNext({
       {...props}
     >
       <span className="hidden sm:block">Next</span>
-      <ChevronRightIcon />
+      <ArrowRight />
     </PaginationLink>
   )
 }

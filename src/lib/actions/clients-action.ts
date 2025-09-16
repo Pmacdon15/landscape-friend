@@ -1,9 +1,11 @@
 'use server'
-import { addClientDB, countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/clients-db";
+import { countClientsByOrgId, deleteClientDB, deleteSiteMapDB, updateClientPricePerDb, updatedClientCutDayDb } from "@/lib/DB/clients-db";
 import { getOrganizationSettings } from "@/lib/DB/org-db";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { schemaAddClient, schemaUpdatePricePerCut, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
+import { schemaAddClient, schemaUpdatePricePerMonth, schemaDeleteClient, schemaUpdateCuttingDay, schemaDeleteSiteMap } from "@/lib/zod/schemas";
 import { triggerNotificationSendToAdmin } from "../utils/novu";
+
+import { findOrCreateStripeCustomerAndLinkClient } from "../utils/stripe-utils";
 
 export async function addClient(formData: FormData) {
     const { orgId, userId } = await isOrgAdmin();
@@ -14,7 +16,7 @@ export async function addClient(formData: FormData) {
     if (!orgSettings) throw new Error("Organization not found.");
 
     const clientCount = await countClientsByOrgId(organizationId);
-    if (clientCount >= orgSettings.max_allowed_clinents) {
+    if (clientCount >= orgSettings.max_allowed_clients) {
         throw new Error("Maximum number of clients reached for this organization.");
     }
 
@@ -30,8 +32,14 @@ export async function addClient(formData: FormData) {
     if (!validatedFields.success) throw new Error("Invalid form data");
 
     try {
-        const result = await addClientDB(validatedFields.data, organizationId)
-        if (!result) throw new Error('Failed to add Client');
+        const customerId = await findOrCreateStripeCustomerAndLinkClient(
+            validatedFields.data.full_name,
+            validatedFields.data.email_address,
+            validatedFields.data.phone_number.toString(),
+            validatedFields.data.address,
+            organizationId
+        );
+
         triggerNotificationSendToAdmin(organizationId, 'client-added', {
             client: {
                 name: validatedFields.data.full_name,
@@ -39,7 +47,7 @@ export async function addClient(formData: FormData) {
             }
         })
 
-        return result;
+        return { success: true, customerId: customerId || null };
     } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         throw new Error(errorMessage);
@@ -67,14 +75,15 @@ export async function deleteClient(clientId: number) {
     }
 }
 
-export async function updateClientPricePer(clientId: number, pricePerCut: number, snow: boolean) {
+export async function updateClientPricePerMonth(clientId: number, price: number, snow: boolean) {
     const { isAdmin, orgId, userId } = await isOrgAdmin();
     if (!isAdmin) throw new Error("Not Admin");
     if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
 
-    const validatedFields = schemaUpdatePricePerCut.safeParse({
+    const validatedFields = schemaUpdatePricePerMonth.safeParse({
         clientId: clientId,
-        pricePerCut: pricePerCut,
+        pricePerMonthGrass: snow ? undefined : price,
+        pricePerMonthSnow: snow ? price : undefined,
         snow: snow
     });
 

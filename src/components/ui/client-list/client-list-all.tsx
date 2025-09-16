@@ -6,7 +6,6 @@ import { CuttingWeekDropDownContainer } from "../cutting-week/cutting-week";
 import { Suspense } from "react";
 import FormContainer from "../containers/form-container";
 import FormHeader from "../header/form-header";
-import PricePerUpdateInput from "./price-per-update-input";
 import ImageList from "../image-list/image-list";
 import { ClientListServiceProps } from "@/types/clients-types";
 import { ClientListItemEmail, ClientListItemHeader } from "./client-list-item";
@@ -54,17 +53,15 @@ export default async function ClientListService({
               {isAdmin && <DeleteClientButton clientId={client.id} />}
               <FormHeader text={client.full_name} />
               <div className="flex flex-col gap-2 items-center justify-center mt-8 mb-8 lg:flex-row w-full">
-                <ClientListItemHeader client={client} />
-                <ClientListItemEmail client={client} />
-                <ClientListItemAddress client={client} >
+                <ClientListItemHeader clientPhoneNumber={client.phone_number} />
+                <ClientListItemEmail clientEmailAddress={client.email_address} clientFullName={client.full_name} />
+                <ClientListItemAddress clientId={client.id} clientAddress={client.address} >
                   <MapComponent address={client.address} />
                 </ClientListItemAddress>
               </div>
               {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
                   <p>Amount owing: ${client.amount_owing} </p>
-                  <PricePerUpdateInput client={client} />
-                  <PricePerUpdateInput client={client} snow={true} />
                   <Suspense fallback={<AssignedToFallback />}>
                     <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
                   </Suspense>
@@ -73,10 +70,15 @@ export default async function ClientListService({
                   </Suspense>
                 </div>
               }
-              <CuttingWeekDropDownContainer isAdmin={isAdmin} client={client} />
-              <ViewSitePhotoSheet client={client}/>
+              <CuttingWeekDropDownContainer
+                isAdmin={isAdmin}
+                client={{
+                  id: client.id,
+                  cutting_schedules: client.cutting_schedules,
+                }}
+              />
+              <ViewSitePhotoSheet clientId={client.id} />
               <ImageList isAdmin={isAdmin} client={client} />
-              {/* <ListServices client={client} /> */}              
             </li>
           </FormContainer>
         ))}

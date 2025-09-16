@@ -9,17 +9,14 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "../button"
-import { Client } from "@/types/clients-types"
 import { getServicedImagesUrls } from "@/lib/DB/db-get-images"
-import Image from "next/image";
+import ServicedImageCarousel from "../client-list/serviced-image-carousel";
+import SheetLogoHeader from "../header/sheet-logo-header";
+import FormHeader from "../header/form-header";
 
-
-
-export async function ViewSitePhotoSheet({client}:{client:Client}) {
-
-    const imagesUrls = await getServicedImagesUrls(client.id);
-    console.log(`imagesUrls`)
-    console.log(imagesUrls)
+export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
+    //TODO: this is a db function put it behind a dal
+    const imagesUrlsObjects = await getServicedImagesUrls(clientId);
 
     return (
         <Sheet>
@@ -27,18 +24,20 @@ export async function ViewSitePhotoSheet({client}:{client:Client}) {
                 <button className="text-blue-500 underline w-full ">View Site Service Photos</button>
             </SheetTrigger>
             <SheetContent className="overflow-y-scroll">
+                <SheetLogoHeader />
                 <SheetHeader>
                     <SheetTitle>Site Serviced Photos</SheetTitle>
                     <SheetDescription>
                         View photos of the serviced sites.
                     </SheetDescription>
                 </SheetHeader>
-                {imagesUrls.map((imageUrl)=>(
-                    <div className="my-2" key={imageUrl.imageurl}>
-                        <Image height={400} width={400} src={imageUrl.imageurl} alt="photoServiced"/>
+                {imagesUrlsObjects.length > 0 ?
+                    <ServicedImageCarousel imageUrlList={imagesUrlsObjects} />
+                    :
+                    <div className="m-2">
+                        <FormHeader>Add Images by marking yard serviced</FormHeader>
                     </div>
-
-                ))}
+                }
                 <SheetFooter>
                     <SheetClose asChild>
                         <Button variant="outline">Close</Button>

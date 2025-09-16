@@ -1,10 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ClientEmailPopover } from "@/components/ui/popovers/client-email-popover";
-import { ClientListItemProps } from "@/types/clients-types";
 
-
-const ClientListItemHeader = ({ client }: ClientListItemProps) => {
+const ClientListItemHeader = ({ clientPhoneNumber }: { clientPhoneNumber: string }) => {
   return (
     <div className="flex flex-row gap-2 items-center w-full relative">
       <Image
@@ -16,15 +13,15 @@ const ClientListItemHeader = ({ client }: ClientListItemProps) => {
       />
       <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
         <p className="text-sm">Phone Number:</p>
-        <Link className="cursor-pointer hover:underline text-center" href={`tel:${client.phone_number}`}>
-          {client.phone_number}
-        </Link>
+        <a className="cursor-pointer hover:underline text-center" href={`tel:${clientPhoneNumber}`}>
+          {clientPhoneNumber}
+        </a>
       </div>
     </div>
   );
 };
 
-const ClientListItemEmail = ({ client }: ClientListItemProps) => {
+const ClientListItemEmail = ({ clientFullName, clientEmailAddress }: { clientFullName: string, clientEmailAddress: string }) => {
   return (
     <div className="flex flex-row gap-2 relative items-center w-full">
       <Image
@@ -36,7 +33,7 @@ const ClientListItemEmail = ({ client }: ClientListItemProps) => {
       />
       <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
         <p className="text-sm">Email:</p>
-        <ClientEmailPopover client={client} />
+        <ClientEmailPopover clientEmailAddress={clientEmailAddress} clientFullName={clientFullName} />
       </div>
     </div>
   );

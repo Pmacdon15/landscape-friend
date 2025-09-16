@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
+
 import FormHeader from '../header/form-header';
 import { useGetLocation, useGetLonAndLatFromAddresses } from '@/lib/hooks/hooks';
 import { GeocodeResult, MapComponentProps } from '@/types/google-map-iframe-types';
@@ -54,11 +54,11 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
         className="w-full h-[200px]"
       />
       <div className="absolute top-2 right-2">
-        <Link href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
+        <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
           <button className="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded">
             View in Google Maps
           </button>
-        </Link>
+        </a>
       </div>
     </div>
   );
