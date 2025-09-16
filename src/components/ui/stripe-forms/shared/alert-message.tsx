@@ -2,7 +2,6 @@
 import { cn } from '@/lib/utils/utils';
 import Link from 'next/link';
 import React from 'react';
-import { Url } from 'url';
 
 interface AlertMessageProps {
   type: 'success' | 'error' | 'info';
