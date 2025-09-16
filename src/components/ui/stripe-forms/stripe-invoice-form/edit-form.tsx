@@ -76,8 +76,15 @@ export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm })
             </form>
 
             {/* Reusable Alerts */}
-            {isSuccess && data && <AlertMessage type="success" message="Invoice updated successfully!" />}
-            {isError && error && <AlertMessage type="error" message={`Error updating invoice: ${error.message}`} />}
+            {isSuccess && data &&
+                <AlertMessage
+                    type="success"
+                    message="Quote updated successfully!"
+                    pathname="/billing/manage/quotes"
+                    id={invoiceOrQuote.id}
+                />
+            }
+            {isError && error && <AlertMessage type="error" message={`Error updating quote: ${error.message}`} />}
         </>
     );
 }
