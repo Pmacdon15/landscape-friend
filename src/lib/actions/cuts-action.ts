@@ -25,16 +25,18 @@ export async function markYardServiced(clientId: number, date: Date, snow = fals
     }
 }
 
-export async function assignGrassCutting(clientId: number, assignedTo: string, cuttingWeek: number | null, cuttingDay: string | null) {
-    const { isAdmin, orgId, userId } = await isOrgAdmin();
-    if (!isAdmin) throw new Error("Not Admin");
-    if (!orgId && !userId) throw new Error("Organization ID or User ID is missing.");
+export async function assignGrassCutting(
+  clientId: number,
+  assignedTo: string,  
+) {
+  const { isAdmin, orgId, userId } = await isOrgAdmin();
+  if (!isAdmin) throw new Error("Not Admin");
+  if (!orgId && !userId)
+    throw new Error("Organization ID or User ID is missing.");
 
     const validatedFields = schemaAssign.safeParse({
         clientId: clientId,
-        assignedTo: assignedTo,
-        cuttingWeek: cuttingWeek,
-        cuttingDay: cuttingDay
+        assignedTo: assignedTo,        
     });
 
     if (!validatedFields.success) throw new Error("Invalid input data");

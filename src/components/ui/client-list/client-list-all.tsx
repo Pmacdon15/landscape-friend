@@ -47,14 +47,19 @@ export default async function ClientListService({
               </div>
               {isAdmin &&
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
-                  <p>Amount owing: ${client.amount_owing} </p>
-                  {/* <PricePerUpdateInput client={client} />
-                  <PricePerUpdateInput client={client} snow={true} /> */}
+                  <p>Amount owing: ${client.amount_owing} </p>                  
                   <Suspense fallback={<AssignedToFallback />}>
-                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
+                    <AssignedTo orgMembersPromise={orgMembersPromise}
+                      clientAssignedTo={client.grass_assigned_to || 'not-assigned'}
+                      clientId={client.id}
+                    />
                   </Suspense>
                   <Suspense fallback={<AssignedToFallback />}>
-                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} snow />
+                    <AssignedTo orgMembersPromise={orgMembersPromise}
+                      clientAssignedTo={client.snow_assigned_to || 'not-assigned'}
+                      clientId={client.id}
+                      snow
+                    />
                   </Suspense>
                 </div>
               }
