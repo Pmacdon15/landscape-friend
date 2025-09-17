@@ -1,10 +1,17 @@
 'use client'
 import { useAssignGrassCutting, useAssignSnowClearing } from "@/lib/mutations/mutations";
 import { use } from "react";
-import { Client } from "@/types/clients-types";
 import { OrgMember } from "@/types/clerk-types";
 
-export default function AssignedTo({ client, orgMembersPromise, snow = false}: { client: Client, orgMembersPromise?: Promise<OrgMember[]>, snow?: boolean }) {
+export default function AssignedTo(
+  { clientAssignedTo, clientId, orgMembersPromise, snow = false }:
+    {
+      clientAssignedTo: string,
+      clientId: number,
+      orgMembersPromise?: Promise<OrgMember[]>,
+      snow?: boolean
+    }
+) {
 
   const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
   const { mutate: mutateAssignGrassCutting } = useAssignGrassCutting()
@@ -12,8 +19,8 @@ export default function AssignedTo({ client, orgMembersPromise, snow = false}: {
 
   const orgMembers = use(orgMembersPromise ?? Promise.resolve([]));
 
-  const defaultValue = snow ? (client.snow_assigned_to ? client.snow_assigned_to.toString() : "not-assigned") : (client.grass_assigned_to ? client.grass_assigned_to.toString() : "not-assigned");
-  
+  const defaultValue = clientAssignedTo ?? "not-assigned"
+
   return (
     < div className="flex gap-2 justify-center mb-2">
       <p className=" my-auto ">Assigned to {snow ? "snow" : "grass"}: </p>
@@ -23,9 +30,9 @@ export default function AssignedTo({ client, orgMembersPromise, snow = false}: {
         onChange={(e) => {
           const selectedUserId = e.target.value;
           if (snow) {
-            mutateAssignSnowClearing({ clientId: client.id, assignedTo: selectedUserId });
+            mutateAssignSnowClearing({ clientId: clientId, assignedTo: selectedUserId });
           } else {
-            mutateAssignGrassCutting({ clientId: client.id, assignedTo: selectedUserId, cuttingWeek: client.cutting_week, cuttingDay: client.cutting_day });
+            mutateAssignGrassCutting({ clientId: clientId, assignedTo: selectedUserId });
           }
         }}
       >

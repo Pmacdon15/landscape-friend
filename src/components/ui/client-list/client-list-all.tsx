@@ -22,22 +22,10 @@ export default async function ClientListService({
 }: ClientListServiceProps) {
   const result = await clientsPromise;
 
-  if (!result)
-    return (
-      <ContentContainer>
-        {" "}
-        <p>Error Loading clients</p>{" "}
-      </ContentContainer>
-    );
+  if (!result) return (<ContentContainer> {" "}<p>Error Loading clients</p>{" "} </ContentContainer>);
   const { clients, totalPages } = result;
 
-  if (clients.length < 1)
-    return (
-      <ContentContainer>
-        {" "}
-        <p>Please add clients</p>{" "}
-      </ContentContainer>
-    );
+  if (clients.length < 1) return (<ContentContainer>{" "}<p>Please add clients</p>{" "}  </ContentContainer>);
 
   return (
     <>
@@ -63,10 +51,17 @@ export default async function ClientListService({
                 <div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
                   <p>Amount owing: ${client.amount_owing} </p>
                   <Suspense fallback={<AssignedToFallback />}>
-                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} />
+                    <AssignedTo orgMembersPromise={orgMembersPromise}
+                      clientAssignedTo={client.grass_assigned_to || 'not-assigned'}
+                      clientId={client.id}
+                    />
                   </Suspense>
                   <Suspense fallback={<AssignedToFallback />}>
-                    <AssignedTo client={client} orgMembersPromise={orgMembersPromise} snow />
+                    <AssignedTo orgMembersPromise={orgMembersPromise}
+                      clientAssignedTo={client.snow_assigned_to || 'not-assigned'}
+                      clientId={client.id}
+                      snow
+                    />
                   </Suspense>
                 </div>
               }

@@ -13,7 +13,7 @@ import { useResetFormOnSuccess } from '@/lib/hooks/hooks';
 import BackToLink from '../../links/back-to-link';
 import { EditStripeForm } from '@/types/stripe-types';
 
-export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm }) {
+export function EditForm({ invoiceOrQuote, invoice = false }: { invoiceOrQuote: EditStripeForm, invoice?: boolean }) {
     const { mutate, isPending, isSuccess, isError, data, error } = useUpdateStripeDocument();
 
     const { register, watch, control, handleSubmit, reset, formState: { errors } } = useForm<z.input<typeof schemaUpdateStatement>>({
@@ -76,8 +76,15 @@ export function EditForm({ invoiceOrQuote }: { invoiceOrQuote: EditStripeForm })
             </form>
 
             {/* Reusable Alerts */}
-            {isSuccess && data && <AlertMessage type="success" message="Invoice updated successfully!" />}
-            {isError && error && <AlertMessage type="error" message={`Error updating invoice: ${error.message}`} />}
+            {isSuccess && data &&
+                <AlertMessage
+                    type="success"
+                    message={`${invoice ? "Invoice" : "Quote"} updated successfully!`}
+                    pathname={invoice ? "/billing/manage/invoices" : "/billing/manage/quotes"}
+                    id={invoiceOrQuote.id}
+                />
+            }
+            {isError && error && <AlertMessage type="error" message={`Error updating quote: ${error.message}`} />}
         </>
     );
 }

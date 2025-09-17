@@ -121,8 +121,8 @@ export const useAssignSnowClearing = () => {
 //MARK: Assign grass cutting
 export const useAssignGrassCutting = () => {
     return useMutation({
-        mutationFn: ({ clientId, assignedTo, cuttingWeek, cuttingDay }: { clientId: number, assignedTo: string, cuttingWeek?: number | null, cuttingDay?: string | null }) => {
-            return assignGrassCutting(clientId, assignedTo, cuttingWeek ?? null, cuttingDay ?? null);
+        mutationFn: ({ clientId, assignedTo }: { clientId: number, assignedTo: string }) => {
+            return assignGrassCutting(clientId, assignedTo);
         }
     });
 };
@@ -285,7 +285,7 @@ export const useMarkQuote = () => {
 
 //MARK: Cancel subscription
 export const useCancelSubscription = () => {
-        return useMutation({
+    return useMutation({
         mutationFn: (subscriptionId: string) => cancelSubscription(subscriptionId),
         onSuccess: () => {
             revalidatePathAction("/billing/manage/subscriptions")

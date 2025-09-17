@@ -818,15 +818,6 @@ export async function assignGrassCuttingDb(
 ) {
   const sql = neon(`${process.env.DATABASE_URL} `);
 
-  await sql`
-    INSERT INTO cutting_schedule(client_id, cutting_week, cutting_day, organization_id)
-    SELECT ${data.clientId}, ${data.cuttingWeek}, ${data.cuttingDay}, ${organization_id}
-    FROM clients
-    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-    ON CONFLICT(client_id, cutting_week, organization_id) DO UPDATE
-    SET cutting_day = EXCLUDED.cutting_day;
-  `;
-
   const result = await sql`
     INSERT INTO assignments(client_id, user_id, service_type)
     SELECT ${data.clientId}, ${data.assignedTo}, 'grass'

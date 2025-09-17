@@ -23,7 +23,7 @@ export default async function EditInvoicePage({
             <FillFormContainer>
                 <FormHeader text={'Edit Quote'} />
                 <div className="p-4 border rounded-md shadow-sm">
-                    <EditForm invoiceOrQuote={quote} />
+                    <EditForm invoiceOrQuote={quote}/>
                 </div>
             </FillFormContainer>
         </FormContainer >

@@ -33,21 +33,21 @@ export default function ImageSelectorMain({
   return (
     <div className="relative w-full max-w-md mx-auto h-[300px]">
       {isLoading && (
-        <div className="absolute inset-0 bg-white/30 flex justify-center items-center ">
+        <div className="absolute inset-0 bg-white/30 flex justify-center items-center z-25 ">
           <Spinner />
         </div>
       )}
       <div className={`flex flex-nowrap absolute top-2 right-2  px-4 py-2`}>
         <button
           onClick={saveDrawing}
-          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
+          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
           disabled={isLoading}
         >
-          <CameraIcon className="w-5 h-5 text-white" />
+          {isLoading ? <Spinner /> : <CameraIcon className="w-5 h-5 text-white" />}
         </button>
         <button
           onClick={backButton}
-          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500"
+          className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
         >
           <ArrowLeftCircleIcon className="w-5 h-5 text-white" />
         </button>
