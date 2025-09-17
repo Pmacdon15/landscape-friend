@@ -111,7 +111,7 @@ const snowfallCheck = inngest.createFunction(
                 await step.run(`trigger-novu-event-for-${userId}`, async () => {
                     if (geocodeResult && !geocodeResult.error && geocodeResult.coordinates) {
                         const { lat, lng } = geocodeResult.coordinates;
-                        const snowing = await isSnowing(lat, lng, true);
+                        const snowing = await isSnowing(lat, lng);
 
                         if (snowing) {
                             console.log(`Snowfall predicted for user ${userId}. Triggering notification.`);
