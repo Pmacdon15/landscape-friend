@@ -63,9 +63,11 @@ export default function VerticalNav() {
                 <Link href="/documentation/stripe" className="p-2 hover:bg-accent rounded-md">Stripe</Link>
             </CollapsibleSection>
 
-            <CollapsibleSection title={<><Settings /> Settings</>}>
-                <Link href="/settings" className="p-2 hover:bg-accent rounded-md">Manage settings</Link>
-            </CollapsibleSection>
+            {isAdmin &&
+                <CollapsibleSection title={<><Settings /> Settings</>}>
+                    <Link href="/settings" className="p-2 hover:bg-accent rounded-md">Manage settings</Link>
+                </CollapsibleSection>
+            }
         </nav>
     )
 }
