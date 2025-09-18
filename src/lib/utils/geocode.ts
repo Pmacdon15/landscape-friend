@@ -1,25 +1,24 @@
-'use client'
-export const fetchGeocode = (address: string) => {
-    return fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY!}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log("result: ", response)
-            return response.json();
-        })
-        .then(data => {
-            if (data.status === 'OK' && data.results.length > 0) {
-                return {
-                    coordinates: {
-                        lat: data.results[0].geometry.location.lat,
-                        lng: data.results[0].geometry.location.lng,
-                    },
-                    zoom: 15,
-                    error: false,
-                };
-            } else {
-                throw new Error(data.error_message || data.status || 'No results found for the address.');
-            }
-        });
-};
+export async function fetchGeocode(address: string) {
+    try {
+        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY!}`, { next: { revalidate: 3600 } });
+        const data = await response.json();
+        if (data.results.length > 0) {
+            return {
+                coordinates: {
+                    lat: data.results[0].geometry.location.lat,
+                    lng: data.results[0].geometry.location.lng,
+                },
+                zoom: 15,
+                error: false,
+            };
+        } else {
+            return { error: 'No results found' };
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error("Error getting cords...");
+            return { error: error.message };
+        }
+        return { error: true };
+    }
+}
