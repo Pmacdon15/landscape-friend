@@ -10,7 +10,7 @@ export default async function MapComponent({ address }: { address: string }) {
 
     const { coordinates, zoom } = result;
 
-    const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}&zoom=${zoom}`;
+    const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}&zoom=${zoom}`;
 
     return (
         <div className="flex flex-col md:flex-row w-full bg-background max-h-[300px] rounded-md p-2 ">
