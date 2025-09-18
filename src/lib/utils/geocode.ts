@@ -5,6 +5,7 @@ export const fetchGeocode = (address: string) => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+            console.log("result: ", response)
             return response.json();
         })
         .then(data => {
