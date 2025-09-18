@@ -14,7 +14,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     return <FormHeader text="Loading . . ." />;
   }
 
-  if (!process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY) {
+  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
     return <div>Error: Google Maps API key is missing</div>;
   }
 
@@ -32,7 +32,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     .join('&');
   const userMarker = `markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`;
   
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}`;
+  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
 
   const origin = `${userLocation.lat},${userLocation.lng}`;
   const destination = `${geocodeResults[geocodeResults.length - 1].coordinates.lat},${geocodeResults[geocodeResults.length - 1].coordinates.lng}`;
