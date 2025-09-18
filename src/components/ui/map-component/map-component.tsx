@@ -1,6 +1,5 @@
 'use client'
 import { useGeocode } from "@/lib/hooks/hooks";
-import { fetchGeocode } from "@/lib/utils/geocode";
 
 export default async function MapComponent({ address }: { address: string }) {
     const { data, error, isLoading, isError } = useGeocode(address);
