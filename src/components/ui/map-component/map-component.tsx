@@ -1,7 +1,7 @@
-import { fetchGeocode } from "@/lib/utils/geocode";
+// import { fetchGeocode } from "@/lib/utils/geocode";
 
 
-export default async function MapComponent({ address }: { address: string }) {
+export default async function MapComponent({ }: { address: string }) {
     // const result = await fetchGeocode(address);
 
     // if (result.error) {
@@ -10,7 +10,7 @@ export default async function MapComponent({ address }: { address: string }) {
 
     // const { coordinates, zoom } = result;
 
-    const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}&q=51.070028,-114.156139&zoom=${zoom}`;
+    const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}&q=51.070028,-114.156139`;
 
     return (
         <div className="flex flex-col md:flex-row w-full bg-background max-h-[300px] rounded-md p-2 ">
