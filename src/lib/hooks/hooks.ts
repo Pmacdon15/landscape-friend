@@ -6,7 +6,6 @@ import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/google-map-
 import { UseFormReset } from 'react-hook-form';
 import React from 'react';
 import { MaterialField } from '@/types/components-types';
-import { useQuery } from '@tanstack/react-query';
 
 export const useDebouncedMutation = <TData>(
   mutate: (data: TData) => void,
@@ -235,30 +234,13 @@ export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuc
 }
 
 export function useResetFormOnSuccess<T extends object>(
-  isSuccess: boolean,
-  submittedData: React.MutableRefObject<T | null>,
-  reset: UseFormReset<T>
+    isSuccess: boolean,
+    submittedData: React.MutableRefObject<T | null>,
+    reset: UseFormReset<T>
 ) {
-  useEffect(() => {
-    if (isSuccess && submittedData.current) {
-      reset(submittedData.current);
-    }
-  }, [isSuccess, reset, submittedData]);
-}
-
-const fetchGeocodeFromApi = async (address: string) => {
-  const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || 'Failed to fetch geocode data');
-  }
-  return response.json();
-};
-
-export const useGeocode = (address: string) => {
-  return useQuery({
-    queryKey: ['geocode', address],
-    queryFn: () => fetchGeocodeFromApi(address),
-    enabled: !!address,
-  })
+    useEffect(() => {
+        if (isSuccess && submittedData.current) {
+            reset(submittedData.current);
+        }
+    }, [isSuccess, reset, submittedData]);
 }
