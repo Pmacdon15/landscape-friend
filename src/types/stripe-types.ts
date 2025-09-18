@@ -50,7 +50,7 @@ export interface APIKey {
 export type EditStripeForm = StripeInvoice | StripeQuote;
 export interface FetchQuotesResponse {
     quotes: StripeQuote[];
-    totalPages: number;
+    totalPages: number;   
 }
 
 export interface InvoiceId {
@@ -58,7 +58,7 @@ export interface InvoiceId {
 }
 
 
-export interface InoivePayload {
+export interface InvoicePayload {
     invoice: {
         amount: string;
         id: string;
@@ -76,7 +76,7 @@ export interface StripeQuote {
     status: string;
     expires_at: number | null;
     created: number;
-   metadata: Record<string, string | number>;
+    metadata: Record<string, string | number>;
     customer_name?: string;
     customer_email?: string;
     client_name?: string;

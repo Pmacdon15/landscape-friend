@@ -2,6 +2,7 @@ export async function fetchGeocode(address: string) {
     try {
         const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY!}`, { next: { revalidate: 3600 } });
         const data = await response.json();
+        console.log("data: ", data)
         if (data.results.length > 0) {
             return {
                 coordinates: {

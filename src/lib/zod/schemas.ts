@@ -46,9 +46,7 @@ export const schemaMarkYardCut = z.object({
 
 export const schemaAssign = z.object({
     clientId: z.number(),
-    assignedTo: z.string(),
-    cuttingWeek: z.number().nullable(),
-    cuttingDay: z.string().nullable()
+    assignedTo: z.string()    
 })
 
 export const schemaAssignSnow = z.object({
