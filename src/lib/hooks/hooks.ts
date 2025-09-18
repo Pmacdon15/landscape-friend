@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { fetchGeocode } from '@/lib/utils/geocode';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/google-map-iframe-types';
 
 import { UseFormReset } from 'react-hook-form';
 import React from 'react';
 import { MaterialField } from '@/types/components-types';
+import { fetchGeocode } from '../actions/geo-codes-action';
 
 export const useDebouncedMutation = <TData>(
   mutate: (data: TData) => void,
