@@ -2,7 +2,7 @@
 import { useGeocode } from "@/lib/hooks/hooks";
 
 export default async function MapComponent({ address }: { address: string }) {
-    const { data, error, isLoading, isError } = useGeocode(address);
+    const { data, error } = useGeocode(address);
 
     if (error || !data) {
         return <div className="w-full text-center">Error: {data?.error}</div>;
