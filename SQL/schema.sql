@@ -22,6 +22,10 @@ DROP TABLE IF EXISTS images CASCADE;
 
 DROP TABLE IF EXISTS assignments CASCADE;
 
+DROP TABLE IF EXISTS images_serviced CASCADE;
+
+
+
 CREATE TABLE users (
     id VARCHAR(100) UNIQUE PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -125,10 +129,46 @@ CREATE TABLE assignments (
 
 CREATE TABLE images (
     id SERIAL PRIMARY KEY,
-    customerID VARCHAR(255) NOT NULL,
+    customerID INT NOT NULL,
     imageURL TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    isActive BOOLEAN
+    isActive BOOLEAN,
+    Foreign Key (customerID) REFERENCES clients (id) ON DELETE CASCADE
+);
+
+CREATE TABLE images_serviced (
+    id SERIAL PRIMARY KEY,
+    imageURL TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    fk_cut_id INT,
+    fk_clear_id INT,
+    CONSTRAINT fk_cut FOREIGN KEY (fk_cut_id) REFERENCES yards_marked_cut (id) ON DELETE CASCADE,
+    CONSTRAINT fk_clear FOREIGN KEY (fk_clear_id) REFERENCES yards_marked_clear (id) ON DELETE CASCADE,
+    CONSTRAINT at_least_one_fk CHECK (
+        fk_cut_id IS NOT NULL OR fk_clear_id IS NOT NULL
+    )
 );
 
 -- SELECT* FROM users;
+-- SELECT * FROM images;
+-- SELECT * FROM yards_marked_cut;
+-- SELECT * FROM yards_um that might not work masybe marked_clear;
+-- SELECT * FROM cutting_schedule;
+-- SELECT * FROM clients;
+-- SELECT * FROM cutting_schedule;
+-- SELECT * FROM clients;
+-- SELECT * FROM users;
+-- SELECT * FROM organizations;
+-- SELECT id, novu_subscriber_id
+--             FROM users
+--             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');
+-- WHERE
+--     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
+-- -- SELECT * from price_per_cut ;
+-- SELECT * FROM stripe_api_keys;
+-- SELECT * FROM snow_clearing_assignments;
+-- SELECT * FROM payments ;
+-- SELECT * FROM accounts;
+
+-- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
+-- SELECT * FROM charges;

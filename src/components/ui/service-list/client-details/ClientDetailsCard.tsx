@@ -16,13 +16,13 @@ interface ClientDetailsCardProps {
   snow: boolean;
 }
 
-const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({ client, isAdmin}) => {
+const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({ client, isAdmin }) => {
   return (
     <>
       <div className="flex flex-col items-center w-full">
         <ClientName fullName={client.full_name} />
         <ClientPhoneNumber phoneNumber={client.phone_number} />
-        <ClientEmail client={client} />
+        <ClientEmail clientEmailAddress={client.email_address} clientFullName={client.full_name} />
         <ClientAddress address={client.address} />
       </div>
 

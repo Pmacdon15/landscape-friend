@@ -6,11 +6,14 @@ import { NovuSubscriberIds } from "@/types/novu-types";
 
 //MARK: Add clients
 
-export async function addClientDB(data: z.infer<typeof schemaAddClient>, organization_id: string): Promise<{ client: Client; account: Account }[]> {
+export async function addClientDB(
+  data: z.infer<typeof schemaAddClient>,
+  organization_id: string
+): Promise<{ client: Client; account: Account }[]> {
   // console.log("addClientDB called with data:", data, "and organization_id:", organization_id);
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
-    const result = await (sql`
+    const result = (await sql`
         WITH new_client AS (
             INSERT INTO clients (full_name, phone_number, email_address, organization_id, address, stripe_customer_id)
             VALUES (${data.full_name}, ${data.phone_number}, ${data.email_address}, ${organization_id}, ${data.address}, ${data.stripe_customer_id || null})
@@ -33,12 +36,14 @@ export async function addClientDB(data: z.infer<typeof schemaAddClient>, organiz
     throw error;
   }
 }
-//MARK:Fetch novu id 
-export async function getNovuIds(userIds: string[]): Promise<NovuSubscriberIds> {
+//MARK:Fetch novu id
+export async function getNovuIds(
+  userIds: string[]
+): Promise<NovuSubscriberIds> {
   const sql = neon(process.env.DATABASE_URL!);
   try {
     const result = await sql.query(
-      'SELECT id, novu_subscriber_id FROM users WHERE id = ANY($1)',
+      "SELECT id, novu_subscriber_id FROM users WHERE id = ANY($1)",
       [userIds]
     );
     const novuIds: { [key: string]: string | null } = {};
@@ -52,9 +57,12 @@ export async function getNovuIds(userIds: string[]): Promise<NovuSubscriberIds> 
   }
 }
 //MARK: Fetch Customer names from stripe id
-export async function fetchStripeCustomerNamesDB(organization_id: string, stripeCusomterIdList: string[]): Promise<CustomerName[]> {
+export async function fetchStripeCustomerNamesDB(
+  organization_id: string,
+  stripeCusomterIdList: string[]
+): Promise<CustomerName[]> {
   const sql = neon(`${process.env.DATABASE_URL}`);
-  const result = await (sql`
+  const result = (await sql`
     SELECT
       full_name,
       stripe_customer_id
@@ -65,10 +73,13 @@ export async function fetchStripeCustomerNamesDB(organization_id: string, stripe
 }
 
 //MARK: Fetch Client ID by Stripe Customer ID
-export async function fetchClientIdByStripeCustomerId(stripeCustomerId: string, organizationId: string): Promise<number | null> {
+export async function fetchClientIdByStripeCustomerId(
+  stripeCustomerId: string,
+  organizationId: string
+): Promise<number | null> {
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
-    const result = await (sql`
+    const result = (await sql`
       SELECT id
       FROM clients
       WHERE stripe_customer_id = ${stripeCustomerId} AND organization_id = ${organizationId}
@@ -79,7 +90,11 @@ export async function fetchClientIdByStripeCustomerId(stripeCustomerId: string, 
     return null;
   }
 }
-export async function updateClientStripeCustomerIdDb(email_address: string, stripe_customer_id: string, organization_id: string) {
+export async function updateClientStripeCustomerIdDb(
+  email_address: string,
+  stripe_customer_id: string,
+  organization_id: string
+) {
   // console.log("updateClientStripeCustomerIdDb called with:", { email_address, stripe_customer_id, organization_id });
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
@@ -98,7 +113,9 @@ export async function updateClientStripeCustomerIdDb(email_address: string, stri
 }
 
 //MARK: Count clients by org id
-export async function countClientsByOrgId(organization_id: string): Promise<number> {
+export async function countClientsByOrgId(
+  organization_id: string
+): Promise<number> {
   const sql = neon(`${process.env.DATABASE_URL}`);
   const result = await sql`
     SELECT COUNT(*) as count FROM clients WHERE organization_id = ${organization_id}
@@ -106,13 +123,14 @@ export async function countClientsByOrgId(organization_id: string): Promise<numb
   return Number(result[0].count);
 }
 
-
-
 //MARK: Delete clients
-export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, organization_id: string): Promise<Client[]> {
+export async function deleteClientDB(
+  data: z.infer<typeof schemaDeleteClient>,
+  organization_id: string
+): Promise<Client[]> {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
-  const result = await (sql`
+  const result = (await sql`
     WITH deleted_account AS (
       DELETE FROM accounts
       WHERE client_id = ${data.client_id} AND client_id IN (
@@ -131,8 +149,10 @@ export async function deleteClientDB(data: z.infer<typeof schemaDeleteClient>, o
   return result;
 }
 
-
-export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>, organization_id: string): Promise<{ success: boolean }> {
+export async function deleteSiteMapDB(
+  data: z.infer<typeof schemaDeleteSiteMap>,
+  organization_id: string
+): Promise<{ success: boolean }> {
   // console.log("deleteSiteMapDB called with data:", data, "and organization_id:", organization_id);
   const sql = neon(`${process.env.DATABASE_URL}`);
   try {
@@ -160,6 +180,7 @@ export async function deleteSiteMapDB(data: z.infer<typeof schemaDeleteSiteMap>,
 
 //MARK: Update price per cut
 export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePricePerMonth>, orgId: string) {
+
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   let setClause;
@@ -173,12 +194,15 @@ export async function updateClientPricePerDb(data: z.infer<typeof schemaUpdatePr
         UPDATE clients
         SET ${setClause}
         WHERE id = ${data.clientId} AND organization_id = ${orgId}
-  `
+  `;
   return result;
 }
 
 //MARK: Updated Client Cut Day
-export async function updatedClientCutDayDb(data: z.infer<typeof schemaUpdateCuttingDay>, orgId: string) {
+export async function updatedClientCutDayDb(
+  data: z.infer<typeof schemaUpdateCuttingDay>,
+  orgId: string
+) {
   const sql = neon(`${process.env.DATABASE_URL} `);
   // const clientCheck = await sql`
   //       SELECT id FROM clients
@@ -308,7 +332,7 @@ FROM(${selectQuery}) AS client_ids
 `;
 
   const paginatedClientIdsResult = await paginatedClientIdsQuery;
-  const paginatedClientIds = paginatedClientIdsResult.map(row => row.id);
+  const paginatedClientIds = paginatedClientIdsResult.map((row) => row.id);
 
   const clientsQuery = sql`
     WITH clients_with_balance AS(
@@ -443,7 +467,7 @@ FROM(${selectQuery}) AS client_ids
 `;
 
   const paginatedClientIdsResult = await paginatedClientIdsQuery;
-  const paginatedClientIds = paginatedClientIdsResult.map(row => row.id);
+  const paginatedClientIds = paginatedClientIdsResult.map((row) => row.id);
 
   const clientsQuery = sql`
     WITH clients_with_balance AS(
@@ -483,7 +507,7 @@ cws.id,
     LEFT JOIN LATERAL(
     SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
       FROM images i
-      WHERE i.customerid = cws.id:: TEXT
+      WHERE i.customerid = cws.id
   ) img ON TRUE
     ORDER BY cws.id
   `;
@@ -580,7 +604,7 @@ cws.id,
   LEFT JOIN LATERAL(
     SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
     FROM images i
-    WHERE i.customerid = cws.id:: TEXT
+    WHERE i.customerid = cws.id
   ) img ON TRUE
   WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
 `;
@@ -628,7 +652,7 @@ cws.id,
 
   const [clientsResult, totalCountResult] = await Promise.all([
     finalQuery,
-    finalCountQuery
+    finalCountQuery,
   ]);
 
   const totalCount = totalCountResult[0]?.total_count || 0;
@@ -637,40 +661,95 @@ cws.id,
 }
 
 //MARK: Mark yard cut
-export async function markYardServicedDb(data: z.infer<typeof schemaMarkYardCut>, organization_id: string, snow: boolean, userId: string) {
+export async function markYardServicedDb(
+  data: z.infer<typeof schemaMarkYardCut>,
+  organization_id: string,
+  snow: boolean,
+  assigned_to: string
+) {
+
   const sql = neon(`${process.env.DATABASE_URL} `);
+  try {
 
-  const query = snow
-    ? sql`
-        INSERT INTO yards_marked_clear(client_id, clearing_date, assigned_to)
-        SELECT ${data.clientId}, ${data.date}, ${userId}
-        FROM clients
-        WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-        ON CONFLICT(client_id, clearing_date) DO NOTHING
-RETURNING *;
-`
-    : sql`
-        INSERT INTO yards_marked_cut(client_id, cutting_date, assigned_to)
-        SELECT ${data.clientId}, ${data.date}, ${userId}
-        FROM clients
-        WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-        ON CONFLICT(client_id, cutting_date) DO NOTHING
-RETURNING *;
-`;
+    const query = snow
 
-  const result = await query;
+      ? sql`
+          INSERT INTO yards_marked_clear(client_id, clearing_date, assigned_to)
+          SELECT ${data.clientId}, ${data.date}, ${assigned_to}
+          FROM clients
+          WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+          ON CONFLICT(client_id, clearing_date) DO NOTHING
+          RETURNING id;
+          `
+      : sql`
+          INSERT INTO yards_marked_cut(client_id, cutting_date, assigned_to)
+          SELECT ${data.clientId}, ${data.date}, ${assigned_to}
+          FROM clients
+          WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+          ON CONFLICT(client_id, cutting_date) DO NOTHING
+          RETURNING id;
+          `;
 
-  if (!result || result.length === 0) {
-    throw new Error('Client not found, access denied, or already marked as serviced');
+
+    const result = await query;
+    console.log(`
+    INSERT INTO yards_marked_cut(client_id, cutting_date, assigned_to)
+    SELECT ${data.clientId}, ${data.date}, ${assigned_to}
+    FROM clients
+    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+    ON CONFLICT(client_id, cutting_date) DO NOTHING`)
+
+
+    console.log("result")
+    console.log(result)
+    if (!result || result.length === 0) {
+      throw new Error(
+        "Error inserting data on table yards_marked_cut or yards_marked_clear"
+      );
+    }
+    return result[0].id;
+  } catch (e) {
+    console.log(e)
   }
-
-  return result;
 }
 
+export async function saveUrlImagesServices(
+  snow: boolean,
+  image_url: string,
+  fk_id: number
+) {
+  const sql = neon(`${process.env.DATABASE_URL} `);
+  console.log("fk_id")
+  console.log(fk_id)
+  try {
 
+
+    const query = snow
+      ? sql`INSERT INTO images_serviced(imageurl, fk_clear_id)
+  VALUES (${image_url}, ${fk_id})
+  returning *;
+  `
+      : sql`INSERT INTO images_serviced(imageurl, fk_cut_id)
+  VALUES (${image_url}, ${fk_id})
+  returning *;
+  `;
+
+    const result = await query;
+    if (!result || result.length === 0) {
+      throw new Error(
+        "Error saving URLs"
+      );
+    }
+
+    return result;
+  } catch (e) {
+    console.log(e)
+  }
+}
 
 //MARK: Unassign grass cutting
 export async function unassignGrassCuttingDb(clientId: number, organization_id: string) {
+
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const result = await sql`
@@ -681,12 +760,19 @@ export async function unassignGrassCuttingDb(clientId: number, organization_id: 
     RETURNING *;
   `;
 
+  //   if (!result || result.length === 0) {
+  //     throw new Error("Unassignment Failed");
+  //   }
+
   // Does not throw error if no rows are deleted, because that means it's already unassigned.
   return result;
 }
 
 //MARK: Unassign snow clearing
-export async function unassignSnowClearingDb(clientId: number, organization_id: string) {
+export async function unassignSnowClearingDb(
+  clientId: number,
+  organization_id: string
+) {
   const sql = neon(`${process.env.DATABASE_URL}`);
 
   const result = await sql`
@@ -702,7 +788,10 @@ export async function unassignSnowClearingDb(clientId: number, organization_id: 
 }
 
 //MARK: Toggle snow client
-export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow>, organization_id: string) {
+export async function assignSnowClearingDb(
+  data: z.infer<typeof schemaAssignSnow>,
+  organization_id: string
+) {
   const sql = neon(`${process.env.DATABASE_URL} `);
 
   const result = await sql`
@@ -716,14 +805,17 @@ export async function assignSnowClearingDb(data: z.infer<typeof schemaAssignSnow
   `;
 
   if (!result || result.length === 0) {
-    throw new Error('Assignment Failed');
+    throw new Error("Assignment Failed");
   }
 
   return result;
 }
 
 //MARK: Assign grass cutting
-export async function assignGrassCuttingDb(data: z.infer<typeof schemaAssign>, organization_id: string) {
+export async function assignGrassCuttingDb(
+  data: z.infer<typeof schemaAssign>,
+  organization_id: string
+) {
   const sql = neon(`${process.env.DATABASE_URL} `);
 
   const result = await sql`
@@ -737,15 +829,19 @@ export async function assignGrassCuttingDb(data: z.infer<typeof schemaAssign>, o
   `;
 
   if (!result || result.length === 0) {
-    throw new Error('Assignment Failed. Client may not exist in the organization.');
+    throw new Error("Assignment Failed");
   }
 
   return result;
 }
 
-
 //MARK: Mark Payment
-export async function markPaidDb(invoiceId: string, stripeCustomerId: string, amountPaid: number, organizationId: string) {
+export async function markPaidDb(
+  invoiceId: string,
+  stripeCustomerId: string,
+  amountPaid: number,
+  organizationId: string
+) {
   const sql = neon(`${process.env.DATABASE_URL} `);
   // console.log("Amount paid: ", amountPaid)
   try {
@@ -770,21 +866,26 @@ export async function markPaidDb(invoiceId: string, stripeCustomerId: string, am
 `;
 
     if (!result || result.length === 0) {
-      throw new Error(`Failed to mark invoice ${invoiceId} as paid in DB.Client not found or update failed.`);
+      throw new Error(
+        `Failed to mark invoice ${invoiceId} as paid in DB.Client not found or update failed.`
+      );
     }
 
     const { new_balance, payment_id } = result[0];
     // console.log(`Invoice ${invoiceId} marked paid.New balance: ${new_balance}, Payment ID: ${payment_id} `);
 
-    return { success: true, message: `Invoice ${invoiceId} marked as paid and database updated.`, newBalance: new_balance, paymentId: payment_id };
-
+    return {
+      success: true,
+      message: `Invoice ${invoiceId} marked as paid and database updated.`,
+      newBalance: new_balance,
+      paymentId: payment_id,
+    };
   } catch (e) {
-    console.error('Error marking invoice paid in DB:', e);
-    return { success: false, message: e instanceof Error ? e.message : 'Failed to mark invoice paid in DB' };
+    console.error("Error marking invoice paid in DB:", e);
+    return {
+      success: false,
+      message:
+        e instanceof Error ? e.message : "Failed to mark invoice paid in DB",
+    };
   }
 }
-
-
-
-
-

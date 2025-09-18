@@ -24,10 +24,10 @@ export interface Client {
     images: Image[];
     stripe_customer_id?: string;
 }
-export interface ClientListItemProps {
-    client: Client;
-    children?: React.ReactNode;
-}
+// export interface ClientListItemProps {
+//     client: Client;
+//     children?: React.ReactNode;
+// }
 
 export interface ClientInfoList {
     id: number,
