@@ -246,10 +246,19 @@ export function useResetFormOnSuccess<T extends object>(
   }, [isSuccess, reset, submittedData]);
 }
 
+const fetchGeocodeFromApi = async (address: string) => {
+  const response = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to fetch geocode data');
+  }
+  return response.json();
+};
+
 export const useGeocode = (address: string) => {
   return useQuery({
     queryKey: ['geocode', address],
-    queryFn: () => fetchGeocode(address),
+    queryFn: () => fetchGeocodeFromApi(address),
     enabled: !!address,
   })
 }
