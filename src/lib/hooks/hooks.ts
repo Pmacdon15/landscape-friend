@@ -6,6 +6,7 @@ import { FetchGeocodeResult, GeocodeResult, Location } from '@/types/google-map-
 import { UseFormReset } from 'react-hook-form';
 import React from 'react';
 import { MaterialField } from '@/types/components-types';
+import { useQuery } from '@tanstack/react-query';
 
 export const useDebouncedMutation = <TData>(
   mutate: (data: TData) => void,
@@ -234,13 +235,21 @@ export function useCreateQuoteForm({ isSuccess, reset, fields, append }: { isSuc
 }
 
 export function useResetFormOnSuccess<T extends object>(
-    isSuccess: boolean,
-    submittedData: React.MutableRefObject<T | null>,
-    reset: UseFormReset<T>
+  isSuccess: boolean,
+  submittedData: React.MutableRefObject<T | null>,
+  reset: UseFormReset<T>
 ) {
-    useEffect(() => {
-        if (isSuccess && submittedData.current) {
-            reset(submittedData.current);
-        }
-    }, [isSuccess, reset, submittedData]);
+  useEffect(() => {
+    if (isSuccess && submittedData.current) {
+      reset(submittedData.current);
+    }
+  }, [isSuccess, reset, submittedData]);
+}
+
+export const useGeocode = (address: string) => {
+  return useQuery({
+    queryKey: ['geocode', address],
+    queryFn: () => fetchGeocode(address),
+    enabled: !!address,
+  })
 }

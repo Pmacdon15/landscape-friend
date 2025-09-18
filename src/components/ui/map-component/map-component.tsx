@@ -1,17 +1,17 @@
+'use client'
+import { useGeocode } from "@/lib/hooks/hooks";
 import { fetchGeocode } from "@/lib/utils/geocode";
 
-
-
 export default async function MapComponent({ address }: { address: string }) {
-    const result = await fetchGeocode(address);
+    const { data, error, isLoading, isError } = useGeocode(address);
 
-    if (result.error) {
-        return <div className="w-full text-center">Error: {result.error}</div>;
+    if (error || !data) {
+        return <div className="w-full text-center">Error: {data?.error}</div>;
     }
 
-    const { coordinates, zoom } = result;
+    // const { coordinates, zoom } = data;
 
-    const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}&zoom=${zoom}`;
+    const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_REACT_APP_GOOGLE_MAPS_API_KEY}&q=${data.coordinates?.lat},${data.coordinates?.lng}&zoom=${data.zoom}`;
     console.log("Map url: ", mapUrl)
     return (
         <div className="flex flex-col md:flex-row w-full bg-background max-h-[300px] rounded-md p-2 ">
