@@ -3,23 +3,20 @@ import FormContainer from "@/components/ui/containers/form-container";
 import FormHeader from "@/components/ui/header/form-header";
 import { fetchCuttingClients } from "@/lib/dal/clients-dal";
 import { isOrgAdmin } from "@/lib/utils/clerk";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import ClientListService from "../../../components/ui/service-list/clients-list-service";
 import { parseClientListParams } from "@/lib/utils/params";
-import { SearchParams } from "@/types/params-types";
+
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
-export default async function page({ searchParams }: { searchParams: Promise<SearchParams>; }) {
+export default async function Page(props: PageProps<'/lists/clearing'>) {
     const [{ isAdmin }, params] = await Promise.all([
         isOrgAdmin(),
-        searchParams,
+        props.searchParams,
     ]);
 
     const { page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
-
-    if (!isAdmin) redirect("/")
-
+    
     const clientsPromise = serviceDate ? fetchCuttingClients(page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo) : Promise.resolve(null);
 
     return (
