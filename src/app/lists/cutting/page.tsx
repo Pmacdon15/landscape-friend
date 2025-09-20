@@ -9,7 +9,7 @@ import { parseClientListParams } from "@/lib/utils/params";
 
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
 
-export default async function Page(props: PageProps<'/lists/clearing'>) {
+export default async function Page(props: PageProps<'/lists/cutting'>) {
     const [{ isAdmin }, params] = await Promise.all([
         isOrgAdmin(),
         props.searchParams,
