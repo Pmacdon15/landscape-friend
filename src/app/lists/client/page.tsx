@@ -30,7 +30,7 @@ export default async function page({
             <FormContainer>
                 <FormHeader text={"Client List"} />
                 <Suspense fallback={<SearchFormFallBack />}>
-                    <SearchForm />
+                    <SearchForm orgMembersPromise={orgMembersPromise}/>
                 </Suspense >
             </FormContainer >
             {isAdmin &&

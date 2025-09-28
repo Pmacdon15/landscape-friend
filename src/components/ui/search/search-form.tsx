@@ -4,11 +4,16 @@ import { CuttingPeriodSelector } from '../selectors/cutting-period-selector';
 import { BillingStatusSelector } from '../selectors/billing-status-selector';
 import { SearchInput } from '../inputs/search-input';
 import { SearchFormVariant } from '@/types/search-fallback-types';
+import { AssignedToSelector } from '../selectors/assigned-to-selector';
+import { OrgMember } from '@/types/clerk-types';
+import { Suspense } from 'react';
+import { AssignedToSelectorFallback } from '../fallbacks/search/assigned-to-selector-fallback';
 
-export default function SearchForm({ variant = 'default' }: { variant?: SearchFormVariant }) {
+export default function SearchForm({ variant = 'default', orgMembersPromise }: { variant?: SearchFormVariant, orgMembersPromise: Promise<OrgMember[]>; }) {
   return (
-    <div className="flex flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
+    <div className="flex flex-wrap flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
       <SearchInput />
+      <Suspense fallback={<AssignedToSelectorFallback />}><AssignedToSelector orgMembersPromise={orgMembersPromise} /></Suspense>
       {variant === "default" &&
         <>
           <CuttingPeriodSelector
