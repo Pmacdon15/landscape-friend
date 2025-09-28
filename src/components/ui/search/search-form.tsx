@@ -10,7 +10,7 @@ import { Suspense } from 'react';
 import { AssignedToSelectorFallback } from '../fallbacks/search/assigned-to-selector-fallback';
 
 export default function SearchForm({ variant = 'default', orgMembersPromise, isAdmin = false }:
-  { variant?: SearchFormVariant, orgMembersPromise: Promise<OrgMember[]>; isAdmin?: boolean }) {
+  { variant?: SearchFormVariant, orgMembersPromise?: Promise<OrgMember[]>; isAdmin?: boolean }) {
   return (
     <div className="flex flex-wrap flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
       <SearchInput />
