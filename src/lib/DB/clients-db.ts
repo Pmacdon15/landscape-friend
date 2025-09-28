@@ -378,7 +378,8 @@ export async function fetchClientsWithSchedules(
   offset: number,
   searchTerm: string,
   searchTermCuttingWeek: number,
-  searchTermCuttingDay: string
+  searchTermCuttingDay: string,
+  searchTermAssignedTo: string
 ) {
   const sql = neon(`${process.env.DATABASE_URL} `);
 
@@ -397,10 +398,12 @@ export async function fetchClientsWithSchedules(
     COALESCE(cs.cutting_week, 0) AS cutting_week,
     COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
     grass_assign.user_id AS grass_assigned_to,
+    grass_user.name AS grass_assigned_to_name,
     snow_assign.user_id AS snow_assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
       LEFT JOIN assignments grass_assign ON cwb.id = grass_assign.client_id AND grass_assign.service_type = 'grass'
+      LEFT JOIN users grass_user ON grass_assign.user_id = grass_user.id
       LEFT JOIN assignments snow_assign ON cwb.id = snow_assign.client_id AND snow_assign.service_type = 'snow'
   )
     `;
@@ -437,16 +440,16 @@ cws.cutting_day = ${searchTermCuttingDay}
 `);
   }
 
-  if (whereClauses.length > 0) {
-    let whereClause = sql`WHERE ${whereClauses[0]} `;
-    if (whereClauses.length > 1) {
-      whereClause = sql`${whereClause} AND ${whereClauses[1]} `;
-    }
+  if (searchTermAssignedTo !== "") {
+    whereClauses.push(sql`cws.grass_assigned_to_name = ${searchTermAssignedTo}`);
+  }
 
-    selectQuery = sql`
-      ${selectQuery}
-      ${whereClause}
-`;
+  if (whereClauses.length > 0) {
+    let whereQuery = sql`WHERE ${whereClauses[0]}`;
+    for (let i = 1; i < whereClauses.length; i++) {
+      whereQuery = sql`${whereQuery} AND ${whereClauses[i]}`;
+    }
+    selectQuery = sql`${selectQuery} ${whereQuery}`;
   }
 
   const countQuery = sql`
@@ -484,10 +487,12 @@ FROM(${selectQuery}) AS client_ids
     COALESCE(cs.cutting_week, 0) AS cutting_week,
     COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
     grass_assign.user_id as grass_assigned_to,
+    grass_user.name as grass_assigned_to_name,
     snow_assign.user_id as snow_assigned_to
       FROM clients_with_balance cwb
       LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
       LEFT JOIN assignments grass_assign ON cwb.id = grass_assign.client_id AND grass_assign.service_type = 'grass'
+      LEFT JOIN users grass_user ON grass_assign.user_id = grass_user.id
       LEFT JOIN assignments snow_assign ON cwb.id = snow_assign.client_id AND snow_assign.service_type = 'snow'
       WHERE cwb.id = ANY(${paginatedClientIds})
   )
@@ -501,6 +506,7 @@ cws.id,
   cws.cutting_week,
   cws.cutting_day,
   cws.grass_assigned_to,
+  cws.grass_assigned_to_name,
   cws.snow_assigned_to,
   COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
     FROM clients_with_schedules cws

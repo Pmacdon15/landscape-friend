@@ -5,13 +5,14 @@ import { isOrgAdmin } from "@/lib/utils/clerk";
 import { ClientResult, NamesAndEmails, PaginatedClients, CustomerName, ClientInfoList } from "@/types/clients-types";
 import { auth } from "@clerk/nextjs/server";
 
-export async function fetchAllClients(clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string):
+export async function fetchAllClients
+  (clientPageNumber: number, searchTerm: string, searchTermCuttingWeek: number, searchTermCuttingDay: string, searchTermAssignedTo: string):
   Promise<PaginatedClients | null> {
   const { orgId, userId } = await auth.protect();
   const pageSize = Number(process.env.PAGE_SIZE) || 10;
   const offset = (clientPageNumber - 1) * pageSize;
 
-  const result = await fetchClientsWithSchedules(orgId || userId, pageSize, offset, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+  const result = await fetchClientsWithSchedules(orgId || userId, pageSize, offset, searchTerm, searchTermCuttingWeek, searchTermCuttingDay, searchTermAssignedTo);
 
   if (!result.clientsResult) return null;
 
