@@ -9,11 +9,17 @@ import { OrgMember } from '@/types/clerk-types';
 import { Suspense } from 'react';
 import { AssignedToSelectorFallback } from '../fallbacks/search/assigned-to-selector-fallback';
 
-export default function SearchForm({ variant = 'default', orgMembersPromise }: { variant?: SearchFormVariant, orgMembersPromise: Promise<OrgMember[]>; }) {
+export default function SearchForm({ variant = 'default', orgMembersPromise, isAdmin = false }:
+  { variant?: SearchFormVariant, orgMembersPromise: Promise<OrgMember[]>; isAdmin?: boolean }) {
   return (
     <div className="flex flex-wrap flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
       <SearchInput />
-      <Suspense fallback={<AssignedToSelectorFallback />}><AssignedToSelector orgMembersPromise={orgMembersPromise} /></Suspense>
+      {isAdmin &&
+        variant !== "invoices" &&
+        variant !== "quotes" &&
+        variant !== "subscriptions" &&
+        < Suspense fallback={<AssignedToSelectorFallback />}><AssignedToSelector orgMembersPromise={orgMembersPromise} /></Suspense>
+      }
       {variant === "default" &&
         <>
           <CuttingPeriodSelector
@@ -42,6 +48,6 @@ export default function SearchForm({ variant = 'default', orgMembersPromise }: {
       {variant === 'subscriptions' &&
         <BillingStatusSelector variant='subscriptions' />
       }
-    </div>
+    </div >
   );
 }

@@ -10,14 +10,14 @@ export function AssignedToSelector({ orgMembersPromise }: { orgMembersPromise: P
 
     return (
         <div className="flex gap-1  ">
-            <label className="flex items-center">Assigned To </label>
+            {/* <label className="flex items-center">Assigned To </label> */}
             <select
                 name={"assigned_to"}
                 className="w-fit border rounded-sm text-center py-2"
                 value={currentValue}
                 onChange={(e) => setParam(e.target.value)}
             >
-                <option value="">Select Member</option>
+                <option value="">Assigned To</option>
                 {orgMembers.map((orgMember) => (
                     <option key={orgMember.userId} value={orgMember.userName || ""}>
                         {orgMember.userName}
