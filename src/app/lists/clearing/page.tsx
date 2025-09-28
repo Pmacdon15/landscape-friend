@@ -7,6 +7,7 @@ import { isOrgAdmin } from "@/lib/utils/clerk";
 import { Suspense } from "react";
 import { parseClientListParams } from "@/lib/utils/params";
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
+import { fetchOrgMembers } from "@/lib/dal/dal-org";
 
 
 export default async function Page(props: PageProps<'/lists/clearing'>) {
@@ -15,13 +16,16 @@ export default async function Page(props: PageProps<'/lists/clearing'>) {
         props.searchParams,
     ]);
 
+    const orgMembersPromise = fetchOrgMembers();
+
+
     const { page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
     // const searchTermAssignedTo = String(params.assigned_to ?? userId);
     if (!serviceDate) return (
         <FormContainer>
             <FormHeader text={"Clearing List"} />
             <Suspense fallback={<SearchFormFallBack variant="clearing" />}>
-                <SearchForm variant="clearing" />
+                <SearchForm variant="clearing" orgMembersPromise={orgMembersPromise} isAdmin={isAdmin} />
             </Suspense>
 
             <FormHeader text={"No date query"} />
@@ -35,7 +39,7 @@ export default async function Page(props: PageProps<'/lists/clearing'>) {
             <FormContainer>
                 <FormHeader text={"Clearing List"} />
                 <Suspense fallback={<SearchFormFallBack variant="clearing" />}>
-                    <SearchForm variant="clearing" />
+                    <SearchForm variant="clearing" orgMembersPromise={orgMembersPromise} isAdmin={isAdmin} />
                 </Suspense>
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>

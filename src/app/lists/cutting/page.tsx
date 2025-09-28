@@ -8,6 +8,7 @@ import ClientListService from "../../../components/ui/service-list/clients-list-
 import { parseClientListParams } from "@/lib/utils/params";
 
 import SearchFormFallBack from "@/components/ui/fallbacks/search/search-form-fallback";
+import { fetchOrgMembers } from "@/lib/dal/dal-org";
 
 export default async function Page(props: PageProps<'/lists/cutting'>) {
     const [{ isAdmin }, params] = await Promise.all([
@@ -16,15 +17,15 @@ export default async function Page(props: PageProps<'/lists/cutting'>) {
     ]);
 
     const { page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo } = parseClientListParams(params);
-    
-    const clientsPromise = serviceDate ? fetchCuttingClients(page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo) : Promise.resolve(null);
 
+    const clientsPromise = serviceDate ? fetchCuttingClients(page, searchTerm, serviceDate, searchTermIsServiced, searchTermAssignedTo) : Promise.resolve(null);
+    const orgMembersPromise = fetchOrgMembers();
     return (
         <>
             <FormContainer>
                 <FormHeader text={"Cutting List"} />
                 <Suspense fallback={<SearchFormFallBack variant="cutting" />}>
-                    <SearchForm variant="cutting" />
+                    <SearchForm variant="cutting" orgMembersPromise={orgMembersPromise} isAdmin={isAdmin} />
                 </Suspense>
             </FormContainer>
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>

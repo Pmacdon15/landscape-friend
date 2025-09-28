@@ -21,8 +21,8 @@ export default async function page({
         searchParams,
     ]);
 
-    const { page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay } = parseClientListParams(params);
-    const clientsPromise = fetchAllClients(page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay);
+    const { page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay, searchTermAssignedTo } = parseClientListParams(params);
+    const clientsPromise = fetchAllClients(page, searchTerm, searchTermCuttingWeek, searchTermCuttingDay, searchTermAssignedTo);
     const orgMembersPromise = fetchOrgMembers();
 
     return (
@@ -30,11 +30,11 @@ export default async function page({
             <FormContainer>
                 <FormHeader text={"Client List"} />
                 <Suspense fallback={<SearchFormFallBack />}>
-                    <SearchForm />
+                    <SearchForm orgMembersPromise={orgMembersPromise} isAdmin={isAdmin} />
                 </Suspense >
             </FormContainer >
             {isAdmin &&
-                <AddClientFormContainer/>
+                <AddClientFormContainer />
             }
             <Suspense fallback={<FormContainer><FormHeader text="Loading . . ." /></FormContainer>}>
                 <ClientListAll
