@@ -928,6 +928,20 @@ export async function getClientsBlobsDB(orgId: string): Promise<BlobUrl[]> {
     JOIN 
         clients c ON cl.client_id = c.id
     WHERE 
+        c.organization_id = ${orgId}
+
+    UNION ALL
+
+    SELECT
+        i.imageURL as url,
+        'site_map' AS source_table,
+        c.id AS reference_id,
+        i.created_at AS reference_date
+    FROM
+        images i
+    JOIN
+        clients c ON i.customerID = c.id
+    WHERE
         c.organization_id = ${orgId};
 `) as BlobUrl[];
 
