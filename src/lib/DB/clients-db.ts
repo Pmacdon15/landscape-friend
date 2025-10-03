@@ -901,7 +901,7 @@ export async function getClientsBlobsDB(orgId: string): Promise<BlobUrl[]> {
   const sql = neon(`${process.env.DATABASE_URL} `);
   const result = await (sql`
     SELECT 
-        i.imageURL,
+        i.imageURL as url,
         'yards_marked_cut' AS source_table,
         c.id AS reference_id,
         c.cutting_date AS reference_date
@@ -917,7 +917,7 @@ export async function getClientsBlobsDB(orgId: string): Promise<BlobUrl[]> {
     UNION ALL
 
     SELECT 
-        i.imageURL,
+        i.imageURL as url,
         'yards_marked_clear' AS source_table,
         cl.id AS reference_id,
         cl.clearing_date AS reference_date
