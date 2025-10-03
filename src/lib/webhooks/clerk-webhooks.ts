@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { clerkClient } from "@clerk/nextjs/server";
 import { handleOrganizationDeletedDb } from "../DB/org-db";
 import { deleteStripeWebhookRoute } from "../utils/stripe-utils";
+import { deleteClientsBlobs } from "../utils/blobs";
 
 export async function handleUserCreated(userId: string, userName: string, userEmail: string) {
     console.log('userId in handleUserCreated:', userId);
@@ -63,6 +64,7 @@ export async function handleOrganizationCreated(orgId: string, orgName: string) 
 
 export async function handleOrganizationDeleted(orgId: string) {
     await deleteStripeWebhookRoute(orgId)
+    await deleteClientsBlobs(orgId)
     await handleOrganizationDeletedDb(orgId)
 }
 

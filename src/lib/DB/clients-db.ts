@@ -3,6 +3,7 @@ import { neon } from "@neondatabase/serverless";
 import z from "zod";
 import { Account, Client, ClientInfoList, CustomerName } from "@/types/clients-types";
 import { NovuSubscriberIds } from "@/types/novu-types";
+import { BlobUrl } from "@/types/blob-types";
 
 //MARK: Add clients
 
@@ -895,3 +896,41 @@ export async function markPaidDb(
     };
   }
 }
+//MARK: Get clients blobs
+export async function getClientsBlobsDB(orgId: string): Promise<BlobUrl[]> {
+  const sql = neon(`${process.env.DATABASE_URL} `);
+  const result = await (sql`
+    SELECT 
+        i.imageURL,
+        'yards_marked_cut' AS source_table,
+        c.id AS reference_id,
+        c.cutting_date AS reference_date
+    FROM 
+        images_serviced i
+    JOIN 
+        yards_marked_cut c ON i.fk_cut_id = c.id
+    JOIN 
+        clients cl ON c.client_id = cl.id
+    WHERE 
+        cl.organization_id = ${orgId}
+
+    UNION ALL
+
+    SELECT 
+        i.imageURL,
+        'yards_marked_clear' AS source_table,
+        cl.id AS reference_id,
+        cl.clearing_date AS reference_date
+    FROM 
+        images_serviced i
+    JOIN 
+        yards_marked_clear cl ON i.fk_clear_id = cl.id
+    JOIN 
+        clients c ON cl.client_id = c.id
+    WHERE 
+        c.organization_id = ${orgId};
+`) as BlobUrl[];
+
+  return result;
+}
+
