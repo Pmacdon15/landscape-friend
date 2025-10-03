@@ -45,11 +45,12 @@ export async function uploadImageBlob(
 export async function uploadImageBlobServiceDone(
   orgId: string,
   customerId: number,
-  file: File | Blob
+  file: File | Blob,
+  isServiceImage = false
 ): Promise<{ status: number, url: string } |
-{ error: string, status: number, url:string }> {
+{ error: string, status: number, url: string }> {
   if (!(file instanceof Blob)) {
-    return { error: "Invalid file type.", status: 400, url:"" };
+    return { error: "Invalid file type.", status: 400, url: "" };
   }
 
   const clientResult = await sql`
@@ -57,19 +58,19 @@ export async function uploadImageBlobServiceDone(
   `;
 
   if (!clientResult || clientResult.rowCount! <= 0) {
-    return { error: "Client not found.", status: 404, url:"" };
+    return { error: "Client not found.", status: 404, url: "" };
   }
 
   const clientOrgId = clientResult.rows[0].organization_id;
 
   if (clientOrgId !== orgId) {
-    return { error: "Customer ID does not belong to the organization.", status: 403, url:"" };
+    return { error: "Customer ID does not belong to the organization.", status: 403, url: "" };
   }
 
-  const { url } = await put("map-drawing.png", file, {
+  const { url } = await put(`${isServiceImage ? 'serviced-image' : 'map-drawing'}.png`, file, {
     access: "public",
     addRandomSuffix: true,
   });
-  return {status: 200, url: url}
+  return { status: 200, url: url }
 }
 
