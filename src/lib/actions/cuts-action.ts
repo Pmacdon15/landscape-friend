@@ -37,7 +37,8 @@ export async function markYardServiced(
       result_upload[i] = await uploadImageBlobServiceDone(
         (orgId || userId)!,
         clientId,
-        images[i]
+        images[i],
+        true
       );
       images_url[i] = result_upload[i].url;
     }

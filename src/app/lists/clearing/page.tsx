@@ -27,7 +27,6 @@ export default async function Page(props: PageProps<'/lists/clearing'>) {
             <Suspense fallback={<SearchFormFallBack variant="clearing" />}>
                 <SearchForm variant="clearing" orgMembersPromise={orgMembersPromise} isAdmin={isAdmin} />
             </Suspense>
-
             <FormHeader text={"No date query"} />
         </FormContainer>
     )
