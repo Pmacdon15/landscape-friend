@@ -1,10 +1,25 @@
+'use client'
 import Image from "next/image";
-import { ReactNode } from "react";
+import { Activity, useState } from "react";
 
-const ClientListItemAddress = ({ clientId, clientAddress, children }: { clientId: number, clientAddress: string, children: ReactNode }) => {
+interface ClientListItemAddressProps {
+  clientId: number;
+  clientAddress: string;
+  children: React.ReactNode;
+}
+
+export default function ClientListItemAddress({ clientId, clientAddress, children }: ClientListItemAddressProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <div className="flex flex-col items-center w-full relative">
-      <input type="checkbox" id={`map-toggle-${clientId}`} className="hidden peer" />
+      <input
+        type="checkbox"
+        id={`map-toggle-${clientId}`}
+        className="hidden"
+        checked={isExpanded}
+        onChange={() => setIsExpanded(!isExpanded)}
+      />
       <label htmlFor={`map-toggle-${clientId}`} className="flex flex-row gap-2 items-center cursor-pointer w-full">
         <Image
           src="/client-list/address.png"
@@ -18,10 +33,8 @@ const ClientListItemAddress = ({ clientId, clientAddress, children }: { clientId
           <p>{clientAddress}</p>
         </div>
       </label>
-      <div className="hidden peer-checked:block w-full">
-        {children}
-      </div>
+      <Activity mode={isExpanded  ? 'visible' : 'hidden'}>{children}</Activity>
+      {/* {isExpanded && <div className="w-full">{children}</div>} */}
     </div>
   );
-};
-export default ClientListItemAddress;
+}
