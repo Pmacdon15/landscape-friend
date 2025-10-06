@@ -9,7 +9,7 @@ import { Toaster } from '@/components/ui/sonner';
 import FCMProvider from "@/components/providers/fcm-provider";
 import HeaderHeader from "@/components/ui/header/header-header";
 import QueryProviders from "../components/providers/query-providers";
-
+import { Analytics } from "@vercel/analytics/next"
 
 export const experimental_ppr = true
 
@@ -50,7 +50,7 @@ export default async function RootLayout({
               }}
               className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-              <div 
+              <div
                 style={{
                   flex: 1,
                   backgroundImage: 'url(/lawn3.jpg)',
@@ -64,9 +64,10 @@ export default async function RootLayout({
                 </Header>
                 <PageContainer>
                   {children}
+                  <Analytics />
                 </PageContainer>
               </div>
-              <Footer  />
+              <Footer />
               <Toaster />
             </body>
           </html >
