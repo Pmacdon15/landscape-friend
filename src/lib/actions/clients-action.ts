@@ -134,7 +134,7 @@ export async function updateCuttingDay(
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (userId) throw new Error('User ID is missing.')
+	if (!userId) throw new Error('User ID is missing.')
 
 	const validatedFields = schemaUpdateCuttingDay.safeParse({
 		clientId: clientId,

@@ -50,7 +50,7 @@ export async function fetchAllClients(
 //TODO: Abstract this
 export async function fetchClientList(): Promise<ClientInfoList[]> {
 	const { orgId, userId } = await isOrgAdmin()
-	if (!orgId && !userId) {
+	if (!userId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
 	const organizationId = orgId || userId
@@ -73,7 +73,6 @@ export async function fetchCuttingClients(
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
 	if (!userId) throw new Error(' User ID is missing.')
-	else if (!orgId) throw new Error('Organization ID is missing.')
 
 	if (!isAdmin && userId !== searchTermAssignedTo)
 		throw new Error('Not admin can not view other coworkers list')
@@ -121,8 +120,7 @@ export async function fetchSnowClearingClients(
 ): Promise<PaginatedClients | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
-	if (!orgId || !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('User ID is missing.')
 	if (!isAdmin && userId !== searchTermAssignedTo)
 		throw new Error('Not admin can not view other coworkers list')
 
