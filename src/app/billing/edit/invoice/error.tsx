@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import FormContainer from '@/components/ui/containers/form-container'
 import FormHeader from '@/components/ui/header/form-header'
 
-export default function Error({
+export default function Page({
 	error,
 	reset,
 }: {

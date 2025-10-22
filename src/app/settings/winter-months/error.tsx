@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import ContentContainer from '@/components/ui/containers/content-container'
 
-export default function Error({
+export default function Page({
 	error,
 	reset,
 }: {
