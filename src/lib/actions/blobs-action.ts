@@ -18,10 +18,10 @@ export async function uploadImage(
 	if (!isAdmin) return new Error('Not Admin')
 	if (!userId) return new Error('No Id')
 
-	let result: Promise<
+	let result:
 		| { success: boolean; message: string; status: number }
 		| { error: string; status: number }
-	>
+
 	try {
 		const image = formData.get('image')
 		const validatedImage = ImageSchema.safeParse({ image })
@@ -75,12 +75,12 @@ export async function uploadDrawing(
 		}
 	}
 
-	let result: Promise<
+	let result:
 		| { success: boolean; message: string; status: number }
 		| { error: string; status: number }
-	>
+
 	try {
-		result = await uploadImageBlob(orgId || userId, clientId, file)
+		result = await uploadImageBlob(orgId || String(userId), clientId, file)
 		if (result && 'error' in result) {
 			throw new Error(result.error)
 		}
