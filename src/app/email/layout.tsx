@@ -1,17 +1,16 @@
-import type { Metadata } from 'next';
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Landscape Friend',
-  description: 'Track and Invoice your lawn clients easily',
-  keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management, send email to client, client email, contact client, reach out',
-};
+	title: 'Landscape Friend',
+	description: 'Track and Invoice your lawn clients easily',
+	keywords:
+		'lawn care, lawn tracking, invoice lawn clients, lawn management, send email to client, client email, contact client, reach out',
+}
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode
 }>) {
-  return (
-    <>{children}</>
-  );
+	return <>{children}</>
 }

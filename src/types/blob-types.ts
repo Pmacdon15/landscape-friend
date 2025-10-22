@@ -1,3 +1,3 @@
 export interface BlobUrl {
-    url: string
+	url: string
 }

@@ -1,11 +1,12 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless'
 
 //MARK: Get Serviced URLs
-export async function getServicedImagesUrls(clientId:number): Promise<{ date:Date, imageurl: string}[]> {
-
-  const sql = neon(`${process.env.DATABASE_URL}`);
-  try {
-    const result = await (sql` 
+export async function getServicedImagesUrls(
+	clientId: number,
+): Promise<{ date: Date; imageurl: string }[]> {
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	try {
+		const result = (await sql` 
       (
       SELECT 
         ymc.cutting_date AS date,
@@ -22,11 +23,11 @@ export async function getServicedImagesUrls(clientId:number): Promise<{ date:Dat
         WHERE ymc.client_id = ${clientId}
       )
       ORDER BY date DESC
-    `) as { date: Date, imageurl: string}[];
-    console.log(result)
-    return result;
-  } catch (error) {
-    console.error("Error in getting Serviced Images Urls:", error);
-    throw error;
-  }
+    `) as { date: Date; imageurl: string }[]
+		console.log(result)
+		return result
+	} catch (error) {
+		console.error('Error in getting Serviced Images Urls:', error)
+		throw error
+	}
 }

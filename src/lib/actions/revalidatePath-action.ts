@@ -1,6 +1,6 @@
 'use server'
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from 'next/cache'
 
 export default async function revalidatePathAction(path: string) {
-    revalidatePath(`${path}`);
+	revalidatePath(`${path}`)
 }

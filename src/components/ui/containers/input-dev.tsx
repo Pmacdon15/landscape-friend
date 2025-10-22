@@ -1,11 +1,7 @@
 export function InputDiv({
-    children,
+	children,
 }: Readonly<{
-    children: React.ReactNode;
+	children: React.ReactNode
 }>) {
-    return (
-        <div className="p-2 flex gap-2 items-center">
-            {children}
-        </div>
-    )
+	return <div className="p-2 flex gap-2 items-center">{children}</div>
 }

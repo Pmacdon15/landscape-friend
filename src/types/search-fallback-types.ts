@@ -1,2 +1,11 @@
-export type SearchFormVariant = 'cutting' | 'clearing' | 'invoices' | 'default' | 'quotes' | 'subscriptions';
-export type VariantBillingStatusSelector = "invoices" | "quotes" | "subscriptions";
+export type SearchFormVariant =
+	| 'cutting'
+	| 'clearing'
+	| 'invoices'
+	| 'default'
+	| 'quotes'
+	| 'subscriptions'
+export type VariantBillingStatusSelector =
+	| 'invoices'
+	| 'quotes'
+	| 'subscriptions'

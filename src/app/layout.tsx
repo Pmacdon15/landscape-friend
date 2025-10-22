@@ -1,78 +1,77 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Header from "../components/ui/header/header";
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
+import Header from '../components/ui/header/header'
 import { ClerkProvider } from '@clerk/nextjs'
-import PageContainer from "../components/ui/containers/page-container";
-import Footer from "@/components/ui/footer/footer";
-import { Toaster } from '@/components/ui/sonner';
-import FCMProvider from "@/components/providers/fcm-provider";
-import HeaderHeader from "@/components/ui/header/header-header";
-import QueryProviders from "../components/providers/query-providers";
-import { Analytics } from "@vercel/analytics/next"
+import PageContainer from '../components/ui/containers/page-container'
+import Footer from '@/components/ui/footer/footer'
+import { Toaster } from '@/components/ui/sonner'
+import FCMProvider from '@/components/providers/fcm-provider'
+import HeaderHeader from '@/components/ui/header/header-header'
+import QueryProviders from '../components/providers/query-providers'
+import { Analytics } from '@vercel/analytics/next'
 
 export const experimental_ppr = true
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+	variable: '--font-geist-sans',
+	subsets: ['latin'],
+})
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+	variable: '--font-geist-mono',
+	subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
-  title: "Landscape Friend",
-  description: "Track and Invoice your lawn clients easily",
-  keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management',
-};
+	title: 'Landscape Friend',
+	description: 'Track and Invoice your lawn clients easily',
+	keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management',
+}
 
 export default async function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode
 }>) {
-
-  return (
-    <ClerkProvider>
-      <QueryProviders>
-        <FCMProvider>
-          <html lang="en">
-            <body
-              style={{
-                margin: 0,
-                padding: 0,
-                minHeight: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-              <div
-                style={{
-                  flex: 1,
-                  backgroundImage: 'url(/lawn3.jpg)',
-                  backgroundSize: 'cover',
-                  backgroundAttachment: 'fixed',
-                  backgroundRepeat: 'no-repeat',
-                }}
-              >
-                <Header>
-                  <HeaderHeader />
-                </Header>
-                <PageContainer>
-                  {children}
-                  <Analytics />
-                </PageContainer>
-              </div>
-              <Footer />
-              <Toaster />
-            </body>
-          </html >
-        </FCMProvider>
-      </QueryProviders>
-    </ClerkProvider>
-  );
+	return (
+		<ClerkProvider>
+			<QueryProviders>
+				<FCMProvider>
+					<html lang="en">
+						<body
+							style={{
+								margin: 0,
+								padding: 0,
+								minHeight: '100vh',
+								display: 'flex',
+								flexDirection: 'column',
+							}}
+							className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+						>
+							<div
+								style={{
+									flex: 1,
+									backgroundImage: 'url(/lawn3.jpg)',
+									backgroundSize: 'cover',
+									backgroundAttachment: 'fixed',
+									backgroundRepeat: 'no-repeat',
+								}}
+							>
+								<Header>
+									<HeaderHeader />
+								</Header>
+								<PageContainer>
+									{children}
+									<Analytics />
+								</PageContainer>
+							</div>
+							<Footer />
+							<Toaster />
+						</body>
+					</html>
+				</FCMProvider>
+			</QueryProviders>
+		</ClerkProvider>
+	)
 }

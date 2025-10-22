@@ -1,11 +1,11 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless'
 
 export async function getYardsCutLastMonth(organization_id: string) {
-    const sql = neon(`${process.env.DATABASE_URL}`);
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	const thirtyDaysAgo = new Date()
+	thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const result = await sql`
+	const result = await sql`
         SELECT
             c.id as client_id,
             c.stripe_customer_id,
@@ -20,14 +20,14 @@ export async function getYardsCutLastMonth(organization_id: string) {
             ymc.cutting_date >= ${thirtyDaysAgo.toISOString().split('T')[0]}
         GROUP BY
             c.id, c.stripe_customer_id, c.price_per_cut;
-    `;
+    `
 
-    return result;
+	return result
 }
 
 export async function getTodaysCuts(cuttingWeek: number, cuttingDay: string) {
-    const sql = neon(`${process.env.DATABASE_URL}`);
-    const result = await sql`
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	const result = await sql`
         SELECT
             c.full_name as client_name,
             u.id as user_id,
@@ -42,6 +42,6 @@ export async function getTodaysCuts(cuttingWeek: number, cuttingDay: string) {
             users u ON a.user_id = u.id
         WHERE
             cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay};
-    `;
-    return result;
+    `
+	return result
 }

@@ -1,7 +1,7 @@
 export interface UserNovuId {
-    UserNovuId: string
+	UserNovuId: string
 }
 
 export interface NovuSubscriberIds {
-    [key: string]: string | null;
+	[key: string]: string | null
 }

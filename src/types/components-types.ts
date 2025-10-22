@@ -1,22 +1,22 @@
-import { Client } from "./clients-types";
+import { Client } from './clients-types'
 
 export interface CuttingPeriodSelectorProps {
-    label: string;
-    options: { value: string; label: string }[];
-    value: string;
-    handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-    name: string;
+	label: string
+	options: { value: string; label: string }[]
+	value: string
+	handleChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
+	name: string
 }
 
 export interface MaterialField {
-    id: string;
-    materialType?: string;
-    materialCostPerUnit?: number;
-    materialUnits?: number;
+	id: string
+	materialType?: string
+	materialCostPerUnit?: number
+	materialUnits?: number
 }
 
 export interface ImageGalleryProps {
-  isAdmin: boolean;
-  client: Client;
-  setView: (view: string) => void;
+	isAdmin: boolean
+	client: Client
+	setView: (view: string) => void
 }
