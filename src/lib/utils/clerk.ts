@@ -1,36 +1,46 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { OrgMember } from "@/types/clerk-types";
+import { auth, clerkClient } from '@clerk/nextjs/server'
+import type { OrgMember } from '@/types/clerk-types'
+
+type AuthProtectResult = Awaited<ReturnType<typeof auth.protect>>
+type AuthResult = Awaited<ReturnType<typeof auth>>
+type CombinedAuthResult = AuthProtectResult | AuthResult
 
 export async function isOrgAdmin(protect = true) {
-    let authResult;
-    if (protect) {
-        authResult = await auth.protect();
-    } else {
-        authResult = await auth();
-    }
+	let authResult: CombinedAuthResult
+	if (protect) {
+		authResult = await auth.protect()
+	} else {
+		authResult = await auth()
+	}
 
-    const { userId, orgId, sessionClaims } = authResult;
-    let isAdmin = true;
-    if (orgId && sessionClaims.orgRole !== "org:admin") isAdmin = false;
+	const { userId, orgId, sessionClaims } = authResult
+	let isAdmin = true
+	if (orgId && sessionClaims.orgRole !== 'org:admin') isAdmin = false
 
-    return { userId, orgId, sessionClaims, isAdmin };
+	return { userId, orgId, sessionClaims, isAdmin }
 }
 
 export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
-    if (!orgId) return [];
-    const clerk = await clerkClient();
-    try {
-        const memberships = await clerk.organizations.getOrganizationMembershipList({ organizationId: orgId });
+	if (!orgId) return []
+	const clerk = await clerkClient()
+	try {
+		const memberships =
+			await clerk.organizations.getOrganizationMembershipList({
+				organizationId: orgId,
+			})
 
-        const members: OrgMember[] = memberships.data.map((membership) => ({
-            userId: membership.publicUserData?.userId || "",
-            userName: (membership.publicUserData?.firstName + " " + membership.publicUserData?.lastName) || "Personal Workspace",
-            role: membership.role
-        }));
+		const members: OrgMember[] = memberships.data.map((membership) => ({
+			userId: membership.publicUserData?.userId || '',
+			userName:
+				membership.publicUserData?.firstName +
+					' ' +
+					membership.publicUserData?.lastName || 'Personal Workspace',
+			role: membership.role,
+		}))
 
-        return members;
-    } catch (error) {
-        console.error('Error fetching organization members:', error);
-        return [];
-    }
+		return members
+	} catch (error) {
+		console.error('Error fetching organization members:', error)
+		return []
+	}
 }

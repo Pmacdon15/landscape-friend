@@ -1,9 +1,8 @@
-
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless'
 
 export async function getSnowClients() {
-    const sql = neon(`${process.env.DATABASE_URL}`);
-    const result = await sql`
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	const result = await sql`
         SELECT
             c.id as client_id,
             c.address,
@@ -17,6 +16,6 @@ export async function getSnowClients() {
             users u ON a.user_id = u.id
         WHERE
             a.service_type = 'snow';
-    `;
-    return result;
+    `
+	return result
 }

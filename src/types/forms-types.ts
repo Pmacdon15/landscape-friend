@@ -1,8 +1,8 @@
-import Stripe from "stripe";
-import { ClientInfoList } from "./clients-types"
+import type Stripe from 'stripe'
+import type { ClientInfoList } from './clients-types'
 
 export interface CreateSubscriptionFormProps {
-  organizationIdPromise: Promise<string | null>;
-  clientsPromise: Promise<ClientInfoList[]>;
-  productsPromise?: Promise<Stripe.Product[]>;
+	organizationIdPromise: Promise<string | null>
+	clientsPromise: Promise<ClientInfoList[]>
+	productsPromise?: Promise<Stripe.Product[]>
 }

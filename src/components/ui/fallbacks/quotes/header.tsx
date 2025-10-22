@@ -1,22 +1,47 @@
-import { inputClassName } from "@/lib/values";
+import { inputClassName } from '@/lib/values'
 
 export default function QuoteHeader() {
-    return (
-        <section>
-            <h3 className="text-md font-semibold mb-2">Client Information</h3>
-            <div>
-                <label htmlFor="clientName" className="block text-sm font-medium text-gray-700">Name</label>
-                <input id="clientName" list="clients-list" className={inputClassName} />
-                <datalist id="clients-list">
-
-                </datalist>
-            </div>
-            <label htmlFor='clientEmail' className="block text-sm font-medium text-gray-700"> Email</label>
-            <input id="clientEmail" type="text" className={inputClassName} />
-            <label htmlFor='phone_number' className="block text-sm font-medium text-gray-700"> Phone Number</label>
-            <input id="phone_number" type="text" className={inputClassName} />
-            <label htmlFor='address' className="block text-sm font-medium text-gray-700"> Address</label>
-            <input id="address" type="text" className={inputClassName} />
-        </section>
-    );
+	return (
+		<section>
+			<h3 className="text-md font-semibold mb-2">Client Information</h3>
+			<div>
+				<label
+					className="block text-sm font-medium text-gray-700"
+					htmlFor="clientName"
+				>
+					Name
+				</label>
+				<input
+					className={inputClassName}
+					id="clientName"
+					list="clients-list"
+				/>
+				<datalist id="clients-list"></datalist>
+			</div>
+			<label
+				className="block text-sm font-medium text-gray-700"
+				htmlFor="clientEmail"
+			>
+				{' '}
+				Email
+			</label>
+			<input className={inputClassName} id="clientEmail" type="text" />
+			<label
+				className="block text-sm font-medium text-gray-700"
+				htmlFor="phone_number"
+			>
+				{' '}
+				Phone Number
+			</label>
+			<input className={inputClassName} id="phone_number" type="text" />
+			<label
+				className="block text-sm font-medium text-gray-700"
+				htmlFor="address"
+			>
+				{' '}
+				Address
+			</label>
+			<input className={inputClassName} id="address" type="text" />
+		</section>
+	)
 }

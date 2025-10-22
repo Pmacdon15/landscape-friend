@@ -1,80 +1,98 @@
-'use client';
+'use client'
 
-import { useProductPrice } from '@/lib/hooks/useStripe';
-import { useEffect } from 'react';
-import { useWatch, Control, UseFormRegister, FieldErrors, UseFormSetValue } from 'react-hook-form';
-import InputField from '../shared/input';
-import Stripe from 'stripe';
-import { z } from 'zod';
-import { schemaCreateQuote } from '@/lib/zod/schemas';
+import { useEffect } from 'react'
+import {
+	type Control,
+	type FieldErrors,
+	type UseFormRegister,
+	type UseFormSetValue,
+	useWatch,
+} from 'react-hook-form'
+import type Stripe from 'stripe'
+import type { z } from 'zod'
+import { useProductPrice } from '@/lib/hooks/useStripe'
+import type { schemaCreateQuote } from '@/lib/zod/schemas'
+import InputField from '../shared/input'
 
 interface QuoteLineItemProps {
-    index: number;
-    control: Control<z.infer<typeof schemaCreateQuote>>;
-    register: UseFormRegister<z.infer<typeof schemaCreateQuote>>;
-    errors: FieldErrors<z.infer<typeof schemaCreateQuote>>;
-    setValue: UseFormSetValue<z.infer<typeof schemaCreateQuote>>;
-    products: Stripe.Product[] | undefined;
+	index: number
+	control: Control<z.infer<typeof schemaCreateQuote>>
+	register: UseFormRegister<z.infer<typeof schemaCreateQuote>>
+	errors: FieldErrors<z.infer<typeof schemaCreateQuote>>
+	setValue: UseFormSetValue<z.infer<typeof schemaCreateQuote>>
+	products: Stripe.Product[] | undefined
 }
 
-export const QuoteLineItem = ({ index, control, register, errors, setValue, products }: QuoteLineItemProps) => {
-    const materialType = useWatch({
-        control,
-        name: `materials.${index}.materialType`,
-    });
+export const QuoteLineItem = ({
+	index,
+	control,
+	register,
+	errors,
+	setValue,
+	products,
+}: QuoteLineItemProps) => {
+	const materialType = useWatch({
+		control,
+		name: `materials.${index}.materialType`,
+	})
 
-    const selectedProduct = products?.find(p => p.name === materialType);
-    const { data: price, isLoading } = useProductPrice(selectedProduct?.id || null);
+	const selectedProduct = products?.find((p) => p.name === materialType)
+	const { data: price, isLoading } = useProductPrice(
+		selectedProduct?.id || null,
+	)
 
-    useEffect(() => {
-        if (price && price.unit_amount) {
-            setValue(`materials.${index}.materialCostPerUnit`, price.unit_amount / 100);
-        }
-    }, [price, index, setValue]);
+	useEffect(() => {
+		if (price?.unit_amount) {
+			setValue(
+				`materials.${index}.materialCostPerUnit`,
+				price.unit_amount / 100,
+			)
+		}
+	}, [price, index, setValue])
 
-    return (
-        <div className="border p-4 mb-4 rounded-md">
-            <div>
-                <InputField
-                    label="Material"
-                    id={`materials.${index}.materialType`}
-                    type="text"
-                    register={register}
-                    errors={errors}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                    list={`materials-list-${index}`}
-                />
-                <datalist id={`materials-list-${index}`}>
-                    {products?.map(product => (
-                        <option key={product.id} value={product.name} />
-                    ))}
-                </datalist>
-            </div>
+	return (
+		<div className="border p-4 mb-4 rounded-md">
+			<div>
+				<InputField
+					className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+					errors={errors}
+					id={`materials.${index}.materialType`}
+					label="Material"
+					list={`materials-list-${index}`}
+					register={register}
+					type="text"
+				/>
+				<datalist id={`materials-list-${index}`}>
+					{products?.map((product) => (
+						<option key={product.id} value={product.name} />
+					))}
+				</datalist>
+			</div>
 
-            <InputField
-                label="Material Cost (per unit)"
-                id={`materials.${index}.materialCostPerUnit`}
-                type="number"
-                register={register}
-                errors={errors}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                min="0"
-                step="0.01"
-                valueAsNumber
-                disabled={isLoading}
-            />
+			<InputField
+				className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+				disabled={isLoading}
+				errors={errors}
+				id={`materials.${index}.materialCostPerUnit`}
+				label="Material Cost (per unit)"
+				min="0"
+				register={register}
+				step="0.01"
+				type="number"
+				valueAsNumber
+			/>
 
-            <InputField
-                label="Material Units"
-                id={`materials.${index}.materialUnits`}
-                type="number"
-                register={register}
-                errors={errors}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                min="1"
-                step="1"
-                valueAsNumber
-            />
-        </div>
-    );
-};
+			<InputField
+				className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+				errors={errors}
+				id={`materials.${index}.materialUnits`}
+				label="Material Units"
+				min="1"
+				register={register}
+				step="1"
+				type="number"
+				valueAsNumber
+			/>
+		</div>
+	)
+}
