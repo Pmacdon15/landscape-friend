@@ -12,7 +12,11 @@ export default function ClientListItemAddress({
 	const [showMap, setShowMap] = useState(false)
 	return (
 		<div className="flex flex-col gap-2 items-center w-full">
-			<button className="flex" onClick={() => setShowMap(!showMap)}>
+			<button
+				className="flex"
+				onClick={() => setShowMap(!showMap)}
+				type="button"
+			>
 				<Image
 					alt="Address Icon"
 					className="w-12 h-12"

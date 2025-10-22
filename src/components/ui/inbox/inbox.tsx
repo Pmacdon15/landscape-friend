@@ -84,6 +84,7 @@ export default function NotificationInbox({
 									}
 								}}
 								style={primaryButtonStyle}
+								type="button"
 							>
 								{notification.primaryAction.label}
 							</button>
@@ -104,6 +105,7 @@ export default function NotificationInbox({
 									}
 								}}
 								style={secondaryButtonStyle}
+								type="button"
 							>
 								{notification.secondaryAction.label}
 							</button>

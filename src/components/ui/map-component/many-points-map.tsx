@@ -63,7 +63,10 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 					rel="noopener noreferrer"
 					target="_blank"
 				>
-					<button className="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded">
+					<button
+						className="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded"
+						type="button"
+					>
 						View in Google Maps
 					</button>
 				</a>

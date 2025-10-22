@@ -21,7 +21,10 @@ export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
-				<button className="text-blue-500 underline w-full ">
+				<button
+					className="text-blue-500 underline w-full "
+					type="button"
+				>
 					View Site Service Photos
 				</button>
 			</SheetTrigger>

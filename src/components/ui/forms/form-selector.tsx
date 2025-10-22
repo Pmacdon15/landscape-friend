@@ -29,12 +29,14 @@ export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({
 				<button
 					className={`px-4 py-2 rounded-md ${formType === 'quote' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
 					onClick={() => setFormType('quote')}
+					type="button"
 				>
 					Create Quote
 				</button>
 				<button
 					className={`px-4 py-2 rounded-md ${formType === 'subscription' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
 					onClick={() => setFormType('subscription')}
+					type="button"
 				>
 					Create Subscription
 				</button>

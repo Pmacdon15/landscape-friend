@@ -83,7 +83,7 @@ export function CuttingWeekDropDownContainer({
 				<CuttingWeekDropDown
 					clientId={client.id}
 					isAdmin={isAdmin}
-					key={index}
+					key={schedule.cutting_week}
 					schedule={schedule}
 					week={index + 1}
 				/>

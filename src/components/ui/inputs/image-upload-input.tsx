@@ -22,6 +22,7 @@ export default function ImageUploadInput() {
 			<input
 				accept="image/*"
 				className="hidden"
+				id="image-upload"
 				name="image"
 				onChange={handleFileChange}
 				ref={fileInputRef}

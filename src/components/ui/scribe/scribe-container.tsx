@@ -12,7 +12,11 @@ export default function ScribeContainer({
 	const [showDocs, setShowDocs] = useState(false)
 	return (
 		<div className="flex flex-col gap-4 w-full max-w-full">
-			<button className={'w-full'} onClick={() => setShowDocs(!showDocs)}>
+			<button
+				className={'w-full'}
+				onClick={() => setShowDocs(!showDocs)}
+				type="button"
+			>
 				<FormHeader text={text}>
 					{showDocs ? 'Click to Collapse ' : 'Click to Expand'}
 				</FormHeader>

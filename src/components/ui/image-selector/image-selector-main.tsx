@@ -45,6 +45,7 @@ export default function ImageSelectorMain({
 					className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
 					disabled={isLoading}
 					onClick={saveDrawing}
+					type="button"
 				>
 					{isLoading ? (
 						<Spinner />
@@ -55,6 +56,7 @@ export default function ImageSelectorMain({
 				<button
 					className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
 					onClick={backButton}
+					type="button"
 				>
 					<ArrowLeftCircleIcon className="w-5 h-5 text-white" />
 				</button>
@@ -77,18 +79,20 @@ export default function ImageSelectorMain({
 						</h2>
 						<ul>
 							{geocodeOptions ? (
-								geocodeOptions.map((result, i) => {
+								geocodeOptions.map((result, _i) => {
 									const formattedAddress =
 										result.formatted_address
 									return (
-										<li
-											className="px-4 py-2 hover:bg-gray-100"
-											key={i}
-											onClick={() =>
-												handleLocationSelect(result)
-											}
-										>
-											{formattedAddress}
+										<li key={result.place_id}>
+											<button
+												className="px-4 py-2 hover:bg-gray-100"
+												onClick={() =>
+													handleLocationSelect(result)
+												}
+												type="button"
+											>
+												{formattedAddress}
+											</button>
 										</li>
 									)
 								})

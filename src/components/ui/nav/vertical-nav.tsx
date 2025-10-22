@@ -25,16 +25,17 @@ const CollapsibleSection = ({
 
 	return (
 		<div>
-			<div
+			<button
 				className="flex items-center justify-between w-full p-2 font-medium text-left cursor-pointer"
 				onClick={toggleOpen}
+				type="button"
 			>
 				<span className="flex gap-2">{title}</span>
 				<ChevronDownIcon
 					className={`transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
 					size={16}
 				/>
-			</div>
+			</button>
 			{isOpen && (
 				<div className="pl-4 py-2 flex flex-col gap-2">{children}</div>
 			)}

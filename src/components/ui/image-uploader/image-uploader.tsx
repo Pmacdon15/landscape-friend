@@ -10,7 +10,10 @@ export default function ImageUploader({
 }) {
 	return (
 		<form className="w-[45%]">
-			<label className="cursor-pointer flex flex-col w-full gap-2">
+			<label
+				className="cursor-pointer flex flex-col w-full gap-2"
+				htmlFor="image-upload"
+			>
 				<ImageUploadInput />
 				<UploadImageButton clientId={clientId} setView={setView} />
 			</label>

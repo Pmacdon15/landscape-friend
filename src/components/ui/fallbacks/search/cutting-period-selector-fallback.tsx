@@ -10,9 +10,12 @@ export function CuttingPeriodSelectorFallback({
 
 	return (
 		<div className="flex gap-1">
-			<label className="flex items-center">{label} </label>
+			<label className="flex items-center" htmlFor={variant}>
+				{label}{' '}
+			</label>
 			<select
 				className="w-fit border rounded-sm text-center p-2"
+				id={variant}
 				name={variant}
 			>
 				<option value="">All</option>

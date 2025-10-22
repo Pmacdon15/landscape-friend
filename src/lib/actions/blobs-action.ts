@@ -16,16 +16,20 @@ export async function uploadImage(
 > {
 	const { isAdmin, userId, orgId } = await isOrgAdmin()
 	if (!isAdmin) return new Error('Not Admin')
+	if (!userId) return new Error('No Id')
 
-	let result
+	let result: Promise<
+		| { success: boolean; message: string; status: number }
+		| { error: string; status: number }
+	>
 	try {
 		const image = formData.get('image')
 		const validatedImage = ImageSchema.safeParse({ image })
 
-		if (!validatedImage.success) throw new Error('invaild inputs')
+		if (!validatedImage.success) throw new Error('invalid inputs')
 
 		result = await uploadImageBlob(
-			orgId || userId!,
+			orgId || userId,
 			customerId,
 			validatedImage.data.image,
 		)
@@ -71,9 +75,12 @@ export async function uploadDrawing(
 		}
 	}
 
-	let result
+	let result: Promise<
+		| { success: boolean; message: string; status: number }
+		| { error: string; status: number }
+	>
 	try {
-		result = await uploadImageBlob(orgId || userId!, clientId, file)
+		result = await uploadImageBlob(orgId || userId, clientId, file)
 		if (result && 'error' in result) {
 			throw new Error(result.error)
 		}

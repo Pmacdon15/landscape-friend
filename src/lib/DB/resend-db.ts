@@ -11,7 +11,7 @@ export async function sendNewsLetterDb(
 	sessionClaims: JwtPayload,
 	userId: string,
 ): Promise<boolean> {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	const baseName = String(
 		sessionClaims.orgName ||
 			sessionClaims.userFullName ||
@@ -36,7 +36,7 @@ export async function sendNewsLetterDb(
 
 //MARK: Fetch names and emails
 export async function fetchClientNamesAndEmailsDb(orgId: string) {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	const namesAndEmails = (await sql`
     SELECT 
       full_name,

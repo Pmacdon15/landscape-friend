@@ -19,6 +19,7 @@ export function SearchInput() {
 				<button
 					className="p-2 text-gray-500 hover:text-gray-700"
 					onClick={() => setSearchTerm('')}
+					type="button"
 				>
 					<X size={16} />
 				</button>

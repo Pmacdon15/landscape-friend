@@ -31,6 +31,7 @@ export default function UploadImageButton({
 			formAction={(formData: FormData) => {
 				mutate({ clientId: clientId, formData })
 			}}
+			type="submit"
 		>
 			{isPending ? (
 				<div className="flex md:gap-8 justify-center">

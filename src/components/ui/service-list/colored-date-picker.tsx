@@ -100,6 +100,7 @@ export const ColoredDatePicker = () => {
 							<button
 								className="px-2 py-1 rounded-md hover:bg-gray-100"
 								onClick={() => changeMonth(-1)}
+								type="button"
 							>
 								&lt;
 							</button>
@@ -112,6 +113,7 @@ export const ColoredDatePicker = () => {
 							<button
 								className="px-2 py-1 rounded-md hover:bg-gray-100"
 								onClick={() => changeMonth(1)}
+								type="button"
 							>
 								&gt;
 							</button>
@@ -133,32 +135,31 @@ export const ColoredDatePicker = () => {
 									{day}
 								</div>
 							))}
-							{daysInMonth.map(
-								({ day, isCurrentMonth }, index) => {
-									const currentDate = new Date(
-										date.getFullYear(),
-										date.getMonth(),
-										day,
-									)
-									const colorClass = isCurrentMonth
-										? getWeekColorClass(currentDate)
-										: 'bg-gray-100'
-									return (
-										<button
-											className={`py-1 rounded-md text-sm ${isCurrentMonth ? 'text-gray-700 hover:bg-gray-200' : 'text-gray-400'} ${colorClass}`}
-											key={index}
-											onClick={() =>
-												handleDateSelect(
-													day,
-													isCurrentMonth,
-												)
-											}
-										>
-											{day}
-										</button>
-									)
-								},
-							)}
+							{daysInMonth.map(({ day, isCurrentMonth }) => {
+								const currentDate = new Date(
+									date.getFullYear(),
+									date.getMonth(),
+									day,
+								)
+								const colorClass = isCurrentMonth
+									? getWeekColorClass(currentDate)
+									: 'bg-gray-100'
+								return (
+									<button
+										className={`py-1 rounded-md text-sm ${isCurrentMonth ? 'text-gray-700 hover:bg-gray-200' : 'text-gray-400'} ${colorClass}`}
+										key={day}
+										onClick={() =>
+											handleDateSelect(
+												day,
+												isCurrentMonth,
+											)
+										}
+										type="button"
+									>
+										{day}
+									</button>
+								)
+							})}
 						</div>
 					</div>
 				</div>

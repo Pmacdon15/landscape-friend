@@ -28,7 +28,10 @@ export const ClientEmailPopover = ({
 	return (
 		<Popover.Root onOpenChange={setOpen} open={open}>
 			<Popover.Trigger asChild>
-				<button className="cursor-pointer text-blue-600 hover:underline">
+				<button
+					className="cursor-pointer text-blue-600 hover:underline"
+					type="button"
+				>
 					{clientEmailAddress}
 				</button>
 			</Popover.Trigger>

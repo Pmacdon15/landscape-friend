@@ -15,9 +15,12 @@ export function CuttingPeriodSelector({
 
 	return (
 		<div className="flex gap-1  ">
-			<label className="flex items-center">{label} </label>
+			<label className="flex items-center" htmlFor={variant}>
+				{label}{' '}
+			</label>
 			<select
 				className="w-fit border rounded-sm text-center py-2"
+				id={variant}
 				name={variant}
 				onChange={(e) => setCuttingPeriod(e.target.value)}
 				value={currentPeriod}

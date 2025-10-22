@@ -22,7 +22,7 @@ export default function ServicedImageCarousel({
 			<Carousel>
 				<CarouselContent>
 					{imageUrlList.map((image, index) => (
-						<CarouselItem key={index}>
+						<CarouselItem key={image.imageurl}>
 							<Image
 								alt={`Serviced Image: ${index}`}
 								height={500}
