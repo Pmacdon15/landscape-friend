@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import type { Client } from '@/types/clients-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
 import ImageGallery from './image-gallery'
@@ -17,7 +17,7 @@ export default function ImageList({
 
 	return (
 		<>
-			{view == 'map' && (
+			{view === 'map' && (
 				<div className="flex flex-col gap-y-2 min-h-[300px] w-full overflow-y-auto h-[300px] bg-background rounded-md p-2 ">
 					<ImageSelectorMain
 						address={client.address}
@@ -26,16 +26,16 @@ export default function ImageList({
 					/>
 				</div>
 			)}
-			{view == 'list' && client.images.length === 0 && isAdmin && (
+			{view === 'list' && client.images.length === 0 && isAdmin && (
 				<AddSiteMap clientId={client.id} setView={setView} />
 			)}
-			{view == 'list' && client.images.length === 0 && !isAdmin && (
+			{view === 'list' && client.images.length === 0 && !isAdmin && (
 				<NonAdminPlaceHolder />
 			)}
-			{view == 'add' && (
+			{view === 'add' && (
 				<AddSiteMap clientId={client.id} setView={setView} />
 			)}
-			{view == 'list' && client.images.length > 0 && (
+			{view === 'list' && client.images.length > 0 && (
 				<ImageGallery
 					client={client}
 					isAdmin={isAdmin}

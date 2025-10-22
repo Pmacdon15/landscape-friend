@@ -6,10 +6,8 @@ export default function EditQuoteLink({ quoteId }: { quoteId?: string }) {
 	return (
 		<Link href={`/billing/edit/quote?quote=${quoteId}`} prefetch={false}>
 			<Button variant={'outline'}>
-				<>
-					<Edit />
-					Edit
-				</>
+				<Edit />
+				Edit
 			</Button>
 		</Link>
 	)

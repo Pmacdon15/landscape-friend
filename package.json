@@ -6,7 +6,7 @@
 		"dev": "next dev --turbopack",
 		"build": "next build --turbopack",
 		"start": "next start",
-		"lint": "biome check --write",
+		"lint": "biome check --write --unsafe",
 		"format": "biome format --write",
 		"postbuild": "next-sitemap --config next-sitemap.config.cjs"
 	},

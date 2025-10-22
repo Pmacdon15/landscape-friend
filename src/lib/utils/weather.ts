@@ -10,7 +10,7 @@ export async function isSnowing(
 		)
 		const data = await response.json()
 
-		if (data && data.hourly && data.hourly.snowfall) {
+		if (data?.hourly?.snowfall) {
 			// Check if any of the hourly snowfall forecasts are greater than 0
 			return data.hourly.snowfall.some((snowfall: number) => snowfall > 0)
 		}

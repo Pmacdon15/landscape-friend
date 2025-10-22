@@ -42,7 +42,7 @@ export const QuoteLineItem = ({
 	)
 
 	useEffect(() => {
-		if (price && price.unit_amount) {
+		if (price?.unit_amount) {
 			setValue(
 				`materials.${index}.materialCostPerUnit`,
 				price.unit_amount / 100,

@@ -46,15 +46,14 @@ export default function AssignedTo({
 				}}
 			>
 				<option value="not-assigned">Not Assigned</option>
-				{orgMembers &&
-					orgMembers.map((member) => (
-						<option
-							key={member.userId}
-							value={member.userId.toString()}
-						>
-							{member.userName}
-						</option>
-					))}
+				{orgMembers?.map((member) => (
+					<option
+						key={member.userId}
+						value={member.userId.toString()}
+					>
+						{member.userName}
+					</option>
+				))}
 			</select>
 		</div>
 	)

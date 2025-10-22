@@ -11,7 +11,7 @@ export const ServiceListDatePicker = () => {
 		if (!dateStr) return null
 		const [year, month, day] = dateStr.split('-').map(Number)
 		const date = new Date(year, month - 1, day)
-		return isNaN(date.getTime()) ? null : date // Return null for invalid dates
+		return Number.isNaN(date.getTime()) ? null : date // Return null for invalid dates
 	}
 
 	const handleDateChange = (date: Date | null) => {

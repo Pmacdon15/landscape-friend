@@ -7,7 +7,7 @@ export function parseClientListParams(
 	const searchTerm = String(params.search ?? '')
 	const serviceDateInput = params.date ? String(params.date) : undefined
 	const serviceDate =
-		serviceDateInput && !isNaN(new Date(serviceDateInput).getTime())
+		serviceDateInput && !Number.isNaN(new Date(serviceDateInput).getTime())
 			? new Date(serviceDateInput)
 			: undefined
 	const searchTermIsServiced = params.serviced === 'true' // Always return a boolean

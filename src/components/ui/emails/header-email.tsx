@@ -8,7 +8,6 @@ import {
 	Tailwind,
 	Text,
 } from '@react-email/components'
-import * as React from 'react'
 import type { HeaderEmailProps } from '@/types/resend-types'
 
 export default function HeaderEmail({

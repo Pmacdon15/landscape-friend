@@ -9,10 +9,8 @@ export default function EditInvoiceLink({ invoiceId }: { invoiceId?: string }) {
 			prefetch={false}
 		>
 			<Button variant={'outline'}>
-				<>
-					<Edit />
-					Edit
-				</>
+				<Edit />
+				Edit
 			</Button>
 		</Link>
 	)

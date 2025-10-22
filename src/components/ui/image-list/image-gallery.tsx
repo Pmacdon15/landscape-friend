@@ -2,7 +2,7 @@
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import { ImagePlusIcon } from 'lucide-react'
 import Image from 'next/image'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import type { ImageGalleryProps } from '@/types/components-types'
 import DeleteSiteMapButton from '../buttons/delete-site-map-button'
 

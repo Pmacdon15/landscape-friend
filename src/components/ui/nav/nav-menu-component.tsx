@@ -110,62 +110,58 @@ export default function NavigationMenuComponent({
 					</NavigationMenuContent>
 				</NavigationMenuItem>
 				{isAdmin && hasStripAPIKey && (
-					<>
-						<NavigationMenuItem>
-							<NavigationMenuTrigger>
-								Billing
-							</NavigationMenuTrigger>
-							<NavigationMenuContent>
-								<ul className="grid w-[300px] gap-4">
-									<li>
-										<NavigationMenuLink asChild>
-											<Link href="/billing/create-quote">
-												<div className="font-medium">
-													Create a Quote
-												</div>
-												<div className="text-muted-foreground">
-													Send an Quote as an Email.
-												</div>
-											</Link>
-										</NavigationMenuLink>
-										<NavigationMenuLink asChild>
-											<Link href="/billing/manage/quotes">
-												<div className="font-medium">
-													Manage Quotes
-												</div>
-												<div className="text-muted-foreground">
-													Manage quotes mark accepted,
-													cancel.
-												</div>
-											</Link>
-										</NavigationMenuLink>
-										<NavigationMenuLink asChild>
-											<Link href="/billing/manage/invoices">
-												<div className="font-medium">
-													Manage Invoices
-												</div>
-												<div className="text-muted-foreground">
-													Manage invoices view, send,
-													resend, mark paid.
-												</div>
-											</Link>
-										</NavigationMenuLink>
-										<NavigationMenuLink asChild>
-											<Link href="/billing/manage/subscriptions">
-												<div className="font-medium">
-													Manage Subscriptions
-												</div>
-												<div className="text-muted-foreground">
-													Manage your active
-													subscriptions.
-												</div>
-											</Link>
-										</NavigationMenuLink>
-									</li>
-								</ul>
-							</NavigationMenuContent>
-						</NavigationMenuItem>
-					</>
+					<NavigationMenuItem>
+						<NavigationMenuTrigger>Billing</NavigationMenuTrigger>
+						<NavigationMenuContent>
+							<ul className="grid w-[300px] gap-4">
+								<li>
+									<NavigationMenuLink asChild>
+										<Link href="/billing/create-quote">
+											<div className="font-medium">
+												Create a Quote
+											</div>
+											<div className="text-muted-foreground">
+												Send an Quote as an Email.
+											</div>
+										</Link>
+									</NavigationMenuLink>
+									<NavigationMenuLink asChild>
+										<Link href="/billing/manage/quotes">
+											<div className="font-medium">
+												Manage Quotes
+											</div>
+											<div className="text-muted-foreground">
+												Manage quotes mark accepted,
+												cancel.
+											</div>
+										</Link>
+									</NavigationMenuLink>
+									<NavigationMenuLink asChild>
+										<Link href="/billing/manage/invoices">
+											<div className="font-medium">
+												Manage Invoices
+											</div>
+											<div className="text-muted-foreground">
+												Manage invoices view, send,
+												resend, mark paid.
+											</div>
+										</Link>
+									</NavigationMenuLink>
+									<NavigationMenuLink asChild>
+										<Link href="/billing/manage/subscriptions">
+											<div className="font-medium">
+												Manage Subscriptions
+											</div>
+											<div className="text-muted-foreground">
+												Manage your active
+												subscriptions.
+											</div>
+										</Link>
+									</NavigationMenuLink>
+								</li>
+							</ul>
+						</NavigationMenuContent>
+					</NavigationMenuItem>
 				)}
 				<NavigationMenuItem>
 					<NavigationMenuTrigger>Documentation</NavigationMenuTrigger>

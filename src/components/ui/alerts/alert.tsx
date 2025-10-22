@@ -34,6 +34,7 @@ export function Alert({
 						<button
 							className={`border rounded-sm p-1  ${isPending ? 'bg-gray/40' : 'bg-white/40'} `}
 							disabled={isPending}
+							type="button"
 						>
 							{text}
 						</button>
@@ -42,6 +43,7 @@ export function Alert({
 						<button
 							className="border rounded-sm bg-white/70"
 							disabled={isPending}
+							type="button"
 						>
 							<X size={18} />
 						</button>

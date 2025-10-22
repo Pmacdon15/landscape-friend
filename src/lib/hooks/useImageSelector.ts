@@ -155,7 +155,7 @@ export function useImageSelector({
 		if (typeof window !== 'undefined') {
 			loadGoogleScript()
 		}
-	}, [address, initMap])
+	}, [initMap])
 
 	function backButton() {
 		setView('list')

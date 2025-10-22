@@ -143,27 +143,19 @@ export async function fetchInvoices(
 
 			filteredInvoices = allInvoices.filter((invoice) => {
 				if (
-					(invoice.customer_name &&
-						invoice.customer_name
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
-					(invoice.customer_email &&
-						invoice.customer_email
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
-					(invoice.id &&
-						invoice.id
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
-					(invoice.number &&
-						invoice.number
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm))
+					invoice.customer_name
+						?.toLowerCase()
+						.includes(lowerCaseSearchTerm) ||
+					invoice.customer_email
+						?.toLowerCase()
+						.includes(lowerCaseSearchTerm) ||
+					invoice.id?.toLowerCase().includes(lowerCaseSearchTerm) ||
+					invoice.number?.toLowerCase().includes(lowerCaseSearchTerm)
 				) {
 					return true
 				}
 
-				if (!isNaN(parseFloat(lowerCaseSearchTerm))) {
+				if (!Number.isNaN(parseFloat(lowerCaseSearchTerm))) {
 					if (
 						invoice.total !== null &&
 						(invoice.total / 100)
@@ -360,20 +352,14 @@ export async function fetchQuotes(
 				)
 
 				return (
-					(quote.description &&
-						quote.description
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
-					(quote.id &&
-						quote.id.toLowerCase().includes(lowerCaseSearchTerm)) ||
-					(clientName &&
-						clientName
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
-					(stripeCustomerName &&
-						stripeCustomerName
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
+					quote.description
+						?.toLowerCase()
+						.includes(lowerCaseSearchTerm) ||
+					quote.id?.toLowerCase().includes(lowerCaseSearchTerm) ||
+					clientName?.toLowerCase().includes(lowerCaseSearchTerm) ||
+					stripeCustomerName
+						?.toLowerCase()
+						.includes(lowerCaseSearchTerm) ||
 					amountTotalStr.includes(lowerCaseSearchTerm) ||
 					lineItemAmounts.some((amount) =>
 						amount.includes(lowerCaseSearchTerm),
@@ -578,18 +564,13 @@ export async function fetchSubscriptions(
 			filteredSubscriptions = allSubscriptions.filter((subscription) => {
 				const customer = subscription.customer as Stripe.Customer
 				return (
-					(customer.name &&
-						customer.name
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
-					(customer.email &&
-						customer.email
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm)) ||
-					(subscription.id &&
-						subscription.id
-							.toLowerCase()
-							.includes(lowerCaseSearchTerm))
+					customer.name
+						?.toLowerCase()
+						.includes(lowerCaseSearchTerm) ||
+					customer.email
+						?.toLowerCase()
+						.includes(lowerCaseSearchTerm) ||
+					subscription.id?.toLowerCase().includes(lowerCaseSearchTerm)
 				)
 			})
 		}

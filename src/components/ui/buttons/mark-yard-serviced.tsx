@@ -125,7 +125,7 @@ export default function MarkYardServiced({
 				<div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
 					<div className="text-6xl">📸</div>
 					<div className="px-2 max-w-full truncate">
-						{images.length == 0
+						{images.length === 0
 							? 'Take a photo to complete the service'
 							: 'Add more photos'}
 					</div>

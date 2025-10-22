@@ -1,4 +1,3 @@
-import React from 'react'
 import type { Props } from '@/types/params-types'
 
 export default function ShowAddClientFormButton({

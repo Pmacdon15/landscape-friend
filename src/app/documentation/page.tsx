@@ -27,7 +27,7 @@ export default function Page() {
 			<FormHeader text="Documentation" />
 			<FillFormContainer>
 				<ul className="space-y-4">
-					{documentationLinks.map((link, index) => (
+					{documentationLinks.map((link, _index) => (
 						<li
 							className="flex items-start space-x-2 border rounded-sm p-4  shadow:sm hover:scale-101 hover:shadow-2xl bg-white/40"
 							key={link.id}

@@ -1,5 +1,3 @@
-// components/InputField.tsx
-import React from 'react'
 import {
 	type FieldErrors,
 	type FieldValues,
