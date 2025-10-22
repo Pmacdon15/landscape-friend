@@ -1,4 +1,4 @@
-import { neon, type SQL } from '@neondatabase/serverless'
+import { neon } from '@neondatabase/serverless'
 import type z from 'zod'
 import type {
 	schemaAddClient,
@@ -203,7 +203,11 @@ export async function updateClientPricePerDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	let setClause: SQL
+  //TODO: Confirm this works
+	let setClause: ReturnType<typeof sql> = data.snow
+		? sql`price_per_month_snow = ${data.pricePerMonthSnow} `
+		: sql`price_per_month_grass = ${data.pricePerMonthGrass} `
+
 	if (data.snow) {
 		setClause = sql`price_per_month_snow = ${data.pricePerMonthSnow} `
 	} else {

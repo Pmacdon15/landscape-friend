@@ -9,7 +9,7 @@ export default function SettingsDisplayItem({
 	label: string
 	children: ReactNode
 	actions: ReactNode
-	id: string
+	id?: string
 }) {
 	return (
 		<div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full">
