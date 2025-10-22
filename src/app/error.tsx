@@ -20,9 +20,9 @@ export default function Error({
 				</h2>
 				<p className="text-sm text-gray-600">{error.message}</p>
 				<Button
-					variant="outline"
 					className="px-4 py-2 text-sm font-medium text-white rounded-md hover:bg-background/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
 					onClick={() => reset()}
+					variant="outline"
 				>
 					Try again
 				</Button>

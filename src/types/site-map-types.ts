@@ -1,4 +1,4 @@
-import { Client } from './clients-types'
+import type { Client } from './clients-types'
 
 export interface ImageListViewProps {
 	client: Client

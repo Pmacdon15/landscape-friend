@@ -5,7 +5,7 @@ import { Button } from '../button'
 export default function SendNewsLetterButton() {
 	const { mutate, isPending } = useSendNewsLetter()
 	return (
-		<Button formAction={mutate} disabled={isPending} variant={'outline'}>
+		<Button disabled={isPending} formAction={mutate} variant={'outline'}>
 			Send
 		</Button>
 	)

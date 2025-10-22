@@ -1,21 +1,21 @@
+import { auth } from '@clerk/nextjs/server'
 import {
-	fetchClientsWithSchedules,
-	fetchClientsCuttingSchedules,
-	fetchClientsClearingGroupsDb,
-	fetchStripeCustomerNamesDB,
 	fetchClientListDb,
+	fetchClientsClearingGroupsDb,
+	fetchClientsCuttingSchedules,
+	fetchClientsWithSchedules,
+	fetchStripeCustomerNamesDB,
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
-import { processClientsResult } from '@/lib/utils/sort'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import {
+import { processClientsResult } from '@/lib/utils/sort'
+import type {
+	ClientInfoList,
 	ClientResult,
+	CustomerName,
 	NamesAndEmails,
 	PaginatedClients,
-	CustomerName,
-	ClientInfoList,
 } from '@/types/clients-types'
-import { auth } from '@clerk/nextjs/server'
 
 export async function fetchAllClients(
 	clientPageNumber: number,
@@ -72,8 +72,9 @@ export async function fetchCuttingClients(
 ): Promise<PaginatedClients | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
-	if (!orgId || !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error(' User ID is missing.')
+	else if (!orgId) throw new Error('Organization ID is missing.')
+
 	if (!isAdmin && userId !== searchTermAssignedTo)
 		throw new Error('Not admin can not view other coworkers list')
 
@@ -87,7 +88,7 @@ export async function fetchCuttingClients(
 	const offset = (clientPageNumber - 1) * pageSize
 
 	const result = await fetchClientsCuttingSchedules(
-		(orgId || userId)!,
+		orgId || userId,
 		pageSize,
 		offset,
 		searchTerm,

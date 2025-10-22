@@ -1,14 +1,13 @@
-import SearchForm from '@/components/ui/search/search-form'
-import FormContainer from '@/components/ui/containers/form-container'
-import FormHeader from '@/components/ui/header/form-header'
-import { fetchCuttingClients } from '@/lib/dal/clients-dal'
-import { isOrgAdmin } from '@/lib/utils/clerk'
 import { Suspense } from 'react'
-import ClientListService from '../../../components/ui/service-list/clients-list-service'
-import { parseClientListParams } from '@/lib/utils/params'
-
+import FormContainer from '@/components/ui/containers/form-container'
 import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fallback'
+import FormHeader from '@/components/ui/header/form-header'
+import SearchForm from '@/components/ui/search/search-form'
+import { fetchCuttingClients } from '@/lib/dal/clients-dal'
 import { fetchOrgMembers } from '@/lib/dal/dal-org'
+import { isOrgAdmin } from '@/lib/utils/clerk'
+import { parseClientListParams } from '@/lib/utils/params'
+import ClientListService from '../../../components/ui/service-list/clients-list-service'
 
 export default async function Page(props: PageProps<'/lists/cutting'>) {
 	const [{ isAdmin }, params] = await Promise.all([
@@ -40,9 +39,9 @@ export default async function Page(props: PageProps<'/lists/cutting'>) {
 				<FormHeader text={'Cutting List'} />
 				<Suspense fallback={<SearchFormFallBack variant="cutting" />}>
 					<SearchForm
-						variant="cutting"
-						orgMembersPromise={orgMembersPromise}
 						isAdmin={isAdmin}
+						orgMembersPromise={orgMembersPromise}
+						variant="cutting"
 					/>
 				</Suspense>
 			</FormContainer>
@@ -55,10 +54,10 @@ export default async function Page(props: PageProps<'/lists/cutting'>) {
 			>
 				<ClientListService
 					clientsPromise={clientsPromise}
-					page={page}
-					serviceDate={serviceDate}
-					searchTermIsServiced={searchTermIsServiced}
 					isAdmin={isAdmin}
+					page={page}
+					searchTermIsServiced={searchTermIsServiced}
+					serviceDate={serviceDate}
 				/>
 			</Suspense>
 		</>

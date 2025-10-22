@@ -15,9 +15,6 @@ export const ServiceListDatePickerFallback = () => {
 
 	return (
 		<DatePicker
-			wrapperClassName="custom-datepicker-wrapper"
-			portalId="root-portal"
-			withPortal
 			className="border rounded-sm "
 			dayClassName={(date) => {
 				const week = getWeekNumber(date)
@@ -29,6 +26,9 @@ export const ServiceListDatePickerFallback = () => {
 							? 'bg-yellow-200'
 							: 'bg-red-200'
 			}}
+			portalId="root-portal"
+			withPortal
+			wrapperClassName="custom-datepicker-wrapper"
 		/>
 	)
 }

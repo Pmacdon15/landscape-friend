@@ -1,16 +1,16 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { useAddClient } from '@/lib/mutations/mutations'
-import { Button } from '../button'
-import EllipsisSpinner from '../loaders/EllipsisSpinner'
-import FormHeader from '../header/form-header'
-import { InputField } from '../inputs/input'
 import {
 	AddClientFormSchema,
-	AddClientFormValues,
+	type AddClientFormValues,
 } from '@/lib/zod/client-schemas'
+import { Button } from '../button'
+import FormHeader from '../header/form-header'
+import { InputField } from '../inputs/input'
+import EllipsisSpinner from '../loaders/EllipsisSpinner'
 
 export function AddClientForm() {
 	const {
@@ -36,39 +36,39 @@ export function AddClientForm() {
 
 	return (
 		<form
-			onSubmit={handleSubmit(onSubmit)}
 			className="flex flex-col gap-6 w-full pb-2"
+			onSubmit={handleSubmit(onSubmit)}
 		>
 			<FormHeader text="Add New Client" />
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 				<InputField
-					type="text"
 					placeholder="Full Name"
+					type="text"
 					{...register('full_name')}
 					error={errors.full_name?.message}
 				/>
 				<InputField
-					type="tel"
 					placeholder="Phone Number"
+					type="tel"
 					{...register('phone_number')}
 					error={errors.phone_number?.message}
 				/>
 				<InputField
-					type="email"
 					placeholder="Email Address"
+					type="email"
 					{...register('email_address')}
 					error={errors.email_address?.message}
 				/>
 				<InputField
-					type="text"
 					placeholder="Address"
+					type="text"
 					{...register('address')}
-					error={errors.address?.message}
 					className="md:col-span-2 lg:col-span-3"
+					error={errors.address?.message}
 				/>
 			</div>
 			<div className="flex justify-end">
-				<Button variant={'outline'} type="submit" disabled={isPending}>
+				<Button disabled={isPending} type="submit" variant={'outline'}>
 					{!isPending ? (
 						'Submit'
 					) : (

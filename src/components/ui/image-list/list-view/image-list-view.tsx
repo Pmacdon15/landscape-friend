@@ -1,7 +1,7 @@
-import Image from 'next/image'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ImagePlusIcon } from 'lucide-react'
-import { ImageListViewProps } from '@/types/site-map-types'
+import Image from 'next/image'
+import type { ImageListViewProps } from '@/types/site-map-types'
 
 export default function ImageListView({
 	client,
@@ -15,8 +15,8 @@ export default function ImageListView({
 				className={`flex flex-nowrap absolute top-3 right-3 z-10 px-4 py-2`}
 			>
 				<button
-					onClick={() => setView('add')}
 					className="select-none cursor-pointer px-6 py-2 bg-background rounded border shadow-lg hover:bg-green-300"
+					onClick={() => setView('add')}
 				>
 					<ImagePlusIcon className="w-5 h-5 text-white" />
 				</button>
@@ -24,13 +24,13 @@ export default function ImageListView({
 
 			{client.images?.map((image, index: number) => (
 				<Image
+					alt={`Image ${index + 1}`}
 					className="p-2 hover:cursor-zoom-in"
+					height={400}
 					key={index}
 					onClick={() => setPreviewSrc(image.url)}
 					src={image.url}
-					alt={`Image ${index + 1}`}
 					width={400}
-					height={400}
 				/>
 			))}
 
@@ -38,12 +38,12 @@ export default function ImageListView({
 			{previewSrc && (
 				<div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 flex items-center justify-center z-50">
 					<Image
-						src={previewSrc}
 						alt="Full screen preview"
-						width={600}
-						height={600}
 						className="max-w-full object-cover max-h-full"
+						height={600}
 						onClick={() => setPreviewSrc(null)}
+						src={previewSrc}
+						width={600}
 					/>
 					<button
 						className="absolute top-4 right-4 text-white p-2 hover:bg-gray-800 rounded-full"

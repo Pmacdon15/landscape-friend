@@ -1,7 +1,7 @@
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import FormContainer from '@/components/ui/containers/form-container'
 import FormHeader from '@/components/ui/header/form-header'
-import Link from 'next/link'
 
 export default function NotFound() {
 	return (

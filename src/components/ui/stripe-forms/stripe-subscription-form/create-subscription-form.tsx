@@ -1,17 +1,17 @@
 'use client'
-import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations'
-import Spinner from '@/components/ui/loaders/spinner'
-import { schemaCreateSubscription } from '@/lib/zod/schemas'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import z from 'zod'
-import InputField from '../shared/input'
-import { AlertMessage } from '../shared/alert-message'
-import { Button } from '../../button'
-import { useIsSnowService } from '@/lib/hooks/useStripe'
 import { use, useEffect } from 'react'
-import { CreateSubscriptionFormProps } from '@/types/forms-types'
+import { useForm } from 'react-hook-form'
+import type z from 'zod'
+import Spinner from '@/components/ui/loaders/spinner'
+import { useIsSnowService } from '@/lib/hooks/useStripe'
+import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations'
 import { inputClassName } from '@/lib/values'
+import { schemaCreateSubscription } from '@/lib/zod/schemas'
+import type { CreateSubscriptionFormProps } from '@/types/forms-types'
+import { Button } from '../../button'
+import { AlertMessage } from '../shared/alert-message'
+import InputField from '../shared/input'
 
 export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	organizationIdPromise,
@@ -83,7 +83,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
+			<form className="space-y-4 " onSubmit={handleSubmit(onSubmit)}>
 				<input
 					type="hidden"
 					{...register('organization_id')}
@@ -97,16 +97,16 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 					</h3>
 					<div>
 						<label
-							htmlFor="clientName"
 							className="block text-sm font-medium text-gray-700"
+							htmlFor="clientName"
 						>
 							Name
 						</label>
 						<input
 							id="clientName"
 							{...register('clientName')}
-							list="clients-list"
 							className={inputClassName}
+							list="clients-list"
 						/>
 						<datalist id="clients-list">
 							{clients.map((client) => (
@@ -118,31 +118,31 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						</datalist>
 					</div>
 					<InputField
-						label="Email"
+						className={inputClassName}
+						disabled={isClientSelected}
+						errors={errors}
 						id="clientEmail"
-						type="text"
+						label="Email"
 						register={register}
-						errors={errors}
-						className={inputClassName}
-						disabled={isClientSelected}
+						type="text"
 					/>
 					<InputField
-						label="Phone Number"
+						className={inputClassName}
+						disabled={isClientSelected}
+						errors={errors}
 						id="phone_number"
-						type="text"
+						label="Phone Number"
 						register={register}
-						errors={errors}
-						className={inputClassName}
-						disabled={isClientSelected}
+						type="text"
 					/>
 					<InputField
-						label="Address"
-						id="address"
-						type="text"
-						register={register}
-						errors={errors}
 						className={inputClassName}
 						disabled={isClientSelected}
+						errors={errors}
+						id="address"
+						label="Address"
+						register={register}
+						type="text"
 					/>
 				</section>
 
@@ -153,8 +153,8 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 					</h3>
 					<div>
 						<label
-							htmlFor="serviceType"
 							className="block text-sm font-medium text-gray-700"
+							htmlFor="serviceType"
 						>
 							Service Type
 						</label>
@@ -175,47 +175,47 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						)}
 					</div>
 					<InputField
-						label="Price Per Month"
-						id="price_per_month"
-						type="number"
-						register={register}
-						errors={errors}
 						className={inputClassName}
+						errors={errors}
+						id="price_per_month"
+						label="Price Per Month"
 						min="0.01"
+						register={register}
 						step="0.01"
+						type="number"
 						valueAsNumber
 					/>
 					<InputField
-						label="Start Date"
+						className={inputClassName}
+						errors={errors}
 						id="startDate"
-						type="date"
+						label="Start Date"
 						register={register}
-						errors={errors}
-						className={inputClassName}
+						type="date"
 					/>
 					<InputField
-						label="End Date"
+						className={inputClassName}
+						errors={errors}
 						id="endDate"
-						type="date"
+						label="End Date"
 						register={register}
-						errors={errors}
-						className={inputClassName}
+						type="date"
 					/>
 					<InputField
-						label="Notes"
-						id="notes"
-						type="textarea"
-						register={register}
-						errors={errors}
 						className={inputClassName}
+						errors={errors}
+						id="notes"
+						label="Notes"
+						register={register}
+						type="textarea"
 					/>
 				</section>
 
 				<div>
 					<Button
-						variant="outline"
-						type="submit"
 						disabled={isPending}
+						type="submit"
+						variant="outline"
 					>
 						{isPending ? (
 							<>
@@ -230,14 +230,14 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			</form>
 			{isSuccess && data && (
 				<AlertMessage
-					type="success"
 					message="Subscription Quote created successfully!"
+					type="success"
 				/>
 			)}
 			{isError && error && (
 				<AlertMessage
-					type="error"
 					message={`Error creating subscription: ${error.message}`}
+					type="error"
 				/>
 			)}
 		</>

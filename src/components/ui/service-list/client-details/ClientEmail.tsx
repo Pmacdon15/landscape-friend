@@ -1,5 +1,5 @@
-import React from 'react'
 import Image from 'next/image'
+import type React from 'react'
 import { ClientEmailPopover } from '../../popovers/client-email-popover'
 
 interface ClientEmailProps {
@@ -14,16 +14,16 @@ const ClientEmail: React.FC<ClientEmailProps> = ({
 	return (
 		<div className="flex w-full gap-2 items-center justify-center">
 			<Image
-				src="/client-list/email.png"
 				alt="Email Icon"
 				className="w-8 h-8"
-				width={512}
 				height={512}
+				src="/client-list/email.png"
+				width={512}
 			/>
 			<p className="my-auto">Email:</p>
 			<ClientEmailPopover
-				clientFullName={clientFullName}
 				clientEmailAddress={clientEmailAddress}
+				clientFullName={clientFullName}
 			/>
 		</div>
 	)

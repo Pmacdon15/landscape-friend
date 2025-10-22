@@ -1,4 +1,4 @@
-import { Client, ClientResult } from '@/types/clients-types'
+import type { Client, ClientResult } from '@/types/clients-types'
 
 export function processClientsResult(
 	clientsResult: ClientResult[],

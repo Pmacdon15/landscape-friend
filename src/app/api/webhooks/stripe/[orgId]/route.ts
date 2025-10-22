@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
 import { headers } from 'next/headers'
+import { type NextRequest, NextResponse } from 'next/server'
+import type Stripe from 'stripe'
 import { fetchWebhookSecretDb } from '@/lib/DB/stripe-db'
+import {
+	createInvoicePayload,
+	triggerNotificationSendToAdmin,
+} from '@/lib/utils/novu'
 import { getStripeInstanceUnprotected } from '@/lib/utils/stripe-utils'
 import {
 	handleInvoicePaid,
 	handleInvoiceSent,
 } from '@/lib/webhooks/stripe-webhooks'
-import {
-	createInvoicePayload,
-	triggerNotificationSendToAdmin,
-} from '@/lib/utils/novu'
 
 export async function POST(
 	req: NextRequest,
@@ -55,7 +55,7 @@ export async function POST(
 	console.log('event type: ', event)
 	try {
 		switch (event.type) {
-			case 'invoice.paid':
+			case 'invoice.paid': {
 				const invoicePaid = event.data.object as Stripe.Invoice
 				const payloadPaid = await createInvoicePayload(
 					invoicePaid.customer_name,
@@ -69,7 +69,8 @@ export async function POST(
 					payloadPaid,
 				)
 				break
-			case 'invoice.sent':
+			}
+			case 'invoice.sent': {
 				const invoiceSent = event.data.object as Stripe.Invoice
 				const payloadSent = await createInvoicePayload(
 					invoiceSent.customer_name,
@@ -83,6 +84,7 @@ export async function POST(
 					payloadSent,
 				)
 				break
+			}
 			default:
 				console.log(`Unhandled event type ${event.type}`)
 		}

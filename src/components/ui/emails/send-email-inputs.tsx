@@ -5,9 +5,9 @@ export default function SendEmailInputs() {
 		<>
 			<InputField
 				name={'title'}
-				type={'text'}
 				placeholder={'Title'}
 				required
+				type={'text'}
 			/>
 			<textarea
 				className="border rounded sm p-2 bg-white"

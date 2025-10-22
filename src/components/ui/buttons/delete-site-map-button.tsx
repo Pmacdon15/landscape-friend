@@ -12,10 +12,10 @@ export default function DeleteSiteMapButton({
 	return (
 		<div className="absolute bottom-5 right-5">
 			<Alert
-				isPending={isPending}
-				variant={'remove-sitemap'}
-				text={'Remove Image'}
 				functionAction={() => mutate({ clientId, siteMapId })}
+				isPending={isPending}
+				text={'Remove Image'}
+				variant={'remove-sitemap'}
 			/>
 		</div>
 	)

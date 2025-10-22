@@ -1,4 +1,3 @@
-import { HeaderEmailProps } from '@/types/resend-types'
 import {
 	Body,
 	Head,
@@ -6,10 +5,11 @@ import {
 	Html,
 	Img,
 	Preview,
-	Text,
 	Tailwind,
+	Text,
 } from '@react-email/components'
 import * as React from 'react'
+import type { HeaderEmailProps } from '@/types/resend-types'
 
 export default function HeaderEmail({
 	text,
@@ -25,9 +25,9 @@ export default function HeaderEmail({
 				<Body className="bg-white text-black w-full m-0 p-0">
 					{/* Image header */}
 					<Img
-						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/Screenshot%20From%202025-08-10%2020-37-34.png"
 						alt="Landscape Friend Logo"
 						className="w-full h-auto"
+						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/Screenshot%20From%202025-08-10%2020-37-34.png"
 					/>
 
 					{/* Main content container */}

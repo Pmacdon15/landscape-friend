@@ -1,8 +1,8 @@
 'use server'
+import { revalidatePath } from 'next/cache'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import { uploadImageBlob } from '@/lib/utils/image-control'
 import { ImageSchema } from '@/lib/zod/schemas'
-import { revalidatePath } from 'next/cache'
 
 export async function uploadImage(
 	customerId: number,

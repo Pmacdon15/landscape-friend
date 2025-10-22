@@ -15,8 +15,8 @@ export default function SendQuotePage() {
 		<FormContainer>
 			<FillFormContainer>
 				<FormSelector
-					organizationIdPromise={organizationIdPromise}
 					clientsPromise={clientsPromise}
+					organizationIdPromise={organizationIdPromise}
 					productsPromise={productsPromise}
 				/>
 			</FillFormContainer>

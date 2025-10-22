@@ -8,9 +8,9 @@ export default function UpdateStripeApiKeyButton() {
 	return (
 		<>
 			<Button
-				variant={'outline'}
-				formAction={mutate}
 				disabled={isPending}
+				formAction={mutate}
+				variant={'outline'}
 			>
 				{isPending ? (
 					<>

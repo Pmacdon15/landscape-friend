@@ -20,13 +20,13 @@ export default function ImageUploadInput() {
 	return (
 		<>
 			<input
-				ref={fileInputRef}
-				type="file"
 				accept="image/*"
+				className="hidden"
 				name="image"
 				onChange={handleFileChange}
-				className="hidden"
+				ref={fileInputRef}
 				required
+				type="file"
 			/>
 
 			<div className="flex flex-col items-center  px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 ">

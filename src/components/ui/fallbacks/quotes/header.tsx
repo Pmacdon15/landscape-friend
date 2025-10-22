@@ -6,42 +6,42 @@ export default function QuoteHeader() {
 			<h3 className="text-md font-semibold mb-2">Client Information</h3>
 			<div>
 				<label
-					htmlFor="clientName"
 					className="block text-sm font-medium text-gray-700"
+					htmlFor="clientName"
 				>
 					Name
 				</label>
 				<input
+					className={inputClassName}
 					id="clientName"
 					list="clients-list"
-					className={inputClassName}
 				/>
 				<datalist id="clients-list"></datalist>
 			</div>
 			<label
-				htmlFor="clientEmail"
 				className="block text-sm font-medium text-gray-700"
+				htmlFor="clientEmail"
 			>
 				{' '}
 				Email
 			</label>
-			<input id="clientEmail" type="text" className={inputClassName} />
+			<input className={inputClassName} id="clientEmail" type="text" />
 			<label
-				htmlFor="phone_number"
 				className="block text-sm font-medium text-gray-700"
+				htmlFor="phone_number"
 			>
 				{' '}
 				Phone Number
 			</label>
-			<input id="phone_number" type="text" className={inputClassName} />
+			<input className={inputClassName} id="phone_number" type="text" />
 			<label
-				htmlFor="address"
 				className="block text-sm font-medium text-gray-700"
+				htmlFor="address"
 			>
 				{' '}
 				Address
 			</label>
-			<input id="address" type="text" className={inputClassName} />
+			<input className={inputClassName} id="address" type="text" />
 		</section>
 	)
 }

@@ -1,9 +1,9 @@
 'use client'
-import { useMarkYardServiced } from '@/lib/mutations/mutations'
-import { Button } from '../button'
-import { useRef, useState } from 'react'
 import imageCompression from 'browser-image-compression'
 import Image from 'next/image'
+import { useRef, useState } from 'react'
+import { useMarkYardServiced } from '@/lib/mutations/mutations'
+import { Button } from '../button'
 
 export default function MarkYardServiced({
 	clientId,
@@ -113,14 +113,14 @@ export default function MarkYardServiced({
 			{isError && <p className="text-red-500">Error Marking Cut</p>}
 			<label>
 				<input
-					type="file"
-					ref={fileInputRef}
 					accept="image/*"
+					capture
+					className="hidden"
 					name="image"
 					onChange={handleFileChange}
-					className="hidden"
-					capture
+					ref={fileInputRef}
 					required
+					type="file"
 				/>
 				<div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
 					<div className="text-6xl">📸</div>
@@ -135,16 +135,16 @@ export default function MarkYardServiced({
 				<>
 					{images.map((img, index) => (
 						<Image
-							key={index}
-							width={400}
-							height={400}
-							src={URL.createObjectURL(new Blob([img]))}
 							alt={'Site Serviced Photo'}
+							height={400}
+							key={index}
+							src={URL.createObjectURL(new Blob([img]))}
+							width={400}
 						/>
 					))}
 
 					<Button
-						variant={'outline'}
+						disabled={isPending}
 						onClick={() =>
 							images
 								? mutate({
@@ -155,7 +155,7 @@ export default function MarkYardServiced({
 									})
 								: null
 						}
-						disabled={isPending}
+						variant={'outline'}
 					>
 						Mark Yard Serviced
 					</Button>

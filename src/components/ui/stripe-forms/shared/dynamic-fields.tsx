@@ -1,14 +1,14 @@
 'use client'
 import React from 'react'
-import {
+import type {
 	Control,
 	FieldErrors,
 	FieldValues,
 	UseFormRegister,
 } from 'react-hook-form'
+import type Stripe from 'stripe'
 import { Button } from '@/components/ui/button'
 import InputField from './input' // adjust path if needed
-import Stripe from 'stripe'
 
 type FieldWithId<T> = T & { id: string }
 
@@ -54,27 +54,27 @@ export function DynamicFields<
 				{labels.description} Items
 			</h3>
 			{fields.map((item, index: number) => (
-				<div key={item.id} className="border p-4 mb-4 rounded-md">
+				<div className="border p-4 mb-4 rounded-md" key={item.id}>
 					{item.description !== undefined && (
 						<InputField
-							label={labels.description}
-							id={`${name}.${index}.description`}
-							type="text"
-							register={register}
-							errors={errors}
 							className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+							errors={errors}
+							id={`${name}.${index}.description`}
+							label={labels.description}
+							register={register}
+							type="text"
 						/>
 					)}
 					{item.materialType !== undefined && (
 						<div>
 							<InputField
-								label={labels.description}
-								id={`${name}.${index}.materialType`}
-								type="text"
-								register={register}
-								errors={errors}
 								className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+								errors={errors}
+								id={`${name}.${index}.materialType`}
+								label={labels.description}
 								list={`${name}-list-${index}`}
+								register={register}
+								type="text"
 							/>
 							<datalist id={`${name}-list-${index}`}>
 								{products?.map((product) => (
@@ -88,34 +88,34 @@ export function DynamicFields<
 					)}
 
 					<InputField
-						label={labels.amount}
-						id={`${name}.${index}.${item.amount !== undefined ? 'amount' : 'materialCostPerUnit'}`}
-						type="number"
-						register={register}
-						errors={errors}
 						className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+						errors={errors}
+						id={`${name}.${index}.${item.amount !== undefined ? 'amount' : 'materialCostPerUnit'}`}
+						label={labels.amount}
 						min="0"
+						register={register}
 						step="0.01"
+						type="number"
 						valueAsNumber
 					/>
 
 					<InputField
-						label={labels.quantity}
-						id={`${name}.${index}.${item.quantity !== undefined ? 'quantity' : 'materialUnits'}`}
-						type="number"
-						register={register}
-						errors={errors}
 						className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+						errors={errors}
+						id={`${name}.${index}.${item.quantity !== undefined ? 'quantity' : 'materialUnits'}`}
+						label={labels.quantity}
 						min="1"
+						register={register}
 						step="1"
+						type="number"
 						valueAsNumber
 					/>
 
 					{fields.length > 1 && (
 						<Button
-							type="button"
-							onClick={() => remove(index)}
 							className="mt-2"
+							onClick={() => remove(index)}
+							type="button"
 						>
 							Remove {labels.description} Item
 						</Button>
@@ -124,9 +124,9 @@ export function DynamicFields<
 			))}
 
 			<Button
-				type="button"
-				onClick={() => append(newItem())}
 				className="mt-2"
+				onClick={() => append(newItem())}
+				type="button"
 			>
 				Add {labels.description} Item
 			</Button>

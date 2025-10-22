@@ -1,7 +1,7 @@
 'use client'
 import * as Popover from '@radix-ui/react-popover'
-import SendEmailComponent from '@/components/ui/emails/send-email-component'
 import { useState } from 'react'
+import SendEmailComponent from '@/components/ui/emails/send-email-component'
 
 export const ClientEmailPopover = ({
 	clientFullName,
@@ -26,7 +26,7 @@ export const ClientEmailPopover = ({
 	}
 
 	return (
-		<Popover.Root open={open} onOpenChange={setOpen}>
+		<Popover.Root onOpenChange={setOpen} open={open}>
 			<Popover.Trigger asChild>
 				<button className="cursor-pointer text-blue-600 hover:underline">
 					{clientEmailAddress}
@@ -38,10 +38,10 @@ export const ClientEmailPopover = ({
 			>
 				<div className="flex flex-col gap-4 ">
 					<SendEmailComponent
-						popover={true}
 						clientEmail={clientEmailAddress}
 						clientName={clientFullName}
 						onEmailSent={closePopOver}
+						popover={true}
 					/>
 				</div>
 			</Popover.Content>

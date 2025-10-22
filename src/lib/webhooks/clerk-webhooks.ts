@@ -1,14 +1,14 @@
+import { clerkClient } from '@clerk/nextjs/server'
 import { neon } from '@neondatabase/serverless'
+import { v4 as uuidv4 } from 'uuid'
+import { handleOrganizationDeletedDb } from '../DB/org-db'
+import { deleteClientsBlobs } from '../utils/blobs'
 import {
 	addNovuSubscriber,
 	deleteNovuSubscriber,
 	triggerNotificationSendToAdmin,
 } from '../utils/novu'
-import { v4 as uuidv4 } from 'uuid'
-import { clerkClient } from '@clerk/nextjs/server'
-import { handleOrganizationDeletedDb } from '../DB/org-db'
 import { deleteStripeWebhookRoute } from '../utils/stripe-utils'
-import { deleteClientsBlobs } from '../utils/blobs'
 
 export async function handleUserCreated(
 	userId: string,

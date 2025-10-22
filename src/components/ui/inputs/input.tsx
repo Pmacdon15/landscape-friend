@@ -34,13 +34,13 @@ export const InputField = React.forwardRef<
 			return (
 				<div className="flex flex-col w-full">
 					<textarea
+						className={`border rounded h-46 md:h-36 sm p-1 bg-white ${className} ${error ? 'border-red-500' : ''}`}
+						defaultValue={defaultValue as string}
 						id={name}
 						name={name}
 						placeholder={placeholder}
-						required={required}
-						className={`border rounded h-46 md:h-36 sm p-1 bg-white ${className} ${error ? 'border-red-500' : ''}`}
-						defaultValue={defaultValue as string}
 						ref={ref as React.ForwardedRef<HTMLTextAreaElement>}
+						required={required}
 						{...rest}
 					/>
 					{error && (
@@ -53,15 +53,15 @@ export const InputField = React.forwardRef<
 		return (
 			<div className="flex flex-col w-full">
 				<input
+					className={`border rounded sm p-1 bg-white ${className} ${error ? 'border-red-500' : ''}`}
+					defaultValue={defaultValue}
 					id={name}
 					name={name}
-					type={type}
 					placeholder={placeholder}
-					required={required}
-					className={`border rounded sm p-1 bg-white ${className} ${error ? 'border-red-500' : ''}`}
-					step={step || 1}
-					defaultValue={defaultValue}
 					ref={ref as React.ForwardedRef<HTMLInputElement>}
+					required={required}
+					step={step || 1}
+					type={type}
 					{...rest}
 				/>
 				{error && <p className="text-red-500 text-xs mt-1">{error}</p>}

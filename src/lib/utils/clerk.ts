@@ -1,8 +1,12 @@
-// import { auth, clerkClient } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import type { OrgMember } from '@/types/clerk-types'
 
+type AuthProtectResult = Awaited<ReturnType<typeof auth.protect>>
+type AuthResult = Awaited<ReturnType<typeof auth>>
+type CombinedAuthResult = AuthProtectResult | AuthResult
+
 export async function isOrgAdmin(protect = true) {
-	let authResult:{userId:string, orgId:string, sessionClaims:}
+	let authResult: CombinedAuthResult
 	if (protect) {
 		authResult = await auth.protect()
 	} else {

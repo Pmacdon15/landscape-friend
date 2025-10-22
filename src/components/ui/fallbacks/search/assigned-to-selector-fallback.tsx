@@ -3,8 +3,8 @@ export function AssignedToSelectorFallback() {
 		<div className="flex gap-1  ">
 			<label className="flex items-center">Assigned To </label>
 			<select
-				name={'assigned_to'}
 				className="w-fit border rounded-sm text-center py-2"
+				name={'assigned_to'}
 				value=""
 			>
 				<option value="">Select Member</option>

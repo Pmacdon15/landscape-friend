@@ -1,10 +1,10 @@
 'use client'
 import { XMarkIcon } from '@heroicons/react/24/solid'
+import { ImagePlusIcon } from 'lucide-react'
 import Image from 'next/image'
 import React, { useState } from 'react'
-import { ImagePlusIcon } from 'lucide-react'
+import type { ImageGalleryProps } from '@/types/components-types'
 import DeleteSiteMapButton from '../buttons/delete-site-map-button'
-import { ImageGalleryProps } from '@/types/components-types'
 
 export default function ImageGallery({
 	isAdmin,
@@ -19,8 +19,8 @@ export default function ImageGallery({
 					className={`flex flex-nowrap absolute top-1 right-1 z-10 px-4 py-2`}
 				>
 					<button
-						onClick={() => setView('add')}
 						className="select-none cursor-pointer px-6 py-2 bg-background rounded border shadow-lg hover:bg-green-300"
+						onClick={() => setView('add')}
 					>
 						<ImagePlusIcon className="w-5 h-5 text-white" />
 					</button>
@@ -29,21 +29,21 @@ export default function ImageGallery({
 
 			<div className="flex flex-wrap justify-center align-middle items-center h-full">
 				{client.images?.map((image, index) => (
-					<div key={index} className="relative">
+					<div className="relative" key={index}>
 						<DeleteSiteMapButton
 							clientId={client.id}
 							siteMapId={image.id}
 						/>
 
 						<Image
+							alt={`Image ${index + 1}`}
 							className="p-2 hover:cursor-zoom-in"
+							height={300}
 							onClick={() => {
 								setPreviewSrc(image.url)
 							}}
 							src={image.url}
-							alt={`Image ${index + 1}`}
 							width={300}
-							height={300}
 						/>
 					</div>
 				))}
@@ -53,10 +53,10 @@ export default function ImageGallery({
 			{previewSrc && (
 				<div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
 					<Image
-						src={previewSrc}
 						alt="Full screen preview"
-						fill
 						className="object-contain"
+						fill
+						src={previewSrc}
 					/>
 					<button
 						className="absolute top-4 right-4 text-white p-2 hover:bg-gray-800 rounded-full"

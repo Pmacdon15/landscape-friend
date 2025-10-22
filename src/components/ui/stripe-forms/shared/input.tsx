@@ -1,11 +1,11 @@
 // components/InputField.tsx
 import React from 'react'
 import {
-	FieldErrors,
-	FieldValues,
-	Path,
-	UseFormRegister,
+	type FieldErrors,
+	type FieldValues,
 	get,
+	type Path,
+	type UseFormRegister,
 } from 'react-hook-form'
 
 interface InputFieldProps<TFieldValues extends FieldValues> {
@@ -40,21 +40,21 @@ const InputField = <TFieldValues extends FieldValues>({
 	return (
 		<div>
 			<label
-				htmlFor={id}
 				className="block text-sm font-medium text-gray-700"
+				htmlFor={id}
 			>
 				{label}
 			</label>
 			<input
-				type={type}
 				id={id}
+				type={type}
 				{...register(id as Path<TFieldValues>, { valueAsNumber })}
-				className={className}
-				min={min}
-				step={step}
 				aria-invalid={error ? 'true' : 'false'}
+				className={className}
 				disabled={disabled}
 				list={list}
+				min={min}
+				step={step}
 			/>
 			{error && (
 				<p className="text-red-500 text-sm mt-1">{error.message}</p>

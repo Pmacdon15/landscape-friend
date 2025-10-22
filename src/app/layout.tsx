@@ -1,15 +1,15 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import Header from '../components/ui/header/header'
 import { ClerkProvider } from '@clerk/nextjs'
-import PageContainer from '../components/ui/containers/page-container'
-import Footer from '@/components/ui/footer/footer'
-import { Toaster } from '@/components/ui/sonner'
-import FCMProvider from '@/components/providers/fcm-provider'
-import HeaderHeader from '@/components/ui/header/header-header'
-import QueryProviders from '../components/providers/query-providers'
 import { Analytics } from '@vercel/analytics/next'
+import FCMProvider from '@/components/providers/fcm-provider'
+import Footer from '@/components/ui/footer/footer'
+import HeaderHeader from '@/components/ui/header/header-header'
+import { Toaster } from '@/components/ui/sonner'
+import QueryProviders from '../components/providers/query-providers'
+import PageContainer from '../components/ui/containers/page-container'
+import Header from '../components/ui/header/header'
 
 export const experimental_ppr = true
 
@@ -40,6 +40,7 @@ export default async function RootLayout({
 				<FCMProvider>
 					<html lang="en">
 						<body
+							className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 							style={{
 								margin: 0,
 								padding: 0,
@@ -47,7 +48,6 @@ export default async function RootLayout({
 								display: 'flex',
 								flexDirection: 'column',
 							}}
-							className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 						>
 							<div
 								style={{

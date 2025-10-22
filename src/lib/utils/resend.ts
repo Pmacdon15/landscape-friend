@@ -1,8 +1,8 @@
-import { Resend } from 'resend'
-import HeaderEmail from '@/components/ui/emails/header-email'
-import { schemaSendEmail } from '../zod/schemas'
-import z from 'zod'
 import type React from 'react'
+import { Resend } from 'resend'
+import type z from 'zod'
+import HeaderEmail from '@/components/ui/emails/header-email'
+import type { schemaSendEmail } from '../zod/schemas'
 
 export function formatSenderEmailAddress(sessionClaims: {
 	orgName?: string

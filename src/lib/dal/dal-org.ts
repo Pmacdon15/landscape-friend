@@ -1,5 +1,5 @@
-import { OrgMember } from '@/types/clerk-types'
 import { auth, clerkClient } from '@clerk/nextjs/server'
+import type { OrgMember } from '@/types/clerk-types'
 
 export async function fetchOrgMembers(): Promise<OrgMember[]> {
 	const { orgId, sessionClaims } = await auth.protect()

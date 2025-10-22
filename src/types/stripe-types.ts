@@ -1,4 +1,4 @@
-import { Subscription } from './subscription-types'
+import type { Subscription } from './subscription-types'
 
 export interface FetchSubscriptionsResponse {
 	subscriptions: Subscription[]

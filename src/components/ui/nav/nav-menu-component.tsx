@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -8,7 +9,6 @@ import {
 } from '@/components/ui/navigation-menu'
 import { useGetIsAdmin } from '@/lib/hooks/useClerk'
 import { useHasStripeApiKey } from '@/lib/hooks/useStripe'
-import Link from 'next/link'
 
 export default function NavigationMenuComponent({
 	userId,
@@ -59,6 +59,7 @@ export default function NavigationMenuComponent({
 								</NavigationMenuLink>
 								<NavigationMenuLink asChild>
 									<Link
+										as={`/lists/clearing?date=${today}&assigned=${userId}`}
 										href={{
 											pathname: '/lists/clearing',
 											query: {
@@ -66,7 +67,6 @@ export default function NavigationMenuComponent({
 												assigned: userId,
 											},
 										}}
-										as={`/lists/clearing?date=${today}&assigned=${userId}`}
 										prefetch={false}
 									>
 										<div className="font-medium">

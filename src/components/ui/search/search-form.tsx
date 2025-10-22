@@ -1,13 +1,13 @@
-import { ServiceListDatePicker } from '../service-list/service-list-date-picker'
-import { ServiceStatusSelector } from '../selectors/service-status-selector'
-import { CuttingPeriodSelector } from '../selectors/cutting-period-selector'
-import { BillingStatusSelector } from '../selectors/billing-status-selector'
-import { SearchInput } from '../inputs/search-input'
-import { SearchFormVariant } from '@/types/search-fallback-types'
-import { AssignedToSelector } from '../selectors/assigned-to-selector'
-import { OrgMember } from '@/types/clerk-types'
 import { Suspense } from 'react'
+import type { OrgMember } from '@/types/clerk-types'
+import type { SearchFormVariant } from '@/types/search-fallback-types'
 import { AssignedToSelectorFallback } from '../fallbacks/search/assigned-to-selector-fallback'
+import { SearchInput } from '../inputs/search-input'
+import { AssignedToSelector } from '../selectors/assigned-to-selector'
+import { BillingStatusSelector } from '../selectors/billing-status-selector'
+import { CuttingPeriodSelector } from '../selectors/cutting-period-selector'
+import { ServiceStatusSelector } from '../selectors/service-status-selector'
+import { ServiceListDatePicker } from '../service-list/service-list-date-picker'
 
 export default function SearchForm({
 	variant = 'default',

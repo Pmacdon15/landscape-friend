@@ -1,6 +1,6 @@
+import type { Route } from 'next'
 import Link from 'next/link'
 import { Button } from '../button'
-import { Route } from 'next'
 
 export default function BackToLink({
 	path,

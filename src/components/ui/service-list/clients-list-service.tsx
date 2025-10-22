@@ -1,10 +1,10 @@
-import { PaginationTabs } from '../pagination/pagination-tabs'
-import ManyPointsMap from '../map-component/many-points-map'
+import type { Client, PaginatedClients } from '@/types/clients-types'
+import MarkYardServiced from '../buttons/mark-yard-serviced'
 import FormContainer from '../containers/form-container'
 import FormHeader from '../header/form-header'
-import { Client, PaginatedClients } from '@/types/clients-types'
+import ManyPointsMap from '../map-component/many-points-map'
+import { PaginationTabs } from '../pagination/pagination-tabs'
 import ClientDetailsCard from './client-details/ClientDetailsCard'
-import MarkYardServiced from '../buttons/mark-yard-serviced'
 
 export default async function ClientListService({
 	clientsPromise,
@@ -73,8 +73,8 @@ export default async function ClientListService({
 					</FormContainer>
 				)}
 				<PaginationTabs
-					path={`${!snow ? '/lists/cutting' : '/lists/clearing'}`}
 					page={page}
+					path={`${!snow ? '/lists/cutting' : '/lists/clearing'}`}
 					totalPages={totalPages}
 				/>
 				{clients.map((client: Client) => (
@@ -99,8 +99,8 @@ export default async function ClientListService({
 				))}
 			</ul>
 			<PaginationTabs
-				path={`${!snow ? '/lists/cutting' : '/lists/clearing'}`}
 				page={page}
+				path={`${!snow ? '/lists/cutting' : '/lists/clearing'}`}
 				totalPages={totalPages}
 			/>
 		</>

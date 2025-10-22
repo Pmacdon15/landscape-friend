@@ -18,12 +18,12 @@ export default function CreateSubscriptionFormFallback() {
 				</h3>
 				<div>
 					<label
-						htmlFor="serviceType"
 						className="block text-sm font-medium text-gray-700"
+						htmlFor="serviceType"
 					>
 						Service Type
 					</label>
-					<select id="serviceType" className={inputClassName}>
+					<select className={inputClassName} id="serviceType">
 						<option value="weekly">Weekly</option>
 						<option value="bi-weekly">Bi-Weekly</option>
 						<option value="monthly">Monthly</option>
@@ -31,44 +31,44 @@ export default function CreateSubscriptionFormFallback() {
 					</select>
 				</div>
 				<label
-					htmlFor="price_per_month"
 					className="block text-sm font-medium text-gray-700"
+					htmlFor="price_per_month"
 				>
 					Price Per Month
 				</label>
 				<input
-					id="price_per_month"
-					type="number"
 					className={inputClassName}
+					defaultValue={0}
+					id="price_per_month"
 					min="0.01"
 					step="0.01"
-					defaultValue={0}
+					type="number"
 				/>
 				<label
-					htmlFor="startDate"
 					className="block text-sm font-medium text-gray-700"
+					htmlFor="startDate"
 				>
 					Start Date
 				</label>
-				<input id="startDate" type="date" className={inputClassName} />
+				<input className={inputClassName} id="startDate" type="date" />
 				<label
-					htmlFor="endDate"
 					className="block text-sm font-medium text-gray-700"
+					htmlFor="endDate"
 				>
 					End Date
 				</label>
-				<input id="endDate" type="date" className={inputClassName} />
+				<input className={inputClassName} id="endDate" type="date" />
 				<label
-					htmlFor="notes"
 					className="block text-sm font-medium text-gray-700"
+					htmlFor="notes"
 				>
 					Notes
 				</label>
-				<input id="notes" type="textarea" className={inputClassName} />
+				<input className={inputClassName} id="notes" type="textarea" />
 			</section>
 
 			<div>
-				<Button variant="outline" type="submit">
+				<Button type="submit" variant="outline">
 					Create Subscription
 				</Button>
 			</div>

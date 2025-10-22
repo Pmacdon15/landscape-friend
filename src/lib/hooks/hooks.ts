@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import {
+import type React from 'react'
+import { useEffect, useState } from 'react'
+
+import type { UseFormReset } from 'react-hook-form'
+import type { MaterialField } from '@/types/components-types'
+import type {
 	FetchGeocodeResult,
 	GeocodeResult,
 	Location,
 } from '@/types/google-map-iframe-types'
-
-import { UseFormReset } from 'react-hook-form'
-import React from 'react'
-import { MaterialField } from '@/types/components-types'
 import { fetchGeocode } from '../actions/geo-codes-action'
 
 export const useDebouncedMutation = <TData>(

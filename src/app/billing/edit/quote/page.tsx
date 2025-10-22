@@ -3,7 +3,7 @@ import FormContainer from '@/components/ui/containers/form-container'
 import FormHeader from '@/components/ui/header/form-header'
 import { EditForm } from '@/components/ui/stripe-forms/stripe-invoice-form/edit-form'
 import { getQuoteDAL } from '@/lib/dal/stripe-dal'
-import { SearchParams } from '@/types/params-types'
+import type { SearchParams } from '@/types/params-types'
 
 export default async function EditInvoicePage({
 	searchParams,

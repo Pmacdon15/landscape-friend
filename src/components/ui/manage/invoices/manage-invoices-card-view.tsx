@@ -1,8 +1,7 @@
 'use client'
-import { StripeInvoice } from '@/types/stripe-types'
-import { DateDisplay } from '../../date-display'
-
+import type { StripeInvoice } from '@/types/stripe-types'
 import ManageInvoiceButton from '../../buttons/manage-invoice-button'
+import { DateDisplay } from '../../date-display'
 import EditInvoiceLink from '../../links/edit-invoice-link'
 
 export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
@@ -10,8 +9,8 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
 		<div className="grid grid-cols-1 gap-4">
 			{invoices.map((invoice) => (
 				<div
-					key={invoice.id}
 					className="bg-white shadow-md rounded-lg p-4"
+					key={invoice.id}
 				>
 					<div className="flex justify-between items-center">
 						<h3 className="text-lg font-semibold">
@@ -56,8 +55,8 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
 						<ul className="mt-2 text-sm">
 							{invoice.lines.data.map((item) => (
 								<li
-									key={item.id}
 									className="flex justify-between"
+									key={item.id}
 								>
 									<span>
 										{item.description} (x{item.quantity})
@@ -70,10 +69,10 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
 					{invoice.hosted_invoice_url && (
 						<div className="mt-4">
 							<a
-								href={invoice.hosted_invoice_url}
-								target="_blank"
-								rel="noopener noreferrer"
 								className="text-blue-500 hover:underline"
+								href={invoice.hosted_invoice_url}
+								rel="noopener noreferrer"
+								target="_blank"
 							>
 								View Invoice
 							</a>
@@ -83,8 +82,8 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
 						{invoice.status === 'draft' ? (
 							<>
 								<ManageInvoiceButton
-									variant="send"
 									invoiceId={invoice.id}
+									variant="send"
 								/>
 								<EditInvoiceLink invoiceId={invoice.id} />
 							</>
@@ -92,8 +91,8 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
 							invoice.status !== 'void' &&
 							invoice.status !== 'paid' && (
 								<ManageInvoiceButton
-									variant="resend"
 									invoiceId={invoice.id}
+									variant="resend"
 								/>
 							)
 						)}
@@ -102,12 +101,12 @@ export function CardView({ invoices }: { invoices: StripeInvoice[] }) {
 							invoice.status !== 'void' && (
 								<>
 									<ManageInvoiceButton
-										variant="paid"
 										invoiceId={invoice.id}
+										variant="paid"
 									/>
 									<ManageInvoiceButton
-										variant="void"
 										invoiceId={invoice.id}
+										variant="void"
 									/>
 								</>
 							)}

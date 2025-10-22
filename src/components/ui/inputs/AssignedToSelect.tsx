@@ -1,10 +1,10 @@
 'use client'
+import { use } from 'react'
 import {
 	useAssignGrassCutting,
 	useAssignSnowClearing,
 } from '@/lib/mutations/mutations'
-import { use } from 'react'
-import { OrgMember } from '@/types/clerk-types'
+import type { OrgMember } from '@/types/clerk-types'
 
 export default function AssignedTo({
 	clientAssignedTo,

@@ -1,9 +1,10 @@
 'use client'
-import { CameraIcon, ArrowLeftCircleIcon } from '@heroicons/react/24/solid'
-import React, { useRef } from 'react'
-import { useImageSelector } from '@/lib/hooks/useImageSelector'
+import { ArrowLeftCircleIcon, CameraIcon } from '@heroicons/react/24/solid'
+import type React from 'react'
+import { useRef } from 'react'
 import Spinner from '@/components/ui/loaders/spinner'
-import { Client } from '@/types/clients-types'
+import { useImageSelector } from '@/lib/hooks/useImageSelector'
+import type { Client } from '@/types/clients-types'
 
 export default function ImageSelectorMain({
 	setView,
@@ -41,9 +42,9 @@ export default function ImageSelectorMain({
 				className={`flex flex-nowrap absolute top-2 right-2  px-4 py-2`}
 			>
 				<button
-					onClick={saveDrawing}
 					className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
 					disabled={isLoading}
+					onClick={saveDrawing}
 				>
 					{isLoading ? (
 						<Spinner />
@@ -52,21 +53,21 @@ export default function ImageSelectorMain({
 					)}
 				</button>
 				<button
-					onClick={backButton}
 					className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
+					onClick={backButton}
 				>
 					<ArrowLeftCircleIcon className="w-5 h-5 text-white" />
 				</button>
 			</div>
 
 			<div
+				className={`relative w-full h-full `}
 				id="map-container"
 				ref={mapContainerRef}
-				className={`relative w-full h-full `}
 			>
 				<div
-					ref={mapElementRef}
 					className="w-full h-full absolute top-0 left-0"
+					ref={mapElementRef}
 				/>
 
 				{showGeocodeSelector && (
@@ -81,8 +82,8 @@ export default function ImageSelectorMain({
 										result.formatted_address
 									return (
 										<li
-											key={i}
 											className="px-4 py-2 hover:bg-gray-100"
+											key={i}
 											onClick={() =>
 												handleLocationSelect(result)
 											}

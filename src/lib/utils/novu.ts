@@ -1,7 +1,7 @@
 import { Novu } from '@novu/api'
-import { getOrgMembers } from './clerk'
+import type { PayloadType } from '@/types/webhooks-types'
 import { getNovuIds } from '../DB/clients-db'
-import { PayloadType } from '@/types/webhooks-types'
+import { getOrgMembers } from './clerk'
 
 export async function addNovuSubscriber(
 	subscriberId: string,

@@ -38,7 +38,7 @@ export default function SendEmailComponent({
 			</form>
 			<div className="w-full flex justify-center">
 				{popover && (
-					<Button type="button" onClick={() => onEmailSent?.(false)}>
+					<Button onClick={() => onEmailSent?.(false)} type="button">
 						Cancel
 					</Button>
 				)}

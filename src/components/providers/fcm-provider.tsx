@@ -1,22 +1,22 @@
 'use client'
-import {
-	useState,
-	useEffect,
-	createContext,
-	useContext,
-	useRef,
-	useCallback,
-} from 'react'
+import { useUser } from '@clerk/clerk-react'
 import { initializeApp } from 'firebase/app'
 import {
 	getMessaging,
 	getToken,
+	type Messaging,
 	onMessage,
-	Messaging,
 } from 'firebase/messaging'
-import { useUser } from '@clerk/clerk-react'
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from 'react'
 import { registerNovuDevice } from '@/lib/actions/novu-action'
-import { FCMContextType } from '@/types/fcm-types'
+import type { FCMContextType } from '@/types/fcm-types'
 
 const firebaseConfig = {
 	apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,

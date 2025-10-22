@@ -1,4 +1,4 @@
-import { VariantBillingStatusSelector } from '@/types/search-fallback-types'
+import type { VariantBillingStatusSelector } from '@/types/search-fallback-types'
 
 export function BillingStatusSelectorFallback({
 	variant = 'invoices',
@@ -12,8 +12,8 @@ export function BillingStatusSelectorFallback({
 
 	return (
 		<select
-			name="status"
 			className="w-fit border rounded-sm text-center p-2"
+			name="status"
 		>
 			{statuses.map((status) => (
 				<option key={status} value={status}>

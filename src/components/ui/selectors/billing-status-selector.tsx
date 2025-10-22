@@ -1,5 +1,5 @@
 'use client'
-import { VariantBillingStatusSelector } from '@/types/search-fallback-types'
+import type { VariantBillingStatusSelector } from '@/types/search-fallback-types'
 import { useBillingStatusSearch } from '../../../lib/hooks/hooks'
 
 export function BillingStatusSelector({
@@ -17,10 +17,10 @@ export function BillingStatusSelector({
 
 	return (
 		<select
-			name="status"
 			className="w-fit border rounded-sm text-center p-2"
-			value={currentStatus}
+			name="status"
 			onChange={(e) => setBillingStatus(e.target.value)}
+			value={currentStatus}
 		>
 			{statuses.map((status) => (
 				<option key={status} value={status}>

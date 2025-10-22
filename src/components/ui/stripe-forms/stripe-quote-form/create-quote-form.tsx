@@ -1,20 +1,18 @@
 'use client'
-import { useCreateStripeQuote } from '@/lib/mutations/mutations'
-import { Button } from '@/components/ui/button'
-import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { schemaCreateQuote } from '@/lib/zod/schemas'
+import { use, useEffect } from 'react'
+import { useFieldArray, useForm } from 'react-hook-form'
+import type Stripe from 'stripe'
+import type { z } from 'zod'
+import { Button } from '@/components/ui/button'
 import { useCreateQuoteForm } from '@/lib/hooks/hooks'
-import { z } from 'zod'
-import InputField from '../shared/input'
-
+import { useCreateStripeQuote } from '@/lib/mutations/mutations'
+import { inputClassName } from '@/lib/values'
+import { schemaCreateQuote } from '@/lib/zod/schemas'
+import type { CreateSubscriptionFormProps } from '@/types/forms-types'
 import Spinner from '../../loaders/spinner'
 import { AlertMessage } from '../shared/alert-message'
-
-import { use, useEffect } from 'react'
-import Stripe from 'stripe'
-import { CreateSubscriptionFormProps } from '@/types/forms-types'
-import { inputClassName } from '@/lib/values'
+import InputField from '../shared/input'
 import { QuoteLineItem } from './quote-line-item'
 
 export function CreateQuoteForm({
@@ -97,7 +95,7 @@ export function CreateQuoteForm({
 
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 				<input
 					type="hidden"
 					{...register('organization_id')}
@@ -111,16 +109,16 @@ export function CreateQuoteForm({
 					</h3>
 					<div>
 						<label
-							htmlFor="clientName"
 							className="block text-sm font-medium text-gray-700"
+							htmlFor="clientName"
 						>
 							Name
 						</label>
 						<input
 							id="clientName"
 							{...register('clientName')}
-							list="clients-list"
 							className={inputClassName}
+							list="clients-list"
 						/>
 						<datalist id="clients-list">
 							{clients.map((client) => (
@@ -132,31 +130,31 @@ export function CreateQuoteForm({
 						</datalist>
 					</div>
 					<InputField
-						label="Email"
+						className={inputClassName}
+						disabled={isClientSelected}
+						errors={errors}
 						id="clientEmail"
-						type="text"
+						label="Email"
 						register={register}
-						errors={errors}
-						className={inputClassName}
-						disabled={isClientSelected}
+						type="text"
 					/>
 					<InputField
-						label="Phone Number"
+						className={inputClassName}
+						disabled={isClientSelected}
+						errors={errors}
 						id="phone_number"
-						type="text"
+						label="Phone Number"
 						register={register}
-						errors={errors}
-						className={inputClassName}
-						disabled={isClientSelected}
+						type="text"
 					/>
 					<InputField
-						label="Address"
-						id="address"
-						type="text"
-						register={register}
-						errors={errors}
 						className={inputClassName}
 						disabled={isClientSelected}
+						errors={errors}
+						id="address"
+						label="Address"
+						register={register}
+						type="text"
 					/>
 				</section>
 
@@ -164,25 +162,25 @@ export function CreateQuoteForm({
 				<section>
 					<h3 className="text-md font-semibold mb-2">Cost Details</h3>
 					<InputField
-						label="Labour Cost (per unit)"
-						id="labourCostPerUnit"
-						type="number"
-						register={register}
-						errors={errors}
 						className={inputClassName}
+						errors={errors}
+						id="labourCostPerUnit"
+						label="Labour Cost (per unit)"
 						min="0"
+						register={register}
 						step="0.01"
+						type="number"
 						valueAsNumber
 					/>
 					<InputField
-						label="Labour Units"
-						id="labourUnits"
-						type="number"
-						register={register}
-						errors={errors}
 						className={inputClassName}
+						errors={errors}
+						id="labourUnits"
+						label="Labour Units"
 						min="1"
+						register={register}
 						step="1"
+						type="number"
 						valueAsNumber
 					/>
 				</section>
@@ -193,18 +191,18 @@ export function CreateQuoteForm({
 					{fields.map((item, index) => (
 						<div key={item.id}>
 							<QuoteLineItem
-								index={index}
 								control={control}
-								register={register}
 								errors={errors}
-								setValue={setValue}
+								index={index}
 								products={products}
+								register={register}
+								setValue={setValue}
 							/>
 							{fields.length > 1 && (
 								<Button
-									type="button"
-									onClick={() => remove(index)}
 									className="mt-2"
+									onClick={() => remove(index)}
+									type="button"
 								>
 									Remove Material
 								</Button>
@@ -212,7 +210,7 @@ export function CreateQuoteForm({
 						</div>
 					))}
 					<Button
-						type="button"
+						className="mt-2"
 						onClick={() =>
 							append({
 								materialType: '',
@@ -220,7 +218,7 @@ export function CreateQuoteForm({
 								materialUnits: 0,
 							})
 						}
-						className="mt-2"
+						type="button"
 					>
 						Add Material
 					</Button>
@@ -229,9 +227,9 @@ export function CreateQuoteForm({
 				<p className="font-bold mt-2">Total: ${total.toFixed(2)}</p>
 				<div>
 					<Button
-						variant="outline"
-						type="submit"
 						disabled={isPending}
+						type="submit"
+						variant="outline"
 					>
 						{isPending ? (
 							<>
@@ -250,14 +248,14 @@ export function CreateQuoteForm({
 			{/* Alerts */}
 			{isSuccess && data && (
 				<AlertMessage
-					type="success"
 					message="Quote created successfully!"
+					type="success"
 				/>
 			)}
 			{isError && error && (
 				<AlertMessage
-					type="error"
 					message={`Error creating quote: ${error.message}`}
+					type="error"
 				/>
 			)}
 		</>

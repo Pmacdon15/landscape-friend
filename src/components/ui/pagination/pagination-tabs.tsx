@@ -1,3 +1,4 @@
+import type { Route } from 'next'
 import {
 	Pagination,
 	PaginationContent,
@@ -7,7 +8,6 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from '@/components/ui/pagination'
-import { Route } from 'next'
 
 export function PaginationTabs({
 	fullWidth = false,

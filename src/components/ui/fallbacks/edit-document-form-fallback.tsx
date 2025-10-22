@@ -11,45 +11,45 @@ export function EditDocumentFormFallback() {
 				<div className="border p-4 mb-4 rounded-md">
 					<div>
 						<label
-							htmlFor={`lines.description`}
 							className="block text-sm font-medium text-gray-700"
+							htmlFor={`lines.description`}
 						>
 							Description:
 						</label>
 						<input
-							type="text"
-							id={`lines.description`}
 							className={inputClassName}
+							id={`lines.description`}
+							type="text"
 						/>
 					</div>
 					<div>
 						<label
-							htmlFor={`lines.amount`}
 							className="block text-sm font-medium text-gray-700"
+							htmlFor={`lines.amount`}
 						>
 							Amount (per unit):
 						</label>
 						<input
-							type="number"
-							id={`lines.amount`}
 							className={inputClassName}
+							id={`lines.amount`}
 							min="0"
 							step="0.01"
+							type="number"
 						/>
 					</div>
 					<div>
 						<label
-							htmlFor={`lines.quantity`}
 							className="block text-sm font-medium text-gray-700"
+							htmlFor={`lines.quantity`}
 						>
 							Quantity:
 						</label>
 						<input
-							type="number"
-							id={`lines.quantity`}
 							className={inputClassName}
+							id={`lines.quantity`}
 							min="1"
 							step="1"
+							type="number"
 						/>
 					</div>
 					<Button className="mt-2">Remove Line</Button>
@@ -59,7 +59,7 @@ export function EditDocumentFormFallback() {
 				<h3 className="text-md font-semibold mb-2">Totals</h3>
 				<p className="font-bold">Grand Total: ${(0o0).toFixed(2)}</p>
 			</section>
-			<Button variant="outline" type="submit">
+			<Button type="submit" variant="outline">
 				Update Invoice
 			</Button>
 		</form>

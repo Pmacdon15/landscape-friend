@@ -1,9 +1,9 @@
-import { Email, NamesAndEmails } from '@/types/clients-types'
+import type { JwtPayload } from '@clerk/types'
 import { neon } from '@neondatabase/serverless'
+import type z from 'zod'
+import type { Email, NamesAndEmails } from '@/types/clients-types'
 import { sendGroupEmail } from '../utils/resend'
-import { schemaSendEmail } from '../zod/schemas'
-import { JwtPayload } from '@clerk/types'
-import z from 'zod'
+import type { schemaSendEmail } from '../zod/schemas'
 
 //MARK: Send newsletter
 export async function sendNewsLetterDb(

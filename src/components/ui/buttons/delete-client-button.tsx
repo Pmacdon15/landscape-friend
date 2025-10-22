@@ -6,8 +6,8 @@ export default function DeleteClientButton({ clientId }: { clientId: number }) {
 	return (
 		<div className="absolute top-1 right-1">
 			<Alert
-				variant={'remove-client'}
 				functionAction={() => mutate(clientId)}
+				variant={'remove-client'}
 			/>
 		</div>
 	)

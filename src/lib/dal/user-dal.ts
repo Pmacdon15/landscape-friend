@@ -1,6 +1,6 @@
-import { UserNovuId } from '@/types/novu-types'
 import { auth } from '@clerk/nextjs/server'
 import { neon } from '@neondatabase/serverless'
+import type { UserNovuId } from '@/types/novu-types'
 
 export async function fetchNovuId(userId: string): Promise<UserNovuId | null> {
 	await auth.protect()

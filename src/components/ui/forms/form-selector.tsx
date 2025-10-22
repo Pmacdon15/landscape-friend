@@ -1,12 +1,13 @@
 'use client'
-import React, { Suspense, useState } from 'react'
+import type React from 'react'
+import { Suspense, useState } from 'react'
 import FormHeader from '@/components/ui/header/form-header' // Import FormHeader
 import { CreateQuoteForm } from '@/components/ui/stripe-forms/stripe-quote-form/create-quote-form'
 import { CreateSubscriptionForm } from '@/components/ui/stripe-forms/stripe-subscription-form/create-subscription-form'
-import BackToLink from '../links/back-to-link'
-import { CreateSubscriptionFormProps } from '@/types/forms-types'
+import type { CreateSubscriptionFormProps } from '@/types/forms-types'
 import { CreateQuoteFormFallback } from '../fallbacks/quotes/create-quote-form-fallback'
 import CreateSubscriptionFormFallback from '../fallbacks/quotes/create-subscription-form-fallback'
+import BackToLink from '../links/back-to-link'
 
 export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({
 	organizationIdPromise,
@@ -42,16 +43,16 @@ export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({
 				{formType === 'quote' ? (
 					<Suspense fallback={<CreateQuoteFormFallback />}>
 						<CreateQuoteForm
-							organizationIdPromise={organizationIdPromise}
 							clientsPromise={clientsPromise}
+							organizationIdPromise={organizationIdPromise}
 							productsPromise={productsPromise}
 						/>
 					</Suspense>
 				) : (
 					<Suspense fallback={<CreateSubscriptionFormFallback />}>
 						<CreateSubscriptionForm
-							organizationIdPromise={organizationIdPromise}
 							clientsPromise={clientsPromise}
+							organizationIdPromise={organizationIdPromise}
 						/>
 					</Suspense>
 				)}

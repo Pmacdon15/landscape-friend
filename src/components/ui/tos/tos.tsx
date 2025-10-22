@@ -24,8 +24,8 @@ export function TosSection({
 				{formattedText}
 				{email && (
 					<Link
-						href="mailto:support@landscapefriend.com"
 						className="underline text-blue-600"
+						href="mailto:support@landscapefriend.com"
 					>
 						support@landscapefriend.com
 					</Link>

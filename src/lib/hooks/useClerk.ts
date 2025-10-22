@@ -1,5 +1,5 @@
-import { getIsAdminAction } from '@/lib/actions/clerk-actions'
 import { useQuery } from '@tanstack/react-query'
+import { getIsAdminAction } from '@/lib/actions/clerk-actions'
 
 export const useGetIsAdmin = () => {
 	return useQuery({

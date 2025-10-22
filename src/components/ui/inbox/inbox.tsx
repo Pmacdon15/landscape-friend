@@ -47,12 +47,17 @@ export default function NotificationInbox({
 	}
 	return (
 		<Inbox
+			appearance={appearance}
 			applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
-			subscriber={`${userNovuId}`}
-			renderSubject={(notification) => (
-				<>
-					<strong>{notification.subject ?? 'No Subject'}</strong>
-				</>
+			renderAvatar={() => (
+				<div className="w-8 h-8 rounded-full bg-[#138b10] flex items-center justify-center text-sm font-bold">
+					<Image
+						alt={'Logo'}
+						height={100}
+						src={'/logo.png'}
+						width={100}
+					/>
+				</div>
 			)}
 			renderCustomActions={(notification) => {
 				return (
@@ -65,7 +70,6 @@ export default function NotificationInbox({
 					>
 						{notification.primaryAction && (
 							<button
-								style={primaryButtonStyle}
 								onClick={() => {
 									if (
 										notification.primaryAction?.redirect
@@ -79,13 +83,13 @@ export default function NotificationInbox({
 										)
 									}
 								}}
+								style={primaryButtonStyle}
 							>
 								{notification.primaryAction.label}
 							</button>
 						)}
 						{notification.secondaryAction && (
 							<button
-								style={secondaryButtonStyle}
 								onClick={() => {
 									if (
 										notification.secondaryAction?.redirect
@@ -99,6 +103,7 @@ export default function NotificationInbox({
 										)
 									}
 								}}
+								style={secondaryButtonStyle}
 							>
 								{notification.secondaryAction.label}
 							</button>
@@ -106,17 +111,12 @@ export default function NotificationInbox({
 					</div>
 				)
 			}}
-			renderAvatar={() => (
-				<div className="w-8 h-8 rounded-full bg-[#138b10] flex items-center justify-center text-sm font-bold">
-					<Image
-						src={'/logo.png'}
-						alt={'Logo'}
-						width={100}
-						height={100}
-					/>
-				</div>
+			renderSubject={(notification) => (
+				<>
+					<strong>{notification.subject ?? 'No Subject'}</strong>
+				</>
 			)}
-			appearance={appearance}
+			subscriber={`${userNovuId}`}
 		/>
 	)
 }

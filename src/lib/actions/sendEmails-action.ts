@@ -1,13 +1,13 @@
 'use server'
+import { auth } from '@clerk/nextjs/server'
 import { sendNewsLetterDb } from '@/lib/DB/resend-db'
+import { isOrgAdmin } from '@/lib/utils/clerk'
 import {
 	formatCompanyName,
 	formatSenderEmailAddress,
 	sendEmail,
 } from '@/lib/utils/resend'
-import { isOrgAdmin } from '@/lib/utils/clerk'
 import { schemaSendEmail } from '@/lib/zod/schemas'
-import { auth } from '@clerk/nextjs/server'
 
 export async function sendEmailWithTemplate(
 	formData: FormData,

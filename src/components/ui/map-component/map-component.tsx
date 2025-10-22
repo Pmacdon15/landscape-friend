@@ -13,7 +13,7 @@ export default async function MapComponent({ address }: { address: string }) {
 
 	return (
 		<div className="flex flex-col md:flex-row w-full bg-background max-h-[300px] rounded-md p-2 ">
-			<iframe title="Map View" src={mapUrl} className="w-full h-full" />
+			<iframe className="w-full h-full" src={mapUrl} title="Map View" />
 		</div>
 	)
 }

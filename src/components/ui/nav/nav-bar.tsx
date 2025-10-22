@@ -1,10 +1,6 @@
 'use client'
-// import * as React from "react"
-import { Button } from '../button'
-import { Suspense } from 'react'
 import { Menu } from 'lucide-react'
-// import NavigationMenuComponent from "./nav-menu-component"
-import VerticalNav from './vertical-nav'
+import { Suspense } from 'react'
 import {
 	Sheet,
 	SheetContent,
@@ -12,6 +8,10 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet'
+// import * as React from "react"
+import { Button } from '../button'
+// import NavigationMenuComponent from "./nav-menu-component"
+import VerticalNav from './vertical-nav'
 
 export function NavBar() {
 	return (
@@ -19,7 +19,7 @@ export function NavBar() {
 			<div>
 				<Sheet>
 					<SheetTrigger asChild>
-						<Button variant="outline" className="p-2 w-9">
+						<Button className="p-2 w-9" variant="outline">
 							<Menu size={24} />
 						</Button>
 					</SheetTrigger>

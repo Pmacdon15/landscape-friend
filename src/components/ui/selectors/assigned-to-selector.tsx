@@ -1,8 +1,8 @@
 'use client'
 
-import { useSearchParam } from '@/lib/hooks/hooks'
-import { OrgMember } from '@/types/clerk-types'
 import { use } from 'react'
+import { useSearchParam } from '@/lib/hooks/hooks'
+import type { OrgMember } from '@/types/clerk-types'
 
 export function AssignedToSelector({
 	orgMembersPromise,
@@ -15,10 +15,10 @@ export function AssignedToSelector({
 	return (
 		<div className="flex gap-1  ">
 			<select
-				name={'assigned_to'}
 				className="w-fit border rounded-sm text-center py-2"
-				value={currentValue}
+				name={'assigned_to'}
 				onChange={(e) => setParam(e.target.value)}
+				value={currentValue}
 			>
 				<option value="">Assigned To</option>
 				{orgMembers.map((orgMember) => (

@@ -22,8 +22,8 @@ export default function SendClientEmailButton({
 
 	return (
 		<Button
-			formAction={(formData) => mutate(formData)}
 			disabled={isPending}
+			formAction={(formData) => mutate(formData)}
 			variant={'outline'}
 		>
 			Send

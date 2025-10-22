@@ -1,12 +1,12 @@
 'use client'
+import { Ban, CreditCard, Send } from 'lucide-react'
 import {
-	useResendInvoice,
 	useMarkInvoicePaid,
 	useMarkInvoiceVoid,
+	useResendInvoice,
 } from '@/lib/mutations/mutations'
 import { Button } from '../button'
 import EllipsisSpinner from '../loaders/EllipsisSpinner'
-import { Ban, CreditCard, Send } from 'lucide-react'
 
 export default function ManageInvoiceButton({
 	invoiceId,
@@ -64,7 +64,7 @@ export default function ManageInvoiceButton({
 		)
 
 	return (
-		<Button variant="outline" disabled={isPending} onClick={handleClick}>
+		<Button disabled={isPending} onClick={handleClick} variant="outline">
 			{buttonText} {isPending && <EllipsisSpinner />}
 		</Button>
 	)

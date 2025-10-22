@@ -1,8 +1,4 @@
 'use client'
-import Link from 'next/link'
-import { useState } from 'react'
-import { useGetIsAdmin } from '@/lib/hooks/useClerk'
-import { useHasStripeApiKey } from '@/lib/hooks/useStripe'
 import {
 	ChevronDownIcon,
 	FileText,
@@ -11,6 +7,10 @@ import {
 	ScrollText,
 	Settings,
 } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
+import { useGetIsAdmin } from '@/lib/hooks/useClerk'
+import { useHasStripeApiKey } from '@/lib/hooks/useStripe'
 import SheetLogoHeader from '../header/sheet-logo-header'
 
 const CollapsibleSection = ({
@@ -63,26 +63,26 @@ export default function VerticalNav() {
 				}
 			>
 				<Link
-					href="/lists/client"
 					className="p-2 hover:bg-accent rounded-md"
+					href="/lists/client"
 				>
 					Client List
 				</Link>
 				<Link
+					className="p-2 hover:bg-accent rounded-md"
 					href={{
 						pathname: '/lists/cutting',
 						query: { date: today },
 					}}
-					className="p-2 hover:bg-accent rounded-md"
 				>
 					Cutting List
 				</Link>
 				<Link
+					className="p-2 hover:bg-accent rounded-md"
 					href={{
 						pathname: '/lists/clearing',
 						query: { date: today },
 					}}
-					className="p-2 hover:bg-accent rounded-md"
 				>
 					Clearing List
 				</Link>
@@ -97,8 +97,8 @@ export default function VerticalNav() {
 				}
 			>
 				<Link
-					href="/email/individual"
 					className="p-2 hover:bg-accent rounded-md"
+					href="/email/individual"
 				>
 					Send Individual
 				</Link>
@@ -113,26 +113,26 @@ export default function VerticalNav() {
 					}
 				>
 					<Link
-						href="/billing/create-quote"
 						className="p-2 hover:bg-accent rounded-md"
+						href="/billing/create-quote"
 					>
 						Create a Quote
 					</Link>
 					<Link
-						href="/billing/manage/quotes"
 						className="p-2 hover:bg-accent rounded-md"
+						href="/billing/manage/quotes"
 					>
 						Manage Quotes
 					</Link>
 					<Link
-						href="/billing/manage/invoices"
 						className="p-2 hover:bg-accent rounded-md"
+						href="/billing/manage/invoices"
 					>
 						Manage Invoices
 					</Link>
 					<Link
-						href="/billing/manage/subscriptions"
 						className="p-2 hover:bg-accent rounded-md"
+						href="/billing/manage/subscriptions"
 					>
 						Manage Subscriptions
 					</Link>
@@ -147,14 +147,14 @@ export default function VerticalNav() {
 				}
 			>
 				<Link
-					href="/documentation/plans"
 					className="p-2 hover:bg-accent rounded-md"
+					href="/documentation/plans"
 				>
 					Plans
 				</Link>
 				<Link
-					href="/documentation/stripe"
 					className="p-2 hover:bg-accent rounded-md"
+					href="/documentation/stripe"
 				>
 					Stripe
 				</Link>
@@ -169,8 +169,8 @@ export default function VerticalNav() {
 					}
 				>
 					<Link
-						href="/settings"
 						className="p-2 hover:bg-accent rounded-md"
+						href="/settings"
 					>
 						Manage settings
 					</Link>

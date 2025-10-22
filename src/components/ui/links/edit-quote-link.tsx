@@ -1,10 +1,10 @@
+import { Edit } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '../button'
-import { Edit } from 'lucide-react'
 
 export default function EditQuoteLink({ quoteId }: { quoteId?: string }) {
 	return (
-		<Link prefetch={false} href={`/billing/edit/quote?quote=${quoteId}`}>
+		<Link href={`/billing/edit/quote?quote=${quoteId}`} prefetch={false}>
 			<Button variant={'outline'}>
 				<>
 					<Edit />

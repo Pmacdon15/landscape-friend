@@ -1,7 +1,7 @@
-import { SearchInputFallback } from './search-input-fallback'
-import { SearchFormVariant } from '@/types/search-fallback-types'
-import { CuttingPeriodSelectorFallback } from './cutting-period-selector-fallback'
+import type { SearchFormVariant } from '@/types/search-fallback-types'
 import { BillingStatusSelectorFallback } from './billing-status-selector-fallback'
+import { CuttingPeriodSelectorFallback } from './cutting-period-selector-fallback'
+import { SearchInputFallback } from './search-input-fallback'
 import { ServiceStatusSelectorFallback } from './service-status-selector'
 import { ServiceListDatePickerFallback } from './servicel-list-date-picker-fallback'
 

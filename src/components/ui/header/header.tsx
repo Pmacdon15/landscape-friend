@@ -8,10 +8,10 @@ import {
 	UserButton,
 	useUser,
 } from '@clerk/nextjs'
-import { NavBar } from '../nav/nav-bar'
 import { useGetNovuId } from '@/lib/hooks/useNovu'
-import Spinner from '../loaders/spinner'
 import NotificationInbox from '../inbox/inbox'
+import Spinner from '../loaders/spinner'
+import { NavBar } from '../nav/nav-bar'
 // import { dark } from '@novu/react/themes';
 
 export default function Header({ children }: { children: React.ReactNode }) {

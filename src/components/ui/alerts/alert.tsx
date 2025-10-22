@@ -1,3 +1,4 @@
+import { X } from 'lucide-react'
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -10,7 +11,6 @@ import {
 	AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { X } from 'lucide-react'
 
 export function Alert({
 	text,
@@ -32,16 +32,16 @@ export function Alert({
 					)}
 					{variant === 'remove-sitemap' && (
 						<button
-							disabled={isPending}
 							className={`border rounded-sm p-1  ${isPending ? 'bg-gray/40' : 'bg-white/40'} `}
+							disabled={isPending}
 						>
 							{text}
 						</button>
 					)}
 					{variant === 'remove-client' && (
 						<button
-							disabled={isPending}
 							className="border rounded-sm bg-white/70"
+							disabled={isPending}
 						>
 							<X size={18} />
 						</button>

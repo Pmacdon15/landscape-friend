@@ -1,7 +1,8 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
-import { useUploadDrawing } from '@/lib/mutations/mutations'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { Client } from '@/types/clients-types'
+import { useUploadDrawing } from '@/lib/mutations/mutations'
+import type { Client } from '@/types/clients-types'
+
 declare global {
 	interface Window {
 		google: typeof google

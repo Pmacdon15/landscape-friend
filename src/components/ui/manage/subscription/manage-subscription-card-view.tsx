@@ -1,7 +1,7 @@
 'use client'
-import { Subscription } from '@/types/subscription-types'
-import { DateDisplay } from '../../date-display'
+import type { Subscription } from '@/types/subscription-types'
 import CancelSubscriptionButton from '../../buttons/cancel-subscription-button'
+import { DateDisplay } from '../../date-display'
 import FormHeader from '../../header/form-header'
 export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
 	return (
@@ -12,8 +12,8 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
 			{subscriptions.map((subscription) => {
 				return (
 					<div
-						key={subscription.id}
 						className="bg-white shadow-md rounded-lg p-4"
+						key={subscription.id}
 					>
 						<div className="flex justify-between items-center">
 							<h3 className="text-lg font-semibold">
@@ -60,8 +60,8 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
 							<ul className="mt-2 text-sm">
 								{subscription.items.data.map((item) => (
 									<li
-										key={item.id}
 										className="flex justify-between"
+										key={item.id}
 									>
 										<span>
 											{item.price.product} (x

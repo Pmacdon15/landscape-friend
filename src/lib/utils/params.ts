@@ -1,4 +1,4 @@
-import { ParsedClientListParams, SearchParams } from '@/types/params-types'
+import type { ParsedClientListParams, SearchParams } from '@/types/params-types'
 
 export function parseClientListParams(
 	params: SearchParams,

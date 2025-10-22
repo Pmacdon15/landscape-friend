@@ -1,8 +1,8 @@
 'use client'
 
+import { useCancelSubscription } from '@/lib/mutations/mutations'
 import { Button } from '../button'
 import EllipsisSpinner from '../loaders/EllipsisSpinner'
-import { useCancelSubscription } from '@/lib/mutations/mutations'
 
 export default function CancelSubscriptionButton({
 	subscriptionId,
@@ -13,9 +13,9 @@ export default function CancelSubscriptionButton({
 	return (
 		<div className="mt-4">
 			<Button
-				variant="destructive"
-				onClick={() => cancelSubscription(subscriptionId)}
 				disabled={isPending}
+				onClick={() => cancelSubscription(subscriptionId)}
+				variant="destructive"
 			>
 				{isPending ? (
 					<>

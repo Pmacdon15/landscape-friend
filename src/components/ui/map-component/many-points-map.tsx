@@ -1,12 +1,11 @@
 'use client'
 import Image from 'next/image'
-
-import FormHeader from '../header/form-header'
 import { useGetLocation, useGetLonAndLatFromAddresses } from '@/lib/hooks/hooks'
-import {
+import type {
 	GeocodeResult,
 	MapComponentProps,
 } from '@/types/google-map-iframe-types'
+import FormHeader from '../header/form-header'
 
 export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	const { userLocation } = useGetLocation()
@@ -51,18 +50,18 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	return (
 		<div className="relative">
 			<Image
-				src={mapUrl}
-				title="Map View"
-				height={800}
-				width={800}
 				alt="Map of uncut yards"
 				className="w-full h-[200px]"
+				height={800}
+				src={mapUrl}
+				title="Map View"
+				width={800}
 			/>
 			<div className="absolute top-2 right-2">
 				<a
 					href={googleMapsUrl}
-					target="_blank"
 					rel="noopener noreferrer"
+					target="_blank"
 				>
 					<button className="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded">
 						View in Google Maps

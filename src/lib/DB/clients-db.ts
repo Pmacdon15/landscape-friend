@@ -1,4 +1,6 @@
-import {
+import { neon } from '@neondatabase/serverless'
+import type z from 'zod'
+import type {
 	schemaAddClient,
 	schemaAssign,
 	schemaAssignSnow,
@@ -8,16 +10,14 @@ import {
 	schemaUpdateCuttingDay,
 	schemaUpdatePricePerMonth,
 } from '@/lib/zod/schemas'
-import { neon } from '@neondatabase/serverless'
-import z from 'zod'
-import {
+import type { BlobUrl } from '@/types/blob-types'
+import type {
 	Account,
 	Client,
 	ClientInfoList,
 	CustomerName,
 } from '@/types/clients-types'
-import { NovuSubscriberIds } from '@/types/novu-types'
-import { BlobUrl } from '@/types/blob-types'
+import type { NovuSubscriberIds } from '@/types/novu-types'
 
 //MARK: Add clients
 

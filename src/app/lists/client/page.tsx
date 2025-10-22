@@ -1,15 +1,15 @@
+import { Suspense } from 'react'
+import AddClientFormContainer from '@/components/ui/client-list/add-client-form-container'
 import ClientListAll from '@/components/ui/client-list/client-list-all'
-import SearchForm from '@/components/ui/search/search-form'
 import FormContainer from '@/components/ui/containers/form-container'
+import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fallback'
 import FormHeader from '@/components/ui/header/form-header'
+import SearchForm from '@/components/ui/search/search-form'
+import { fetchAllClients } from '@/lib/dal/clients-dal'
 import { fetchOrgMembers } from '@/lib/dal/dal-org'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import { Suspense } from 'react'
 import { parseClientListParams } from '@/lib/utils/params'
-import { fetchAllClients } from '@/lib/dal/clients-dal'
-import { SearchParams } from '@/types/params-types'
-import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fallback'
-import AddClientFormContainer from '@/components/ui/client-list/add-client-form-container'
+import type { SearchParams } from '@/types/params-types'
 
 export default async function page({
 	searchParams,
@@ -43,8 +43,8 @@ export default async function page({
 				<FormHeader text={'Client List'} />
 				<Suspense fallback={<SearchFormFallBack />}>
 					<SearchForm
-						orgMembersPromise={orgMembersPromise}
 						isAdmin={isAdmin}
+						orgMembersPromise={orgMembersPromise}
 					/>
 				</Suspense>
 			</FormContainer>
@@ -58,9 +58,9 @@ export default async function page({
 			>
 				<ClientListAll
 					clientsPromise={clientsPromise}
-					page={page}
 					isAdmin={isAdmin}
 					orgMembersPromise={orgMembersPromise}
+					page={page}
 				/>
 			</Suspense>
 		</>

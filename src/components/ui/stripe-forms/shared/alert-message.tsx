@@ -1,7 +1,7 @@
 'use client'
-import { cn } from '@/lib/utils/utils'
 import Link from 'next/link'
-import React from 'react'
+import type React from 'react'
+import { cn } from '@/lib/utils/utils'
 
 interface AlertMessageProps {
 	type: 'success' | 'error' | 'info'

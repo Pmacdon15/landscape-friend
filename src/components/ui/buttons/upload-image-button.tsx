@@ -1,6 +1,6 @@
 'use client'
-import { useUploadImage } from '@/lib/mutations/mutations'
 import { toast } from 'sonner'
+import { useUploadImage } from '@/lib/mutations/mutations'
 import Spinner from '../loaders/spinner'
 
 export default function UploadImageButton({
@@ -22,15 +22,15 @@ export default function UploadImageButton({
 	})
 	return (
 		<button
-			formAction={(formData: FormData) => {
-				mutate({ clientId: clientId, formData })
-			}}
-			disabled={isPending}
 			className={`px-6 py-3 rounded-md shadow-md text-white font-semibold  ${
 				isPending
 					? 'bg-green-400 cursor-not-allowed'
 					: 'bg-background hover:bg-green-500'
 			}`}
+			disabled={isPending}
+			formAction={(formData: FormData) => {
+				mutate({ clientId: clientId, formData })
+			}}
 		>
 			{isPending ? (
 				<div className="flex md:gap-8 justify-center">

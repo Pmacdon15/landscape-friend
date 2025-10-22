@@ -1,6 +1,6 @@
 'use client'
 import { useUpdateCuttingDay } from '@/lib/mutations/mutations'
-import { CuttingSchedule } from '@/types/clients-types'
+import type { CuttingSchedule } from '@/types/clients-types'
 
 function CuttingWeekDropDown({
 	week,
@@ -34,7 +34,6 @@ function CuttingWeekDropDown({
 			{isAdmin ? (
 				<select
 					className="w-28"
-					value={cuttingDay}
 					onChange={(event) =>
 						mutate({
 							clientId,
@@ -42,6 +41,7 @@ function CuttingWeekDropDown({
 							cuttingDay: event.target.value,
 						})
 					}
+					value={cuttingDay}
 				>
 					{days.map((day) => (
 						<option key={day} value={day}>
@@ -81,11 +81,11 @@ export function CuttingWeekDropDownContainer({
 		<div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
 			{schedules.map((schedule, index) => (
 				<CuttingWeekDropDown
-					key={index}
-					week={index + 1}
-					schedule={schedule}
 					clientId={client.id}
 					isAdmin={isAdmin}
+					key={index}
+					schedule={schedule}
+					week={index + 1}
 				/>
 			))}
 		</div>

@@ -1,18 +1,18 @@
-import ContentContainer from '../containers/content-container'
-import MapComponent from '../map-component/map-component'
-import DeleteClientButton from '../buttons/delete-client-button'
-import { PaginationTabs } from '../pagination/pagination-tabs'
-import { CuttingWeekDropDownContainer } from '../cutting-week/cutting-week'
 import { Suspense } from 'react'
+import type { ClientListServiceProps } from '@/types/clients-types'
+import DeleteClientButton from '../buttons/delete-client-button'
+import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
+import { CuttingWeekDropDownContainer } from '../cutting-week/cutting-week'
+import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
 import ImageList from '../image-list/image-list'
-import { ClientListServiceProps } from '@/types/clients-types'
+import AssignedTo from '../inputs/AssignedToSelect'
+import MapComponent from '../map-component/map-component'
+import { PaginationTabs } from '../pagination/pagination-tabs'
+import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
-import AssignedTo from '../inputs/AssignedToSelect'
-import AssignedToFallback from '../fallbacks/assigned-to-fallback'
-import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 
 export default async function ClientListService({
 	clientsPromise,
@@ -42,8 +42,8 @@ export default async function ClientListService({
 	return (
 		<>
 			<PaginationTabs
-				path="/lists/client"
 				page={page}
+				path="/lists/client"
 				totalPages={totalPages}
 			/>
 			<ul className="flex flex-col gap-4 rounded-sm w-full items-center justify-center">
@@ -63,8 +63,8 @@ export default async function ClientListService({
 									clientFullName={client.full_name}
 								/>
 								<ClientListItemAddress
-									clientId={client.id}
 									clientAddress={client.address}
+									clientId={client.id}
 								>
 									<MapComponent address={client.address} />
 								</ClientListItemAddress>
@@ -74,47 +74,47 @@ export default async function ClientListService({
 									<p>Amount owing: ${client.amount_owing} </p>
 									<Suspense fallback={<AssignedToFallback />}>
 										<AssignedTo
-											orgMembersPromise={
-												orgMembersPromise
-											}
 											clientAssignedTo={
 												client.grass_assigned_to ||
 												'not-assigned'
 											}
 											clientId={client.id}
+											orgMembersPromise={
+												orgMembersPromise
+											}
 										/>
 									</Suspense>
 									<Suspense fallback={<AssignedToFallback />}>
 										<AssignedTo
-											orgMembersPromise={
-												orgMembersPromise
-											}
 											clientAssignedTo={
 												client.snow_assigned_to ||
 												'not-assigned'
 											}
 											clientId={client.id}
+											orgMembersPromise={
+												orgMembersPromise
+											}
 											snow
 										/>
 									</Suspense>
 								</div>
 							)}
 							<CuttingWeekDropDownContainer
-								isAdmin={isAdmin}
 								client={{
 									id: client.id,
 									cutting_schedules: client.cutting_schedules,
 								}}
+								isAdmin={isAdmin}
 							/>
 							<ViewSitePhotoSheet clientId={client.id} />
-							<ImageList isAdmin={isAdmin} client={client} />
+							<ImageList client={client} isAdmin={isAdmin} />
 						</li>
 					</FormContainer>
 				))}
 			</ul>
 			<PaginationTabs
-				path="/lists/client"
 				page={page}
+				path="/lists/client"
 				totalPages={totalPages}
 			/>
 		</>

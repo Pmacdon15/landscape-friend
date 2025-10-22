@@ -18,24 +18,24 @@ export default function Footer() {
 						<ul className="space-y-2">
 							<li>
 								<Link
-									href="/lists/client"
 									className="hover:text-green-300"
+									href="/lists/client"
 								>
 									Client List
 								</Link>
 							</li>
 							<li>
 								<Link
-									href="/billing/manage/invoices"
 									className="hover:text-green-300"
+									href="/billing/manage/invoices"
 								>
 									Billing
 								</Link>
 							</li>
 							<li>
 								<Link
-									href="/documentation"
 									className="hover:text-green-300"
+									href="/documentation"
 								>
 									Documentation
 								</Link>
@@ -48,8 +48,8 @@ export default function Footer() {
 							Have questions or need help?
 						</p>
 						<a
-							href="mailto:support@landscapefriend.com"
 							className="text-blue-400 hover:text-blue-300"
+							href="mailto:support@landscapefriend.com"
 						>
 							support@landscapefriend.com
 						</a>
@@ -63,14 +63,14 @@ export default function Footer() {
 				</p>
 				<div className="flex justify-center space-x-4 mt-2">
 					<Link
-						href="/privacy-policy"
 						className="hover:text-green-300"
+						href="/privacy-policy"
 					>
 						Privacy Policy
 					</Link>
 					<Link
-						href="/terms-of-service"
 						className="hover:text-green-300"
+						href="/terms-of-service"
 					>
 						Terms of Service
 					</Link>

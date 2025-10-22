@@ -16,11 +16,11 @@ export default function ReusableNumberInput({
 	return (
 		<input
 			className={className}
-			name={name}
-			type="number"
 			defaultValue={defaultValue}
-			onChange={(event) => onChange(Number(event.target.value))}
 			disabled={disabled}
+			name={name}
+			onChange={(event) => onChange(Number(event.target.value))}
+			type="number"
 		/>
 	)
 }

@@ -1,5 +1,5 @@
-import ImageUploadInput from '../inputs/image-upload-input'
 import UploadImageButton from '../buttons/upload-image-button'
+import ImageUploadInput from '../inputs/image-upload-input'
 
 export default function ImageUploader({
 	clientId,

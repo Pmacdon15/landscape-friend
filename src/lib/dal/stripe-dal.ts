@@ -1,16 +1,16 @@
-import { fetchStripAPIKeyDb } from '@/lib/DB/stripe-db'
-import { isOrgAdmin } from '@/lib/utils/clerk'
-import {
-	APIKey,
-	FetchInvoicesResponse,
-	StripeInvoice,
-	FetchQuotesResponse,
-	StripeQuote,
-	FetchSubscriptionsResponse,
-} from '@/types/stripe-types'
-import { Subscription } from '@/types/subscription-types'
 import { auth } from '@clerk/nextjs/server'
 import Stripe from 'stripe'
+import { fetchStripAPIKeyDb } from '@/lib/DB/stripe-db'
+import { isOrgAdmin } from '@/lib/utils/clerk'
+import type {
+	APIKey,
+	FetchInvoicesResponse,
+	FetchQuotesResponse,
+	FetchSubscriptionsResponse,
+	StripeInvoice,
+	StripeQuote,
+} from '@/types/stripe-types'
+import type { Subscription } from '@/types/subscription-types'
 import { fetchClientNamesByStripeIds } from './clients-dal'
 
 let stripe: Stripe | null = null
@@ -52,7 +52,7 @@ export async function fetchProducts(): Promise<Stripe.Product[]> {
 	try {
 		let products: Stripe.Product[] = []
 		let hasMore = true
-		let startingAfter: string | undefined = undefined
+		let startingAfter: string | undefined
 
 		while (hasMore) {
 			const response: Stripe.ApiList<Stripe.Product> =
@@ -109,7 +109,7 @@ export async function fetchInvoices(
 	try {
 		let allInvoices: Stripe.Invoice[] = []
 		let hasMore = true
-		let startingAfter: string | undefined = undefined
+		let startingAfter: string | undefined
 
 		const params: Stripe.InvoiceListParams = { limit: 100 }
 		if (
@@ -279,7 +279,7 @@ export async function fetchQuotes(
 	try {
 		let allQuotes: Stripe.Quote[] = []
 		let hasMore = true
-		let startingAfter: string | undefined = undefined
+		let startingAfter: string | undefined
 
 		const params: Stripe.QuoteListParams = { limit: 100 }
 		if (
@@ -541,7 +541,7 @@ export async function fetchSubscriptions(
 	try {
 		let allSubscriptions: Stripe.Subscription[] = []
 		let hasMore = true
-		let startingAfter: string | undefined = undefined
+		let startingAfter: string | undefined
 
 		const params: Stripe.SubscriptionListParams = {
 			limit: 100,

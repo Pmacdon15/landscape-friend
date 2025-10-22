@@ -3,7 +3,7 @@ import FormContainer from '@/components/ui/containers/form-container'
 import FormHeader from '@/components/ui/header/form-header'
 import { EditForm } from '@/components/ui/stripe-forms/stripe-invoice-form/edit-form'
 import { getInvoiceDAL } from '@/lib/dal/stripe-dal'
-import { SearchParams } from '@/types/params-types'
+import type { SearchParams } from '@/types/params-types'
 
 export default async function EditInvoicePage({
 	searchParams,
@@ -33,7 +33,7 @@ export default async function EditInvoicePage({
 			<FillFormContainer>
 				<FormHeader text={'Edit Invoice'} />
 				<div className="p-4 border rounded-md shadow-sm">
-					<EditForm invoiceOrQuote={invoice} invoice />
+					<EditForm invoice invoiceOrQuote={invoice} />
 				</div>
 			</FillFormContainer>
 		</FormContainer>

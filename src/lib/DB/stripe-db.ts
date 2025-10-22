@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless'
-import { schemaUpdateAPI } from '../zod/schemas'
-import z from 'zod'
+import type z from 'zod'
+import type { schemaUpdateAPI } from '../zod/schemas'
 
 //MARK: Update Strip API Key
 export async function updatedStripeAPIKeyDb(

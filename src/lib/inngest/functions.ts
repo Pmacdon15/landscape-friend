@@ -1,9 +1,9 @@
-import { inngest } from './inngest'
 import { getTodaysCuts } from '../DB/grass-cutting-db'
-import { triggerNovuEvent } from '../utils/novu'
 import { getSnowClients } from '../DB/snow-clearing-db'
 import { fetchGeocode } from '../utils/geocode'
+import { triggerNovuEvent } from '../utils/novu'
 import { isSnowing } from '../utils/weather'
+import { inngest } from './inngest'
 
 type GeocodeResult = {
 	coordinates?: {
@@ -113,7 +113,7 @@ const snowfallCheck = inngest.createFunction(
 
 		const geocodeResults: Record<string, GeocodeResult> = {}
 		for (const userId in snowClientsByUser) {
-			if (snowClientsByUser.hasOwnProperty(userId)) {
+			if (Object.hasOwn(snowClientsByUser, userId)) {
 				const address = snowClientsByUser[userId].address
 				if (!geocodeResults[address]) {
 					geocodeResults[address] = await fetchGeocode(address)
@@ -122,7 +122,7 @@ const snowfallCheck = inngest.createFunction(
 		}
 
 		for (const userId in snowClientsByUser) {
-			if (snowClientsByUser.hasOwnProperty(userId)) {
+			if (Object.hasOwn(snowClientsByUser, userId)) {
 				const userData = snowClientsByUser[userId]
 				const geocodeResult = geocodeResults[userData.address]
 				await step.run(`trigger-novu-event-for-${userId}`, async () => {

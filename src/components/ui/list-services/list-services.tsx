@@ -1,7 +1,6 @@
-import { getServicedImagesUrls } from '@/lib/DB/db-get-images'
-import { Client } from '@/types/clients-types'
-
 import Image from 'next/image'
+import { getServicedImagesUrls } from '@/lib/DB/db-get-images'
+import type { Client } from '@/types/clients-types'
 
 export default async function ListServices({ client }: { client: Client }) {
 	const imagesUrls = await getServicedImagesUrls(client.id)
@@ -25,11 +24,11 @@ export default async function ListServices({ client }: { client: Client }) {
 							{`Last Service: ${imageUrl.date.toDateString()}`}
 						</h1>
 						<Image
-							className="my-2 py-2"
 							alt="Image"
+							className="my-2 py-2"
+							height={400}
 							src={imageUrl.imageurl}
 							width={400}
-							height={400}
 						/>
 					</>
 				))}

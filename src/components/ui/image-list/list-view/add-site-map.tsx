@@ -14,7 +14,7 @@ export default function AddSiteMap({
 		<ListViewWrapper>
 			<ListViewHeader text={'Save a Site Map Here'} />
 			<div className="flex flex-row gap-4 justify-center bg-white/30 py-4 rounded-sm">
-				<SetViewMapButton setFunction={setView} functionText="map">
+				<SetViewMapButton functionText="map" setFunction={setView}>
 					<div className="text-6xl">🗺️</div>
 					<div>Capture from Maps</div>
 				</SetViewMapButton>

@@ -1,6 +1,6 @@
 import { del } from '@vercel/blob'
+import type { BlobUrl } from '@/types/blob-types'
 import { getClientsBlobsDB } from '../DB/clients-db'
-import { BlobUrl } from '@/types/blob-types'
 
 export async function deleteClientsBlobs(orgId: string) {
 	try {

@@ -1,17 +1,17 @@
 'use client'
-import React from 'react'
-import { useUpdateStripeDocument } from '@/lib/mutations/mutations'
-import { Button } from '@/components/ui/button'
-import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import React from 'react'
+import { type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import type { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { useResetFormOnSuccess } from '@/lib/hooks/hooks'
+import { useUpdateStripeDocument } from '@/lib/mutations/mutations'
 import { schemaUpdateStatement } from '@/lib/zod/schemas'
+import type { EditStripeForm } from '@/types/stripe-types'
+import BackToLink from '../../links/back-to-link'
 import Spinner from '../../loaders/spinner'
 import { AlertMessage } from '../shared/alert-message'
 import { DynamicFields } from '../shared/dynamic-fields' // our reusable component
-import { z } from 'zod'
-import { useResetFormOnSuccess } from '@/lib/hooks/hooks'
-import BackToLink from '../../links/back-to-link'
-import { EditStripeForm } from '@/types/stripe-types'
 
 export function EditForm({
 	invoiceOrQuote,
@@ -66,7 +66,7 @@ export function EditForm({
 
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 				<input
 					type="hidden"
 					{...register('id')}
@@ -79,23 +79,23 @@ export function EditForm({
 						Invoice Lines
 					</h3>
 					<DynamicFields
-						name="lines"
-						fields={fields}
 						append={append}
-						remove={remove}
-						register={register}
 						control={control}
 						errors={errors}
+						fields={fields}
 						labels={{
 							description: 'Invoice Line',
 							amount: 'Amount (per unit)',
 							quantity: 'Quantity',
 						}}
+						name="lines"
 						newItem={() => ({
 							description: '',
 							amount: 0,
 							quantity: 1,
 						})}
+						register={register}
+						remove={remove}
 					/>
 				</section>
 
@@ -105,9 +105,9 @@ export function EditForm({
 
 				<div>
 					<Button
-						variant="outline"
-						type="submit"
 						disabled={isPending}
+						type="submit"
+						variant="outline"
 					>
 						{isPending ? (
 							<>
@@ -129,20 +129,20 @@ export function EditForm({
 			{/* Reusable Alerts */}
 			{isSuccess && data && (
 				<AlertMessage
-					type="success"
+					id={invoiceOrQuote.id}
 					message={`${invoice ? 'Invoice' : 'Quote'} updated successfully!`}
 					pathname={
 						invoice
 							? '/billing/manage/invoices'
 							: '/billing/manage/quotes'
 					}
-					id={invoiceOrQuote.id}
+					type="success"
 				/>
 			)}
 			{isError && error && (
 				<AlertMessage
-					type="error"
 					message={`Error updating quote: ${error.message}`}
+					type="error"
 				/>
 			)}
 		</>

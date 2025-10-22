@@ -8,11 +8,11 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet'
-import { Button } from '../button'
 import { getServicedImagesUrls } from '@/lib/DB/db-get-images'
+import { Button } from '../button'
 import ServicedImageCarousel from '../client-list/serviced-image-carousel'
-import SheetLogoHeader from '../header/sheet-logo-header'
 import FormHeader from '../header/form-header'
+import SheetLogoHeader from '../header/sheet-logo-header'
 
 export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
 	//TODO: this is a db function put it behind a dal

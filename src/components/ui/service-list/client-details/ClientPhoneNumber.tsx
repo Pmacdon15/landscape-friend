@@ -1,6 +1,6 @@
-import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import type React from 'react'
 
 interface ClientPhoneNumberProps {
 	phoneNumber: string
@@ -12,11 +12,11 @@ const ClientPhoneNumber: React.FC<ClientPhoneNumberProps> = ({
 	return (
 		<div className="flex w-full gap-2 items-center justify-center">
 			<Image
-				src="/client-list/telephone.png"
 				alt="Email Icon"
 				className="w-8 h-8"
-				width={512}
 				height={512}
+				src="/client-list/telephone.png"
+				width={512}
 			/>
 			<p className="my-auto">Phone Number:</p>
 			<Link

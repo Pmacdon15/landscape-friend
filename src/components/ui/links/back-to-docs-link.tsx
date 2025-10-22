@@ -3,7 +3,7 @@ import { Button } from '../button'
 
 export default function BackToDocsLink() {
 	return (
-		<Link href="/documentation" className="mx-auto mt-auto">
+		<Link className="mx-auto mt-auto" href="/documentation">
 			<Button variant="outline">Back To Documentation</Button>
 		</Link>
 	)

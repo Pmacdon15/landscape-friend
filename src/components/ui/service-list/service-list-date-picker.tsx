@@ -36,11 +36,6 @@ export const ServiceListDatePicker = () => {
 
 	return (
 		<DatePicker
-			wrapperClassName="custom-datepicker-wrapper"
-			portalId="root-portal"
-			withPortal
-			selected={parseLocalDate(currentServiceDate)}
-			onChange={handleDateChange}
 			className="border rounded-sm p-2"
 			dayClassName={(date) => {
 				const week = getWeekNumber(date)
@@ -52,6 +47,11 @@ export const ServiceListDatePicker = () => {
 							? 'bg-yellow-200'
 							: 'bg-red-200'
 			}}
+			onChange={handleDateChange}
+			portalId="root-portal"
+			selected={parseLocalDate(currentServiceDate)}
+			withPortal
+			wrapperClassName="custom-datepicker-wrapper"
 		/>
 	)
 }

@@ -1,20 +1,21 @@
+import type { JwtPayload } from '@clerk/types'
 import Stripe from 'stripe'
+import type z from 'zod'
 import {
 	addClientDB,
 	updateClientStripeCustomerIdDb,
 } from '@/lib/DB/clients-db'
 import {
-	fetchStripAPIKeyDb,
-	storeWebhookInfoDb,
-	fetchWebhookIdDb,
 	deleteWebhookIdDb,
+	fetchStripAPIKeyDb,
+	fetchWebhookIdDb,
+	storeWebhookInfoDb,
 } from '@/lib/DB/stripe-db'
-import { getStripeInstance } from '../dal/stripe-dal'
-import { schemaCreateSubscription } from '../zod/schemas'
-import z from 'zod'
 import { sendEmailWithTemplate } from '../actions/sendEmails-action'
-import { JwtPayload } from '@clerk/types'
+import { getStripeInstance } from '../dal/stripe-dal'
+import type { schemaCreateSubscription } from '../zod/schemas'
 import { formatCompanyName } from './resend'
+
 let stripe: Stripe | null = null
 
 export async function getStripeInstanceUnprotected(
