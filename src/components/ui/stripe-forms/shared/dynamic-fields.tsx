@@ -41,8 +41,7 @@ export function DynamicFields<
 	remove,
 	register,
 	errors,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	control,
+
 	labels,
 	newItem,
 	products,

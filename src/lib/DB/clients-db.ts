@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless'
+import { neon, type SQL } from '@neondatabase/serverless'
 import type z from 'zod'
 import type {
 	schemaAddClient,
@@ -55,7 +55,7 @@ export async function addClientDB(
 export async function getNovuIds(
 	userIds: string[],
 ): Promise<NovuSubscriberIds> {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	try {
 		const result = await sql.query(
 			'SELECT id, novu_subscriber_id FROM users WHERE id = ANY($1)',
@@ -203,7 +203,7 @@ export async function updateClientPricePerDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	let setClause
+	let setClause: SQL
 	if (data.snow) {
 		setClause = sql`price_per_month_snow = ${data.pricePerMonthSnow} `
 	} else {

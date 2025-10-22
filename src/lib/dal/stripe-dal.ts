@@ -214,7 +214,7 @@ export async function fetchInvoices(
 		const strippedInvoices = paginatedInvoices
 			.filter((invoice) => invoice.id)
 			.map((invoice) => ({
-				id: invoice.id!,
+				id: String(invoice.id),
 				object: invoice.object,
 				amount_due: invoice.amount_due / 100,
 				amount_paid: invoice.amount_paid / 100,

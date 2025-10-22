@@ -6,7 +6,7 @@ export async function fetchGeocode(address: string) {
 	await auth.protect()
 	try {
 		const response = await fetch(
-			`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.GOOGLE_MAPS_API_KEY!}`,
+			`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.GOOGLE_MAPS_API_KEY as string}`,
 			{ next: { revalidate: 3600 } },
 		)
 		const data = await response.json()

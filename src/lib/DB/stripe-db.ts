@@ -7,7 +7,7 @@ export async function updatedStripeAPIKeyDb(
 	data: z.infer<typeof schemaUpdateAPI>,
 	orgId: string,
 ) {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	try {
 		await sql`
     INSERT INTO stripe_api_keys (organization_id, api_key)
@@ -29,7 +29,7 @@ export async function updatedStripeAPIKeyDb(
 
 //MARK:fetch Strip API Key
 export async function fetchStripAPIKeyDb(orgId: string) {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	const result = (await sql`
     SELECT 
       api_key
@@ -45,7 +45,7 @@ export async function storeWebhookInfoDb(
 	webhookSecret: string,
 	webhookId: string,
 ) {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	try {
 		await sql`
     UPDATE stripe_api_keys
@@ -69,7 +69,7 @@ export async function storeWebhookInfoDb(
 
 //MARK: Fetch Webhook Secret
 export async function fetchWebhookSecretDb(orgId: string) {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	const result = (await sql`
     SELECT 
       webhook_secret
@@ -81,7 +81,7 @@ export async function fetchWebhookSecretDb(orgId: string) {
 
 //MARK: Fetch Webhook ID
 export async function fetchWebhookIdDb(orgId: string) {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	const result = (await sql`
     SELECT 
       webhook_id
@@ -93,7 +93,7 @@ export async function fetchWebhookIdDb(orgId: string) {
 
 //MARK: Delete Webhook ID
 export async function deleteWebhookIdDb(orgId: string) {
-	const sql = neon(process.env.DATABASE_URL!)
+	const sql = neon(String(process.env.DATABASE_URL))
 	try {
 		await sql`
     UPDATE stripe_api_keys

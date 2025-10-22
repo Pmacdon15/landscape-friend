@@ -4,7 +4,7 @@ import { fetchNovuIdAction } from '@/lib/actions/novu-action'
 export const useGetNovuId = (userId: string | undefined) => {
 	return useQuery({
 		queryKey: ['novuId', userId],
-		queryFn: () => fetchNovuIdAction(userId!),
+		queryFn: () => fetchNovuIdAction(userId as string),
 		enabled: !!userId,
 	})
 }

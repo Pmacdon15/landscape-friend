@@ -71,8 +71,7 @@ export async function addClient(formData: FormData) {
 
 export async function deleteClient(clientId: number) {
 	const { orgId, userId } = await isOrgAdmin()
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('User ID is missing.')
 
 	const validatedFields = schemaDeleteClient.safeParse({
 		client_id: clientId,
@@ -83,10 +82,13 @@ export async function deleteClient(clientId: number) {
 	try {
 		const result = await deleteClientDB(
 			validatedFields.data,
-			(orgId || userId)!,
+			orgId || String(userId),
 		)
 		if (!result) throw new Error('Delete Client')
-		triggerNotificationSendToAdmin(orgId || userId!, 'client-deleted')
+		triggerNotificationSendToAdmin(
+			orgId || String(userId),
+			'client-deleted',
+		)
 		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
@@ -101,8 +103,7 @@ export async function updateClientPricePerMonth(
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('User ID is missing.')
 
 	const validatedFields = schemaUpdatePricePerMonth.safeParse({
 		clientId: clientId,
@@ -116,7 +117,7 @@ export async function updateClientPricePerMonth(
 	try {
 		const result = await updateClientPricePerDb(
 			validatedFields.data,
-			(orgId || userId)!,
+			orgId || String(userId),
 		)
 		if (!result) throw new Error('Failed to update Client price per')
 		return result
@@ -133,8 +134,7 @@ export async function updateCuttingDay(
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (userId) throw new Error('User ID is missing.')
 
 	const validatedFields = schemaUpdateCuttingDay.safeParse({
 		clientId: clientId,
@@ -147,7 +147,7 @@ export async function updateCuttingDay(
 	try {
 		const result = await updatedClientCutDayDb(
 			validatedFields.data,
-			(orgId || userId)!,
+			orgId || String(userId),
 		)
 		if (!result) throw new Error('Failed to update Client cut day')
 		return result
@@ -159,8 +159,7 @@ export async function updateCuttingDay(
 
 export async function deleteSiteMap(clientId: number, siteMapId: number) {
 	const { orgId, userId } = await isOrgAdmin()
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
 	const validatedFields = schemaDeleteSiteMap.safeParse({
 		client_id: clientId,
@@ -172,7 +171,7 @@ export async function deleteSiteMap(clientId: number, siteMapId: number) {
 	try {
 		const result = await deleteSiteMapDB(
 			validatedFields.data,
-			(orgId || userId)!,
+			orgId || String(userId),
 		)
 		if (!result.success) throw new Error('Delete Client')
 		return result

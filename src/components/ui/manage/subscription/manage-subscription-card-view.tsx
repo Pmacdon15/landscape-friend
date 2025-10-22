@@ -84,7 +84,9 @@ export function CardView({ subscriptions }: { subscriptions: Subscription[] }) {
 								</p>
 								{subscription.subscription_schedule.phases.map(
 									(phase, index) => (
-										<p key={index}>
+										<p
+											key={`${phase.start_date}-${phase.end_date}-${index}`}
+										>
 											<DateDisplay
 												timestamp={phase.start_date}
 											/>{' '}

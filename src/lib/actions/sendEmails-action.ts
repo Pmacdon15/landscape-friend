@@ -73,7 +73,7 @@ export async function sendNewsLetter(formData: FormData) {
 		const result = await sendNewsLetterDb(
 			validatedFields.data,
 			sessionClaims,
-			userId!,
+			userId as string,
 		)
 		if (!result) throw new Error('Failed to Send News Letter')
 		return result

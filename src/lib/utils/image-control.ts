@@ -18,7 +18,10 @@ export async function uploadImageBlob(
     SELECT organization_id FROM clients WHERE id = ${customerId};
   `
 
-	if (!clientResult || clientResult.rowCount! <= 0) {
+	if (
+		!clientResult ||
+		(clientResult.rowCount && clientResult.rowCount <= 0)
+	) {
 		return { error: 'Client not found.', status: 404 }
 	}
 
@@ -43,7 +46,7 @@ export async function uploadImageBlob(
 	if (
 		!sqlResults ||
 		sqlResults == null ||
-		sqlResults.rowCount! <= 0 ||
+		(sqlResults.rowCount && sqlResults.rowCount <= 0) ||
 		sqlResults.command !== 'INSERT'
 	)
 		return { error: 'Failed to upload.', status: 400 }
@@ -67,7 +70,10 @@ export async function uploadImageBlobServiceDone(
     SELECT organization_id FROM clients WHERE id = ${customerId};
   `
 
-	if (!clientResult || clientResult.rowCount! <= 0) {
+	if (
+		!clientResult ||
+		(clientResult.rowCount && clientResult.rowCount <= 0)
+	) {
 		return { error: 'Client not found.', status: 404, url: '' }
 	}
 

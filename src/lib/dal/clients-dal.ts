@@ -121,7 +121,7 @@ export async function fetchSnowClearingClients(
 ): Promise<PaginatedClients | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
-	if (!orgId && !userId)
+	if (!orgId || !userId)
 		throw new Error('Organization ID or User ID is missing.')
 	if (!isAdmin && userId !== searchTermAssignedTo)
 		throw new Error('Not admin can not view other coworkers list')
@@ -130,7 +130,7 @@ export async function fetchSnowClearingClients(
 	const offset = (clientPageNumber - 1) * pageSize
 
 	const result = await fetchClientsClearingGroupsDb(
-		(orgId || userId)!,
+		orgId || userId,
 		pageSize,
 		offset,
 		searchTerm,

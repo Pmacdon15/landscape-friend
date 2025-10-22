@@ -8,6 +8,7 @@ import { isOrgAdmin } from '@/lib/utils/clerk'
 import { formatCompanyName } from '@/lib/utils/resend'
 import {
 	acceptAndScheduleQuote,
+	cancelStripeSubscription,
 	createNotificationPayloadInvoice,
 	createNotificationPayloadQuote,
 	createStripeSubscriptionQuote,
@@ -38,9 +39,8 @@ import { createStripeWebhook } from '../utils/stripe-utils'
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
-	let novuId
+	if (!userId) throw new Error('User ID is missing.')
+	let novuId = null
 	if (userId) novuId = await fetchNovuId(userId)
 
 	const validatedFields = schemaUpdateAPI.safeParse({
@@ -52,11 +52,11 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 	try {
 		const result = await updatedStripeAPIKeyDb(
 			validatedFields.data,
-			(orgId || userId)!,
+			orgId || String(userId),
 		)
 		if (!result.success) throw new Error(result.message)
 
-		await createStripeWebhook(validatedFields.data.APIKey, orgId || userId!)
+		await createStripeWebhook(validatedFields.data.APIKey, orgId || userId)
 
 		if (novuId)
 			await triggerNotification(
@@ -76,8 +76,7 @@ export async function createStripeQuote(
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('User ID is missing.')
 	// const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
 
 	const validatedFields = schemaCreateQuote.safeParse(quoteData)
@@ -202,7 +201,7 @@ export async function createStripeQuote(
 			invoice_settings: { days_until_due: 10 },
 		})
 		await triggerNotificationSendToAdmin(
-			orgId || userId!,
+			orgId || String(userId),
 			'quote-created',
 			{
 				quote: {
@@ -229,8 +228,7 @@ export async function updateStripeDocument(
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('User ID is missing.')
 
 	const validatedFields = schemaUpdateStatement.safeParse({
 		...documentData,
@@ -283,7 +281,7 @@ export async function updateStripeDocument(
 				}
 			}
 			triggerNotificationSendToAdmin(
-				orgId || userId!,
+				orgId || userId,
 				'invoice-edited',
 				await createNotificationPayloadInvoice(
 					updatedInvoice,
@@ -337,7 +335,7 @@ export async function updateStripeDocument(
 			}
 
 			triggerNotificationSendToAdmin(
-				orgId || userId!,
+				orgId || userId,
 				'quote-edited',
 				await createNotificationPayloadQuote(updatedQuote, clientName),
 			)
@@ -535,7 +533,7 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 
 		if (notificationType[action]) {
 			triggerNotificationSendToAdmin(
-				orgId || userId!,
+				orgId || userId,
 				notificationType[action],
 				await createNotificationPayloadQuote(updatedQuote, clientName),
 			)
@@ -544,8 +542,6 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 		throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`)
 	}
 }
-
-import { cancelStripeSubscription } from '@/lib/utils/stripe-utils'
 
 //MARK: Cancel Subscription
 export async function cancelSubscription(subscriptionId: string) {

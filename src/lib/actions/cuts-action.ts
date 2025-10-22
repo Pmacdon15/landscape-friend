@@ -17,8 +17,7 @@ export async function markYardServiced(
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (!orgId && !userId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
 	const validatedFields = schemaMarkYardCut.safeParse({
 		clientId: clientId,
@@ -35,7 +34,7 @@ export async function markYardServiced(
 
 		for (let i = 0; i < images.length; i++) {
 			result_upload[i] = await uploadImageBlobServiceDone(
-				(orgId || userId)!,
+				orgId || userId,
 				clientId,
 				images[i],
 				true,
@@ -52,9 +51,9 @@ export async function markYardServiced(
 	try {
 		const result_mark = await markYardServicedDb(
 			validatedFields.data,
-			(orgId || userId)!,
+			orgId || userId,
 			snow,
-			userId!,
+			userId,
 		)
 
 		const result_url = []
@@ -91,14 +90,14 @@ export async function assignGrassCutting(clientId: number, assignedTo: string) {
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignGrassCuttingDb(
 				validatedFields.data.clientId,
-				(orgId || userId)!,
+				orgId || String(userId),
 			)
 			if (!result) throw new Error('Failed to unassign grass cutting')
 			return result
 		} else {
 			const result = await assignGrassCuttingDb(
 				validatedFields.data,
-				(orgId || userId)!,
+				orgId || String(userId),
 			)
 			if (!result) throw new Error('Failed to update Client cut day')
 			return result

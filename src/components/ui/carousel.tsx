@@ -119,7 +119,6 @@ function Carousel({
 			}}
 		>
 			<section
-				aria-roledescription="carousel"
 				className={cn('relative', className)}
 				data-slot="carousel"
 				onKeyDownCapture={handleKeyDown}
