@@ -13,12 +13,12 @@ export default async function Page() {
 				<FormHeader text={'Plans'} />
 				<div className=" flex flex-col items-center border rounded-sm gap-4 p-4">
 					<FormHeader text={'Personal Plans'} />
-					<PricingTable forOrganizations={false} />
+					<PricingTable/>
 				</div>
 				<div className=" flex flex-col items-center border rounded-sm gap-4 p-4">
 					<FormHeader text={'Organization Plans'} />
 					{orgId ? (
-						<PricingTable forOrganizations={true} />
+						<PricingTable />
 					) : (
 						<p>Sign in and create and organizations to see plans</p>
 					)}

@@ -4,14 +4,12 @@ import './globals.css'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Analytics } from '@vercel/analytics/next'
 import FCMProvider from '@/components/providers/fcm-provider'
+import QueryProviders from '@/components/providers/query-providers'
 import Footer from '@/components/ui/footer/footer'
 import HeaderHeader from '@/components/ui/header/header-header'
 import { Toaster } from '@/components/ui/sonner'
-import QueryProviders from '../components/providers/query-providers'
 import PageContainer from '../components/ui/containers/page-container'
 import Header from '../components/ui/header/header'
-
-export const experimental_ppr = true
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',

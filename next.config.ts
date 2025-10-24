@@ -20,18 +20,16 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
+
 	typedRoutes: true,
+	cacheComponents: true,
+	// allowedDevOrigins: ['http://localhost:3000', 'http://10.0.0.150:*'],
 	experimental: {
-		ppr: 'incremental',
 		serverActions: {
 			bodySizeLimit: '5mb',
 		},
 	},
-	allowedDevOrigins: ['http://localhost:3000', 'http://10.0.0.150:*'],
 }
 
 export default nextConfig
 
-//  experimental: {
-//     ppr: "incremental"
-//   }

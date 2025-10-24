@@ -58,7 +58,7 @@ export default function Footer() {
 			</div>
 			<div className="mt-8 border-t border-gray-700 pt-4 text-center text-gray-500 ">
 				<p>
-					&copy; {new Date().getFullYear()} Landscape Friend. All
+					&copy; 2025 Landscape Friend. All
 					rights reserved.
 				</p>
 				<div className="flex justify-center space-x-4 mt-2">

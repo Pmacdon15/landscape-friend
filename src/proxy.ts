@@ -3,10 +3,10 @@ import { NextResponse } from 'next/server'
 
 const isAdminRoute = createRouteMatcher(['/billing(.*)', '/settings(.*)'])
 
-export default clerkMiddleware(async (auth, req) => {
+export const proxy = clerkMiddleware(async (auth, req) => {
 	if (isAdminRoute(req)) {
-		const { orgId, sessionClaims } = await auth()
-		if (sessionClaims?.orgRole !== 'org:admin' && orgId) {
+		const { sessionClaims } = await auth()
+		if (sessionClaims?.orgRole !== 'org:admin') {
 			const url = req.nextUrl.clone()
 			url.pathname = '/'
 			return NextResponse.redirect(url)
@@ -19,5 +19,10 @@ export const config = {
 		'/((?!api/webhooks|_next/static|_next/image|favicon.ico).*)',
 		'/(lists|email|settings|billing)(.*)',
 	],
-	protectedRoutes: ['lists', 'email', 'settings', 'billing'],
+	protectedRoutes: [
+		'/lists(.*)',
+		'/email(.*)',
+		'/settings(.*)',
+		'/billing(.*)',
+	],
 }

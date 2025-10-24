@@ -5,28 +5,46 @@ import FormContainer from '../containers/form-container'
 import FormHeader from '../header/form-header'
 import SendEmailInputs from './send-email-inputs'
 
-export default function SendEmailComponent({
-	clientEmail,
-	clientName,
+export default async function SendEmailComponent({
+	clientDataPromise,
+	clientName: propClientName,
+	clientEmail: propClientEmail,
 	popover,
 	onEmailSent,
 }: {
-	clientEmail?: string
+	clientDataPromise?: Promise<{ client_email: string; client_name: string }>
 	clientName?: string
+	clientEmail?: string
 	popover?: boolean
 	onEmailSent?: (success?: boolean) => void
 }) {
+	let clientName = propClientName
+	let clientEmail = propClientEmail
+
+	// If direct props not provided, but a promise is, await it
+	if ((!clientName || !clientEmail) && clientDataPromise) {
+		const { client_email, client_name } = await clientDataPromise
+		clientName = clientName || decodeURIComponent(client_name)
+		clientEmail = clientEmail || decodeURIComponent(client_email)
+	}
+
+	const isGroupEmail = !clientEmail && !clientName
+
 	return (
 		<FormContainer popover={popover}>
-			{!clientName ? (
-				<FormHeader text={`Send a group email to your clients`} />
-			) : (
-				<FormHeader text={`Send an Email to ${clientName}`} />
-			)}
+			<FormHeader
+				text={
+					isGroupEmail
+						? 'Send a group email to your clients'
+						: `Send an Email to ${clientName ?? 'Client'}`
+				}
+			/>
+
 			<form className="flex flex-col gap-4 w-full">
 				<SendEmailInputs />
+
 				<div className="flex justify-center w-full">
-					{clientEmail === undefined ? (
+					{isGroupEmail || !clientEmail ? (
 						<SendNewsLetterButton />
 					) : (
 						<SendClientEmailButton
@@ -36,13 +54,14 @@ export default function SendEmailComponent({
 					)}
 				</div>
 			</form>
-			<div className="w-full flex justify-center">
-				{popover && (
+
+			{popover && (
+				<div className="w-full flex justify-center">
 					<Button onClick={() => onEmailSent?.(false)} type="button">
 						Cancel
 					</Button>
-				)}
-			</div>
+				</div>
+			)}
 		</FormContainer>
 	)
 }

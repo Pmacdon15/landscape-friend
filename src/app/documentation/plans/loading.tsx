@@ -11,7 +11,7 @@ export default async function Loading() {
 				<FormHeader text={'Plans'} />
 				<div className=" flex flex-col items-center border rounded-sm gap-4 p-4">
 					<FormHeader text={'Personal Plans'} />
-					<PricingTable forOrganizations={false} />
+					<PricingTable />
 				</div>
 				<BackToDocsLink />
 			</FillFormContainer>
