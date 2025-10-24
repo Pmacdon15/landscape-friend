@@ -38,8 +38,7 @@ export default async function Page(props: PageProps<'/lists/cutting'>) {
 			<FormContainer>
 				<FormHeader text={'Cutting List'} />
 				<Suspense fallback={<SearchFormFallBack variant="cutting" />}>
-					<SearchForm
-						isAdmin={isAdmin}
+					<SearchForm						
 						orgMembersPromise={orgMembersPromise}
 						variant="cutting"
 					/>

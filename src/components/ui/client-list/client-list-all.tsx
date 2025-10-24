@@ -1,4 +1,7 @@
 import { Suspense } from 'react'
+import { fetchAllClients } from '@/lib/dal/clients-dal'
+import { isOrgAdmin } from '@/lib/utils/clerk'
+import { parseClientListParams } from '@/lib/utils/params'
 import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
@@ -15,12 +18,28 @@ import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
 
 export default async function ClientListService({
-	clientsPromise,
-	page,
+	props,
 	orgMembersPromise,
-	isAdmin,
 }: ClientListServiceProps) {
-	const result = await clientsPromise
+	const [{ isAdmin }, searchParams] = await Promise.all([
+		isOrgAdmin(),
+		props.searchParams,
+	])
+
+	const {
+		page,
+		searchTerm,
+		searchTermCuttingWeek,
+		searchTermCuttingDay,
+		searchTermAssignedTo,
+	} = parseClientListParams(searchParams)
+	const result = await fetchAllClients(
+		page,
+		searchTerm,
+		searchTermCuttingWeek,
+		searchTermCuttingDay,
+		searchTermAssignedTo,
+	)
 
 	if (!result)
 		return (

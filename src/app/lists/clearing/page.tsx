@@ -30,8 +30,7 @@ export default async function Page(props: PageProps<'/lists/clearing'>) {
 			<FormContainer>
 				<FormHeader text={'Clearing List'} />
 				<Suspense fallback={<SearchFormFallBack variant="clearing" />}>
-					<SearchForm
-						isAdmin={isAdmin}
+					<SearchForm						
 						orgMembersPromise={orgMembersPromise}
 						variant="clearing"
 					/>
@@ -53,8 +52,7 @@ export default async function Page(props: PageProps<'/lists/clearing'>) {
 			<FormContainer>
 				<FormHeader text={'Clearing List'} />
 				<Suspense fallback={<SearchFormFallBack variant="clearing" />}>
-					<SearchForm
-						isAdmin={isAdmin}
+					<SearchForm						
 						orgMembersPromise={orgMembersPromise}
 						variant="clearing"
 					/>
