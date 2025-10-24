@@ -63,10 +63,10 @@ interface CuttingWeekClient {
 
 export function CuttingWeekDropDownContainer({
 	client,
-	isAdmin,
+	isAdmin = false,
 }: {
 	client: CuttingWeekClient
-	isAdmin: boolean
+	isAdmin?: boolean
 }) {
 	// Ensure all weeks (1–4) have a schedule, defaulting to "No cut" if missing
 	const schedules: CuttingSchedule[] = Array.from({ length: 4 }, (_, i) => {

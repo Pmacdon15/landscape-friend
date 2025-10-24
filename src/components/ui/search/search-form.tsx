@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { isOrgAdmin } from '@/lib/utils/clerk'
 import type { OrgMember } from '@/types/clerk-types'
 import type { SearchFormVariant } from '@/types/search-fallback-types'
 import { AssignedToSelectorFallback } from '../fallbacks/search/assigned-to-selector-fallback'
@@ -12,12 +11,14 @@ import { ServiceListDatePicker } from '../service-list/service-list-date-picker'
 
 export default async function SearchForm({
 	variant = 'default',
+	isAdminPromise,
 	orgMembersPromise,
 }: {
 	variant?: SearchFormVariant
+	isAdminPromise?: Promise<{ isAdmin: boolean }>
 	orgMembersPromise?: Promise<OrgMember[]>
 }) {
-	const { isAdmin } = await isOrgAdmin()
+	const isAdmin = await isAdminPromise
 	return (
 		<div className="flex flex-wrap flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
 			<SearchInput />

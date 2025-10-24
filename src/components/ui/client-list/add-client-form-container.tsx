@@ -1,11 +1,14 @@
 import { Plus } from 'lucide-react'
-import { isOrgAdmin } from '@/lib/utils/clerk'
 import FormContainer from '../containers/form-container'
 import { EditSettingSheet } from '../sheets/edit-settings-sheet'
 import { AddClientForm } from './add-client-form'
 
-export default async function AddClientFormContainer() {
-	const { isAdmin } = await isOrgAdmin()
+export default async function AddClientFormContainer({
+	isAdminPromise,
+}: {
+	isAdminPromise?: Promise<{ isAdmin: boolean }>
+}) {
+	const isAdmin = await isAdminPromise
 	if (!isAdmin) return null
 	return (
 		<FormContainer>

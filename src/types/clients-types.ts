@@ -55,8 +55,7 @@ export interface ClientResult {
 }
 
 export interface ClientListServiceProps {
-	// clientsPromise: Promise<PaginatedClients | null>
-	// page: number
+	isAdminPromise?: Promise<{ isAdmin: boolean }>
 	props: PageProps<'/lists/client'>
 	orgMembersPromise?: Promise<OrgMember[]>
 }

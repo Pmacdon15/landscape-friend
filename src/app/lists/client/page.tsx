@@ -6,19 +6,24 @@ import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fal
 import FormHeader from '@/components/ui/header/form-header'
 import SearchForm from '@/components/ui/search/search-form'
 import { fetchOrgMembers } from '@/lib/dal/dal-org'
+import { isOrgAdmin } from '@/lib/utils/clerk'
 
 export default function page(props: PageProps<'/lists/client'>) {
 	const orgMembersPromise = fetchOrgMembers()
+	const isAdminPromise = isOrgAdmin()
 	return (
 		<>
 			<FormContainer>
 				<FormHeader text={'Client List'} />
 				<Suspense fallback={<SearchFormFallBack />}>
-					<SearchForm orgMembersPromise={orgMembersPromise} />
+					<SearchForm
+						isAdminPromise={isAdminPromise}
+						orgMembersPromise={orgMembersPromise}
+					/>
 				</Suspense>
 			</FormContainer>
 			<Suspense>
-				<AddClientFormContainer />
+				<AddClientFormContainer isAdminPromise={isAdminPromise} />
 			</Suspense>
 			<Suspense
 				fallback={
@@ -28,6 +33,7 @@ export default function page(props: PageProps<'/lists/client'>) {
 				}
 			>
 				<ClientListAll
+					isAdminPromise={isAdminPromise}
 					orgMembersPromise={orgMembersPromise}
 					props={props}
 				/>
