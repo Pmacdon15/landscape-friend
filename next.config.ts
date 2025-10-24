@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
-
+	// reactCompiler: true,
 	typedRoutes: true,
 	cacheComponents: true,
 	// allowedDevOrigins: ['http://localhost:3000', 'http://10.0.0.150:*'],
@@ -32,4 +32,3 @@ const nextConfig: NextConfig = {
 }
 
 export default nextConfig
-
