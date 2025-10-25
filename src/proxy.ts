@@ -5,8 +5,9 @@ const isAdminRoute = createRouteMatcher(['/billing(.*)', '/settings(.*)'])
 
 export const proxy = clerkMiddleware(async (auth, req) => {
 	if (isAdminRoute(req)) {
-		const { sessionClaims } = await auth()
-		if (sessionClaims?.orgRole !== 'org:admin') {
+		const { sessionClaims, orgId } = await auth.protect()
+
+		if (sessionClaims?.orgRole !== 'org:admin' && orgId) {
 			const url = req.nextUrl.clone()
 			url.pathname = '/'
 			return NextResponse.redirect(url)

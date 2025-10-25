@@ -14,6 +14,7 @@ export default function Page(
 			<Suspense fallback={<SearchFormFallBack variant="invoices" />}>
 				<SearchForm variant="invoices" />
 			</Suspense>
+			{/* //MARK: TODO: Add fallback */}
 			<Suspense>
 				<CardView props={props} />
 			</Suspense>
