@@ -7,7 +7,7 @@ import { fetchOrgMembers } from '@/lib/dal/dal-org'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import ClientListService from '../../../components/ui/service-list/clients-list-service'
 
-export default async function Page(props: PageProps<'/lists/cutting'>) {
+export default function Page(props: PageProps<'/lists/cutting'>) {
 	const isAdminPromise = isOrgAdmin()
 	const orgMembersPromise = fetchOrgMembers()
 	return (
