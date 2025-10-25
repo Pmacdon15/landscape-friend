@@ -121,7 +121,7 @@ function FormBase<
 		/>
 	)
 }
-//MARK:TODO add type number for this input
+//MARK:TODO add type number for this
 export const FormInput: FormControlFunc = (props) => {
 	return <FormBase {...props}>{(field) => <Input {...field} />}</FormBase>
 }

@@ -1,11 +1,9 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
-import { useResetFormOnSuccess } from '@/lib/hooks/hooks'
 import { useUpdateStripeDocument } from '@/lib/mutations/mutations'
 import { schemaUpdateStatement } from '@/lib/zod/schemas'
 import type { EditStripeForm } from '@/types/stripe-types'
@@ -44,16 +42,17 @@ export function EditForm({
 	})
 
 	const { mutate, isPending, isSuccess, isError, data, error } =
-		useUpdateStripeDocument()
-
-	const submittedData = React.useRef<z.input<
-		typeof schemaUpdateStatement
-	> | null>(null)
-
-	useResetFormOnSuccess(isSuccess, submittedData, form.reset)
+		useUpdateStripeDocument({
+			onSuccess: () => {
+				console.log('Update successful')
+			},
+			onError: () => {
+				console.error('Update failed Error')
+			},
+		})
 
 	async function onSubmit(data: z.infer<typeof schemaUpdateStatement>) {
-		submittedData.current = data
+		// submittedData.current = data
 		mutate(data as z.infer<typeof schemaUpdateStatement>)
 	}
 
@@ -61,7 +60,11 @@ export function EditForm({
 		<div className="container px-4 mx-auto my-6">
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<FieldGroup>
-					<FormInput control={form.control} label="Id" name="id" />
+					<FormInput
+						control={form.control}						
+						label="Id"
+						name="id"
+					/>
 					<section>
 						<h3 className="text-md font-semibold mb-2">
 							Invoice Lines

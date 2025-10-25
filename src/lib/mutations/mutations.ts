@@ -288,20 +288,27 @@ export const useCreateStripeSubscriptionQuote = (snow: boolean) => {
 }
 
 //MARK:Update stripe document
-export const useUpdateStripeDocument = () => {
-	return useMutation({
-		mutationFn: async (
-			documentData: z.infer<typeof schemaUpdateStatement>,
-		) => {
-			const result = await updateStripeDocument(documentData)
-			if (!result.success) {
-				throw new Error('Failed to update Stripe document')
-			}
-			return result
-		},
-	})
+export const useUpdateStripeDocument = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: () => void
+  onError?: () => void
+} = {}) => {
+  return useMutation({
+    mutationFn: async (
+      documentData: z.infer<typeof schemaUpdateStatement>,
+    ) => {
+      const result = await updateStripeDocument(documentData)
+      if (!result.success) {
+        throw new Error('Failed to update Stripe document')
+      }
+      return result
+    },
+    onSuccess: () => onSuccess?.(),
+    onError: () => onError?.(),
+  })
 }
-
 //MARK:Update stripe api key
 export const useUpdateStripeAPIKey = () => {
 	const queryClient = useQueryClient()
