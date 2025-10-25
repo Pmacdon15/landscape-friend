@@ -203,7 +203,7 @@ export async function updateClientPricePerDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
-  //TODO: Confirm this works
+	//TODO: Confirm this works
 	let setClause: ReturnType<typeof sql> = data.snow
 		? sql`price_per_month_snow = ${data.pricePerMonthSnow} `
 		: sql`price_per_month_grass = ${data.pricePerMonthGrass} `

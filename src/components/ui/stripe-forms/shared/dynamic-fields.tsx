@@ -1,15 +1,24 @@
 // DynamicFields.tsx
+
+import type {
+	FieldArrayWithId,
+	UseFieldArrayAppend,
+	UseFormReturn,
+} from 'react-hook-form'
+import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { FieldGroup } from '@/components/ui/field'
+import type { schemaUpdateStatement } from '@/lib/zod/schemas'
 import { FormInput } from '../../forms/form'
 
+type FormValues = z.infer<typeof schemaUpdateStatement>
 
 interface DynamicFieldsProps {
-	fields: any[]
-	append: (item: any) => void
+	fields: FieldArrayWithId<FormValues, 'lines', 'id'>[]
+	append: UseFieldArrayAppend<FormValues, 'lines'>
 	remove: (index: number) => void
-	form: any
-	name: string
+	form: UseFormReturn<FormValues>
+	name: 'lines'
 	labels: {
 		description: string
 		amount: string
@@ -28,7 +37,7 @@ export function DynamicFields({
 	return (
 		<FieldGroup>
 			{fields.map((field, index) => (
-				<div key={field.id}>
+				<div className="flex flex-col gap-4 border p-4 rounded-sm" key={field.id}>
 					<FormInput
 						control={form.control}
 						label={labels.description}
@@ -38,16 +47,17 @@ export function DynamicFields({
 						control={form.control}
 						label={labels.amount}
 						name={`${name}.${index}.amount`}
-						// type="number"
+						type="number"
 					/>
 					<FormInput
 						control={form.control}
 						label={labels.quantity}
 						name={`${name}.${index}.quantity`}
-						// valueAsNumber
+						type="number"
 					/>
 					{fields.length > 1 && (
 						<Button
+							className=" w-30"
 							onClick={() => remove(index)}
 							type="button"
 							variant="destructive"
@@ -58,6 +68,7 @@ export function DynamicFields({
 				</div>
 			))}
 			<Button
+				className=" w-30"
 				onClick={() =>
 					append({ description: '', amount: 0, quantity: 1 })
 				}

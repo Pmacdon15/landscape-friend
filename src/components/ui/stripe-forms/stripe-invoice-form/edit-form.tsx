@@ -61,7 +61,8 @@ export function EditForm({
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<FieldGroup>
 					<FormInput
-						control={form.control}						
+						control={form.control}
+						hidden
 						label="Id"
 						name="id"
 					/>
@@ -87,7 +88,7 @@ export function EditForm({
 						Subtotal: $
 						{lines
 							.reduce(
-								(acc, item, index) =>
+								(acc, _item, index) =>
 									acc +
 									Number(
 										form.getValues(`lines.${index}.amount`),

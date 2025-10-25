@@ -121,9 +121,30 @@ function FormBase<
 		/>
 	)
 }
-//MARK:TODO add type number for this
-export const FormInput: FormControlFunc = (props) => {
-	return <FormBase {...props}>{(field) => <Input {...field} />}</FormBase>
+export const FormInput: FormControlFunc<{
+	type?: 'text' | 'number'
+	hidden?: boolean
+}> = ({ type, hidden, ...props }) => {
+	if (hidden) {
+		// If hidden, we don't need the label, description, etc. from FormBase.
+		return (
+			<Controller
+				control={props.control}
+				name={props.name}
+				render={({ field }) => (
+					<Input {...field} type="hidden" value={field.value ?? ''} />
+				)}
+			/>
+		)
+	}
+
+	return (
+		<FormBase {...props}>
+			{(field) => (
+				<Input {...field} type={type} value={field.value ?? ''} />
+			)}
+		</FormBase>
+	)
 }
 
 export const FormTextarea: FormControlFunc = (props) => {
