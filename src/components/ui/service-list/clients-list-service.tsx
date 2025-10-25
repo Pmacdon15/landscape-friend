@@ -1,4 +1,6 @@
-import type { Client, PaginatedClients } from '@/types/clients-types'
+import { fetchCuttingClients } from '@/lib/dal/clients-dal'
+import { parseClientListParams } from '@/lib/utils/params'
+import type { Client } from '@/types/clients-types'
 import MarkYardServiced from '../buttons/mark-yard-serviced'
 import FormContainer from '../containers/form-container'
 import FormHeader from '../header/form-header'
@@ -7,21 +9,34 @@ import { PaginationTabs } from '../pagination/pagination-tabs'
 import ClientDetailsCard from './client-details/ClientDetailsCard'
 
 export default async function ClientListService({
-	clientsPromise,
-	page,
-	serviceDate,
-	searchTermIsServiced,
 	snow = false,
-	isAdmin,
+	isAdminPromise,
+	props,
 }: {
-	clientsPromise: Promise<PaginatedClients | null>
-	page: number
-	serviceDate?: Date
-	searchTermIsServiced: boolean
 	snow?: boolean
-	isAdmin: boolean
+	isAdminPromise?: Promise<{ isAdmin: boolean }>
+	props: PageProps<'/lists/cutting'> | PageProps<'/lists/clearing'>
 }) {
-	const result = await clientsPromise
+	const [isAdmin, searchParams] = await Promise.all([
+		isAdminPromise,
+		props.searchParams,
+	])
+
+	const {
+		page,
+		searchTerm,
+		serviceDate,
+		searchTermIsServiced,
+		searchTermAssignedTo,
+	} = parseClientListParams(searchParams)
+
+	const result = await fetchCuttingClients(
+		page,
+		searchTerm,
+		serviceDate,
+		searchTermIsServiced,
+		searchTermAssignedTo,
+	)
 
 	if (!serviceDate)
 		return (
@@ -82,7 +97,7 @@ export default async function ClientListService({
 						<li className="border p-4 rounded-sm bg-white/50 w-full">
 							<ClientDetailsCard
 								client={client}
-								isAdmin={isAdmin}
+								isAdmin={isAdmin?.isAdmin}
 								searchTermIsServiced={searchTermIsServiced}
 								serviceDate={serviceDate}
 								snow={snow}

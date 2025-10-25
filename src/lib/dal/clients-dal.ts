@@ -66,9 +66,9 @@ export async function fetchClientList(): Promise<ClientInfoList[]> {
 export async function fetchCuttingClients(
 	clientPageNumber: number,
 	searchTerm: string,
-	cuttingDate: Date,
-	searchTermIsCut: boolean,
-	searchTermAssignedTo: string,
+	cuttingDate?: Date | undefined,
+	searchTermIsCut?: boolean,
+	searchTermAssignedTo?: string,
 ): Promise<PaginatedClients | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
@@ -79,7 +79,7 @@ export async function fetchCuttingClients(
 
 	let assignedTo: string
 	if (searchTermAssignedTo === '') assignedTo = userId
-	else assignedTo = searchTermAssignedTo
+	else assignedTo = String(searchTermAssignedTo)
 
 	if (!assignedTo) throw new Error('Can not search with no one assigned.')
 
@@ -91,7 +91,7 @@ export async function fetchCuttingClients(
 		pageSize,
 		offset,
 		searchTerm,
-		cuttingDate,
+		cuttingDate || new Date,
 		searchTermIsCut,
 		assignedTo,
 	)

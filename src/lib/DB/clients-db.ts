@@ -557,8 +557,8 @@ export async function fetchClientsCuttingSchedules(
 	offset: number,
 	searchTerm: string,
 	cuttingDate: Date,
-	searchTermIsCut: boolean,
-	searchTermAssignedTo: string,
+	searchTermIsCut?: boolean,
+	searchTermAssignedTo?: string,
 ) {
 	const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1)
 	const daysSinceStart = Math.floor(
