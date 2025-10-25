@@ -141,7 +141,18 @@ export const FormInput: FormControlFunc<{
 	return (
 		<FormBase {...props}>
 			{(field) => (
-				<Input {...field} type={type} value={field.value ?? ''} />
+				<Input
+					{...field}
+					onChange={(e) =>
+						field.onChange(
+							type === 'number'
+								? e.target.valueAsNumber
+								: e.target.value,
+						)
+					}
+					type={type}
+					value={field.value ?? ''}
+				/>
 			)}
 		</FormBase>
 	)
