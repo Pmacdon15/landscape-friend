@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { SearchFormVariant } from '@/types/search-fallback-types'
 import { BillingStatusSelectorFallback } from './billing-status-selector-fallback'
 import { CuttingPeriodSelectorFallback } from './cutting-period-selector-fallback'
@@ -21,7 +22,9 @@ export default function SearchFormFallBack({
 			)}
 			{variant === 'cutting' && (
 				<>
-					<ServiceListDatePickerFallback />
+					<Suspense>
+						<ServiceListDatePickerFallback />
+					</Suspense>
 					<ServiceStatusSelectorFallback />
 				</>
 			)}

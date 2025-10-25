@@ -1,4 +1,4 @@
-import { fetchCuttingClients } from '@/lib/dal/clients-dal'
+import { fetchCuttingClients, fetchSnowClearingClients } from '@/lib/dal/clients-dal'
 import { parseClientListParams } from '@/lib/utils/params'
 import type { Client } from '@/types/clients-types'
 import MarkYardServiced from '../buttons/mark-yard-serviced'
@@ -30,13 +30,21 @@ export default async function ClientListService({
 		searchTermAssignedTo,
 	} = parseClientListParams(searchParams)
 
-	const result = await fetchCuttingClients(
-		page,
-		searchTerm,
-		serviceDate,
-		searchTermIsServiced,
-		searchTermAssignedTo,
-	)
+	const result = snow
+		? await fetchSnowClearingClients(
+				page,
+				searchTerm,
+				serviceDate,
+				searchTermIsServiced,
+				searchTermAssignedTo,
+			)
+		: await fetchCuttingClients(
+				page,
+				searchTerm,
+				serviceDate,
+				searchTermIsServiced,
+				searchTermAssignedTo,
+			)
 
 	if (!serviceDate)
 		return (

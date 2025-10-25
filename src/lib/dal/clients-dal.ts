@@ -91,7 +91,7 @@ export async function fetchCuttingClients(
 		pageSize,
 		offset,
 		searchTerm,
-		cuttingDate || new Date,
+		cuttingDate || new Date(),
 		searchTermIsCut,
 		assignedTo,
 	)
@@ -114,9 +114,9 @@ export async function fetchCuttingClients(
 export async function fetchSnowClearingClients(
 	clientPageNumber: number,
 	searchTerm: string,
-	clearingDate: Date,
-	searchTermIsServiced: boolean,
-	searchTermAssignedTo: string,
+	clearingDate?: Date,
+	searchTermIsServiced?: boolean,
+	searchTermAssignedTo?: string,
 ): Promise<PaginatedClients | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
@@ -132,10 +132,11 @@ export async function fetchSnowClearingClients(
 		pageSize,
 		offset,
 		searchTerm,
-		clearingDate,
+		clearingDate || new Date(),
+		userId,
 		searchTermIsServiced,
 		searchTermAssignedTo,
-		userId,
+		
 	)
 
 	if (!result.clientsResult) return null
