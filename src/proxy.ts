@@ -20,10 +20,10 @@ export const config = {
 		'/((?!api/webhooks|_next/static|_next/image|favicon.ico).*)',
 		'/(lists|email|settings|billing)(.*)',
 	],
-	protectedRoutes: [
-		'/lists(.*)',
-		'/email(.*)',
-		'/settings(.*)',
-		'/billing(.*)',
-	],
+	// protectedRoutes: [
+	// 	'/lists(.*)',
+	// 	'/email(.*)',
+	// 	'/settings(.*)',
+	// 	'/billing(.*)',
+	// ],
 }
