@@ -1,17 +1,19 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React from 'react'
-import { type SubmitHandler, useFieldArray, useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
+import { FieldGroup } from '@/components/ui/field'
 import { useResetFormOnSuccess } from '@/lib/hooks/hooks'
 import { useUpdateStripeDocument } from '@/lib/mutations/mutations'
 import { schemaUpdateStatement } from '@/lib/zod/schemas'
 import type { EditStripeForm } from '@/types/stripe-types'
+import { FormInput } from '../../forms/form'
 import BackToLink from '../../links/back-to-link'
 import Spinner from '../../loaders/spinner'
 import { AlertMessage } from '../shared/alert-message'
-import { DynamicFields } from '../shared/dynamic-fields' // our reusable component
+import { DynamicFields } from '../shared/dynamic-fields'
 
 export function EditForm({
 	invoiceOrQuote,
@@ -20,17 +22,7 @@ export function EditForm({
 	invoiceOrQuote: EditStripeForm
 	invoice?: boolean
 }) {
-	const { mutate, isPending, isSuccess, isError, data, error } =
-		useUpdateStripeDocument()
-
-	const {
-		register,
-		watch,
-		control,
-		handleSubmit,
-		reset,
-		formState: { errors },
-	} = useForm<z.input<typeof schemaUpdateStatement>>({
+	const form = useForm({
 		resolver: zodResolver(schemaUpdateStatement),
 		defaultValues: {
 			id: invoiceOrQuote.id || '',
@@ -39,76 +31,75 @@ export function EditForm({
 				amount: line.amount,
 				quantity: line.quantity,
 			})),
-		} as z.input<typeof schemaUpdateStatement>,
+		},
 	})
+
+	const {
+		fields: lines,
+		append,
+		remove,
+	} = useFieldArray({
+		control: form.control,
+		name: 'lines',
+	})
+
+	const { mutate, isPending, isSuccess, isError, data, error } =
+		useUpdateStripeDocument()
 
 	const submittedData = React.useRef<z.input<
 		typeof schemaUpdateStatement
 	> | null>(null)
 
-	useResetFormOnSuccess(isSuccess, submittedData, reset)
+	useResetFormOnSuccess(isSuccess, submittedData, form.reset)
 
-	const { fields, append, remove } = useFieldArray({ control, name: 'lines' })
-
-	const watchedLines = watch('lines')
-	const subtotal =
-		watchedLines?.reduce(
-			(acc, item) => acc + Number(item.amount) * Number(item.quantity),
-			0,
-		) ?? 0
-
-	const onSubmit: SubmitHandler<z.input<typeof schemaUpdateStatement>> = (
-		formData,
-	) => {
-		submittedData.current = formData
-		mutate(formData as z.infer<typeof schemaUpdateStatement>)
+	async function onSubmit(data: z.infer<typeof schemaUpdateStatement>) {
+		submittedData.current = data
+		mutate(data as z.infer<typeof schemaUpdateStatement>)
 	}
 
 	return (
-		<>
-			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-				<input
-					type="hidden"
-					{...register('id')}
-					value={invoiceOrQuote.id}
-				/>
+		<div className="container px-4 mx-auto my-6">
+			<form onSubmit={form.handleSubmit(onSubmit)}>
+				<FieldGroup>
+					<FormInput control={form.control} label="Id" name="id" />
+					<section>
+						<h3 className="text-md font-semibold mb-2">
+							Invoice Lines
+						</h3>
+						<DynamicFields
+							append={append}
+							fields={lines}
+							form={form}
+							labels={{
+								description: 'Invoice Line',
+								amount: 'Amount (per unit)',
+								quantity: 'Quantity',
+							}}
+							name="lines"
+							remove={remove}
+						/>
+					</section>
 
-				{/* Reusable Dynamic Fields for Invoice Lines */}
-				<section>
-					<h3 className="text-md font-semibold mb-2">
-						Invoice Lines
-					</h3>
-					<DynamicFields
-						append={append}
-						control={control}
-						errors={errors}
-						fields={fields}
-						labels={{
-							description: 'Invoice Line',
-							amount: 'Amount (per unit)',
-							quantity: 'Quantity',
-						}}
-						name="lines"
-						newItem={() => ({
-							description: '',
-							amount: 0,
-							quantity: 1,
-						})}
-						register={register}
-						remove={remove}
-					/>
-				</section>
+					<p className="font-bold mt-2">
+						Subtotal: $
+						{lines
+							.reduce(
+								(acc, item, index) =>
+									acc +
+									Number(
+										form.getValues(`lines.${index}.amount`),
+									) *
+										Number(
+											form.getValues(
+												`lines.${index}.quantity`,
+											),
+										),
+								0,
+							)
+							.toFixed(2)}
+					</p>
 
-				<p className="font-bold mt-2">
-					Subtotal: ${subtotal.toFixed(2)}
-				</p>
-
-				<div>
-					<Button
-						disabled={isPending}
-						type="submit"
-						variant="outline"
-					>
+					<Button disabled={isPending} type="submit">
 						{isPending ? (
 							<>
 								Updating document...
@@ -118,15 +109,14 @@ export function EditForm({
 							'Update Document'
 						)}
 					</Button>
-				</div>
 
-				<BackToLink
-					path={'/billing/manage/invoices'}
-					place={'Invoices'}
-				/>
+					<BackToLink
+						path={'/billing/manage/invoices'}
+						place={'Invoices'}
+					/>
+				</FieldGroup>
 			</form>
 
-			{/* Reusable Alerts */}
 			{isSuccess && data && (
 				<AlertMessage
 					id={invoiceOrQuote.id}
@@ -145,6 +135,6 @@ export function EditForm({
 					type="error"
 				/>
 			)}
-		</>
+		</div>
 	)
 }
