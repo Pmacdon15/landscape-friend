@@ -16,3 +16,4 @@ export default async function Settings() {
 		</ContentContainer>
 	)
 }
+``
