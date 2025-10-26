@@ -1,6 +1,10 @@
 import type { NextConfig } from 'next'
 
-const nextConfig: NextConfig = {
+const nextConfig: NextConfig = {	
+	// reactCompiler: true,
+	typedRoutes: true,
+	cacheComponents: true,
+	// allowedDevOrigins: ['http://localhost:3000', 'http://10.0.0.150:*'],
 	images: {
 		remotePatterns: [
 			{
@@ -20,10 +24,6 @@ const nextConfig: NextConfig = {
 			},
 		],
 	},
-	// reactCompiler: true,
-	typedRoutes: true,
-	cacheComponents: true,
-	// allowedDevOrigins: ['http://localhost:3000', 'http://10.0.0.150:*'],
 	experimental: {
 		serverActions: {
 			bodySizeLimit: '5mb',
