@@ -8,6 +8,7 @@ interface AlertMessageProps {
 	message: string | React.ReactNode
 	pathname?: string
 	id?: string
+	path?: string
 }
 
 export function AlertMessage({
@@ -15,6 +16,7 @@ export function AlertMessage({
 	message,
 	pathname,
 	id,
+	path,
 }: AlertMessageProps) {
 	const baseClasses = 'mt-4 p-3 rounded-md text-sm font-medium'
 	const styles = {
@@ -25,15 +27,21 @@ export function AlertMessage({
 
 	return (
 		<div className={cn(baseClasses, styles[type])}>
-			{message} View{' '}
-			{pathname && id && (
-				<Link
-					className="text-blue-600"
-					href={{ pathname, query: { search: id } }}
-				>
-					Quote
-				</Link>
-			)}
+			{message}
+			{pathname && ' View '}
+			{pathname &&
+				(id ? (
+					<Link
+						className="text-blue-600"
+						href={{ pathname, query: { search: id } }}
+					>
+						{path}
+					</Link>
+				) : (
+					<Link className="text-blue-600" href={{ pathname }}>
+						{path}
+					</Link>
+				))}
 		</div>
 	)
 }

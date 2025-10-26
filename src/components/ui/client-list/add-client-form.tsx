@@ -8,17 +8,19 @@ import {
 	type AddClientFormValues,
 } from '@/lib/zod/client-schemas'
 import { Button } from '../button'
+import { FormInput } from '../forms/form'
 import FormHeader from '../header/form-header'
-import { InputField } from '../inputs/input'
 import EllipsisSpinner from '../loaders/EllipsisSpinner'
 
 export function AddClientForm() {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<AddClientFormValues>({
+	const form = useForm<AddClientFormValues>({
 		resolver: zodResolver(AddClientFormSchema),
+		defaultValues: {
+			full_name: '',
+			phone_number: '',
+			email_address: '',
+			address: '',
+		},
 	})
 
 	const { mutate, isPending, isError } = useAddClient()
@@ -37,34 +39,32 @@ export function AddClientForm() {
 	return (
 		<form
 			className="flex flex-col gap-6 w-full pb-2"
-			onSubmit={handleSubmit(onSubmit)}
+			onSubmit={form.handleSubmit(onSubmit)}
 		>
 			<FormHeader text="Add New Client" />
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<InputField
-					placeholder="Full Name"
-					type="text"
-					{...register('full_name')}
-					error={errors.full_name?.message}
+			<div className="flex flex-col gap-2">
+				<FormInput
+					control={form.control}
+					label={'Full Name'}
+					name={'full_name'}
 				/>
-				<InputField
-					placeholder="Phone Number"
-					type="tel"
-					{...register('phone_number')}
-					error={errors.phone_number?.message}
+
+				<FormInput
+					control={form.control}
+					label={'Phone Number'}
+					name={'phone_number'}
 				/>
-				<InputField
-					placeholder="Email Address"
-					type="email"
-					{...register('email_address')}
-					error={errors.email_address?.message}
+
+				<FormInput
+					control={form.control}
+					label={'Email Address'}
+					name={'email_address'}
 				/>
-				<InputField
-					placeholder="Address"
-					type="text"
-					{...register('address')}
-					className="md:col-span-2 lg:col-span-3"
-					error={errors.address?.message}
+
+				<FormInput
+					control={form.control}
+					label={'Address'}
+					name={'address'}
 				/>
 			</div>
 			<div className="flex justify-end">

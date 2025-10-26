@@ -1,6 +1,6 @@
 'use client'
 import type React from 'react'
-import { Suspense, useState } from 'react'
+import { Activity, Suspense, useState } from 'react'
 import FormHeader from '@/components/ui/header/form-header' // Import FormHeader
 import { CreateQuoteForm } from '@/components/ui/stripe-forms/stripe-quote-form/create-quote-form'
 import { CreateSubscriptionForm } from '@/components/ui/stripe-forms/stripe-subscription-form/create-subscription-form'
@@ -42,7 +42,7 @@ export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({
 				</button>
 			</div>
 			<div className="p-4 border rounded-md shadow-sm">
-				{formType === 'quote' ? (
+				<Activity mode={formType === 'quote' ? 'visible' : 'hidden'}>
 					<Suspense fallback={<CreateQuoteFormFallback />}>
 						<CreateQuoteForm
 							clientsPromise={clientsPromise}
@@ -50,14 +50,18 @@ export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({
 							productsPromise={productsPromise}
 						/>
 					</Suspense>
-				) : (
+				</Activity>
+
+				<Activity
+					mode={formType === 'subscription' ? 'visible' : 'hidden'}
+				>
 					<Suspense fallback={<CreateSubscriptionFormFallback />}>
 						<CreateSubscriptionForm
 							clientsPromise={clientsPromise}
 							organizationIdPromise={organizationIdPromise}
 						/>
 					</Suspense>
-				)}
+				</Activity>
 			</div>
 			<BackToLink path={'/billing/manage/quotes'} place={'Quotes'} />
 		</>
