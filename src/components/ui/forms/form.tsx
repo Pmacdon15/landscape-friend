@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import {
 	Select,
 	SelectContent,
+	SelectItem,
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select'
@@ -170,26 +171,34 @@ export const FormTextarea: FormControlFunc = (props) => {
 	return <FormBase {...props}>{(field) => <Textarea {...field} />}</FormBase>
 }
 
-export const FormSelect: FormControlFunc<{ children: ReactNode }> = ({
-	children,
-	...props
-}) => {
-	return (
-		<FormBase {...props}>
-			{({ onChange, onBlur, ...field }) => (
-				<Select {...field} onValueChange={onChange}>
-					<SelectTrigger
-						aria-invalid={field['aria-invalid']}
-						id={field.id}
-						onBlur={onBlur}
-					>
-						<SelectValue />
-					</SelectTrigger>
-					<SelectContent>{children}</SelectContent>
-				</Select>
-			)}
-		</FormBase>
-	)
+export const FormSelect: FormControlFunc<{
+  children?: ReactNode
+  options?: { value: string; label: string }[]
+}> = ({ children, options, ...props }) => {
+  if (options) {
+    children = options.map((option) => (
+      <SelectItem key={option.value} value={option.value}>
+        {option.label}
+      </SelectItem>
+    ))
+  }
+
+  return (
+    <FormBase {...props}>
+      {({ onChange, onBlur, ...field }) => (
+        <Select {...field} onValueChange={onChange}>
+          <SelectTrigger
+            aria-invalid={field['aria-invalid']}
+            id={field.id}
+            onBlur={onBlur}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>{children}</SelectContent>
+        </Select>
+      )}
+    </FormBase>
+  )
 }
 
 // export const FormCheckbox: FormControlFunc = props => {

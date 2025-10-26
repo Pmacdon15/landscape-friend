@@ -6,12 +6,11 @@ import type z from 'zod'
 import Spinner from '@/components/ui/loaders/spinner'
 import { useIsSnowService } from '@/lib/hooks/useStripe'
 import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations'
-import { inputClassName } from '@/lib/values'
 import { schemaCreateSubscription } from '@/lib/zod/schemas'
 import type { CreateSubscriptionFormProps } from '@/types/forms-types'
 import { Button } from '../../button'
+import { FormInput, FormSelect } from '../../forms/form'
 import { AlertMessage } from '../shared/alert-message'
-import InputField from '../shared/input'
 
 export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	organizationIdPromise,
@@ -21,7 +20,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	const organizationId = use(organizationIdPromise)
 
 	const {
-		register,
+		control,
 		handleSubmit,
 		formState: { errors },
 		watch,
@@ -39,9 +38,9 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			startDate: '',
 			endDate: '',
 			notes: '',
-			organization_id: organizationId,
+			organization_id: organizationId || '',
 			collectionMethod: 'send_invoice',
-		} as z.infer<typeof schemaCreateSubscription>, // Explicitly cast defaultValues
+		},
 	})
 
 	const serviceType = watch('serviceType')
@@ -84,10 +83,11 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	return (
 		<>
 			<form className="space-y-4 " onSubmit={handleSubmit(onSubmit)}>
-				<input
-					type="hidden"
-					{...register('organization_id')}
-					value={organizationId || ''}
+				<FormInput
+					control={control}
+					hidden
+					label="organization_id"
+					name="organization_id"
 				/>
 
 				{/* Client Info */}
@@ -96,17 +96,11 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						Client Information
 					</h3>
 					<div>
-						<label
-							className="block text-sm font-medium text-gray-700"
-							htmlFor="clientName"
-						>
-							Name
-						</label>
-						<input
-							id="clientName"
-							{...register('clientName')}
-							className={inputClassName}
+						<FormInput
+							control={control}
+							label="Name"
 							list="clients-list"
+							name="clientName"
 						/>
 						<datalist id="clients-list">
 							{clients.map((client) => (
@@ -117,32 +111,23 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 							))}
 						</datalist>
 					</div>
-					<InputField
-						className={inputClassName}
+					<FormInput
+						control={control}
 						disabled={isClientSelected}
-						errors={errors}
-						id="clientEmail"
 						label="Email"
-						register={register}
-						type="text"
+						name="clientEmail"
 					/>
-					<InputField
-						className={inputClassName}
+					<FormInput
+						control={control}
 						disabled={isClientSelected}
-						errors={errors}
-						id="phone_number"
 						label="Phone Number"
-						register={register}
-						type="text"
+						name="phone_number"
 					/>
-					<InputField
-						className={inputClassName}
+					<FormInput
+						control={control}
 						disabled={isClientSelected}
-						errors={errors}
-						id="address"
 						label="Address"
-						register={register}
-						type="text"
+						name="address"
 					/>
 				</section>
 
@@ -152,61 +137,41 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						Subscription Details
 					</h3>
 					<div>
-						<label
-							className="block text-sm font-medium text-gray-700"
-							htmlFor="serviceType"
-						>
-							Service Type
-						</label>
-						<select
-							id="serviceType"
-							{...register('serviceType')}
-							className={inputClassName}
-						>
-							<option value="weekly">Weekly</option>
-							<option value="bi-weekly">Bi-Weekly</option>
-							<option value="monthly">Monthly</option>
-							<option value="as-needed">Snow as needed</option>
-						</select>
-						{errors.serviceType && (
-							<p className="text-red-500 text-xs mt-1">
-								{errors.serviceType.message}
-							</p>
-						)}
+						<FormSelect
+							control={control}
+							label="Service Type"
+							name="serviceType"
+							options={[
+								{ value: 'weekly', label: 'Weekly' },
+								{ value: 'bi-weekly', label: 'Bi-Weekly' },
+								{ value: 'monthly', label: 'Monthly' },
+								{ value: 'snow-as-needed', label: 'Snow as needed' },
+							]}
+						/>
 					</div>
-					<InputField
-						className={inputClassName}
-						errors={errors}
-						id="price_per_month"
+					<FormInput
+						control={control}
 						label="Price Per Month"
-						min="0.01"
-						register={register}
+						name="price_per_month"
 						step="0.01"
 						type="number"
-						valueAsNumber
 					/>
-					<InputField
-						className={inputClassName}
-						errors={errors}
-						id="startDate"
+					<FormInput
+						control={control}
 						label="Start Date"
-						register={register}
+						name="startDate"
 						type="date"
 					/>
-					<InputField
-						className={inputClassName}
-						errors={errors}
-						id="endDate"
+					<FormInput
+						control={control}
 						label="End Date"
-						register={register}
+						name="endDate"
 						type="date"
 					/>
-					<InputField
-						className={inputClassName}
-						errors={errors}
-						id="notes"
+					<FormInput
+						control={control}
 						label="Notes"
-						register={register}
+						name="notes"
 						type="textarea"
 					/>
 				</section>
