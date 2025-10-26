@@ -1,6 +1,7 @@
 'use client'
 import { Edit, Eye, EyeOff } from 'lucide-react'
-import { useState } from 'react'
+import { use, useState } from 'react'
+import type { APIKey } from '@/types/stripe-types'
 import { Button } from '../button'
 import UpdateStripeApiKeyButton from '../buttons/update-stripe-api-key-button'
 import SettingsForm from '../forms/settings-form'
@@ -8,7 +9,12 @@ import { InputField } from '../inputs/input'
 import { EditSettingSheet } from '../sheets/edit-settings-sheet'
 import SettingsDisplayItem from './settings-display-item'
 
-export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
+export default function DisplayStripeApiKey({
+	apiKeyPromise,
+}: {
+	apiKeyPromise?: Promise<APIKey | Error>
+}) {
+	const apiKey = use(apiKeyPromise || Promise.resolve(new Error('Error')))
 	const [showKey, setShowKey] = useState(false)
 
 	const toggleShowKey = () => {
@@ -44,7 +50,7 @@ export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
 					>
 						<SettingsForm>
 							<InputField
-								defaultValue={apiKey}
+								defaultValue={String(apiKey)}
 								name={'api_key'}
 								placeholder={'Your Stripe API Key'}
 								type={'textarea'}
@@ -58,7 +64,7 @@ export default function DisplayStripeApiKey({ apiKey }: { apiKey: string }) {
 		>
 			<p className="break-all">
 				{showKey
-					? apiKey
+					? String(apiKey)
 					: apiKey
 						? '********************************'
 						: ''}
