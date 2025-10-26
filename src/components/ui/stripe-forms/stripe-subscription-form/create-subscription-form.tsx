@@ -19,7 +19,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	const clients = use(clientsPromise)
 	const organizationId = use(organizationIdPromise)
 
-	const form = useForm<z.infer<typeof schemaCreateSubscription>>({
+	const form = useForm({
 		resolver: zodResolver(schemaCreateSubscription),
 		mode: 'onBlur',
 		defaultValues: {
@@ -30,8 +30,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			serviceType: 'weekly', // Default value
 			price_per_month: 0,
 			startDate: '',
-			endDate: '',
-			notes: '',
+			endDate: '',			
 			organization_id: organizationId || '',
 			collectionMethod: 'send_invoice',
 		},
@@ -189,14 +188,16 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			{isSuccess && data && (
 				<AlertMessage
 					message="Subscription Quote created successfully!"
+					path="Quotes"
+					pathname="/billing/manage/quotes "
 					type="success"
 				/>
 			)}
 			{isError && error && (
 				<AlertMessage
 					message={`Error creating subscription: ${error.message}`}
-					path="Subscriptions"
-					pathname="/billing/manage/subscriptions "
+					path="Quotes"
+					pathname="/billing/manage/quotes "
 					type="error"
 				/>
 			)}
