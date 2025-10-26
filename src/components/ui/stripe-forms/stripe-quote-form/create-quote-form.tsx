@@ -5,7 +5,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import type Stripe from 'stripe'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { FormInput } from '@/components/ui/forms/form'
+import { FormInput, FormSelect } from '@/components/ui/forms/form'
 import { useCreateStripeQuote } from '@/lib/mutations/mutations'
 import { schemaCreateQuote } from '@/lib/zod/schemas'
 import type { CreateSubscriptionFormProps } from '@/types/forms-types'
@@ -101,11 +101,14 @@ export function CreateQuoteForm({
 						Client Information
 					</h3>
 					<div>
-						<FormInput
+						<FormSelect
 							control={form.control}
 							label="Name"
-							list="clients-list"
 							name="clientName"
+							options={clients.map((client) => ({
+								value: client.full_name,
+								label: client.full_name,
+							}))}
 						/>
 						<datalist id="clients-list">
 							{clients.map((client) => (

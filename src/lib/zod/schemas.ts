@@ -139,8 +139,8 @@ export const schemaCreateSubscription = z.object({
 	price_per_month: z
 		.number()
 		.min(0.01, 'Price per month must be a positive number'),
-	startDate: z.string().min(1, 'Start date is required'),
-	endDate: z.string().optional(), // Added endDate
+	startDate: z.coerce.date({ message: 'Start date is required' }),
+	endDate: z.coerce.date({ message: 'End date is required' }),
 	notes: z.string().optional(),
 	organization_id: z.string(),
 	collectionMethod: z

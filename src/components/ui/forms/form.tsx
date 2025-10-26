@@ -1,3 +1,5 @@
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import {
 	Controller,
@@ -5,6 +7,7 @@ import {
 	type FieldPath,
 	type FieldValues,
 } from 'react-hook-form'
+import { Calendar } from '@/components/ui/calendar'
 import {
 	Field,
 	FieldContent,
@@ -21,6 +24,7 @@ import {
 	SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 
 type FormControlProps<
 	TFieldValues extends FieldValues = FieldValues,
@@ -172,33 +176,69 @@ export const FormTextarea: FormControlFunc = (props) => {
 }
 
 export const FormSelect: FormControlFunc<{
-  children?: ReactNode
-  options?: { value: string; label: string }[]
+	children?: ReactNode
+	options?: { value: string; label: string }[]
 }> = ({ children, options, ...props }) => {
-  if (options) {
-    children = options.map((option) => (
-      <SelectItem key={option.value} value={option.value}>
-        {option.label}
-      </SelectItem>
-    ))
-  }
+	if (options) {
+		children = options.map((option) => (
+			<SelectItem key={option.value} value={option.value}>
+				{option.label}
+			</SelectItem>
+		))
+	}
 
-  return (
-    <FormBase {...props}>
-      {({ onChange, onBlur, ...field }) => (
-        <Select {...field} onValueChange={onChange}>
-          <SelectTrigger
-            aria-invalid={field['aria-invalid']}
-            id={field.id}
-            onBlur={onBlur}
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>{children}</SelectContent>
-        </Select>
-      )}
-    </FormBase>
-  )
+	return (
+		<FormBase {...props}>
+			{({ onChange, onBlur, ...field }) => (
+				<Select {...field} onValueChange={onChange}>
+					<SelectTrigger
+						aria-invalid={field['aria-invalid']}
+						id={field.id}
+						onBlur={onBlur}
+					>
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>{children}</SelectContent>
+				</Select>
+			)}
+		</FormBase>
+	)
+}
+
+export const FormDatePicker: FormControlFunc = (props) => {
+	return (
+		<FormBase {...props}>
+			{(field) => (
+				<div className="w-32">
+					<Popover>
+						<PopoverTrigger>
+							<div className='flex gap-4 border rounded-sm p-1 px-4'>
+								{/* <Button
+								className="data-[empty=true]:text-muted-foreground justify-start text-left font-normal"
+								data-empty={!field.value}
+								variant="outline"
+							> */}
+								<CalendarIcon />
+								{field.value ? (
+									format(field.value, 'PPP')
+								) : (
+									<span>Pick a date</span>
+								)}
+							</div>
+							{/* </Button> */}
+						</PopoverTrigger>
+						<PopoverContent className="w-auto p-0">
+							<Calendar
+								mode="single"
+								onSelect={field.onChange}
+								selected={field.value}
+							/>
+						</PopoverContent>
+					</Popover>
+				</div>
+			)}
+		</FormBase>
+	)
 }
 
 // export const FormCheckbox: FormControlFunc = props => {

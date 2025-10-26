@@ -9,7 +9,7 @@ import { useCreateStripeSubscriptionQuote } from '@/lib/mutations/mutations'
 import { schemaCreateSubscription } from '@/lib/zod/schemas'
 import type { CreateSubscriptionFormProps } from '@/types/forms-types'
 import { Button } from '../../button'
-import { FormInput, FormSelect } from '../../forms/form'
+import { FormDatePicker, FormInput, FormSelect } from '../../forms/form'
 import { AlertMessage } from '../shared/alert-message'
 
 export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
@@ -19,13 +19,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	const clients = use(clientsPromise)
 	const organizationId = use(organizationIdPromise)
 
-	const {
-		control,
-		handleSubmit,
-		formState: { errors },
-		watch,
-		setValue,
-	} = useForm<z.infer<typeof schemaCreateSubscription>>({
+	const form = useForm<z.infer<typeof schemaCreateSubscription>>({
 		resolver: zodResolver(schemaCreateSubscription),
 		mode: 'onBlur',
 		defaultValues: {
@@ -43,8 +37,8 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 		},
 	})
 
-	const serviceType = watch('serviceType')
-	const clientName = watch('clientName')
+	const serviceType = form.watch('serviceType')
+	const clientName = form.watch('clientName')
 	const snow = useIsSnowService(serviceType)
 
 	useEffect(() => {
@@ -52,15 +46,15 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			(client) => client.full_name === clientName,
 		)
 		if (selectedClient) {
-			setValue('clientEmail', selectedClient.email_address)
-			setValue('phone_number', selectedClient.phone_number)
-			setValue('address', selectedClient.address)
+			form.setValue('clientEmail', selectedClient.email_address)
+			form.setValue('phone_number', selectedClient.phone_number)
+			form.setValue('address', selectedClient.address)
 		} else {
-			setValue('clientEmail', '')
-			setValue('phone_number', '')
-			setValue('address', '')
+			form.setValue('clientEmail', '')
+			form.setValue('phone_number', '')
+			form.setValue('address', '')
 		}
-	}, [clientName, clients, setValue])
+	}, [clientName, clients, form.setValue, form])
 
 	const { mutate, isPending, isSuccess, isError, data, error } =
 		useCreateStripeSubscriptionQuote(snow)
@@ -82,9 +76,9 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 
 	return (
 		<>
-			<form className="space-y-4 " onSubmit={handleSubmit(onSubmit)}>
+			<form className="space-y-4 " onSubmit={form.handleSubmit(onSubmit)}>
 				<FormInput
-					control={control}
+					control={form.control}
 					hidden
 					label="organization_id"
 					name="organization_id"
@@ -96,11 +90,14 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						Client Information
 					</h3>
 					<div>
-						<FormInput
-							control={control}
+						<FormSelect
+							control={form.control}
 							label="Name"
-							list="clients-list"
 							name="clientName"
+							options={clients.map((client) => ({
+								value: client.full_name,
+								label: client.full_name,
+							}))}
 						/>
 						<datalist id="clients-list">
 							{clients.map((client) => (
@@ -112,19 +109,19 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						</datalist>
 					</div>
 					<FormInput
-						control={control}
+						control={form.control}
 						disabled={isClientSelected}
 						label="Email"
 						name="clientEmail"
 					/>
 					<FormInput
-						control={control}
+						control={form.control}
 						disabled={isClientSelected}
 						label="Phone Number"
 						name="phone_number"
 					/>
 					<FormInput
-						control={control}
+						control={form.control}
 						disabled={isClientSelected}
 						label="Address"
 						name="address"
@@ -132,47 +129,43 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 				</section>
 
 				{/* Subscription Details */}
-				<section>
+				<section className="flex flex-col gap-2">
 					<h3 className="text-md font-semibold mb-2">
 						Subscription Details
 					</h3>
 					<div>
 						<FormSelect
-							control={control}
+							control={form.control}
 							label="Service Type"
 							name="serviceType"
 							options={[
 								{ value: 'weekly', label: 'Weekly' },
 								{ value: 'bi-weekly', label: 'Bi-Weekly' },
 								{ value: 'monthly', label: 'Monthly' },
-								{ value: 'snow-as-needed', label: 'Snow as needed' },
+								{
+									value: 'snow-as-needed',
+									label: 'Snow as needed',
+								},
 							]}
 						/>
 					</div>
 					<FormInput
-						control={control}
+						control={form.control}
 						label="Price Per Month"
 						name="price_per_month"
 						step="0.01"
 						type="number"
 					/>
-					<FormInput
-						control={control}
+					<FormDatePicker
+						control={form.control}
 						label="Start Date"
 						name="startDate"
-						type="date"
 					/>
-					<FormInput
-						control={control}
-						label="End Date"
-						name="endDate"
-						type="date"
-					/>
-					<FormInput
-						control={control}
-						label="Notes"
-						name="notes"
-						type="textarea"
+
+					<FormDatePicker
+						control={form.control}
+						label={'End Date'}
+						name={'endDate'}
 					/>
 				</section>
 
@@ -202,6 +195,8 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			{isError && error && (
 				<AlertMessage
 					message={`Error creating subscription: ${error.message}`}
+					path="Subscriptions"
+					pathname="/billing/manage/subscriptions "
 					type="error"
 				/>
 			)}

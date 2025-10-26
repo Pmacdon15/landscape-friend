@@ -277,9 +277,9 @@ export const useCreateStripeQuote = ({
 		onSuccess: () => {
 			onSuccess?.()
 		},
-		onError:()=>{
+		onError: () => {
 			onError?.()
-		}
+		},
 	})
 }
 

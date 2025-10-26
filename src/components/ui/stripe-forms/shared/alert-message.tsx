@@ -27,7 +27,8 @@ export function AlertMessage({
 
 	return (
 		<div className={cn(baseClasses, styles[type])}>
-			{message} View{' '}
+			{message}
+			{pathname && 'View'}
 			{pathname &&
 				(id ? (
 					<Link

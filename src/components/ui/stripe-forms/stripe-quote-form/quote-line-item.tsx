@@ -59,7 +59,7 @@ export const QuoteLineItem = ({
 			<FormInput
 				control={control}
 				disabled={isLoading}
-				label="Material Cost (per unit)"				
+				label="Material Cost (per unit)"
 				name={`materials.${index}.materialCostPerUnit`}
 				step="0.01"
 				type="number"
@@ -68,7 +68,7 @@ export const QuoteLineItem = ({
 			<FormInput
 				control={control}
 				label="Material Units"
-				name={`materials.${index}.materialUnits`}				
+				name={`materials.${index}.materialUnits`}
 				type="number"
 			/>
 		</div>
