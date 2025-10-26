@@ -19,6 +19,13 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	const clients = use(clientsPromise)
 	const organizationId = use(organizationIdPromise)
 
+	const currentDate = new Date() // Current date: e.g., 2025-10-26T15:18:00-06:00 (MDT)
+	const startDate = new Date(currentDate)
+	startDate.setDate(currentDate.getDate() + 2) // Current date + 2 days: e.g., 2025-10-28
+
+	const endDate = new Date(currentDate)
+	endDate.setMonth(currentDate.getMonth() + 4) // Add 4 months: e.g., 2026-02-26
+	endDate.setDate(currentDate.getDate() + 2) // Add 2 days: e.g., 2026-02-28
 	const form = useForm({
 		resolver: zodResolver(schemaCreateSubscription),
 		mode: 'onBlur',
@@ -29,8 +36,8 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			address: '',
 			serviceType: 'weekly', // Default value
 			price_per_month: 0,
-			startDate: '',
-			endDate: '',			
+			startDate: startDate,
+			endDate: endDate,
 			organization_id: organizationId || '',
 			collectionMethod: 'send_invoice',
 		},
@@ -160,7 +167,6 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						label="Start Date"
 						name="startDate"
 					/>
-
 					<FormDatePicker
 						control={form.control}
 						label={'End Date'}
