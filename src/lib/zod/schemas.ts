@@ -65,10 +65,12 @@ export const materialSchema = z.object({
 })
 
 export const schemaCreateQuote = z.object({
-	clientName: z.string(),
+	clientName: z.string().min(3).max(25),
 	clientEmail: z.email(),
-	phone_number: z.string(),
-	address: z.string(),
+	phone_number: z
+		.string()
+		.regex(/^\d{10}$/, 'Invalid phone number format use 123456789'),
+	address: z.string().min(3),
 	labourCostPerUnit: z.number(),
 	labourUnits: z.number(),
 	materials: z.array(materialSchema),

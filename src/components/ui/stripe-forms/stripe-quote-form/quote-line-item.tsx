@@ -1,24 +1,16 @@
 'use client'
 
 import { useEffect } from 'react'
-import {
-	type Control,
-	type FieldErrors,
-	type UseFormRegister,
-	type UseFormSetValue,
-	useWatch,
-} from 'react-hook-form'
+import { type Control, type UseFormSetValue, useWatch } from 'react-hook-form'
 import type Stripe from 'stripe'
 import type { z } from 'zod'
+import { FormInput } from '@/components/ui/forms/form'
 import { useProductPrice } from '@/lib/hooks/useStripe'
 import type { schemaCreateQuote } from '@/lib/zod/schemas'
-import InputField from '../shared/input'
 
 interface QuoteLineItemProps {
 	index: number
 	control: Control<z.infer<typeof schemaCreateQuote>>
-	register: UseFormRegister<z.infer<typeof schemaCreateQuote>>
-	errors: FieldErrors<z.infer<typeof schemaCreateQuote>>
 	setValue: UseFormSetValue<z.infer<typeof schemaCreateQuote>>
 	products: Stripe.Product[] | undefined
 }
@@ -26,8 +18,6 @@ interface QuoteLineItemProps {
 export const QuoteLineItem = ({
 	index,
 	control,
-	register,
-	errors,
 	setValue,
 	products,
 }: QuoteLineItemProps) => {
@@ -53,14 +43,11 @@ export const QuoteLineItem = ({
 	return (
 		<div className="border p-4 mb-4 rounded-md">
 			<div>
-				<InputField
-					className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-					errors={errors}
-					id={`materials.${index}.materialType`}
+				<FormInput
+					control={control}
 					label="Material"
 					list={`materials-list-${index}`}
-					register={register}
-					type="text"
+					name={`materials.${index}.materialType`}
 				/>
 				<datalist id={`materials-list-${index}`}>
 					{products?.map((product) => (
@@ -69,29 +56,20 @@ export const QuoteLineItem = ({
 				</datalist>
 			</div>
 
-			<InputField
-				className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+			<FormInput
+				control={control}
 				disabled={isLoading}
-				errors={errors}
-				id={`materials.${index}.materialCostPerUnit`}
-				label="Material Cost (per unit)"
-				min="0"
-				register={register}
+				label="Material Cost (per unit)"				
+				name={`materials.${index}.materialCostPerUnit`}
 				step="0.01"
 				type="number"
-				valueAsNumber
 			/>
 
-			<InputField
-				className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-				errors={errors}
-				id={`materials.${index}.materialUnits`}
+			<FormInput
+				control={control}
 				label="Material Units"
-				min="1"
-				register={register}
-				step="1"
+				name={`materials.${index}.materialUnits`}				
 				type="number"
-				valueAsNumber
 			/>
 		</div>
 	)

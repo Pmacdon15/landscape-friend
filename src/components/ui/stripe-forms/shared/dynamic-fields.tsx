@@ -37,7 +37,10 @@ export function DynamicFields({
 	return (
 		<FieldGroup>
 			{fields.map((field, index) => (
-				<div className="flex flex-col gap-4 border p-4 rounded-sm" key={field.id}>
+				<div
+					className="flex flex-col gap-4 border p-4 rounded-sm"
+					key={field.id}
+				>
 					<FormInput
 						control={form.control}
 						label={labels.description}

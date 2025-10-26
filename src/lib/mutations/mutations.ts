@@ -259,7 +259,13 @@ export const useSendNewsLetter = () => {
 }
 
 //MARK:Create stripe quote
-export const useCreateStripeQuote = () => {
+export const useCreateStripeQuote = ({
+	onSuccess,
+	onError,
+}: {
+	onSuccess?: () => void
+	onError?: () => void
+} = {}) => {
 	return useMutation({
 		mutationFn: async (quoteData: z.infer<typeof schemaCreateQuote>) => {
 			const result = await createStripeQuote(quoteData)
@@ -268,6 +274,12 @@ export const useCreateStripeQuote = () => {
 			}
 			return result
 		},
+		onSuccess: () => {
+			onSuccess?.()
+		},
+		onError:()=>{
+			onError?.()
+		}
 	})
 }
 

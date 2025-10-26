@@ -124,7 +124,11 @@ function FormBase<
 export const FormInput: FormControlFunc<{
 	type?: 'text' | 'number'
 	hidden?: boolean
-}> = ({ type, hidden, ...props }) => {
+	disabled?: boolean
+	list?: string
+	min?: string | number
+	step?: string | number
+}> = ({ type, hidden, disabled, list, min, step, ...props }) => {
 	if (hidden) {
 		// If hidden, we don't need the label, description, etc. from FormBase.
 		return (
@@ -143,6 +147,9 @@ export const FormInput: FormControlFunc<{
 			{(field) => (
 				<Input
 					{...field}
+					disabled={disabled}
+					list={list}
+					min={min}
 					onChange={(e) =>
 						field.onChange(
 							type === 'number'
@@ -150,6 +157,7 @@ export const FormInput: FormControlFunc<{
 								: e.target.value,
 						)
 					}
+					step={step}
 					type={type}
 					value={field.value ?? ''}
 				/>
