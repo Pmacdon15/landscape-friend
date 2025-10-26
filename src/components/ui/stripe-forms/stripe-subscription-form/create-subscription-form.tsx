@@ -26,7 +26,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	const endDate = new Date(currentDate)
 	endDate.setMonth(currentDate.getMonth() + 4) // Add 4 months: e.g., 2026-02-26
 	endDate.setDate(currentDate.getDate() + 2) // Add 2 days: e.g., 2026-02-28
-	
+
 	const form = useForm({
 		resolver: zodResolver(schemaCreateSubscription),
 		mode: 'onBlur',

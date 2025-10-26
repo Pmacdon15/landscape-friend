@@ -212,7 +212,7 @@ export const FormDatePicker: FormControlFunc = (props) => {
 				<div className="w-32">
 					<Popover>
 						<PopoverTrigger>
-							<div className='flex gap-4 border rounded-sm p-1 px-4'>
+							<div className="flex gap-4 border rounded-sm p-1 px-4">
 								{/* <Button
 								className="data-[empty=true]:text-muted-foreground justify-start text-left font-normal"
 								data-empty={!field.value}

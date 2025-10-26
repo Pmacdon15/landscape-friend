@@ -42,8 +42,7 @@ export function AddClientForm() {
 			onSubmit={form.handleSubmit(onSubmit)}
 		>
 			<FormHeader text="Add New Client" />
-			<div className="flex flex-col gap-2">			
-
+			<div className="flex flex-col gap-2">
 				<FormInput
 					control={form.control}
 					label={'Full Name'}

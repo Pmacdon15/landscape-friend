@@ -140,7 +140,7 @@ export const schemaCreateSubscription = z.object({
 		.number()
 		.min(0.01, 'Price per month must be a positive number'),
 	startDate: z.coerce.date({ message: 'Start date is required' }),
-	endDate: z.coerce.date({ message: 'End date is required' }),	
+	endDate: z.coerce.date({ message: 'End date is required' }),
 	organization_id: z.string(),
 	collectionMethod: z
 		.enum(['charge_automatically', 'send_invoice'])
