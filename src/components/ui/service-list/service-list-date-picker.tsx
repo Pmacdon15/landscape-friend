@@ -2,6 +2,7 @@
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useServiceDateSearch } from '@/lib/hooks/hooks'
+import { Suspense } from 'react'
 
 export const ServiceListDatePicker = () => {
 	const { currentServiceDate, setServiceDate } = useServiceDateSearch()
@@ -35,23 +36,25 @@ export const ServiceListDatePicker = () => {
 	}
 
 	return (
-		<DatePicker
-			className="border rounded-sm p-2"
-			dayClassName={(date) => {
-				const week = getWeekNumber(date)
-				return week === 1
-					? 'bg-blue-200'
-					: week === 2
-						? 'bg-green-200'
-						: week === 3
-							? 'bg-yellow-200'
-							: 'bg-red-200'
-			}}
-			onChange={handleDateChange}
-			portalId="root-portal"
-			selected={parseLocalDate(currentServiceDate)}
-			withPortal
-			wrapperClassName="custom-datepicker-wrapper"
-		/>
+		<Suspense>
+			<DatePicker
+				className="border rounded-sm p-2"
+				dayClassName={(date) => {
+					const week = getWeekNumber(date)
+					return week === 1
+						? 'bg-blue-200'
+						: week === 2
+							? 'bg-green-200'
+							: week === 3
+								? 'bg-yellow-200'
+								: 'bg-red-200'
+				}}
+				onChange={handleDateChange}
+				portalId="root-portal"
+				selected={parseLocalDate(currentServiceDate)}
+				withPortal
+				wrapperClassName="custom-datepicker-wrapper"
+			/>
+		</Suspense>
 	)
 }

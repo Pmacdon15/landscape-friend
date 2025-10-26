@@ -5,14 +5,12 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import type Stripe from 'stripe'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { useCreateQuoteForm } from '@/lib/hooks/hooks'
+import { FormInput, FormSelect } from '@/components/ui/forms/form'
 import { useCreateStripeQuote } from '@/lib/mutations/mutations'
-import { inputClassName } from '@/lib/values'
 import { schemaCreateQuote } from '@/lib/zod/schemas'
 import type { CreateSubscriptionFormProps } from '@/types/forms-types'
 import Spinner from '../../loaders/spinner'
 import { AlertMessage } from '../shared/alert-message'
-import InputField from '../shared/input'
 import { QuoteLineItem } from './quote-line-item'
 
 export function CreateQuoteForm({
@@ -21,21 +19,17 @@ export function CreateQuoteForm({
 	productsPromise,
 }: CreateSubscriptionFormProps) {
 	const { mutate, isPending, isSuccess, isError, data, error } =
-		useCreateStripeQuote()
+		useCreateStripeQuote({
+			onSuccess: () => {
+				console.log('Update successful')
+			},
+		})
 	const organizationId = use(organizationIdPromise)
 	const clients = use(clientsPromise)
 	let products: Stripe.Product[]
 	if (productsPromise) products = use(productsPromise)
-	// console.log("Products: ", products)
-	const {
-		register,
-		watch,
-		control,
-		reset,
-		handleSubmit,
-		setValue,
-		formState: { errors },
-	} = useForm<z.infer<typeof schemaCreateQuote>>({
+
+	const form = useForm<z.infer<typeof schemaCreateQuote>>({
 		resolver: zodResolver(schemaCreateQuote),
 		mode: 'onBlur',
 		defaultValues: {
@@ -53,11 +47,11 @@ export function CreateQuoteForm({
 	})
 
 	const { fields, append, remove } = useFieldArray({
-		control,
+		control: form.control,
 		name: 'materials',
 	})
 
-	const watchedValues = watch()
+	const watchedValues = form.watch()
 	const clientName = watchedValues.clientName
 
 	useEffect(() => {
@@ -65,17 +59,15 @@ export function CreateQuoteForm({
 			(client) => client.full_name === clientName,
 		)
 		if (selectedClient) {
-			setValue('clientEmail', selectedClient.email_address)
-			setValue('phone_number', selectedClient.phone_number)
-			setValue('address', selectedClient.address)
+			form.setValue('clientEmail', selectedClient.email_address)
+			form.setValue('phone_number', selectedClient.phone_number)
+			form.setValue('address', selectedClient.address)
 		} else {
-			setValue('clientEmail', '')
-			setValue('phone_number', '')
-			setValue('address', '')
+			form.setValue('clientEmail', '')
+			form.setValue('phone_number', '')
+			form.setValue('address', '')
 		}
-	}, [clientName, clients, setValue])
-
-	useCreateQuoteForm({ isSuccess, reset, fields, append })
+	}, [clientName, clients, form.setValue, form])
 
 	const onSubmit = (formData: z.infer<typeof schemaCreateQuote>) => {
 		mutate(formData)
@@ -95,11 +87,12 @@ export function CreateQuoteForm({
 
 	return (
 		<>
-			<form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-				<input
-					type="hidden"
-					{...register('organization_id')}
-					value={organizationId || ''}
+			<form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+				<FormInput
+					control={form.control}
+					hidden
+					label="organization_id"
+					name="organization_id"
 				/>
 
 				{/* Client Info */}
@@ -108,17 +101,14 @@ export function CreateQuoteForm({
 						Client Information
 					</h3>
 					<div>
-						<label
-							className="block text-sm font-medium text-gray-700"
-							htmlFor="clientName"
-						>
-							Name
-						</label>
-						<input
-							id="clientName"
-							{...register('clientName')}
-							className={inputClassName}
-							list="clients-list"
+						<FormSelect
+							control={form.control}
+							label="Name"
+							name="clientName"
+							options={clients.map((client) => ({
+								value: client.full_name,
+								label: client.full_name,
+							}))}
 						/>
 						<datalist id="clients-list">
 							{clients.map((client) => (
@@ -129,59 +119,42 @@ export function CreateQuoteForm({
 							))}
 						</datalist>
 					</div>
-					<InputField
-						className={inputClassName}
+					<FormInput
+						control={form.control}
 						disabled={isClientSelected}
-						errors={errors}
-						id="clientEmail"
 						label="Email"
-						register={register}
-						type="text"
+						name="clientEmail"
 					/>
-					<InputField
-						className={inputClassName}
+					<FormInput
+						control={form.control}
 						disabled={isClientSelected}
-						errors={errors}
-						id="phone_number"
 						label="Phone Number"
-						register={register}
-						type="text"
+						name="phone_number"
 					/>
-					<InputField
-						className={inputClassName}
+					<FormInput
+						control={form.control}
 						disabled={isClientSelected}
-						errors={errors}
-						id="address"
 						label="Address"
-						register={register}
-						type="text"
+						name="address"
 					/>
 				</section>
 
 				{/* Labour Details */}
 				<section>
 					<h3 className="text-md font-semibold mb-2">Cost Details</h3>
-					<InputField
-						className={inputClassName}
-						errors={errors}
-						id="labourCostPerUnit"
+					<FormInput
+						control={form.control}
 						label="Labour Cost (per unit)"
-						min="0"
-						register={register}
+						name="labourCostPerUnit"
 						step="0.01"
 						type="number"
-						valueAsNumber
 					/>
-					<InputField
-						className={inputClassName}
-						errors={errors}
-						id="labourUnits"
+					<FormInput
+						control={form.control}
 						label="Labour Units"
-						min="1"
-						register={register}
+						name="labourUnits"
 						step="1"
 						type="number"
-						valueAsNumber
 					/>
 				</section>
 
@@ -191,12 +164,10 @@ export function CreateQuoteForm({
 					{fields.map((item, index) => (
 						<div key={item.id}>
 							<QuoteLineItem
-								control={control}
-								errors={errors}
+								control={form.control}
 								index={index}
 								products={products}
-								register={register}
-								setValue={setValue}
+								setValue={form.setValue}
 							/>
 							{fields.length > 1 && (
 								<Button
@@ -249,6 +220,8 @@ export function CreateQuoteForm({
 			{isSuccess && data && (
 				<AlertMessage
 					message="Quote created successfully!"
+					path="Quotes"
+					pathname="/billing/manage/quotes"
 					type="success"
 				/>
 			)}

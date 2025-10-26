@@ -3,6 +3,7 @@ import Link from 'next/link'
 import FillFormContainer from '@/components/ui/containers/fill-form-container'
 import FormContainer from '@/components/ui/containers/form-container'
 import FormHeader from '@/components/ui/header/form-header'
+import BackToLink from '@/components/ui/links/back-to-link'
 
 export default function Page() {
 	const documentationLinks = [
@@ -23,28 +24,34 @@ export default function Page() {
 	] as const
 
 	return (
-		<FormContainer>
-			<FormHeader text="Documentation" />
-			<FillFormContainer>
-				<ul className="space-y-4">
-					{documentationLinks.map((link, _index) => (
-						<li
-							className="flex items-start space-x-2 border rounded-sm p-4  shadow:sm hover:scale-101 hover:shadow-2xl bg-white/40"
-							key={link.id}
-						>
-							<Link className="h-full w-full " href={link.href}>
-								{link.icon}
-								<p className="hover:underline font-semibold">
-									{link.text}
-								</p>
-								<p className="hover:underline text-gray-600 font-medium">
-									{link.info}
-								</p>
-							</Link>
-						</li>
-					))}
-				</ul>
-			</FillFormContainer>
-		</FormContainer>
+		<>
+			<FormContainer>
+				<FormHeader text="Documentation" />
+				<FillFormContainer>
+					<ul className="space-y-4">
+						{documentationLinks.map((link, _index) => (
+							<li
+								className="flex items-start space-x-2 border rounded-sm p-4  shadow:sm hover:scale-101 hover:shadow-2xl bg-white/40"
+								key={link.id}
+							>
+								<Link
+									className="h-full w-full "
+									href={link.href}
+								>
+									{link.icon}
+									<p className="hover:underline font-semibold">
+										{link.text}
+									</p>
+									<p className="hover:underline text-gray-600 font-medium">
+										{link.info}
+									</p>
+								</Link>
+							</li>
+						))}
+					</ul>
+				</FillFormContainer>
+			</FormContainer>
+			<BackToLink path={'/'} place={'Home'} />
+		</>
 	)
 }

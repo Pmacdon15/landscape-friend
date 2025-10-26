@@ -1,133 +1,84 @@
-'use client'
+// DynamicFields.tsx
+
 import type {
-	Control,
-	FieldErrors,
-	FieldValues,
-	UseFormRegister,
+	FieldArrayWithId,
+	UseFieldArrayAppend,
+	UseFormReturn,
 } from 'react-hook-form'
-import type Stripe from 'stripe'
+import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import InputField from './input' // adjust path if needed
+import { FieldGroup } from '@/components/ui/field'
+import type { schemaUpdateStatement } from '@/lib/zod/schemas'
+import { FormInput } from '../../forms/form'
 
-type FieldWithId<T> = T & { id: string }
+type FormValues = z.infer<typeof schemaUpdateStatement>
 
-interface DynamicFieldsProps<T, TFieldValues extends FieldValues> {
-	name: string // "lines" or "materials"
-	fields: FieldWithId<T>[]
-	append: (item: T | T[]) => void
+interface DynamicFieldsProps {
+	fields: FieldArrayWithId<FormValues, 'lines', 'id'>[]
+	append: UseFieldArrayAppend<FormValues, 'lines'>
 	remove: (index: number) => void
-	register: UseFormRegister<TFieldValues>
-	errors: FieldErrors<TFieldValues>
-	control: Control<TFieldValues>
-	labels: { description: string; amount: string; quantity: string } // customizable labels
-	newItem: () => T
-	products?: Stripe.Product[]
+	form: UseFormReturn<FormValues>
+	name: 'lines'
+	labels: {
+		description: string
+		amount: string
+		quantity: string
+	}
 }
 
-export function DynamicFields<
-	T extends {
-		description?: string
-		amount?: number | unknown
-		quantity?: number | unknown
-		materialType?: string
-		materialCostPerUnit?: number
-		materialUnits?: number
-	},
-	TFieldValues extends FieldValues,
->({
-	name,
+export function DynamicFields({
 	fields,
 	append,
 	remove,
-	register,
-	errors,
-
+	form,
+	name,
 	labels,
-	newItem,
-	products,
-}: DynamicFieldsProps<T, TFieldValues>) {
+}: DynamicFieldsProps) {
 	return (
-		<section>
-			<h3 className="text-md font-semibold mb-2">
-				{labels.description} Items
-			</h3>
-			{fields.map((item, index: number) => (
-				<div className="border p-4 mb-4 rounded-md" key={item.id}>
-					{item.description !== undefined && (
-						<InputField
-							className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-							errors={errors}
-							id={`${name}.${index}.description`}
-							label={labels.description}
-							register={register}
-							type="text"
-						/>
-					)}
-					{item.materialType !== undefined && (
-						<div>
-							<InputField
-								className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-								errors={errors}
-								id={`${name}.${index}.materialType`}
-								label={labels.description}
-								list={`${name}-list-${index}`}
-								register={register}
-								type="text"
-							/>
-							<datalist id={`${name}-list-${index}`}>
-								{products?.map((product) => (
-									<option
-										key={product.id}
-										value={product.name}
-									/>
-								))}
-							</datalist>
-						</div>
-					)}
-
-					<InputField
-						className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-						errors={errors}
-						id={`${name}.${index}.${item.amount !== undefined ? 'amount' : 'materialCostPerUnit'}`}
+		<FieldGroup>
+			{fields.map((field, index) => (
+				<div
+					className="flex flex-col gap-4 border p-4 rounded-sm"
+					key={field.id}
+				>
+					<FormInput
+						control={form.control}
+						label={labels.description}
+						name={`${name}.${index}.description`}
+					/>
+					<FormInput
+						control={form.control}
 						label={labels.amount}
-						min="0"
-						register={register}
-						step="0.01"
+						name={`${name}.${index}.amount`}
 						type="number"
-						valueAsNumber
 					/>
-
-					<InputField
-						className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-						errors={errors}
-						id={`${name}.${index}.${item.quantity !== undefined ? 'quantity' : 'materialUnits'}`}
+					<FormInput
+						control={form.control}
 						label={labels.quantity}
-						min="1"
-						register={register}
-						step="1"
+						name={`${name}.${index}.quantity`}
 						type="number"
-						valueAsNumber
 					/>
-
 					{fields.length > 1 && (
 						<Button
-							className="mt-2"
+							className=" w-30"
 							onClick={() => remove(index)}
 							type="button"
+							variant="destructive"
 						>
-							Remove {labels.description} Item
+							Remove
 						</Button>
 					)}
 				</div>
 			))}
-
 			<Button
-				className="mt-2"
-				onClick={() => append(newItem())}
+				className=" w-30"
+				onClick={() =>
+					append({ description: '', amount: 0, quantity: 1 })
+				}
 				type="button"
 			>
-				Add {labels.description} Item
+				Add Line
 			</Button>
-		</section>
+		</FieldGroup>
 	)
 }

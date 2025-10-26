@@ -1,4 +1,6 @@
 import { Suspense } from 'react'
+import { fetchAllClients } from '@/lib/dal/clients-dal'
+import { parseClientListParams } from '@/lib/utils/params'
 import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
@@ -15,12 +17,29 @@ import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
 
 export default async function ClientListService({
-	clientsPromise,
-	page,
+	props,
+	isAdminPromise,
 	orgMembersPromise,
-	isAdmin,
 }: ClientListServiceProps) {
-	const result = await clientsPromise
+	const [isAdmin, searchParams] = await Promise.all([
+		isAdminPromise,
+		props.searchParams,
+	])
+
+	const {
+		page,
+		searchTerm,
+		searchTermCuttingWeek,
+		searchTermCuttingDay,
+		searchTermAssignedTo,
+	} = parseClientListParams(searchParams)
+	const result = await fetchAllClients(
+		page,
+		searchTerm,
+		searchTermCuttingWeek,
+		searchTermCuttingDay,
+		searchTermAssignedTo,
+	)
 
 	if (!result)
 		return (
@@ -50,7 +69,7 @@ export default async function ClientListService({
 				{clients.map((client) => (
 					<FormContainer key={client.id}>
 						<li className="border p-4 rounded-sm relative bg-white/70">
-							{isAdmin && (
+							{isAdmin?.isAdmin && (
 								<DeleteClientButton clientId={client.id} />
 							)}
 							<FormHeader text={client.full_name} />
@@ -69,7 +88,7 @@ export default async function ClientListService({
 									<MapComponent address={client.address} />
 								</ClientListItemAddress>
 							</div>
-							{isAdmin && (
+							{isAdmin?.isAdmin && (
 								<div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
 									<p>Amount owing: ${client.amount_owing} </p>
 									<Suspense fallback={<AssignedToFallback />}>
@@ -104,10 +123,10 @@ export default async function ClientListService({
 									id: client.id,
 									cutting_schedules: client.cutting_schedules,
 								}}
-								isAdmin={isAdmin}
+								isAdmin={isAdmin?.isAdmin}
 							/>
 							<ViewSitePhotoSheet clientId={client.id} />
-							<ImageList client={client} isAdmin={isAdmin} />
+							<ImageList client={client} isAdmin={isAdmin?.isAdmin} />
 						</li>
 					</FormContainer>
 				))}

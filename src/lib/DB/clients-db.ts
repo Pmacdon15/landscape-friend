@@ -203,7 +203,7 @@ export async function updateClientPricePerDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
-  //TODO: Confirm this works
+	//TODO: Confirm this works
 	let setClause: ReturnType<typeof sql> = data.snow
 		? sql`price_per_month_snow = ${data.pricePerMonthSnow} `
 		: sql`price_per_month_grass = ${data.pricePerMonthGrass} `
@@ -270,9 +270,10 @@ export async function fetchClientsClearingGroupsDb(
 	offset: number,
 	searchTerm: string,
 	clearingDate: Date,
-	searchTermIsServiced: boolean,
-	searchTermAssignedTo: string,
-	userId: string | null,
+  userId: string | null,
+	searchTermIsServiced?: boolean,
+	searchTermAssignedTo?: string,
+	
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
@@ -557,8 +558,8 @@ export async function fetchClientsCuttingSchedules(
 	offset: number,
 	searchTerm: string,
 	cuttingDate: Date,
-	searchTermIsCut: boolean,
-	searchTermAssignedTo: string,
+	searchTermIsCut?: boolean,
+	searchTermAssignedTo?: string,
 ) {
 	const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1)
 	const daysSinceStart = Math.floor(

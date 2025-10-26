@@ -31,7 +31,9 @@ export async function getStripeInstanceUnprotected(
 		return null
 	}
 
-	stripe = new Stripe(apiKey)
+	stripe = new Stripe(apiKey, {
+		apiVersion: '2025-08-27.basil',
+	})
 	return stripe
 }
 
@@ -267,7 +269,7 @@ export async function createStripeSubscriptionQuote(
 		metadata: { organization_id, serviceType },
 	})
 
-	const quote = await stripe.quotes.create({
+	const quoteParams: Stripe.QuoteCreateParams = {
 		customer: customer.id,
 		line_items: [
 			{
@@ -279,10 +281,11 @@ export async function createStripeSubscriptionQuote(
 			organization_id,
 			clientEmail,
 			serviceType,
-			startDate,
-			endDate,
+			startDate: startDate.toISOString(),
+			endDate: endDate.toISOString(),
 		},
-	})
+	}
+	const quote = await stripe.quotes.create(quoteParams)
 
 	const finalizedQuote = await stripe.quotes.finalizeQuote(quote.id)
 	await sendQuote(quote.id, stripe, sessionClaims)

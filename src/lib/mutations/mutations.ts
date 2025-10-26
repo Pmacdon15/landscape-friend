@@ -259,7 +259,13 @@ export const useSendNewsLetter = () => {
 }
 
 //MARK:Create stripe quote
-export const useCreateStripeQuote = () => {
+export const useCreateStripeQuote = ({
+	onSuccess,
+	onError,
+}: {
+	onSuccess?: () => void
+	onError?: () => void
+} = {}) => {
 	return useMutation({
 		mutationFn: async (quoteData: z.infer<typeof schemaCreateQuote>) => {
 			const result = await createStripeQuote(quoteData)
@@ -267,6 +273,12 @@ export const useCreateStripeQuote = () => {
 				throw new Error('Failed to create Stripe quote')
 			}
 			return result
+		},
+		onSuccess: () => {
+			onSuccess?.()
+		},
+		onError: () => {
+			onError?.()
 		},
 	})
 }
@@ -288,7 +300,13 @@ export const useCreateStripeSubscriptionQuote = (snow: boolean) => {
 }
 
 //MARK:Update stripe document
-export const useUpdateStripeDocument = () => {
+export const useUpdateStripeDocument = ({
+	onSuccess,
+	onError,
+}: {
+	onSuccess?: () => void
+	onError?: () => void
+} = {}) => {
 	return useMutation({
 		mutationFn: async (
 			documentData: z.infer<typeof schemaUpdateStatement>,
@@ -299,9 +317,10 @@ export const useUpdateStripeDocument = () => {
 			}
 			return result
 		},
+		onSuccess: () => onSuccess?.(),
+		onError: () => onError?.(),
 	})
 }
-
 //MARK:Update stripe api key
 export const useUpdateStripeAPIKey = () => {
 	const queryClient = useQueryClient()

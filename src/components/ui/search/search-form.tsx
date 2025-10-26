@@ -9,15 +9,16 @@ import { CuttingPeriodSelector } from '../selectors/cutting-period-selector'
 import { ServiceStatusSelector } from '../selectors/service-status-selector'
 import { ServiceListDatePicker } from '../service-list/service-list-date-picker'
 
-export default function SearchForm({
+export default async function SearchForm({
 	variant = 'default',
+	isAdminPromise,
 	orgMembersPromise,
-	isAdmin = false,
 }: {
 	variant?: SearchFormVariant
+	isAdminPromise?: Promise<{ isAdmin: boolean }>
 	orgMembersPromise?: Promise<OrgMember[]>
-	isAdmin?: boolean
 }) {
+	const isAdmin = await isAdminPromise
 	return (
 		<div className="flex flex-wrap flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
 			<SearchInput />

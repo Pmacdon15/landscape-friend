@@ -7,10 +7,10 @@ import AddSiteMap from './list-view/add-site-map'
 import NonAdminPlaceHolder from './list-view/non-admin-placeholder'
 
 export default function ImageList({
-	isAdmin,
+	isAdmin = false,
 	client,
 }: {
-	isAdmin: boolean
+	isAdmin?: boolean
 	client: Client
 }) {
 	const [view, setView] = useState<string>('list')

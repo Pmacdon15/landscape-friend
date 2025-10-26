@@ -11,7 +11,7 @@ import ClientPhoneNumber from './ClientPhoneNumber'
 
 interface ClientDetailsCardProps {
 	client: Client
-	isAdmin: boolean
+	isAdmin?: boolean
 	searchTermIsServiced: boolean
 	serviceDate?: Date
 	snow: boolean

@@ -65,10 +65,12 @@ export const materialSchema = z.object({
 })
 
 export const schemaCreateQuote = z.object({
-	clientName: z.string(),
+	clientName: z.string().min(3).max(25),
 	clientEmail: z.email(),
-	phone_number: z.string(),
-	address: z.string(),
+	phone_number: z
+		.string()
+		.regex(/^\d{10}$/, 'Invalid phone number format use 123456789'),
+	address: z.string().min(3),
 	labourCostPerUnit: z.number(),
 	labourUnits: z.number(),
 	materials: z.array(materialSchema),
@@ -137,9 +139,8 @@ export const schemaCreateSubscription = z.object({
 	price_per_month: z
 		.number()
 		.min(0.01, 'Price per month must be a positive number'),
-	startDate: z.string().min(1, 'Start date is required'),
-	endDate: z.string().optional(), // Added endDate
-	notes: z.string().optional(),
+	startDate: z.coerce.date({ message: 'Start date is required' }),
+	endDate: z.coerce.date({ message: 'End date is required' }),
 	organization_id: z.string(),
 	collectionMethod: z
 		.enum(['charge_automatically', 'send_invoice'])

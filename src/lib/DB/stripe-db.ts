@@ -29,6 +29,7 @@ export async function updatedStripeAPIKeyDb(
 
 //MARK:fetch Strip API Key
 export async function fetchStripAPIKeyDb(orgId: string) {
+	'use cache'
 	const sql = neon(String(process.env.DATABASE_URL))
 	const result = (await sql`
     SELECT 
