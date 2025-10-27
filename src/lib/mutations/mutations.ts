@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import type { z } from 'zod'
 import { uploadDrawing, uploadImage } from '@/lib/actions/blobs-action'
 import {
@@ -9,7 +9,7 @@ import {
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
-import revalidatePathAction from '@/lib/actions/revalidatePath-action'
+
 import {
 	sendEmailWithTemplate,
 	sendNewsLetter,
@@ -31,6 +31,10 @@ import type {
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
+import {
+	revalidatePathAction,
+	revalidateTagAction,
+} from '../actions/revalidatePath-action'
 
 //MARK: Add client
 export const useAddClient = () => {
@@ -323,14 +327,13 @@ export const useUpdateStripeDocument = ({
 }
 //MARK:Update stripe api key
 export const useUpdateStripeAPIKey = () => {
-	const queryClient = useQueryClient()
 	return useMutation({
 		mutationFn: (formData: FormData) => {
 			return updateStripeAPIKey({ formData })
 		},
 		onSuccess: () => {
 			revalidatePathAction('/settings/stripe-api-key')
-			queryClient.invalidateQueries({ queryKey: ['hasStripeApiKey'] })
+			// revalidateTagAction('api_key')
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)

@@ -51,7 +51,7 @@ CREATE TABLE clients (
     address VARCHAR(200) UNIQUE NOT NULL,   
     stripe_customer_id VARCHAR(255) NULL
 );
-
+select * from stripe_api_keys;
 CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,

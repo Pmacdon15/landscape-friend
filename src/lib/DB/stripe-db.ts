@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import type z from 'zod'
 import type { schemaUpdateAPI } from '../zod/schemas'
+import { cacheTag } from 'next/cache'
 
 //MARK: Update Strip API Key
 export async function updatedStripeAPIKeyDb(
@@ -29,7 +30,8 @@ export async function updatedStripeAPIKeyDb(
 
 //MARK:fetch Strip API Key
 export async function fetchStripAPIKeyDb(orgId: string) {
-	'use cache'
+	// 'use cache'
+	// cacheTag('api_key')
 	const sql = neon(String(process.env.DATABASE_URL))
 	const result = (await sql`
     SELECT 

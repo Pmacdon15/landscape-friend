@@ -14,7 +14,11 @@ export default function DisplayStripeApiKey({
 }: {
 	apiKeyPromise?: Promise<APIKey | Error>
 }) {
-	const apiKey = use(apiKeyPromise || Promise.resolve(new Error('Error')))
+	let apiKey: APIKey | Error
+	if (apiKeyPromise) {
+		apiKey = use(apiKeyPromise)
+	} else apiKey = new Error("")
+
 	const [showKey, setShowKey] = useState(false)
 
 	const toggleShowKey = () => {
@@ -25,16 +29,16 @@ export default function DisplayStripeApiKey({
 		<SettingsDisplayItem
 			actions={
 				<div className="flex gap-2">
-					{apiKey && (
+					{apiKeyPromise && !(apiKey instanceof Error) && (
 						<Button onClick={toggleShowKey}>
 							{showKey ? (
 								<>
-									<EyeOff className="w-4 h-4" /> Show
+									<EyeOff className="w-4 h-4" /> Hide
 								</>
 							) : (
 								<>
 									<Eye className="w-4 h-4" />
-									Hide
+									Show
 								</>
 							)}
 						</Button>
@@ -50,7 +54,7 @@ export default function DisplayStripeApiKey({
 					>
 						<SettingsForm>
 							<InputField
-								defaultValue={String(apiKey)}
+								defaultValue={apiKeyPromise && !(apiKey instanceof Error) ? apiKey.apk_key : ''}
 								name={'api_key'}
 								placeholder={'Your Stripe API Key'}
 								type={'textarea'}
@@ -63,11 +67,13 @@ export default function DisplayStripeApiKey({
 			label="Stripe API Key"
 		>
 			<p className="break-all">
-				{showKey
-					? String(apiKey)
-					: apiKey
-						? '********************************'
-						: ''}
+				{apiKeyPromise
+					? !(apiKey instanceof Error)
+						? showKey
+							? apiKey.apk_key
+							: '********************************'
+						: 'API key not set'
+					: ''}
 			</p>
 		</SettingsDisplayItem>
 	)
