@@ -95,8 +95,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 				<section>
 					<h3 className="text-md font-semibold mb-2">
 						Client Information
-					</h3>
-					<div>
+					</h3>					
 						<FormSelect
 							control={form.control}
 							label="Name"
@@ -105,31 +104,22 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 								value: client.full_name,
 								label: client.full_name,
 							}))}
-						/>
-						<datalist id="clients-list">
-							{clients.map((client) => (
-								<option
-									key={client.id}
-									value={client.full_name}
-								/>
-							))}
-						</datalist>
-					</div>
+						/>	
 					<FormInput
 						control={form.control}
-						disabled={isClientSelected}
+						disabled
 						label="Email"
 						name="clientEmail"
 					/>
 					<FormInput
 						control={form.control}
-						disabled={isClientSelected}
+						disabled
 						label="Phone Number"
 						name="phone_number"
 					/>
 					<FormInput
 						control={form.control}
-						disabled={isClientSelected}
+						disabled
 						label="Address"
 						name="address"
 					/>
