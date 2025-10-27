@@ -45,33 +45,30 @@ export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
 	}
 }
 
-export async function deleteOrganizationIfOnlyOneMember(userId: string) {
-	try {
-			const clerk = await clerkClient()
-		// Get the user's organization memberships
-		const memberships =
-			await clerk.users.getOrganizationMembershipList({
-				userId,
-			})
+export async function deleteEmptyOrganizations() {
+  try {
+    const clerk = await clerkClient()
 
-		// Loop through each organization membership
-		for (const membership of memberships.data) {
-			const organizationId = membership.organization.id
+    // Get all organizations
+    const organizations = await clerk.organizations.getOrganizationList()
 
-			// Get the organization's memberships
-			const orgMemberships =
-				await clerk.organizations.getOrganizationMembershipList({
-					organizationId,
-				})
+    // Loop through each organization
+    for (const organization of organizations.data) {
+      const organizationId = organization.id
 
-			// Check if the organization has only one member
-			if (orgMemberships.data.length === 1) {
-				// Delete the organization
-				await clerk.organizations.deleteOrganization(organizationId)
-				console.log(`Organization ${organizationId} deleted.`)
-			}
-		}
-	} catch (error) {
-		console.error(`Error deleting organization: ${error}`)
-	}
+      // Get the organization's memberships
+      const orgMemberships = await clerk.organizations.getOrganizationMembershipList({
+        organizationId,
+      })
+
+      // Check if the organization has no members
+      if (orgMemberships.data.length === 0) {
+        // Delete the organization
+        await clerk.organizations.deleteOrganization(organizationId)
+        console.log(`Organization ${organizationId} deleted.`)
+      }
+    }
+  } catch (error) {
+    console.error(`Error deleting organization: ${error}`)
+  }
 }

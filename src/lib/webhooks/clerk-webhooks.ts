@@ -3,7 +3,7 @@ import { neon } from '@neondatabase/serverless'
 import { v4 as uuidv4 } from 'uuid'
 import { handleOrganizationDeletedDb } from '../DB/org-db'
 import { deleteClientsBlobs } from '../utils/blobs'
-import { deleteOrganizationIfOnlyOneMember } from '../utils/clerk'
+import { deleteEmptyOrganizations, deleteOrganizationIfOnlyOneMember } from '../utils/clerk'
 import {
 	addNovuSubscriber,
 	deleteNovuSubscriber,
@@ -58,7 +58,7 @@ export async function handleUserDeleted(userId: string) {
 	if (deleteResult.length > 0) {
 		console.log(`User ${userId} deleted from database.`)
 
-		await deleteOrganizationIfOnlyOneMember(userId)
+		await deleteEmptyOrganizations()
 		// Remove the user from Novu
 		const user = deleteResult[0]
 		if (user.novu_subscriber_id) {
