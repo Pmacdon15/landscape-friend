@@ -3,7 +3,7 @@ import { neon } from '@neondatabase/serverless'
 import { v4 as uuidv4 } from 'uuid'
 import { handleOrganizationDeletedDb } from '../DB/org-db'
 import { deleteClientsBlobs } from '../utils/blobs'
-import { deleteEmptyOrganizations, deleteOrganizationIfOnlyOneMember } from '../utils/clerk'
+import { deleteEmptyOrganizations } from '../utils/clerk'
 import {
 	addNovuSubscriber,
 	deleteNovuSubscriber,
