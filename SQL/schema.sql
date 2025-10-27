@@ -1,3 +1,4 @@
+-- Active: 1759456932153@@ep-snowy-poetry-adb5ubzx-pooler.c-2.us-east-1.aws.neon.tech@5432@neondb
 DROP TABLE IF EXISTS stripe_api_keys CASCADE;
 
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
@@ -47,7 +48,7 @@ CREATE TABLE clients (
     email_address VARCHAR(75) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,    
-    address VARCHAR(200) NOT NULL,   
+    address VARCHAR(200) UNIQUE NOT NULL,   
     stripe_customer_id VARCHAR(255) NULL
 );
 
