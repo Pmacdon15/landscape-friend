@@ -29,6 +29,7 @@ export function CreateQuoteForm({
 	let products: Stripe.Product[]
 	if (productsPromise) products = use(productsPromise)
 
+
 	const form = useForm<z.infer<typeof schemaCreateQuote>>({
 		resolver: zodResolver(schemaCreateQuote),
 		mode: 'onBlur',
@@ -110,14 +111,15 @@ export function CreateQuoteForm({
 								label: client.full_name,
 							}))}
 						/>
-						<datalist id="clients-list">
+
+						{/* <datalist id="clients-list">
 							{clients.map((client) => (
 								<option
 									key={client.id}
 									value={client.full_name}
 								/>
 							))}
-						</datalist>
+						</datalist> */}
 					</div>
 					<FormInput
 						control={form.control}

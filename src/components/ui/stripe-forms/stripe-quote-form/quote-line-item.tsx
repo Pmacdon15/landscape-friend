@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { type Control, type UseFormSetValue, useWatch } from 'react-hook-form'
 import type Stripe from 'stripe'
 import type { z } from 'zod'
-import { FormInput } from '@/components/ui/forms/form'
+import { FormInput, FormSelect } from '@/components/ui/forms/form'
 import { useProductPrice } from '@/lib/hooks/useStripe'
 import type { schemaCreateQuote } from '@/lib/zod/schemas'
 
@@ -43,17 +43,15 @@ export const QuoteLineItem = ({
 	return (
 		<div className="border p-4 mb-4 rounded-md">
 			<div>
-				<FormInput
+				<FormSelect
 					control={control}
 					label="Material"
-					list={`materials-list-${index}`}
 					name={`materials.${index}.materialType`}
+					options={products?.map((product) => ({
+						value: product.name + product.id,
+						label: product.name,
+					}))}
 				/>
-				<datalist id={`materials-list-${index}`}>
-					{products?.map((product) => (
-						<option key={product.id} value={product.name} />
-					))}
-				</datalist>
 			</div>
 
 			<FormInput
