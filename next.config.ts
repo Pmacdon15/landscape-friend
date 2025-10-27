@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {	
-	// reactCompiler: true,
+	reactCompiler: true,
 	typedRoutes: true,
 	cacheComponents: true,
 	// allowedDevOrigins: ['http://localhost:3000', 'http://10.0.0.150:*'],
