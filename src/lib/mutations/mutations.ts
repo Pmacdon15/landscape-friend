@@ -333,7 +333,7 @@ export const useUpdateStripeAPIKey = () => {
 		},
 		onSuccess: () => {
 			revalidatePathAction('/settings/stripe-api-key')
-			// revalidateTagAction('api_key')
+			// revalidateTagAction('api-key')
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)

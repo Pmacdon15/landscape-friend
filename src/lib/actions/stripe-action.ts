@@ -1,5 +1,6 @@
 'use server'
 import { auth } from '@clerk/nextjs/server'
+import { revalidateTag } from 'next/cache'
 import type Stripe from 'stripe'
 import type { z } from 'zod'
 import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action'
@@ -49,8 +50,9 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 	if (!validatedFields.success) throw new Error('Invalid input data')
 
+	let result:{success:boolean, message:string}
 	try {
-		const result = await updatedStripeAPIKeyDb(
+		result = await updatedStripeAPIKeyDb(
 			validatedFields.data,
 			orgId || String(userId),
 		)
@@ -63,11 +65,12 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 				novuId.UserNovuId,
 				'stripe-api-key-updated',
 			)
-		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		throw new Error(errorMessage)
 	}
+	revalidateTag('api-key', 'default')
+	return result
 }
 
 //MARK: Create quote
