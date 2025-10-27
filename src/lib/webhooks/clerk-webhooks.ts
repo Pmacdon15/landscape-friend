@@ -61,6 +61,7 @@ export async function handleUserDeleted(userId: string) {
 		await deleteEmptyOrganizations()
 		// Remove the user from Novu
 		const user = deleteResult[0]
+		console.log('user: ', user)
 		if (user.novu_subscriber_id) {
 			const result = await deleteNovuSubscriber(user.novu_subscriber_id)
 			if (!result) {

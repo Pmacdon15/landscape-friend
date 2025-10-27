@@ -33,8 +33,9 @@ export async function addNovuSubscriber(
 }
 
 export async function deleteNovuSubscriber(subscriberId: string) {
-	await novu.subscribers.delete(subscriberId)
-	console.log(`Subscriber ${subscriberId} deleted successfully`)
+	const result = await novu.subscribers.delete(subscriberId)
+	console.log('Result from delete novu sub: ', result)
+	// console.log(`Subscriber ${subscriberId} deleted successfully`)
 	return true
 }
 
