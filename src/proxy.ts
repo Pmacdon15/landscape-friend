@@ -2,8 +2,16 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
 const isAdminRoute = createRouteMatcher(['/billing(.*)', '/settings(.*)'])
-
+const isProtectedRoute = createRouteMatcher([
+	'/lists(.*)',
+	'/email(.*)',
+	// '/settings(.*)',
+	// '/billing(.*)',
+])
 export const proxy = clerkMiddleware(async (auth, req) => {
+	if (isProtectedRoute(req)) {
+		await auth.protect()
+	}
 	if (isAdminRoute(req)) {
 		const { sessionClaims, orgId } = await auth.protect()
 
@@ -19,11 +27,5 @@ export const config = {
 	matcher: [
 		'/((?!api/webhooks|_next/static|_next/image|favicon.ico).*)',
 		'/(lists|email|settings|billing)(.*)',
-	],
-	protectedRoutes: [
-		'/lists(.*)',
-		'/email(.*)',
-		'/settings(.*)',
-		'/billing(.*)',
 	],
 }
