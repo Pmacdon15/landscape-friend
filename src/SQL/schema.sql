@@ -48,10 +48,11 @@ CREATE TABLE clients (
     email_address VARCHAR(75) NOT NULL,
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,    
-    address VARCHAR(200) UNIQUE NOT NULL,   
-    stripe_customer_id VARCHAR(255) NULL
+    address VARCHAR(200) NOT NULL,   
+    stripe_customer_id VARCHAR(255) NULL,
+    UNIQUE (organization_id, address)
 );
-select * from stripe_api_keys;
+-- SELECT * FROM clients;
 CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,
