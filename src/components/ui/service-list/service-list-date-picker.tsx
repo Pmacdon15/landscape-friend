@@ -1,8 +1,8 @@
 'use client'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { useServiceDateSearch } from '@/lib/hooks/hooks'
 import { Suspense } from 'react'
+import { useServiceDateSearch } from '@/lib/hooks/hooks'
 
 export const ServiceListDatePicker = () => {
 	const { currentServiceDate, setServiceDate } = useServiceDateSearch()
@@ -38,7 +38,7 @@ export const ServiceListDatePicker = () => {
 	return (
 		<Suspense>
 			<DatePicker
-				className="border rounded-sm p-2"
+				className="rounded-sm border p-2"
 				dayClassName={(date) => {
 					const week = getWeekNumber(date)
 					return week === 1

@@ -31,9 +31,9 @@ export default function SendIndividualEmail({
 	return (
 		<FormContainer>
 			<FormHeader text={`Send an Email to a client`} />
-			<form className="flex flex-col gap-4 w-full">
+			<form className="flex w-full flex-col gap-4">
 				<select
-					className="border rounded sm p-2 bg-white"
+					className="sm rounded border bg-white p-2"
 					onChange={handleClientChange}
 				>
 					<option value={' '}> </option>
@@ -47,7 +47,7 @@ export default function SendIndividualEmail({
 					))}
 				</select>
 				{children}
-				<div className="flex justify-center w-full">
+				<div className="flex w-full justify-center">
 					<SendClientEmailButton clientEmail={clientEmail} />
 				</div>
 			</form>

@@ -7,7 +7,7 @@ export function SearchInput() {
 	const { searchTerm, setSearchTerm } = useSearchInput()
 
 	return (
-		<div className="flex items-center sm:w-1/2 md:w-2/6 border rounded-sm">
+		<div className="flex items-center rounded-sm border sm:w-1/2 md:w-2/6">
 			<input
 				className="flex-grow p-2 focus:outline-none"
 				name="search"

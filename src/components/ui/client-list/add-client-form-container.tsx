@@ -12,7 +12,7 @@ export default async function AddClientFormContainer({
 	if (!isAdmin) return null
 	return (
 		<FormContainer>
-			<div className="w-full flex justify-end">
+			<div className="flex w-full justify-end">
 				<EditSettingSheet
 					prompt={'Enter Client Information'}
 					title={

@@ -14,12 +14,12 @@ export function CuttingPeriodSelector({
 	const options = variant === 'week' ? weeks : days
 
 	return (
-		<div className="flex gap-1  ">
+		<div className="flex gap-1">
 			<label className="flex items-center" htmlFor={variant}>
 				{label}{' '}
 			</label>
 			<select
-				className="w-fit border rounded-sm text-center py-2"
+				className="w-fit rounded-sm border py-2 text-center"
 				id={variant}
 				name={variant}
 				onChange={(e) => setCuttingPeriod(e.target.value)}

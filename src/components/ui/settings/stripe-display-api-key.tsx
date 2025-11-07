@@ -17,7 +17,7 @@ export default function DisplayStripeApiKey({
 	let apiKey: APIKey | Error
 	if (apiKeyPromise) {
 		apiKey = use(apiKeyPromise)
-	} else apiKey = new Error("")
+	} else apiKey = new Error('')
 
 	const [showKey, setShowKey] = useState(false)
 
@@ -33,11 +33,11 @@ export default function DisplayStripeApiKey({
 						<Button onClick={toggleShowKey}>
 							{showKey ? (
 								<>
-									<EyeOff className="w-4 h-4" /> Hide
+									<EyeOff className="h-4 w-4" /> Hide
 								</>
 							) : (
 								<>
-									<Eye className="w-4 h-4" />
+									<Eye className="h-4 w-4" />
 									Show
 								</>
 							)}
@@ -54,7 +54,11 @@ export default function DisplayStripeApiKey({
 					>
 						<SettingsForm>
 							<InputField
-								defaultValue={apiKeyPromise && !(apiKey instanceof Error) ? apiKey.apk_key : ''}
+								defaultValue={
+									apiKeyPromise && !(apiKey instanceof Error)
+										? apiKey.apk_key
+										: ''
+								}
 								name={'api_key'}
 								placeholder={'Your Stripe API Key'}
 								type={'textarea'}

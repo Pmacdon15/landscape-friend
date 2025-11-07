@@ -46,29 +46,30 @@ export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
 }
 
 export async function deleteEmptyOrganizations() {
-  try {
-    const clerk = await clerkClient()
+	try {
+		const clerk = await clerkClient()
 
-    // Get all organizations
-    const organizations = await clerk.organizations.getOrganizationList()
+		// Get all organizations
+		const organizations = await clerk.organizations.getOrganizationList()
 
-    // Loop through each organization
-    for (const organization of organizations.data) {
-      const organizationId = organization.id
+		// Loop through each organization
+		for (const organization of organizations.data) {
+			const organizationId = organization.id
 
-      // Get the organization's memberships
-      const orgMemberships = await clerk.organizations.getOrganizationMembershipList({
-        organizationId,
-      })
+			// Get the organization's memberships
+			const orgMemberships =
+				await clerk.organizations.getOrganizationMembershipList({
+					organizationId,
+				})
 
-      // Check if the organization has no members
-      if (orgMemberships.data.length === 0) {
-        // Delete the organization
-        await clerk.organizations.deleteOrganization(organizationId)
-        console.log(`Organization ${organizationId} deleted.`)
-      }
-    }
-  } catch (error) {
-    console.error(`Error deleting organization: ${error}`)
-  }
+			// Check if the organization has no members
+			if (orgMemberships.data.length === 0) {
+				// Delete the organization
+				await clerk.organizations.deleteOrganization(organizationId)
+				console.log(`Organization ${organizationId} deleted.`)
+			}
+		}
+	} catch (error) {
+		console.error(`Error deleting organization: ${error}`)
+	}
 }

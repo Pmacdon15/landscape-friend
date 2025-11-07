@@ -6,7 +6,7 @@ export const ServiceStatusSelector = () => {
 
 	return (
 		<select
-			className="w-fit border rounded-sm text-center py-2"
+			className="w-fit rounded-sm border py-2 text-center"
 			name="serviced"
 			onChange={(e) => setServiceStatus(e.target.value)}
 			value={currentServiceStatus}

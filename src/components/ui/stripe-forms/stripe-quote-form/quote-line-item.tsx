@@ -41,7 +41,7 @@ export const QuoteLineItem = ({
 	}, [price, index, setValue])
 
 	return (
-		<div className="border p-4 mb-4 rounded-md">
+		<div className="mb-4 rounded-md border p-4">
 			<div>
 				<FormSelect
 					control={control}

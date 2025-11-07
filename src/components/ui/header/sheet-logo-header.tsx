@@ -2,7 +2,7 @@ import Image from 'next/image'
 import HeaderTitle from './header-title'
 export default function SheetLogoHeader() {
 	return (
-		<div className="flex flex-col justify-center items-center md:p-4 w-full">
+		<div className="flex w-full flex-col items-center justify-center md:p-4">
 			<Image
 				alt="Lawn Buddy Logo"
 				height={100}

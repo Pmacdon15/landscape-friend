@@ -10,7 +10,7 @@ export default function DeleteSiteMapButton({
 }) {
 	const { mutate, isPending } = useDeleteSiteMap()
 	return (
-		<div className="absolute bottom-5 right-5">
+		<div className="absolute right-5 bottom-5">
 			<Alert
 				functionAction={() => mutate({ clientId, siteMapId })}
 				isPending={isPending}

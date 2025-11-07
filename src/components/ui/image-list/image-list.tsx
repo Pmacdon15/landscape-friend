@@ -18,7 +18,7 @@ export default function ImageList({
 	return (
 		<>
 			{view === 'map' && (
-				<div className="flex flex-col gap-y-2 min-h-[300px] w-full overflow-y-auto h-[300px] bg-background rounded-md p-2 ">
+				<div className="flex h-[300px] min-h-[300px] w-full flex-col gap-y-2 overflow-y-auto rounded-md bg-background p-2">
 					<ImageSelectorMain
 						address={client.address}
 						client={client}

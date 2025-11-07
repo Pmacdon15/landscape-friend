@@ -38,7 +38,7 @@ const InputField = <TFieldValues extends FieldValues>({
 	return (
 		<div>
 			<label
-				className="block text-sm font-medium text-gray-700"
+				className="block font-medium text-gray-700 text-sm"
 				htmlFor={id}
 			>
 				{label}
@@ -55,7 +55,7 @@ const InputField = <TFieldValues extends FieldValues>({
 				step={step}
 			/>
 			{error && (
-				<p className="text-red-500 text-sm mt-1">{error.message}</p>
+				<p className="mt-1 text-red-500 text-sm">{error.message}</p>
 			)}
 		</div>
 	)

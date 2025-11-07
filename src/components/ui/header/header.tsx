@@ -19,11 +19,11 @@ export default function Header({ children }: { children: React.ReactNode }) {
 	const { data: novuId, isPending } = useGetNovuId(user?.id)
 
 	return (
-		<div className="flex flex-col items-center bg-background border rounded-b-sm p-4 w-full gap-2 ">
+		<div className="flex w-full flex-col items-center gap-2 rounded-b-sm border bg-background p-4">
 			{children}
-			<div className="flex flex-wrap justify-between border-t w-full pt-2">
+			<div className="flex w-full flex-wrap justify-between border-t pt-2">
 				{user?.id && <NavBar />}
-				<div className="flex ml-auto items-center gap-2">
+				<div className="ml-auto flex items-center gap-2">
 					<SignedIn>
 						<UserButton />
 						<OrganizationSwitcher />
@@ -34,7 +34,7 @@ export default function Header({ children }: { children: React.ReactNode }) {
 					<NotificationInbox userNovuId={novuId.UserNovuId} />
 				)}
 				<SignedOut>
-					<div className="bg-white/30 backdrop-filter backdrop-blur-md flex gap-4 p-2 rounded-sm ml-auto">
+					<div className="ml-auto flex gap-4 rounded-sm bg-white/30 p-2 backdrop-blur-md backdrop-filter">
 						<SignInButton />
 						<SignUpButton />
 					</div>

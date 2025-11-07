@@ -81,7 +81,7 @@ export function CreateQuoteForm({
 			return acc + cost * units
 		}, 0) ?? 0)
 
-	const isClientSelected = clients.some(
+	const _isClientSelected = clients.some(
 		(client) => client.full_name === clientName,
 	)
 
@@ -97,7 +97,7 @@ export function CreateQuoteForm({
 
 				{/* Client Info */}
 				<section>
-					<h3 className="text-md font-semibold mb-2">
+					<h3 className="mb-2 font-semibold text-md">
 						Client Information
 					</h3>
 					<FormSelect
@@ -131,7 +131,7 @@ export function CreateQuoteForm({
 
 				{/* Labour Details */}
 				<section>
-					<h3 className="text-md font-semibold mb-2">Cost Details</h3>
+					<h3 className="mb-2 font-semibold text-md">Cost Details</h3>
 					<FormInput
 						control={form.control}
 						label="Labour Cost (per unit)"
@@ -150,7 +150,7 @@ export function CreateQuoteForm({
 
 				{/* Dynamic Materials Section */}
 				<section>
-					<h3 className="text-md font-semibold mb-2">Materials</h3>
+					<h3 className="mb-2 font-semibold text-md">Materials</h3>
 					{fields.map((item, index) => (
 						<div key={item.id}>
 							<QuoteLineItem
@@ -185,7 +185,7 @@ export function CreateQuoteForm({
 					</Button>
 				</section>
 
-				<p className="font-bold mt-2">Total: ${total.toFixed(2)}</p>
+				<p className="mt-2 font-bold">Total: ${total.toFixed(2)}</p>
 				<div>
 					<Button
 						disabled={isPending}

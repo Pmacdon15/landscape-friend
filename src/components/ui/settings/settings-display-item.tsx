@@ -12,14 +12,14 @@ export default function SettingsDisplayItem({
 	id?: string
 }) {
 	return (
-		<div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full">
-			<div className="flex w-full md:w-96 items-center gap-4">
-				<label className="w-32 " htmlFor={id}>
+		<div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-center">
+			<div className="flex w-full items-center gap-4 md:w-96">
+				<label className="w-32" htmlFor={id}>
 					{label}
 				</label>
 				<div className="flex-1">{children}</div>
 			</div>
-			<div className="flex-1 w-full md:w-auto ">{actions}</div>
+			<div className="w-full flex-1 md:w-auto">{actions}</div>
 		</div>
 	)
 }

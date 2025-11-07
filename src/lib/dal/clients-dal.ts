@@ -136,7 +136,6 @@ export async function fetchSnowClearingClients(
 		userId,
 		searchTermIsServiced,
 		searchTermAssignedTo,
-		
 	)
 
 	if (!result.clientsResult) return null

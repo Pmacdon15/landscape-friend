@@ -65,15 +65,15 @@ export default async function ClientListService({
 				path="/lists/client"
 				totalPages={totalPages}
 			/>
-			<ul className="flex flex-col gap-4 rounded-sm w-full items-center justify-center">
+			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
 				{clients.map((client) => (
 					<FormContainer key={client.id}>
-						<li className="border p-4 rounded-sm relative bg-white/70">
+						<li className="relative rounded-sm border bg-white/70 p-4">
 							{isAdmin?.isAdmin && (
 								<DeleteClientButton clientId={client.id} />
 							)}
 							<FormHeader text={client.full_name} />
-							<div className="flex flex-col gap-2 items-center justify-center mt-8 mb-8 lg:flex-row w-full">
+							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
 								<ClientListItemHeader
 									clientPhoneNumber={client.phone_number}
 								/>
@@ -89,7 +89,7 @@ export default async function ClientListService({
 								</ClientListItemAddress>
 							</div>
 							{isAdmin?.isAdmin && (
-								<div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
+								<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
 									<p>Amount owing: ${client.amount_owing} </p>
 									<Suspense fallback={<AssignedToFallback />}>
 										<AssignedTo
@@ -126,7 +126,10 @@ export default async function ClientListService({
 								isAdmin={isAdmin?.isAdmin}
 							/>
 							<ViewSitePhotoSheet clientId={client.id} />
-							<ImageList client={client} isAdmin={isAdmin?.isAdmin} />
+							<ImageList
+								client={client}
+								isAdmin={isAdmin?.isAdmin}
+							/>
 						</li>
 					</FormContainer>
 				))}

@@ -25,10 +25,10 @@ export default function AssignedTo({
 	const defaultValue = clientAssignedTo ?? 'not-assigned'
 
 	return (
-		<div className="flex gap-2 justify-center mb-2">
-			<p className=" my-auto ">Assigned to {snow ? 'snow' : 'grass'}: </p>
+		<div className="mb-2 flex justify-center gap-2">
+			<p className="my-auto">Assigned to {snow ? 'snow' : 'grass'}: </p>
 			<select
-				className="rounded-sm border md:w-3/6  w-3/6 p-1"
+				className="w-3/6 rounded-sm border p-1 md:w-3/6"
 				defaultValue={defaultValue}
 				onChange={(e) => {
 					const selectedUserId = e.target.value

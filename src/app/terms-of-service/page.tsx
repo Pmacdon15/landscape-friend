@@ -7,7 +7,7 @@ export default function Page() {
 	return (
 		<>
 			<ContentContainer>
-				<h1 className="text-2xl font-bold mb-4">Terms of Service</h1>
+				<h1 className="mb-4 font-bold text-2xl">Terms of Service</h1>
 
 				<p className="mb-4">
 					Welcome to <strong>Landscape Friend</strong>! By accessing

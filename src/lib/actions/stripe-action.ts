@@ -50,7 +50,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 	if (!validatedFields.success) throw new Error('Invalid input data')
 
-	let result:{success:boolean, message:string}
+	let result: { success: boolean; message: string }
 	try {
 		result = await updatedStripeAPIKeyDb(
 			validatedFields.data,

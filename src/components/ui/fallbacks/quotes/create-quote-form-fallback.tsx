@@ -12,9 +12,9 @@ export function CreateQuoteFormFallback() {
 
 			{/* Labour Details */}
 			<section>
-				<h3 className="text-md font-semibold mb-2">Cost Details</h3>
+				<h3 className="mb-2 font-semibold text-md">Cost Details</h3>
 				<label
-					className="block text-sm font-medium text-gray-700"
+					className="block font-medium text-gray-700 text-sm"
 					htmlFor="labourCostPerUnit"
 				>
 					Labour Cost (per unit)
@@ -28,7 +28,7 @@ export function CreateQuoteFormFallback() {
 					type="number"
 				/>
 				<label
-					className="block text-sm font-medium text-gray-700"
+					className="block font-medium text-gray-700 text-sm"
 					htmlFor="labourUnits"
 				>
 					Labour Units
@@ -45,10 +45,10 @@ export function CreateQuoteFormFallback() {
 
 			{/* Dynamic Materials Section */}
 			<section>
-				<h3 className="text-md font-semibold mb-2"> Items</h3>
-				<div className="border p-4 mb-4 rounded-md">
+				<h3 className="mb-2 font-semibold text-md"> Items</h3>
+				<div className="mb-4 rounded-md border p-4">
 					<label
-						className="block text-sm font-medium text-gray-700"
+						className="block font-medium text-gray-700 text-sm"
 						htmlFor="materialType"
 					>
 						Material
@@ -59,7 +59,7 @@ export function CreateQuoteFormFallback() {
 						type="text"
 					/>
 					<label
-						className="block text-sm font-medium text-gray-700"
+						className="block font-medium text-gray-700 text-sm"
 						htmlFor="materialCostPerUnit"
 					>
 						Material Cost (per unit)
@@ -73,7 +73,7 @@ export function CreateQuoteFormFallback() {
 						type="number"
 					/>
 					<label
-						className="block text-sm font-medium text-gray-700"
+						className="block font-medium text-gray-700 text-sm"
 						htmlFor="materialUnits"
 					>
 						Material Units
@@ -93,7 +93,7 @@ export function CreateQuoteFormFallback() {
 				</Button>
 			</section>
 
-			<p className="font-bold mt-2">Total: $</p>
+			<p className="mt-2 font-bold">Total: $</p>
 			<div>
 				<Button type="submit" variant="outline">
 					Create Quote

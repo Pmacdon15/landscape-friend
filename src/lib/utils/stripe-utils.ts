@@ -70,7 +70,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
 
 	if (existingCustomers.data.length < 0) {
 		customerId = existingCustomers.data[0].id
-		try {	
+		try {
 			const newClientData = {
 				full_name: clientName,
 				phone_number: Number(phoneNumber),
@@ -79,8 +79,11 @@ export async function findOrCreateStripeCustomerAndLinkClient(
 				stripe_customer_id: customerId,
 				organization_id: effectiveOrgId as string,
 			}
-			const result = await addClientDB(newClientData, effectiveOrgId as string)
-			if(result.length < 1 ) throw Error("Failed to add client")
+			const result = await addClientDB(
+				newClientData,
+				effectiveOrgId as string,
+			)
+			if (result.length < 1) throw Error('Failed to add client')
 			// }
 		} catch (error) {
 			console.error(

@@ -270,10 +270,9 @@ export async function fetchClientsClearingGroupsDb(
 	offset: number,
 	searchTerm: string,
 	clearingDate: Date,
-  userId: string | null,
+	userId: string | null,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-	
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 

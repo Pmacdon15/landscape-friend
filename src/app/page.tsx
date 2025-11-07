@@ -9,31 +9,31 @@ import FillFormContainer from '@/components/ui/containers/fill-form-container'
 export default function Home() {
 	return (
 		<>
-			<div className="flex justify-center items-center mb-4 overflow-hidden width-100% md:overflow-visible ">
-				<div className="flex justify-right items-right logo-slide-in">
+			<div className="width-100% mb-4 flex items-center justify-center overflow-hidden md:overflow-visible">
+				<div className="justify-right items-right logo-slide-in flex">
 					<Image
 						alt="Landscape Friend Logo"
-						className="w-64 h-auto mx-auto mb-4 "
+						className="mx-auto mb-4 h-auto w-64"
 						height={800}
 						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/logo.png"
 						width={800}
 					/>
 				</div>
 
-				<div className="flex-columns justify-top items-left h-16 bg-green-500 text-white logo-slide-in-reverse">
-					<h1 className="text-3xl font-bold">Landscape Friend</h1>
+				<div className="justify-top items-left logo-slide-in-reverse h-16 flex-columns bg-green-500 text-white">
+					<h1 className="font-bold text-3xl">Landscape Friend</h1>
 					<div className="fit bg-green-700">
-						<h2 className="text-xl font-semibold">
+						<h2 className="font-semibold text-xl">
 							Your Lawn Care Companion
 						</h2>
 					</div>
 				</div>
 			</div>
 
-			<div className="flex-row justify-center items-center">
-				<div className="mx-auto justify-center items-center max-w-md overflow-hidden md:max-w-6xl">
+			<div className="flex-row items-center justify-center">
+				<div className="mx-auto max-w-md items-center justify-center overflow-hidden md:max-w-6xl">
 					<div className="md:flex">
-						<div className="md:shrink-0 logo-slide-in">
+						<div className="logo-slide-in md:shrink-0">
 							<Image
 								alt="Lawn Mower Mowing a Lawn"
 								className="h-64 w-full object-cover md:h-full md:w-96"
@@ -42,10 +42,10 @@ export default function Home() {
 								width={800}
 							/>
 						</div>
-						<div className="w-full md:ml-4 md:mt-0 mt-4 logo-slide-in-reverse">
+						<div className="logo-slide-in-reverse mt-4 w-full md:mt-0 md:ml-4">
 							<FormContainer popover={true}>
 								<FillFormContainer>
-									<h1 className="text-3xl font-bold mb-6">
+									<h1 className="mb-6 font-bold text-3xl">
 										Welcome to Landscape Friend
 									</h1>
 									<p className="mb-4 indent-4">
@@ -75,13 +75,13 @@ export default function Home() {
 				</div>
 			</div>
 
-			<div className="flex-row justify-center items-center">
-				<div className="mx-auto justify-center items-center max-w-md overflow-hidden md:max-w-6xl">
+			<div className="flex-row items-center justify-center">
+				<div className="mx-auto max-w-md items-center justify-center overflow-hidden md:max-w-6xl">
 					<div className="md:flex">
-						<div className="w-full md:mr-4 md:mt-0 mt-4 logo-slide-in sm:mb-4 ">
+						<div className="logo-slide-in mt-4 w-full sm:mb-4 md:mt-0 md:mr-4">
 							<FormContainer popover={true}>
 								<FillFormContainer>
-									<h1 className="text-3xl font-bold mb-6">
+									<h1 className="mb-6 font-bold text-3xl">
 										Why choose Landscape Friend?
 									</h1>
 									<p className="mb-4 indent-4">
@@ -93,10 +93,10 @@ export default function Home() {
 										services, track maintenance, and manage
 										your lawn care tasks efficiently.
 									</p>
-									<h2 className="text-2xl font-semibold mb-4">
+									<h2 className="mb-4 font-semibold text-2xl">
 										What we Provide:
 									</h2>
-									<ul className="list-disc list-inside mb-4">
+									<ul className="mb-4 list-inside list-disc">
 										<li>
 											A secure end-to-end platform for
 											managing clients for landscaping
@@ -120,7 +120,7 @@ export default function Home() {
 								</FillFormContainer>
 							</FormContainer>
 						</div>
-						<div className="md:shrink-0 logo-slide-in-reverse  mt-4 md:mt-0 pb-4">
+						<div className="logo-slide-in-reverse mt-4 pb-4 md:mt-0 md:shrink-0">
 							<Image
 								alt="Lawn Mower Mowing a Lawn"
 								className="h-64 w-full object-cover md:h-full md:w-96"

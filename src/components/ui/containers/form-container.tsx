@@ -7,12 +7,12 @@ export default function FormContainer({
 }) {
 	return (
 		<div
-			className={`bg-white  shadow-2xl rounded-sm border  ${popover ? 'p-2' : 'p-1'} ${popover ? 'w-full' : 'max-sm:w-full sm:w-4/6 md:w-5/6'}  `}
+			className={`rounded-sm border bg-white shadow-2xl ${popover ? 'p-2' : 'p-1'} ${popover ? 'w-full' : 'max-sm:w-full sm:w-4/6 md:w-5/6'}  `}
 		>
 			<div
-				className={`bg-background ${popover ? 'p-2' : 'p-1'} shadow-2xl rounded-sm border `}
+				className={`bg-background ${popover ? 'p-2' : 'p-1'} rounded-sm border shadow-2xl`}
 			>
-				<div className="flex flex-col rounded-sm w-full p-2 bg-[url('/lawn3.jpg')] bg-cover bg-center bg-no-repeat shadow-2xl gap-2 border">
+				<div className="flex w-full flex-col gap-2 rounded-sm border bg-[url('/lawn3.jpg')] bg-center bg-cover bg-no-repeat p-2 shadow-2xl">
 					{children}
 				</div>
 			</div>

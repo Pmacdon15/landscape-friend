@@ -15,7 +15,7 @@ export const ServiceListDatePickerFallback = () => {
 
 	return (
 		<DatePicker
-			className="border rounded-sm "
+			className="rounded-sm border"
 			dayClassName={(date) => {
 				const week = getWeekNumber(date)
 				return week === 1

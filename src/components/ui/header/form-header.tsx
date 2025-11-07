@@ -7,9 +7,9 @@ export default function FormHeader({
 }) {
 	return (
 		<div
-			className={`flex ${children && 'flex-col'} justify-center align-middle p-2 bg-white/70 shadow-2xl border rounded-sm`}
+			className={`flex ${children && 'flex-col'} justify-center rounded-sm border bg-white/70 p-2 align-middle shadow-2xl`}
 		>
-			<h1 className="text-2xl font-semibold text-gray-800">{text}</h1>
+			<h1 className="font-semibold text-2xl text-gray-800">{text}</h1>
 			{children}
 		</div>
 	)

@@ -85,7 +85,7 @@ export const ColoredDatePicker = () => {
 		<div className="relative inline-block text-left">
 			<div>
 				<input
-					className="w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+					className="w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 font-medium text-gray-700 text-sm shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
 					onClick={() => setIsOpen(!isOpen)}
 					readOnly
 					type="text"
@@ -94,24 +94,24 @@ export const ColoredDatePicker = () => {
 			</div>
 
 			{isOpen && (
-				<div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+				<div className="absolute right-0 mt-2 w-80 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5">
 					<div className="p-2">
-						<div className="flex justify-between items-center mb-2">
+						<div className="mb-2 flex items-center justify-between">
 							<button
-								className="px-2 py-1 rounded-md hover:bg-gray-100"
+								className="rounded-md px-2 py-1 hover:bg-gray-100"
 								onClick={() => changeMonth(-1)}
 								type="button"
 							>
 								&lt;
 							</button>
-							<div className="text-lg font-semibold">
+							<div className="font-semibold text-lg">
 								{date.toLocaleString('default', {
 									month: 'long',
 									year: 'numeric',
 								})}
 							</div>
 							<button
-								className="px-2 py-1 rounded-md hover:bg-gray-100"
+								className="rounded-md px-2 py-1 hover:bg-gray-100"
 								onClick={() => changeMonth(1)}
 								type="button"
 							>
@@ -129,7 +129,7 @@ export const ColoredDatePicker = () => {
 								'Sat',
 							].map((day) => (
 								<div
-									className="font-medium text-xs text-gray-500"
+									className="font-medium text-gray-500 text-xs"
 									key={day}
 								>
 									{day}
@@ -146,7 +146,7 @@ export const ColoredDatePicker = () => {
 									: 'bg-gray-100'
 								return (
 									<button
-										className={`py-1 rounded-md text-sm ${isCurrentMonth ? 'text-gray-700 hover:bg-gray-200' : 'text-gray-400'} ${colorClass}`}
+										className={`rounded-md py-1 text-sm ${isCurrentMonth ? 'text-gray-700 hover:bg-gray-200' : 'text-gray-400'} ${colorClass}`}
 										key={day}
 										onClick={() =>
 											handleDateSelect(

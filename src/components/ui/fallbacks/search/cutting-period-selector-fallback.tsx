@@ -14,7 +14,7 @@ export function CuttingPeriodSelectorFallback({
 				{label}{' '}
 			</label>
 			<select
-				className="w-fit border rounded-sm text-center p-2"
+				className="w-fit rounded-sm border p-2 text-center"
 				id={variant}
 				name={variant}
 			>

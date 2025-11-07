@@ -57,7 +57,7 @@ export function EditForm({
 	}
 
 	return (
-		<div className="container px-4 mx-auto my-6">
+		<div className="container mx-auto my-6 px-4">
 			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<FieldGroup>
 					<FormInput
@@ -67,7 +67,7 @@ export function EditForm({
 						name="id"
 					/>
 					<section>
-						<h3 className="text-md font-semibold mb-2">
+						<h3 className="mb-2 font-semibold text-md">
 							Invoice Lines
 						</h3>
 						<DynamicFields
@@ -84,7 +84,7 @@ export function EditForm({
 						/>
 					</section>
 
-					<p className="font-bold mt-2">
+					<p className="mt-2 font-bold">
 						Subtotal: $
 						{lines
 							.reduce(

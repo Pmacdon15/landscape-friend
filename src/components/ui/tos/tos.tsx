@@ -19,12 +19,12 @@ export function TosSection({
 
 	return (
 		<>
-			<h2 className="text-xl font-semibold mt-6 mb-2">{title}</h2>
+			<h2 className="mt-6 mb-2 font-semibold text-xl">{title}</h2>
 			<p className="mb-4">
 				{formattedText}
 				{email && (
 					<Link
-						className="underline text-blue-600"
+						className="text-blue-600 underline"
 						href="mailto:support@landscapefriend.com"
 					>
 						support@landscapefriend.com

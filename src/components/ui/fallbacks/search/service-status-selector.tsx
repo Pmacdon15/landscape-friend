@@ -1,7 +1,7 @@
 export const ServiceStatusSelectorFallback = () => {
 	return (
 		<select
-			className="w-fit border rounded-sm text-center p-2"
+			className="w-fit rounded-sm border p-2 text-center"
 			name="serviced"
 		>
 			<option value="false">Un-serviced</option>

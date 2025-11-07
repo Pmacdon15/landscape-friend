@@ -77,13 +77,13 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 		mutate(form)
 	}
 
-	const isClientSelected = clients.some(
+	const _isClientSelected = clients.some(
 		(client) => client.full_name === clientName,
 	)
 
 	return (
 		<>
-			<form className="space-y-4 " onSubmit={form.handleSubmit(onSubmit)}>
+			<form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
 				<FormInput
 					control={form.control}
 					hidden
@@ -93,18 +93,18 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 
 				{/* Client Info */}
 				<section>
-					<h3 className="text-md font-semibold mb-2">
+					<h3 className="mb-2 font-semibold text-md">
 						Client Information
-					</h3>					
-						<FormSelect
-							control={form.control}
-							label="Name"
-							name="clientName"
-							options={clients.map((client) => ({
-								value: client.full_name,
-								label: client.full_name,
-							}))}
-						/>	
+					</h3>
+					<FormSelect
+						control={form.control}
+						label="Name"
+						name="clientName"
+						options={clients.map((client) => ({
+							value: client.full_name,
+							label: client.full_name,
+						}))}
+					/>
 					<FormInput
 						control={form.control}
 						disabled
@@ -127,7 +127,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 
 				{/* Subscription Details */}
 				<section className="flex flex-col gap-2">
-					<h3 className="text-md font-semibold mb-2">
+					<h3 className="mb-2 font-semibold text-md">
 						Subscription Details
 					</h3>
 					<div>

@@ -12,7 +12,7 @@ export default function SearchFormFallBack({
 	variant?: SearchFormVariant
 }) {
 	return (
-		<div className="flex flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
+		<div className="flex flex-col justify-center gap-2 rounded-sm bg-white/70 p-2 shadow-lg md:flex-row">
 			<SearchInputFallback />
 			{variant === 'default' && (
 				<>

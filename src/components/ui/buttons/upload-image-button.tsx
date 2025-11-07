@@ -22,9 +22,9 @@ export default function UploadImageButton({
 	})
 	return (
 		<button
-			className={`px-6 py-3 rounded-md shadow-md text-white font-semibold  ${
+			className={`rounded-md px-6 py-3 font-semibold text-white shadow-md ${
 				isPending
-					? 'bg-green-400 cursor-not-allowed'
+					? 'cursor-not-allowed bg-green-400'
 					: 'bg-background hover:bg-green-500'
 			}`}
 			disabled={isPending}
@@ -34,7 +34,7 @@ export default function UploadImageButton({
 			type="submit"
 		>
 			{isPending ? (
-				<div className="flex md:gap-8 justify-center">
+				<div className="flex justify-center md:gap-8">
 					Uploading...
 					<Spinner />
 				</div>

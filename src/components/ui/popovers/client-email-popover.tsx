@@ -36,10 +36,10 @@ export const ClientEmailPopover = ({
 				</button>
 			</Popover.Trigger>
 			<Popover.Content
-				className="w-[90vw] md:w-5/6 max-h-[90vh] p-4 z-[9999]"
+				className="z-[9999] max-h-[90vh] w-[90vw] p-4 md:w-5/6"
 				sideOffset={4}
 			>
-				<div className="flex flex-col gap-4 ">
+				<div className="flex flex-col gap-4">
 					<SendEmailComponent
 						clientEmail={clientEmailAddress}
 						clientName={clientFullName}

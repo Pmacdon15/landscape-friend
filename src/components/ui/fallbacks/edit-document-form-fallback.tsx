@@ -6,11 +6,11 @@ export function EditDocumentFormFallback() {
 	return (
 		<form className="space-y-4">
 			<section>
-				<h3 className="text-md font-semibold mb-2">Invoice Lines</h3>
-				<div className="border p-4 mb-4 rounded-md">
+				<h3 className="mb-2 font-semibold text-md">Invoice Lines</h3>
+				<div className="mb-4 rounded-md border p-4">
 					<div>
 						<label
-							className="block text-sm font-medium text-gray-700"
+							className="block font-medium text-gray-700 text-sm"
 							htmlFor={`lines.description`}
 						>
 							Description:
@@ -23,7 +23,7 @@ export function EditDocumentFormFallback() {
 					</div>
 					<div>
 						<label
-							className="block text-sm font-medium text-gray-700"
+							className="block font-medium text-gray-700 text-sm"
 							htmlFor={`lines.amount`}
 						>
 							Amount (per unit):
@@ -38,7 +38,7 @@ export function EditDocumentFormFallback() {
 					</div>
 					<div>
 						<label
-							className="block text-sm font-medium text-gray-700"
+							className="block font-medium text-gray-700 text-sm"
 							htmlFor={`lines.quantity`}
 						>
 							Quantity:
@@ -55,7 +55,7 @@ export function EditDocumentFormFallback() {
 				</div>
 			</section>
 			<section>
-				<h3 className="text-md font-semibold mb-2">Totals</h3>
+				<h3 className="mb-2 font-semibold text-md">Totals</h3>
 				<p className="font-bold">Grand Total: ${(0o0).toFixed(2)}</p>
 			</section>
 			<Button type="submit" variant="outline">

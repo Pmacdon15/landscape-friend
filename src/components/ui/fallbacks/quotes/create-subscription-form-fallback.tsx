@@ -13,12 +13,12 @@ export default function CreateSubscriptionFormFallback() {
 
 			{/* Subscription Details */}
 			<section>
-				<h3 className="text-md font-semibold mb-2">
+				<h3 className="mb-2 font-semibold text-md">
 					Subscription Details
 				</h3>
 				<div>
 					<label
-						className="block text-sm font-medium text-gray-700"
+						className="block font-medium text-gray-700 text-sm"
 						htmlFor="serviceType"
 					>
 						Service Type
@@ -31,7 +31,7 @@ export default function CreateSubscriptionFormFallback() {
 					</select>
 				</div>
 				<label
-					className="block text-sm font-medium text-gray-700"
+					className="block font-medium text-gray-700 text-sm"
 					htmlFor="price_per_month"
 				>
 					Price Per Month
@@ -45,21 +45,21 @@ export default function CreateSubscriptionFormFallback() {
 					type="number"
 				/>
 				<label
-					className="block text-sm font-medium text-gray-700"
+					className="block font-medium text-gray-700 text-sm"
 					htmlFor="startDate"
 				>
 					Start Date
 				</label>
 				<input className={inputClassName} id="startDate" type="date" />
 				<label
-					className="block text-sm font-medium text-gray-700"
+					className="block font-medium text-gray-700 text-sm"
 					htmlFor="endDate"
 				>
 					End Date
 				</label>
 				<input className={inputClassName} id="endDate" type="date" />
 				<label
-					className="block text-sm font-medium text-gray-700"
+					className="block font-medium text-gray-700 text-sm"
 					htmlFor="notes"
 				>
 					Notes

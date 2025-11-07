@@ -32,7 +32,7 @@ export function Alert({
 					)}
 					{variant === 'remove-sitemap' && (
 						<button
-							className={`border rounded-sm p-1  ${isPending ? 'bg-gray/40' : 'bg-white/40'} `}
+							className={`rounded-sm border p-1 ${isPending ? 'bg-gray/40' : 'bg-white/40'} `}
 							disabled={isPending}
 							type="button"
 						>
@@ -41,7 +41,7 @@ export function Alert({
 					)}
 					{variant === 'remove-client' && (
 						<button
-							className="border rounded-sm bg-white/70"
+							className="rounded-sm border bg-white/70"
 							disabled={isPending}
 							type="button"
 						>

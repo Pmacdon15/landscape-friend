@@ -19,7 +19,7 @@ export function NavBar() {
 			<div>
 				<Sheet>
 					<SheetTrigger asChild>
-						<Button className="p-2 w-9" variant="outline">
+						<Button className="w-9 p-2" variant="outline">
 							<Menu size={24} />
 						</Button>
 					</SheetTrigger>

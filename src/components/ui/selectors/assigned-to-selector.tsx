@@ -13,9 +13,9 @@ export function AssignedToSelector({
 	const { currentValue, setParam } = useSearchParam('assigned', '')
 
 	return (
-		<div className="flex gap-1  ">
+		<div className="flex gap-1">
 			<select
-				className="w-fit border rounded-sm text-center py-2"
+				className="w-fit rounded-sm border py-2 text-center"
 				name={'assigned_to'}
 				onChange={(e) => setParam(e.target.value)}
 				value={currentValue}

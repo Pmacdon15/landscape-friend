@@ -16,7 +16,7 @@ export default function ClientListItemAddress({
 	const [isExpanded, setIsExpanded] = useState(false)
 
 	return (
-		<div className="flex flex-col items-center w-full relative">
+		<div className="relative flex w-full flex-col items-center">
 			<input
 				checked={isExpanded}
 				className="hidden"
@@ -25,17 +25,17 @@ export default function ClientListItemAddress({
 				type="checkbox"
 			/>
 			<label
-				className="flex flex-row gap-2 items-center cursor-pointer w-full"
+				className="flex w-full cursor-pointer flex-row items-center gap-2"
 				htmlFor={`map-toggle-${clientId}`}
 			>
 				<Image
 					alt="Address Icon"
-					className="w-10 h-10"
+					className="h-10 w-10"
 					height={512}
 					src="/client-list/address.png"
 					width={512}
 				/>
-				<div className="flex flex-col items-center absolute left-1/2 -translate-x-1/2 w-full">
+				<div className="-translate-x-1/2 absolute left-1/2 flex w-full flex-col items-center">
 					<p className="text-sm">Address:</p>
 					<p>{clientAddress}</p>
 				</div>

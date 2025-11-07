@@ -9,17 +9,17 @@ export default async function ListServices({ client }: { client: Client }) {
 
 	if (imagesUrls.length === 0) {
 		return (
-			<div className="flex flex-col items-center justify-center mt-2 w-full lg:w-4/6  mx-auto min-h-[300px] overflow-y-auto bg-background rounded-md p-2">
-				<h1 className="text-white font-bold">No Last Service found</h1>
+			<div className="mx-auto mt-2 flex min-h-[300px] w-full flex-col items-center justify-center overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
+				<h1 className="font-bold text-white">No Last Service found</h1>
 			</div>
 		)
 	}
 	return (
-		<div className="flex flex-col items-center justify-center mt-2 w-full lg:w-4/6  mx-auto min-h-[300px] overflow-y-auto bg-background rounded-md p-2">
+		<div className="mx-auto mt-2 flex min-h-[300px] w-full flex-col items-center justify-center overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
 			`
 			{imagesUrls.map((imageUrl) => (
 				<>
-					<h1 className="text-white font-bold">
+					<h1 className="font-bold text-white">
 						{`Last Service: ${imageUrl.date.toDateString()}`}
 					</h1>
 					<Image

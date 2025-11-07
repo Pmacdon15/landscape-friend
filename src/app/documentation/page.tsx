@@ -31,18 +31,18 @@ export default function Page() {
 					<ul className="space-y-4">
 						{documentationLinks.map((link, _index) => (
 							<li
-								className="flex items-start space-x-2 border rounded-sm p-4  shadow:sm hover:scale-101 hover:shadow-2xl bg-white/40"
+								className="shadow:sm flex items-start space-x-2 rounded-sm border bg-white/40 p-4 hover:scale-101 hover:shadow-2xl"
 								key={link.id}
 							>
 								<Link
-									className="h-full w-full "
+									className="h-full w-full"
 									href={link.href}
 								>
 									{link.icon}
-									<p className="hover:underline font-semibold">
+									<p className="font-semibold hover:underline">
 										{link.text}
 									</p>
-									<p className="hover:underline text-gray-600 font-medium">
+									<p className="font-medium text-gray-600 hover:underline">
 										{link.info}
 									</p>
 								</Link>

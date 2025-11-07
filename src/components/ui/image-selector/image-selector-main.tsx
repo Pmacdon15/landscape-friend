@@ -32,17 +32,17 @@ export default function ImageSelectorMain({
 	})
 
 	return (
-		<div className="relative w-full max-w-md mx-auto h-[300px]">
+		<div className="relative mx-auto h-[300px] w-full max-w-md">
 			{isLoading && (
-				<div className="absolute inset-0 bg-white/30 flex justify-center items-center z-25 ">
+				<div className="absolute inset-0 z-25 flex items-center justify-center bg-white/30">
 					<Spinner />
 				</div>
 			)}
 			<div
-				className={`flex flex-nowrap absolute top-2 right-2  px-4 py-2`}
+				className={`absolute top-2 right-2 flex flex-nowrap px-4 py-2`}
 			>
 				<button
-					className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
+					className="z-25 mx-2 flex gap-2 rounded bg-background px-4 py-2 text-white hover:bg-green-500"
 					disabled={isLoading}
 					onClick={saveDrawing}
 					type="button"
@@ -50,31 +50,31 @@ export default function ImageSelectorMain({
 					{isLoading ? (
 						<Spinner />
 					) : (
-						<CameraIcon className="w-5 h-5 text-white" />
+						<CameraIcon className="h-5 w-5 text-white" />
 					)}
 				</button>
 				<button
-					className="flex gap-2 mx-2 px-4 py-2 text-white rounded bg-background hover:bg-green-500 z-25"
+					className="z-25 mx-2 flex gap-2 rounded bg-background px-4 py-2 text-white hover:bg-green-500"
 					onClick={backButton}
 					type="button"
 				>
-					<ArrowLeftCircleIcon className="w-5 h-5 text-white" />
+					<ArrowLeftCircleIcon className="h-5 w-5 text-white" />
 				</button>
 			</div>
 
 			<div
-				className={`relative w-full h-full `}
+				className={`relative h-full w-full`}
 				id="map-container"
 				ref={mapContainerRef}
 			>
 				<div
-					className="w-full h-full absolute top-0 left-0"
+					className="absolute top-0 left-0 h-full w-full"
 					ref={mapElementRef}
 				/>
 
 				{showGeocodeSelector && (
-					<div className="absolute top-4 left-4 bg-white shadow-md rounded max-w-md w-[90%] sm:w-[400px]">
-						<h2 className="text-lg font-bold mb-2 px-4 pt-4">
+					<div className="absolute top-4 left-4 w-[90%] max-w-md rounded bg-white shadow-md sm:w-[400px]">
+						<h2 className="mb-2 px-4 pt-4 font-bold text-lg">
 							Select a Location
 						</h2>
 						<ul>

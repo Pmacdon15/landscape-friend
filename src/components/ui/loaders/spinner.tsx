@@ -5,14 +5,14 @@ const Spinner = ({
 }) => {
 	if (variant === 'default') {
 		return (
-			<div className="flex justify-center items-center">
-				<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+			<div className="flex items-center justify-center">
+				<div className="h-8 w-8 animate-spin rounded-full border-white border-b-2"></div>
 			</div>
 		)
 	} else {
 		return (
-			<div className="flex justify-center items-center">
-				<div className="animate-spin rounded-full h-8 w-8 border-4 border-t-transparent border-green-500"></div>
+			<div className="flex items-center justify-center">
+				<div className="h-8 w-8 animate-spin rounded-full border-4 border-green-500 border-t-transparent"></div>
 			</div>
 		)
 	}

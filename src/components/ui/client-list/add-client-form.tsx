@@ -38,7 +38,7 @@ export function AddClientForm() {
 
 	return (
 		<form
-			className="flex flex-col gap-6 w-full pb-2"
+			className="flex w-full flex-col gap-6 pb-2"
 			onSubmit={form.handleSubmit(onSubmit)}
 		>
 			<FormHeader text="Add New Client" />
@@ -72,7 +72,7 @@ export function AddClientForm() {
 					{!isPending ? (
 						'Submit'
 					) : (
-						<div className="flex gap-4 justify-center">
+						<div className="flex justify-center gap-4">
 							{' '}
 							Submitting <EllipsisSpinner />
 						</div>

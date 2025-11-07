@@ -14,22 +14,22 @@ export default function ImageGallery({
 }: ImageGalleryProps) {
 	const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 	return (
-		<div className="relative w-full lg:w-4/6  mx-auto h-[300px] overflow-y-auto bg-background rounded-md p-2">
+		<div className="relative mx-auto h-[300px] w-full overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
 			{isAdmin && (
 				<div
-					className={`flex flex-nowrap absolute top-1 right-1 z-10 px-4 py-2`}
+					className={`absolute top-1 right-1 z-10 flex flex-nowrap px-4 py-2`}
 				>
 					<button
-						className="select-none cursor-pointer px-6 py-2 bg-background rounded border shadow-lg hover:bg-green-300"
+						className="cursor-pointer select-none rounded border bg-background px-6 py-2 shadow-lg hover:bg-green-300"
 						onClick={() => setView('add')}
 						type="button"
 					>
-						<ImagePlusIcon className="w-5 h-5 text-white" />
+						<ImagePlusIcon className="h-5 w-5 text-white" />
 					</button>
 				</div>
 			)}
 
-			<div className="flex flex-wrap justify-center align-middle items-center h-full">
+			<div className="flex h-full flex-wrap items-center justify-center align-middle">
 				{client.images?.map((image, index) => (
 					<div className="relative" key={image.id}>
 						<DeleteSiteMapButton
@@ -53,7 +53,7 @@ export default function ImageGallery({
 
 			{/* Fullscreen Preview */}
 			{previewSrc && (
-				<div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90">
 					<Image
 						alt="Full screen preview"
 						className="object-contain"
@@ -61,7 +61,7 @@ export default function ImageGallery({
 						src={previewSrc}
 					/>
 					<button
-						className="absolute top-4 right-4 text-white p-2 hover:bg-gray-800 rounded-full"
+						className="absolute top-4 right-4 rounded-full p-2 text-white hover:bg-gray-800"
 						onClick={() => setPreviewSrc(null)}
 						type="button"
 					>

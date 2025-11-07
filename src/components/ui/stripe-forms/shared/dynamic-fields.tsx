@@ -38,7 +38,7 @@ export function DynamicFields({
 		<FieldGroup>
 			{fields.map((field, index) => (
 				<div
-					className="flex flex-col gap-4 border p-4 rounded-sm"
+					className="flex flex-col gap-4 rounded-sm border p-4"
 					key={field.id}
 				>
 					<FormInput
@@ -60,7 +60,7 @@ export function DynamicFields({
 					/>
 					{fields.length > 1 && (
 						<Button
-							className=" w-30"
+							className="w-30"
 							onClick={() => remove(index)}
 							type="button"
 							variant="destructive"
@@ -71,7 +71,7 @@ export function DynamicFields({
 				</div>
 			))}
 			<Button
-				className=" w-30"
+				className="w-30"
 				onClick={() =>
 					append({ description: '', amount: 0, quantity: 1 })
 				}

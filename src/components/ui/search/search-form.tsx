@@ -20,7 +20,7 @@ export default async function SearchForm({
 }) {
 	const isAdmin = await isAdminPromise
 	return (
-		<div className="flex flex-wrap flex-col md:flex-row gap-2 justify-center bg-white/70 p-2 rounded-sm shadow-lg">
+		<div className="flex flex-col flex-wrap justify-center gap-2 rounded-sm bg-white/70 p-2 shadow-lg md:flex-row">
 			<SearchInput />
 			{isAdmin &&
 				variant !== 'invoices' &&

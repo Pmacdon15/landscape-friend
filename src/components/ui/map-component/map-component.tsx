@@ -12,8 +12,8 @@ export default async function MapComponent({ address }: { address: string }) {
 	const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}&zoom=${zoom}`
 
 	return (
-		<div className="flex flex-col md:flex-row w-full bg-background max-h-[300px] rounded-md p-2 ">
-			<iframe className="w-full h-full" src={mapUrl} title="Map View" />
+		<div className="flex max-h-[300px] w-full flex-col rounded-md bg-background p-2 md:flex-row">
+			<iframe className="h-full w-full" src={mapUrl} title="Map View" />
 		</div>
 	)
 }

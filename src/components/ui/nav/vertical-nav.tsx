@@ -26,7 +26,7 @@ const CollapsibleSection = ({
 	return (
 		<div>
 			<button
-				className="flex items-center justify-between w-full p-2 font-medium text-left cursor-pointer"
+				className="flex w-full cursor-pointer items-center justify-between p-2 text-left font-medium"
 				onClick={toggleOpen}
 				type="button"
 			>
@@ -37,7 +37,7 @@ const CollapsibleSection = ({
 				/>
 			</button>
 			{isOpen && (
-				<div className="pl-4 py-2 flex flex-col gap-2">{children}</div>
+				<div className="flex flex-col gap-2 py-2 pl-4">{children}</div>
 			)}
 		</div>
 	)
@@ -53,7 +53,7 @@ export default function VerticalNav() {
 	const { data: hasStripAPIKey } = useHasStripeApiKey()
 
 	return (
-		<nav className="flex flex-col gap-2 w-full">
+		<nav className="flex w-full flex-col gap-2">
 			<SheetLogoHeader />
 			<CollapsibleSection
 				title={
@@ -64,13 +64,13 @@ export default function VerticalNav() {
 				}
 			>
 				<Link
-					className="p-2 hover:bg-accent rounded-md"
+					className="rounded-md p-2 hover:bg-accent"
 					href="/lists/client"
 				>
 					Client List
 				</Link>
 				<Link
-					className="p-2 hover:bg-accent rounded-md"
+					className="rounded-md p-2 hover:bg-accent"
 					href={{
 						pathname: '/lists/cutting',
 						query: { date: today },
@@ -79,7 +79,7 @@ export default function VerticalNav() {
 					Cutting List
 				</Link>
 				<Link
-					className="p-2 hover:bg-accent rounded-md"
+					className="rounded-md p-2 hover:bg-accent"
 					href={{
 						pathname: '/lists/clearing',
 						query: { date: today },
@@ -98,7 +98,7 @@ export default function VerticalNav() {
 				}
 			>
 				<Link
-					className="p-2 hover:bg-accent rounded-md"
+					className="rounded-md p-2 hover:bg-accent"
 					href="/email/individual"
 				>
 					Send Individual
@@ -114,25 +114,25 @@ export default function VerticalNav() {
 					}
 				>
 					<Link
-						className="p-2 hover:bg-accent rounded-md"
+						className="rounded-md p-2 hover:bg-accent"
 						href="/billing/create-quote"
 					>
 						Create a Quote
 					</Link>
 					<Link
-						className="p-2 hover:bg-accent rounded-md"
+						className="rounded-md p-2 hover:bg-accent"
 						href="/billing/manage/quotes"
 					>
 						Manage Quotes
 					</Link>
 					<Link
-						className="p-2 hover:bg-accent rounded-md"
+						className="rounded-md p-2 hover:bg-accent"
 						href="/billing/manage/invoices"
 					>
 						Manage Invoices
 					</Link>
 					<Link
-						className="p-2 hover:bg-accent rounded-md"
+						className="rounded-md p-2 hover:bg-accent"
 						href="/billing/manage/subscriptions"
 					>
 						Manage Subscriptions
@@ -148,13 +148,13 @@ export default function VerticalNav() {
 				}
 			>
 				<Link
-					className="p-2 hover:bg-accent rounded-md"
+					className="rounded-md p-2 hover:bg-accent"
 					href="/documentation/plans"
 				>
 					Plans
 				</Link>
 				<Link
-					className="p-2 hover:bg-accent rounded-md"
+					className="rounded-md p-2 hover:bg-accent"
 					href="/documentation/stripe"
 				>
 					Stripe
@@ -170,7 +170,7 @@ export default function VerticalNav() {
 					}
 				>
 					<Link
-						className="p-2 hover:bg-accent rounded-md"
+						className="rounded-md p-2 hover:bg-accent"
 						href="/settings"
 					>
 						Manage settings

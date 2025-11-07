@@ -10,7 +10,7 @@ export default function SendEmailInputs() {
 				type={'text'}
 			/>
 			<textarea
-				className="border rounded sm p-2 bg-white"
+				className="sm rounded border bg-white p-2"
 				id={'message'}
 				name="message"
 				placeholder="Your message"

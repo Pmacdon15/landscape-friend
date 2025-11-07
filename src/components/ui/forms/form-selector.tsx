@@ -27,21 +27,21 @@ export const FormSelector: React.FC<CreateSubscriptionFormProps> = ({
 			/>
 			<div className="mb-4 flex justify-center space-x-4">
 				<button
-					className={`px-4 py-2 rounded-md ${formType === 'quote' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+					className={`rounded-md px-4 py-2 ${formType === 'quote' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
 					onClick={() => setFormType('quote')}
 					type="button"
 				>
 					Create Quote
 				</button>
 				<button
-					className={`px-4 py-2 rounded-md ${formType === 'subscription' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+					className={`rounded-md px-4 py-2 ${formType === 'subscription' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
 					onClick={() => setFormType('subscription')}
 					type="button"
 				>
 					Create Subscription
 				</button>
 			</div>
-			<div className="p-4 border rounded-md shadow-sm">
+			<div className="rounded-md border p-4 shadow-sm">
 				<Activity mode={formType === 'quote' ? 'visible' : 'hidden'}>
 					<Suspense fallback={<CreateQuoteFormFallback />}>
 						<CreateQuoteForm

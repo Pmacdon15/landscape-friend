@@ -7,10 +7,10 @@ interface ClientAddressProps {
 
 const ClientAddress: React.FC<ClientAddressProps> = ({ address }) => {
 	return (
-		<div className="flex w-full gap-2 items-center justify-center">
+		<div className="flex w-full items-center justify-center gap-2">
 			<Image
 				alt="Address Icon"
-				className="w-8 h-8"
+				className="h-8 w-8"
 				height={512}
 				src="/client-list/address.png"
 				width={512}

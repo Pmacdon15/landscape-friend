@@ -21,17 +21,17 @@ export default function HeaderEmail({
 			<Html>
 				<Head />
 				<Preview>Email from {companyName}</Preview>
-				<Body className="bg-white text-black w-full m-0 p-0">
+				<Body className="m-0 w-full bg-white p-0 text-black">
 					{/* Image header */}
 					<Img
 						alt="Landscape Friend Logo"
-						className="w-full h-auto"
+						className="h-auto w-full"
 						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/Screenshot%20From%202025-08-10%2020-37-34.png"
 					/>
 
 					{/* Main content container */}
-					<div className="max-w-xl mx-auto px-6 py-6">
-						<Heading className="text-[#138b10] text-xl font-bold mb-4 ">
+					<div className="mx-auto max-w-xl px-6 py-6">
+						<Heading className="mb-4 font-bold text-[#138b10] text-xl">
 							{title}
 						</Heading>
 
@@ -39,7 +39,7 @@ export default function HeaderEmail({
 							{text}
 						</Text>
 
-						<Text className="text-sm mt-6 font-semibold">
+						<Text className="mt-6 font-semibold text-sm">
 							{senderName}
 						</Text>
 					</div>

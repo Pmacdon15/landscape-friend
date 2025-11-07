@@ -5,9 +5,7 @@ import FormHeader from '@/components/ui/header/form-header'
 import { CardView } from '@/components/ui/manage/invoices/manage-invoices-card-view'
 import SearchForm from '@/components/ui/search/search-form'
 
-export default function Page(
-	props: PageProps<'/billing/manage/invoices'>,
-) {
+export default function Page(props: PageProps<'/billing/manage/invoices'>) {
 	return (
 		<FormContainer>
 			<FormHeader text={'Manage Invoices'} />

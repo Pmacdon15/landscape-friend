@@ -3,7 +3,7 @@ export default function HeaderImageIco() {
 	return (
 		<div className="flex items-center">
 			<div
-				className="p-2 border rounded-sm bg-background w-[50px] md:w-[75px]"
+				className="w-[50px] rounded-sm border bg-background p-2 md:w-[75px]"
 				style={{
 					backgroundImage: 'url(/lawn3.jpg)',
 					backgroundPosition: '0% 20%', // Show the bottom half of the image

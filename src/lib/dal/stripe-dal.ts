@@ -12,7 +12,6 @@ import type {
 } from '@/types/stripe-types'
 import type { Subscription } from '@/types/subscription-types'
 import { fetchClientNamesByStripeIds } from './clients-dal'
-import { cacheTag } from 'next/cache'
 
 let stripe: Stripe | null = null
 
@@ -31,7 +30,7 @@ export async function getStripeInstance(): Promise<Stripe | null> {
 	return stripe
 }
 
-export async function fetchStripeAPIKey(): Promise<APIKey | Error> {	
+export async function fetchStripeAPIKey(): Promise<APIKey | Error> {
 	const { orgId, userId } = await auth.protect()
 	try {
 		const result = await fetchStripAPIKeyDb(orgId || userId)

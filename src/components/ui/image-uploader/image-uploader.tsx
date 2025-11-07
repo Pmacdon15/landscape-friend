@@ -11,7 +11,7 @@ export default function ImageUploader({
 	return (
 		<form className="w-[45%]">
 			<label
-				className="cursor-pointer flex flex-col w-full gap-2"
+				className="flex w-full cursor-pointer flex-col gap-2"
 				htmlFor="image-upload"
 			>
 				<ImageUploadInput />

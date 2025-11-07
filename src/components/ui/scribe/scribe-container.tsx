@@ -11,7 +11,7 @@ export default function ScribeContainer({
 }) {
 	const [showDocs, setShowDocs] = useState(false)
 	return (
-		<div className="flex flex-col gap-4 w-full max-w-full">
+		<div className="flex w-full max-w-full flex-col gap-4">
 			<button
 				className={'w-full'}
 				onClick={() => setShowDocs(!showDocs)}

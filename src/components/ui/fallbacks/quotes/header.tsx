@@ -3,10 +3,10 @@ import { inputClassName } from '@/lib/values'
 export default function QuoteHeader() {
 	return (
 		<section>
-			<h3 className="text-md font-semibold mb-2">Client Information</h3>
+			<h3 className="mb-2 font-semibold text-md">Client Information</h3>
 			<div>
 				<label
-					className="block text-sm font-medium text-gray-700"
+					className="block font-medium text-gray-700 text-sm"
 					htmlFor="clientName"
 				>
 					Name
@@ -19,7 +19,7 @@ export default function QuoteHeader() {
 				<datalist id="clients-list"></datalist>
 			</div>
 			<label
-				className="block text-sm font-medium text-gray-700"
+				className="block font-medium text-gray-700 text-sm"
 				htmlFor="clientEmail"
 			>
 				{' '}
@@ -27,7 +27,7 @@ export default function QuoteHeader() {
 			</label>
 			<input className={inputClassName} id="clientEmail" type="text" />
 			<label
-				className="block text-sm font-medium text-gray-700"
+				className="block font-medium text-gray-700 text-sm"
 				htmlFor="phone_number"
 			>
 				{' '}
@@ -35,7 +35,7 @@ export default function QuoteHeader() {
 			</label>
 			<input className={inputClassName} id="phone_number" type="text" />
 			<label
-				className="block text-sm font-medium text-gray-700"
+				className="block font-medium text-gray-700 text-sm"
 				htmlFor="address"
 			>
 				{' '}

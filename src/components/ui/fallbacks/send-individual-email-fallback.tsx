@@ -6,8 +6,8 @@ export default function SendIndividualEmailFallback() {
 	return (
 		<FormContainer>
 			<FormHeader text={`Send an Email to a client`} />
-			<form className="flex flex-col gap-4 w-full">
-				<select className="border rounded sm p-2 bg-white">
+			<form className="flex w-full flex-col gap-4">
+				<select className="sm rounded border bg-white p-2">
 					<option value={' '}> </option>
 				</select>
 				<SendEmailInputs />

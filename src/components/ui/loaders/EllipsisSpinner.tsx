@@ -1,6 +1,6 @@
 const EllipsisSpinner = () => {
 	return (
-		<div className="flex justify-center items-center text-lg font-bold">
+		<div className="flex items-center justify-center font-bold text-lg">
 			<span className="animate-ellipsis-dots"> </span>
 		</div>
 	)

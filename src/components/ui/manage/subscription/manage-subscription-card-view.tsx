@@ -13,10 +13,10 @@ export async function CardView({
 	const { searchTermStatus, page, searchTerm } =
 		parseClientListParams(searchParams)
 	const { subscriptions, totalPages } = await fetchSubscriptions(
-			searchTermStatus,
-			page,
-			searchTerm,
-		)
+		searchTermStatus,
+		page,
+		searchTerm,
+	)
 	return (
 		<>
 			<PaginationTabs
@@ -32,31 +32,31 @@ export async function CardView({
 				{subscriptions.map((subscription) => {
 					return (
 						<div
-							className="bg-white shadow-md rounded-lg p-4"
+							className="rounded-lg bg-white p-4 shadow-md"
 							key={subscription.id}
 						>
-							<div className="flex justify-between items-center">
-								<h3 className="text-lg font-semibold">
+							<div className="flex items-center justify-between">
+								<h3 className="font-semibold text-lg">
 									{subscription.customer.name ||
 										subscription.customer.email}
 								</h3>
 								<span
-									className={`px-2 py-1 text-xs font-semibold rounded-full ${subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+									className={`rounded-full px-2 py-1 font-semibold text-xs ${subscription.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
 								>
 									{subscription.status}
 								</span>
 							</div>
-							<p className="text-sm text-gray-500">
+							<p className="text-gray-500 text-sm">
 								{subscription.customer.email}
 							</p>
 							<CancelSubscriptionButton
 								subscriptionId={subscription.id}
 							/>
 							<div className="mt-4">
-								<p className="text-sm font-medium text-gray-700">
+								<p className="font-medium text-gray-700 text-sm">
 									Subscription Details
 								</p>
-								<div className="grid grid-cols-2 gap-2 mt-2 text-sm">
+								<div className="mt-2 grid grid-cols-2 gap-2 text-sm">
 									<p>
 										<span className="font-semibold">
 											Created:
@@ -74,7 +74,7 @@ export async function CardView({
 								</div>
 							</div>
 							<div className="mt-4">
-								<p className="text-sm font-medium text-gray-700">
+								<p className="font-medium text-gray-700 text-sm">
 									Items
 								</p>
 								<ul className="mt-2 text-sm">
@@ -99,7 +99,7 @@ export async function CardView({
 							</div>
 							{subscription.subscription_schedule && (
 								<div className="mt-4">
-									<p className="text-sm font-medium text-gray-700">
+									<p className="font-medium text-gray-700 text-sm">
 										Subscription Schedule
 									</p>
 									{subscription.subscription_schedule.phases.map(

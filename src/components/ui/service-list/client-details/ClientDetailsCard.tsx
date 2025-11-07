@@ -23,7 +23,7 @@ const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({
 }) => {
 	return (
 		<>
-			<div className="flex flex-col items-center w-full">
+			<div className="flex w-full flex-col items-center">
 				<ClientName fullName={client.full_name} />
 				<ClientPhoneNumber phoneNumber={client.phone_number} />
 				<ClientEmail
@@ -33,7 +33,7 @@ const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({
 				<ClientAddress address={client.address} />
 			</div>
 
-			<div className="flex flex-col sm:flex-row gap-1">
+			<div className="flex flex-col gap-1 sm:flex-row">
 				<Suspense fallback={<FormHeader text="Loading..." />}>
 					<MapComponent address={client.address} />
 				</Suspense>

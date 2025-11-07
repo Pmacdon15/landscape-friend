@@ -8,7 +8,7 @@ export default function Loading() {
 		<FormContainer>
 			<FillFormContainer>
 				<FormHeader text={'Edit Quote'} />
-				<div className="p-4 border rounded-md shadow-sm">
+				<div className="rounded-md border p-4 shadow-sm">
 					<EditDocumentFormFallback />
 				</div>
 			</FillFormContainer>

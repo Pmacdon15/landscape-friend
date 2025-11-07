@@ -31,10 +31,7 @@ import type {
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
-import {
-	revalidatePathAction,
-	revalidateTagAction,
-} from '../actions/revalidatePath-action'
+import { revalidatePathAction } from '../actions/revalidatePath-action'
 
 //MARK: Add client
 export const useAddClient = () => {

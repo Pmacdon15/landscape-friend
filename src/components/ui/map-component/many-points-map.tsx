@@ -51,7 +51,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 		<div className="relative">
 			<Image
 				alt="Map of uncut yards"
-				className="w-full h-[200px]"
+				className="h-[200px] w-full"
 				height={800}
 				src={mapUrl}
 				title="Map View"
@@ -64,7 +64,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 					target="_blank"
 				>
 					<button
-						className="bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold py-1 px-2 rounded"
+						className="rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs hover:bg-blue-700"
 						type="button"
 					>
 						View in Google Maps

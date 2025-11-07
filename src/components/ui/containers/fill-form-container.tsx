@@ -6,7 +6,7 @@ export default function FillFormContainer({
 	return (
 		<div
 			className={
-				'flex flex-col rounded-sm w-full p-6 bg-white/70 shadow-lg gap-4'
+				'flex w-full flex-col gap-4 rounded-sm bg-white/70 p-6 shadow-lg'
 			}
 		>
 			{children}

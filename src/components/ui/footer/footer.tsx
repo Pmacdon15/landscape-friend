@@ -2,11 +2,11 @@ import Link from 'next/link'
 
 export default function Footer() {
 	return (
-		<footer className=" bg-green-900 text-white py-8 px-4 mt-auto">
+		<footer className="mt-auto bg-green-900 px-4 py-8 text-white">
 			<div className="flex justify-center">
-				<div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 ">
+				<div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-3">
 					<div className="flex flex-col items-center">
-						<h3 className="text-lg font-bold mb-4">
+						<h3 className="mb-4 font-bold text-lg">
 							Landscape Friend
 						</h3>
 						<p className="text-gray-400">
@@ -14,7 +14,7 @@ export default function Footer() {
 						</p>
 					</div>
 					<div className="flex flex-col items-center">
-						<h3 className="text-lg font-bold mb-4">Quick Links</h3>
+						<h3 className="mb-4 font-bold text-lg">Quick Links</h3>
 						<ul className="space-y-2">
 							<li>
 								<Link
@@ -42,8 +42,8 @@ export default function Footer() {
 							</li>
 						</ul>
 					</div>
-					<div className=" flex flex-col items-center">
-						<h3 className="text-lg font-bold mb-4 ">Support</h3>
+					<div className="flex flex-col items-center">
+						<h3 className="mb-4 font-bold text-lg">Support</h3>
 						<p className="text-gray-400">
 							Have questions or need help?
 						</p>
@@ -56,12 +56,9 @@ export default function Footer() {
 					</div>
 				</div>
 			</div>
-			<div className="mt-8 border-t border-gray-700 pt-4 text-center text-gray-500 ">
-				<p>
-					&copy; 2025 Landscape Friend. All
-					rights reserved.
-				</p>
-				<div className="flex justify-center space-x-4 mt-2">
+			<div className="mt-8 border-gray-700 border-t pt-4 text-center text-gray-500">
+				<p>&copy; 2025 Landscape Friend. All rights reserved.</p>
+				<div className="mt-2 flex justify-center space-x-4">
 					<Link
 						className="hover:text-green-300"
 						href="/privacy-policy"

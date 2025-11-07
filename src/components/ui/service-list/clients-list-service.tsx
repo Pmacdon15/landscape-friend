@@ -1,4 +1,7 @@
-import { fetchCuttingClients, fetchSnowClearingClients } from '@/lib/dal/clients-dal'
+import {
+	fetchCuttingClients,
+	fetchSnowClearingClients,
+} from '@/lib/dal/clients-dal'
 import { parseClientListParams } from '@/lib/utils/params'
 import type { Client } from '@/types/clients-types'
 import MarkYardServiced from '../buttons/mark-yard-serviced'
@@ -84,10 +87,10 @@ export default async function ClientListService({
 
 	return (
 		<>
-			<ul className="flex flex-col gap-2 md:gap-4 rounded-sm w-full items-center">
+			<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
 				{addresses && addresses?.length > 0 && (
 					<FormContainer>
-						<div className="flex flex-col md:flex-row w-full justify-center items-center align-middle p-2 gap-4 ">
+						<div className="flex w-full flex-col items-center justify-center gap-4 p-2 align-middle md:flex-row">
 							<FormHeader
 								text={`Clients Left to Service Today: ${flattenedAddresses.length}`}
 							/>
@@ -102,7 +105,7 @@ export default async function ClientListService({
 				/>
 				{clients.map((client: Client) => (
 					<FormContainer key={client.id}>
-						<li className="border p-4 rounded-sm bg-white/50 w-full">
+						<li className="w-full rounded-sm border bg-white/50 p-4">
 							<ClientDetailsCard
 								client={client}
 								isAdmin={isAdmin?.isAdmin}

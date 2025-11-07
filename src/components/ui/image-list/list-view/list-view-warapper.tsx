@@ -4,7 +4,7 @@ export default function ListViewWrapper({
 	children: React.ReactNode
 }) {
 	return (
-		<div className="flex flex-col  min-h-[300px] w-full overflow-y-auto h-[300px] bg-background rounded-md p-2  ">
+		<div className="flex h-[300px] min-h-[300px] w-full flex-col overflow-y-auto rounded-md bg-background p-2">
 			{children}
 		</div>
 	)

@@ -11,7 +11,7 @@ export default async function Page() {
 			<FormContainer>
 				<FillFormContainer>
 					<FormHeader text={'Plans'} />
-					<div className=" flex flex-col items-center border rounded-sm gap-4 p-4">
+					<div className="flex flex-col items-center gap-4 rounded-sm border p-4">
 						<FormHeader text={'Organization Plans'} />
 						<PricingTable for="organization" />
 					</div>

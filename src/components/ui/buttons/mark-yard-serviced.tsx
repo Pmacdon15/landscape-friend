@@ -103,7 +103,7 @@ export default function MarkYardServiced({
 	}
 	if (!isMobileDevice())
 		return (
-			<div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
+			<div className="flex select-none flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-3 shadow-sm transition duration-300 ease-in-out hover:bg-green-200">
 				<h1>Device not supported for complete services</h1>
 			</div>
 		)
@@ -122,9 +122,9 @@ export default function MarkYardServiced({
 					required
 					type="file"
 				/>
-				<div className="flex flex-col items-center select-none px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 transition duration-300 ease-in-out">
+				<div className="flex select-none flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-3 shadow-sm transition duration-300 ease-in-out hover:bg-green-200">
 					<div className="text-6xl">📸</div>
-					<div className="px-2 max-w-full truncate">
+					<div className="max-w-full truncate px-2">
 						{images.length === 0
 							? 'Take a photo to complete the service'
 							: 'Add more photos'}

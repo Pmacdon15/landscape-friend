@@ -50,7 +50,7 @@ export default function NotificationInbox({
 			appearance={appearance}
 			applicationIdentifier={`${process.env.NEXT_PUBLIC_NOVU_APPLICATION_IDENTIFIER}`}
 			renderAvatar={() => (
-				<div className="w-8 h-8 rounded-full bg-[#138b10] flex items-center justify-center text-sm font-bold">
+				<div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#138b10] font-bold text-sm">
 					<Image
 						alt={'Logo'}
 						height={100}

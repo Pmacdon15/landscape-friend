@@ -6,7 +6,7 @@ export default function NonAdminPlaceHolder() {
 	return (
 		<ListViewWrapper>
 			<ListViewHeader text={'No Site Map uploaded'} />
-			<div className="flex flex-row gap-4 justify-center bg-white/30 py-4 rounded-sm h-55 ">
+			<div className="flex h-55 flex-row justify-center gap-4 rounded-sm bg-white/30 py-4">
 				<Image
 					alt="Placeholder image"
 					className="p-2"

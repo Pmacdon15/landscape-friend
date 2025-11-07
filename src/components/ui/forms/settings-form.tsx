@@ -3,5 +3,5 @@ export default function SettingsForm({
 }: {
 	children: React.ReactNode
 }) {
-	return <form className="flex gap-4 flex-col">{children}</form>
+	return <form className="flex flex-col gap-4">{children}</form>
 }

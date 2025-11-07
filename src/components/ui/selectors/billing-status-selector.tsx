@@ -17,7 +17,7 @@ export function BillingStatusSelector({
 
 	return (
 		<select
-			className="w-fit border rounded-sm text-center p-2"
+			className="w-fit rounded-sm border p-2 text-center"
 			name="status"
 			onChange={(e) => setBillingStatus(e.target.value)}
 			value={currentStatus}

@@ -4,13 +4,13 @@ import HeaderTitle from './header-title'
 
 export default function HeaderHeader() {
 	return (
-		<div className="flex  w-full justify-baseline relative">
-			<div className="flex flex-col items-center justify-center h-full">
+		<div className="justify-baseline relative flex w-full">
+			<div className="flex h-full flex-col items-center justify-center">
 				<Link href="/">
 					<HeaderImageIco />
 				</Link>
 			</div>
-			<div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-fit">
+			<div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 w-fit">
 				<Link href="/">
 					<HeaderTitle text="Landscape Friend" />
 				</Link>

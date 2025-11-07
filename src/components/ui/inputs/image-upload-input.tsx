@@ -30,9 +30,9 @@ export default function ImageUploadInput() {
 				type="file"
 			/>
 
-			<div className="flex flex-col items-center  px-6 py-3 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-green-200 ">
+			<div className="flex flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-3 shadow-sm hover:bg-green-200">
 				<div className="text-6xl">📸</div>
-				<div className="px-2 max-w-full ">{captionButtonImage}</div>
+				<div className="max-w-full px-2">{captionButtonImage}</div>
 			</div>
 		</>
 	)

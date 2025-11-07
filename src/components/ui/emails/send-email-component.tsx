@@ -40,10 +40,10 @@ export default async function SendEmailComponent({
 				}
 			/>
 
-			<form className="flex flex-col gap-4 w-full">
+			<form className="flex w-full flex-col gap-4">
 				<SendEmailInputs />
 
-				<div className="flex justify-center w-full">
+				<div className="flex w-full justify-center">
 					{isGroupEmail || !clientEmail ? (
 						<SendNewsLetterButton />
 					) : (
@@ -56,7 +56,7 @@ export default async function SendEmailComponent({
 			</form>
 
 			{popover && (
-				<div className="w-full flex justify-center">
+				<div className="flex w-full justify-center">
 					<Button onClick={() => onEmailSent?.(false)} type="button">
 						Cancel
 					</Button>

@@ -15,13 +15,13 @@ export default function Page({
 	return (
 		<FormContainer>
 			<FormHeader text={'Lists Client'} />
-			<div className="flex flex-col items-center justify-center gap-4 p-4 bg-white/70 shadow-lg rounded-sm">
-				<h2 className="text-lg font-semibold text-red-500">
+			<div className="flex flex-col items-center justify-center gap-4 rounded-sm bg-white/70 p-4 shadow-lg">
+				<h2 className="font-semibold text-lg text-red-500">
 					Something went wrong!
 				</h2>
-				<p className="text-sm text-gray-600">{error.message}</p>
+				<p className="text-gray-600 text-sm">{error.message}</p>
 				<Button
-					className="px-4 py-2 text-sm font-medium text-white rounded-md hover:bg-background/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+					className="rounded-md px-4 py-2 font-medium text-sm text-white hover:bg-background/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
 					onClick={() => reset()}
 					variant="outline"
 				>

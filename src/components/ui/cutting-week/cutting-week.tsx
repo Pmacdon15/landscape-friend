@@ -29,7 +29,7 @@ function CuttingWeekDropDown({
 	const { mutate } = useUpdateCuttingDay()
 
 	return (
-		<p className="flex flex-row items-center gap-3 mb-3 text-sm md:text-base">
+		<p className="mb-3 flex flex-row items-center gap-3 text-sm md:text-base">
 			<span className="w-32">Cutting week {week}:</span>
 			{isAdmin ? (
 				<select
@@ -78,7 +78,7 @@ export function CuttingWeekDropDownContainer({
 	})
 
 	return (
-		<div className="flex flex-col gap-2 md:flex-row items-center flex-wrap justify-center">
+		<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
 			{schedules.map((schedule, index) => (
 				<CuttingWeekDropDown
 					clientId={client.id}

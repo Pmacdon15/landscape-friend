@@ -30,7 +30,7 @@ export function EditSettingSheet({
 					<SheetTitle>Update Form</SheetTitle>
 					<SheetDescription>{prompt}</SheetDescription>
 				</SheetHeader>
-				<div className=" flex flex-col gap-2">
+				<div className="flex flex-col gap-2">
 					{children}
 					<SheetClose asChild>
 						<Button className="w-full">Close</Button>
