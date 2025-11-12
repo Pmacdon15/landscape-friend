@@ -1,4 +1,5 @@
 'use client'
+import { useOptimistic, useTransition } from 'react'
 import { useCuttingPeriodSearch } from '@/lib/hooks/hooks'
 
 import { days, weeks } from '@/lib/values'
@@ -9,9 +10,22 @@ export function CuttingPeriodSelector({
 	variant: 'week' | 'day'
 }) {
 	const { currentPeriod, setCuttingPeriod } = useCuttingPeriodSearch(variant)
+	const [optimisticPeriod, setOptimisticPeriod] = useOptimistic(
+		currentPeriod,
+		(_, newPeriod: string) => newPeriod,
+	)
+	const [, startTransition] = useTransition()
 
 	const label = variant === 'week' ? 'Cutting Week' : 'Cutting Day'
 	const options = variant === 'week' ? weeks : days
+
+	function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
+		const newPeriod = e.target.value
+		startTransition(() => {
+			setOptimisticPeriod(newPeriod)
+			setCuttingPeriod(newPeriod)
+		})
+	}
 
 	return (
 		<div className="flex gap-1">
@@ -22,8 +36,8 @@ export function CuttingPeriodSelector({
 				className="w-fit rounded-sm border py-2 text-center"
 				id={variant}
 				name={variant}
-				onChange={(e) => setCuttingPeriod(e.target.value)}
-				value={currentPeriod}
+				onChange={handleChange}
+				value={optimisticPeriod}
 			>
 				<option value="">All</option>
 				{options.map((option) => (
