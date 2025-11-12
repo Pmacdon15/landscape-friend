@@ -6,9 +6,9 @@ export function AssignedToSelectorFallback() {
 			</label>
 			<select
 				className="w-fit rounded-sm border py-2 text-center"
+				defaultValue=""
 				id="assigned_to"
 				name={'assigned_to'}
-				value=""
 			>
 				<option value="">Select Member</option>
 			</select>

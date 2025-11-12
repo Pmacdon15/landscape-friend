@@ -1,4 +1,5 @@
 'use client'
+import { useOptimistic, useTransition } from 'react'
 import { useUpdateCuttingDay } from '@/lib/mutations/mutations'
 import type { CuttingSchedule } from '@/types/clients-types'
 
@@ -23,10 +24,26 @@ function CuttingWeekDropDown({
 		'Saturday',
 		'Sunday',
 	]
-	// Ensure the cutting_day is either the schedule's cutting_day or "No cut"
 	const cuttingDay = schedule.cutting_day ?? 'No cut'
+	const [optimisticDay, setOptimisticDay] = useOptimistic(
+		cuttingDay,
+		(_, newDay: string) => newDay,
+	)
+	const [, startTransition] = useTransition()
 
 	const { mutate } = useUpdateCuttingDay()
+
+	function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
+		const newDay = event.target.value
+		startTransition(() => {
+			setOptimisticDay(newDay)
+		})
+		mutate({
+			clientId,
+			cuttingWeek: week,
+			cuttingDay: newDay,
+		})
+	}
 
 	return (
 		<p className="mb-3 flex flex-row items-center gap-3 text-sm md:text-base">
@@ -34,14 +51,8 @@ function CuttingWeekDropDown({
 			{isAdmin ? (
 				<select
 					className="w-28"
-					onChange={(event) =>
-						mutate({
-							clientId,
-							cuttingWeek: week,
-							cuttingDay: event.target.value,
-						})
-					}
-					value={cuttingDay}
+					onChange={handleChange}
+					value={optimisticDay}
 				>
 					{days.map((day) => (
 						<option key={day} value={day}>
