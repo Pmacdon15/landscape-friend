@@ -38,7 +38,7 @@ export const ServiceListDatePicker = () => {
 	return (
 		<Suspense>
 			<DatePicker
-				className="rounded-sm border p-2"
+				className="rounded-sm border bg-white/40 p-1 font-light"
 				dayClassName={(date) => {
 					const week = getWeekNumber(date)
 					return week === 1

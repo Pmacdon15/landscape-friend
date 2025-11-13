@@ -29,8 +29,8 @@ export function CuttingPeriodSelector({
 
 	function handleChange(value: string) {
 		startTransition(() => {
-			setOptimisticPeriod(value === "all" ? "" : value)
-			setCuttingPeriod(value === "all" ? "" : value)
+			setOptimisticPeriod(value === 'all' ? '' : value)
+			setCuttingPeriod(value === 'all' ? '' : value)
 		})
 	}
 
@@ -42,14 +42,14 @@ export function CuttingPeriodSelector({
 			<Select
 				name={variant}
 				onValueChange={handleChange}
-				value={optimisticPeriod || "all"}
+				value={optimisticPeriod || 'all'}
 			>
-				<SelectTrigger >
+				<SelectTrigger>
 					<SelectValue placeholder="All" />
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
-						<SelectItem value={"all"}>All</SelectItem>
+						<SelectItem value={'all'}>All</SelectItem>
 						{options.map((option) => (
 							<SelectItem key={option.value} value={option.value}>
 								{option.label}

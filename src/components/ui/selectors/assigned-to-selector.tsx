@@ -26,7 +26,7 @@ export function AssignedToSelector({
 
 	function handleChange(value: string) {
 		startTransition(() => {
-			const newValue = value === 'none' ? '' : value;
+			const newValue = value === 'none' ? '' : value
 			setOptimisticValue(newValue)
 			setParam(newValue)
 		})

@@ -32,16 +32,16 @@ export default function AssignedTo({
 
 	const defaultValue = clientAssignedTo ?? 'not-assigned'
 
-		function handleChange(value: string) {
+	function handleChange(value: string) {
 		if (snow) {
 			mutateAssignSnowClearing({
 				clientId: clientId,
-				assignedTo: value ,
+				assignedTo: value,
 			})
 		} else {
 			mutateAssignGrassCutting({
 				clientId: clientId,
-				assignedTo: value ,
+				assignedTo: value,
 			})
 		}
 	}
@@ -49,16 +49,15 @@ export default function AssignedTo({
 	return (
 		<div className="mb-2 flex justify-center gap-2">
 			<p className="my-auto">Assigned to {snow ? 'snow' : 'grass'}: </p>
-			<Select
-				defaultValue={defaultValue}
-				onValueChange={handleChange}
-			>
+			<Select defaultValue={defaultValue} onValueChange={handleChange}>
 				<SelectTrigger>
 					<SelectValue placeholder="Not Assigned" />
 				</SelectTrigger>
 				<SelectContent>
 					<SelectGroup>
-						<SelectItem value="not-assigned">Not Assigned</SelectItem>
+						<SelectItem value="not-assigned">
+							Not Assigned
+						</SelectItem>
 						{orgMembers?.map((member) => (
 							<SelectItem
 								key={member.userId}
