@@ -157,7 +157,7 @@ CREATE TABLE images_serviced (
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
--- SELECT * FROM assignments;
+SELECT * FROM assignments;
 -- SELECT * FROM clients;
 -- SELECT * FROM users;
 -- SELECT * FROM organizations;

@@ -56,10 +56,7 @@ function CuttingWeekDropDown({
 		<p className="mb-3 flex flex-row items-center gap-3 text-sm md:text-base">
 			<span className="w-32">Cutting week {week}:</span>
 			{isAdmin ? (
-				<Select
-					onValueChange={handleChange}
-					value={optimisticDay}
-				>
+				<Select onValueChange={handleChange} value={optimisticDay}>
 					<SelectTrigger className="w-28">
 						<SelectValue placeholder="Select Day" />
 					</SelectTrigger>
