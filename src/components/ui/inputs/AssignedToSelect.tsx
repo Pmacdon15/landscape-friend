@@ -5,6 +5,14 @@ import {
 	useAssignSnowClearing,
 } from '@/lib/mutations/mutations'
 import type { OrgMember } from '@/types/clerk-types'
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '../select'
 
 export default function AssignedTo({
 	clientAssignedTo,
@@ -24,37 +32,44 @@ export default function AssignedTo({
 
 	const defaultValue = clientAssignedTo ?? 'not-assigned'
 
+		function handleChange(value: string) {
+		if (snow) {
+			mutateAssignSnowClearing({
+				clientId: clientId,
+				assignedTo: value ,
+			})
+		} else {
+			mutateAssignGrassCutting({
+				clientId: clientId,
+				assignedTo: value ,
+			})
+		}
+	}
+
 	return (
 		<div className="mb-2 flex justify-center gap-2">
 			<p className="my-auto">Assigned to {snow ? 'snow' : 'grass'}: </p>
-			<select
-				className="w-3/6 rounded-sm border p-1 md:w-3/6"
+			<Select
 				defaultValue={defaultValue}
-				onChange={(e) => {
-					const selectedUserId = e.target.value
-					if (snow) {
-						mutateAssignSnowClearing({
-							clientId: clientId,
-							assignedTo: selectedUserId,
-						})
-					} else {
-						mutateAssignGrassCutting({
-							clientId: clientId,
-							assignedTo: selectedUserId,
-						})
-					}
-				}}
+				onValueChange={handleChange}
 			>
-				<option value="not-assigned">Not Assigned</option>
-				{orgMembers?.map((member) => (
-					<option
-						key={member.userId}
-						value={member.userId.toString()}
-					>
-						{member.userName}
-					</option>
-				))}
-			</select>
+				<SelectTrigger>
+					<SelectValue placeholder="Not Assigned" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						<SelectItem value="not-assigned">Not Assigned</SelectItem>
+						{orgMembers?.map((member) => (
+							<SelectItem
+								key={member.userId}
+								value={member.userId.toString()}
+							>
+								{member.userName}
+							</SelectItem>
+						))}
+					</SelectGroup>
+				</SelectContent>
+			</Select>
 		</div>
 	)
 }
