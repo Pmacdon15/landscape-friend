@@ -1,6 +1,15 @@
 'use client'
+import { useOptimistic, useTransition } from 'react'
 import type { VariantBillingStatusSelector } from '@/types/search-fallback-types'
 import { useBillingStatusSearch } from '../../../lib/hooks/hooks'
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '../select'
 
 export function BillingStatusSelector({
 	variant = 'invoices',
@@ -8,6 +17,12 @@ export function BillingStatusSelector({
 	variant?: VariantBillingStatusSelector
 }) {
 	const { currentStatus, setBillingStatus } = useBillingStatusSearch()
+	const [optimisticStatus, setOptimisticStatus] = useOptimistic(
+		currentStatus,
+		(_, newValue: string) => newValue,
+	)
+	const [, startTransition] = useTransition()
+
 	const statuses =
 		variant === 'invoices'
 			? ['all', 'draft', 'open', 'paid', 'void']
@@ -15,18 +30,33 @@ export function BillingStatusSelector({
 				? ['all', 'draft', 'open', 'accepted', 'canceled']
 				: ['active', 'canceled', 'incomplete']
 
+	function handleChange(value: string) {
+		startTransition(() => {
+			setOptimisticStatus(value)
+			setBillingStatus(value)
+		})
+	}
+
 	return (
-		<select
-			className="w-fit rounded-sm border p-2 text-center"
-			name="status"
-			onChange={(e) => setBillingStatus(e.target.value)}
-			value={currentStatus}
-		>
-			{statuses.map((status) => (
-				<option key={status} value={status}>
-					{status}
-				</option>
-			))}
-		</select>
+		<div className="flex gap-1">
+			<Select
+				name="status"
+				onValueChange={handleChange}
+				value={optimisticStatus}
+			>
+				<SelectTrigger>
+					<SelectValue placeholder="Status" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						{statuses.map((status) => (
+							<SelectItem key={status} value={status}>
+								{status}
+							</SelectItem>
+						))}
+					</SelectGroup>
+				</SelectContent>
+			</Select>
+		</div>
 	)
 }
