@@ -2,14 +2,15 @@
 
 import { X } from 'lucide-react'
 import { useSearchInput } from '@/lib/hooks/hooks'
+import { Input } from '../input'
 
 export function SearchInput() {
 	const { searchTerm, setSearchTerm } = useSearchInput()
 
 	return (
-		<div className="flex items-center rounded-sm border sm:w-1/2 md:w-2/6">
-			<input
-				className="flex-grow p-2 focus:outline-none"
+		<div className="flex items-center sm:w-1/2 md:w-2/6">
+			<Input
+				className="grow p-2 focus:outline-none"
 				name="search"
 				onChange={(e) => setSearchTerm(e.target.value)}
 				placeholder="Search"
