@@ -2,6 +2,14 @@
 import { useOptimistic, useTransition } from 'react'
 import { useUpdateCuttingDay } from '@/lib/mutations/mutations'
 import type { CuttingSchedule } from '@/types/clients-types'
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '../select'
 
 function CuttingWeekDropDown({
 	week,
@@ -33,15 +41,14 @@ function CuttingWeekDropDown({
 
 	const { mutate } = useUpdateCuttingDay()
 
-	function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
-		const newDay = event.target.value
+	function handleChange(value: string) {
 		startTransition(() => {
-			setOptimisticDay(newDay)
+			setOptimisticDay(value)
 		})
 		mutate({
 			clientId,
 			cuttingWeek: week,
-			cuttingDay: newDay,
+			cuttingDay: value,
 		})
 	}
 
@@ -49,17 +56,23 @@ function CuttingWeekDropDown({
 		<p className="mb-3 flex flex-row items-center gap-3 text-sm md:text-base">
 			<span className="w-32">Cutting week {week}:</span>
 			{isAdmin ? (
-				<select
-					className="w-28"
-					onChange={handleChange}
+				<Select
+					onValueChange={handleChange}
 					value={optimisticDay}
 				>
-					{days.map((day) => (
-						<option key={day} value={day}>
-							{day}
-						</option>
-					))}
-				</select>
+					<SelectTrigger className="w-28">
+						<SelectValue placeholder="Select Day" />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectGroup>
+							{days.map((day) => (
+								<SelectItem key={day} value={day}>
+									{day}
+								</SelectItem>
+							))}
+						</SelectGroup>
+					</SelectContent>
+				</Select>
 			) : (
 				<span className="w-28">{cuttingDay}</span>
 			)}
