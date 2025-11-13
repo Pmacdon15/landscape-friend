@@ -3,6 +3,14 @@ import { useOptimistic, useTransition } from 'react'
 import { useCuttingPeriodSearch } from '@/lib/hooks/hooks'
 
 import { days, weeks } from '@/lib/values'
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '../select'
 
 export function CuttingPeriodSelector({
 	variant,
@@ -19,11 +27,10 @@ export function CuttingPeriodSelector({
 	const label = variant === 'week' ? 'Cutting Week' : 'Cutting Day'
 	const options = variant === 'week' ? weeks : days
 
-	function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-		const newPeriod = e.target.value
+	function handleChange(value: string) {
 		startTransition(() => {
-			setOptimisticPeriod(newPeriod)
-			setCuttingPeriod(newPeriod)
+			setOptimisticPeriod(value === "all" ? "" : value)
+			setCuttingPeriod(value === "all" ? "" : value)
 		})
 	}
 
@@ -32,20 +39,25 @@ export function CuttingPeriodSelector({
 			<label className="flex items-center" htmlFor={variant}>
 				{label}{' '}
 			</label>
-			<select
-				className="w-fit rounded-sm border py-2 text-center"
-				id={variant}
+			<Select
 				name={variant}
-				onChange={handleChange}
-				value={optimisticPeriod}
+				onValueChange={handleChange}
+				value={optimisticPeriod || "all"}
 			>
-				<option value="">All</option>
-				{options.map((option) => (
-					<option key={option.value} value={option.value}>
-						{option.label}
-					</option>
-				))}
-			</select>
+				<SelectTrigger >
+					<SelectValue placeholder="All" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						<SelectItem value={"all"}>All</SelectItem>
+						{options.map((option) => (
+							<SelectItem key={option.value} value={option.value}>
+								{option.label}
+							</SelectItem>
+						))}
+					</SelectGroup>
+				</SelectContent>
+			</Select>
 		</div>
 	)
 }
