@@ -8,14 +8,15 @@ import {
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import { processClientsResult } from '@/lib/utils/sort'
 import type {
+	Client,
 	ClientInfoList,
 	ClientResult,
 	CustomerName,
 	NamesAndEmails,
 	PaginatedClients,
 } from '@/types/clients-types'
+import { processClientsResult } from '../utils/sort'
 
 export async function fetchAllClients(
 	clientPageNumber: number,
@@ -64,12 +65,11 @@ export async function fetchClientList(): Promise<ClientInfoList[]> {
 	return result
 }
 export async function fetchCuttingClients(
-	clientPageNumber: number,
 	searchTerm: string,
 	cuttingDate?: Date | undefined,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<PaginatedClients | null> {
+): Promise<{ clients: Client[] } | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
 	if (!userId) throw new Error(' User ID is missing.')
@@ -83,54 +83,31 @@ export async function fetchCuttingClients(
 
 	if (!assignedTo) throw new Error('Can not search with no one assigned.')
 
-	const pageSize = Number(process.env.PAGE_SIZE) || 10
-	const offset = (clientPageNumber - 1) * pageSize
-
 	const result = await fetchClientsCuttingSchedules(
 		orgId || userId,
-		pageSize,
-		offset,
 		searchTerm,
 		cuttingDate || new Date(),
 		searchTermIsCut,
 		assignedTo,
 	)
 
-	if (!result.clientsResult) return null
 
-	const { clients, totalPages } = processClientsResult(
-		result.clientsResult as ClientResult[],
-		result.totalCount,
-		pageSize,
-	)
-
-	return {
-		clients,
-		totalPages,
-		totalClients: result.totalCount,
-	}
+	return result
 }
-
 export async function fetchSnowClearingClients(
-	clientPageNumber: number,
 	searchTerm: string,
 	clearingDate?: Date,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<PaginatedClients | null> {
+): Promise<{ clients: Client[] } | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin()
 
 	if (!userId) throw new Error('User ID is missing.')
 	if (!isAdmin && userId !== searchTermAssignedTo)
 		throw new Error('Not admin can not view other coworkers list')
 
-	const pageSize = Number(process.env.PAGE_SIZE) || 10
-	const offset = (clientPageNumber - 1) * pageSize
-
 	const result = await fetchClientsClearingGroupsDb(
 		orgId || userId,
-		pageSize,
-		offset,
 		searchTerm,
 		clearingDate || new Date(),
 		userId,
@@ -138,19 +115,7 @@ export async function fetchSnowClearingClients(
 		searchTermAssignedTo,
 	)
 
-	if (!result.clientsResult) return null
-
-	const { clients, totalPages } = processClientsResult(
-		result.clientsResult as ClientResult[],
-		result.totalCount,
-		pageSize,
-	)
-
-	return {
-		clients,
-		totalPages,
-		totalClients: result.totalCount,
-	}
+	return result
 }
 
 export async function fetchClientsNamesAndEmails(): Promise<

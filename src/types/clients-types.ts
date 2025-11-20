@@ -74,6 +74,10 @@ export interface PaginatedClients {
 	totalPages: number
 	totalClients?: number
 }
+export interface ClientsReturn {
+	clients: Client[]
+	totalClients?: number
+}
 
 export interface Address {
 	address: string

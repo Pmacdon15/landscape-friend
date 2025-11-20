@@ -10,30 +10,20 @@ import ClientListService from '../../../components/ui/service-list/clients-list-
 export default function Page(props: PageProps<'/lists/cutting'>) {
 	const isAdminPromise = isOrgAdmin()
 	const orgMembersPromise = fetchOrgMembers()
+
 	return (
 		<>
 			<FormContainer>
-				<FormHeader text={'Cutting List'} />
-				<Suspense fallback={<SearchFormFallBack variant="cutting" />}>
+				<FormHeader text={'Clearing List'} />
+				<Suspense fallback={<SearchFormFallBack variant="clearing" />}>
 					<SearchForm
 						isAdminPromise={isAdminPromise}
 						orgMembersPromise={orgMembersPromise}
-						variant="cutting"
+						variant="clearing"
 					/>
 				</Suspense>
 			</FormContainer>
-			<Suspense
-				fallback={
-					<FormContainer>
-						<FormHeader text="Loading . . ." />
-					</FormContainer>
-				}
-			>
-				<ClientListService
-					isAdminPromise={isAdminPromise}
-					props={props}
-				/>
-			</Suspense>
+			<ClientListService isAdminPromise={isAdminPromise} props={props} />
 		</>
 	)
 }

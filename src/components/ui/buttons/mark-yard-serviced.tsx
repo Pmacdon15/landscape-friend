@@ -11,7 +11,7 @@ export default function MarkYardServiced({
 	snow = false,
 }: {
 	clientId: number
-	serviceDate: Date
+	serviceDate: Date 
 	snow?: boolean
 }) {
 	const { mutate, isError, isPending } = useMarkYardServiced()
