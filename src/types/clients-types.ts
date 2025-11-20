@@ -6,6 +6,7 @@ export interface Image {
 }
 
 export interface Assignment {
+	id: number
 	user_id: string
 	name: string
 	priority: number

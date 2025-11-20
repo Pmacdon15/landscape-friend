@@ -295,7 +295,7 @@ export async function fetchClientsClearingGroupsDb(
         FROM clients_with_balance cwb
         , LATERAL (
             SELECT jsonb_agg(
-                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
                 ORDER BY a.priority
             ) as assignments
             FROM assignments a
@@ -350,24 +350,24 @@ export async function fetchClientsClearingGroupsDb(
 	}
 
 	const clientsQuery = sql`
-    ${baseQuery}
-    SELECT
-      cwa.id,
-      cwa.full_name,
-      cwa.phone_number,
-      cwa.email_address,
-      cwa.address,
-      cwa.snow_assignments,
-      COALESCE(img.urls, '[]'::jsonb) AS images
-    FROM clients_with_assignments cwa
-    LEFT JOIN LATERAL(
-      SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.imageURL)) as urls
-      FROM images i
-      WHERE i.customerid = cwa.id
-    ) img ON TRUE
-    WHERE cwa.id IN (${selectQuery})
-    ORDER BY cwa.id
-  `
+  ${baseQuery}
+  SELECT
+    cwa.id,
+    cwa.full_name,
+    cwa.phone_number,
+    cwa.email_address,
+    cwa.address,
+    cwa.snow_assignments,
+    COALESCE(img.urls, '[]'::jsonb) AS images
+  FROM clients_with_assignments cwa
+  LEFT JOIN LATERAL(
+    SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.imageURL)) as urls
+    FROM images i
+    WHERE i.customerid = cwa.id
+  ) img ON TRUE
+  WHERE cwa.id IN (${selectQuery})
+  ORDER BY (SELECT MIN((sa->>'priority')::int) FROM jsonb_array_elements(cwa.snow_assignments) AS sa)
+`;
 
 	const clientsResult = await clientsQuery
 
@@ -406,7 +406,7 @@ export async function fetchClientsWithSchedules(
         LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
         LEFT JOIN LATERAL (
             SELECT jsonb_agg(
-                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
                 ORDER BY a.priority
             ) as assignments
             FROM assignments a
@@ -415,7 +415,7 @@ export async function fetchClientsWithSchedules(
         ) grass_assignments ON TRUE
         LEFT JOIN LATERAL (
             SELECT jsonb_agg(
-                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
                 ORDER BY a.priority
             ) as assignments
             FROM assignments a
@@ -501,7 +501,9 @@ FROM(${selectQuery}) AS client_ids
 `
 
 	const paginatedClientIdsResult = await paginatedClientIdsQuery
-	const paginatedClientIds = paginatedClientIdsResult.map((row: any) => row.id)
+	const paginatedClientIds = paginatedClientIdsResult.map(
+		(row: any) => row.id,
+	)
 
 	const clientsQuery = sql`
     WITH clients_with_balance AS(
@@ -523,7 +525,7 @@ FROM(${selectQuery}) AS client_ids
         LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
         LEFT JOIN LATERAL (
             SELECT jsonb_agg(
-                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
                 ORDER BY a.priority
             ) as assignments
             FROM assignments a
@@ -532,7 +534,7 @@ FROM(${selectQuery}) AS client_ids
         ) grass_assignments ON TRUE
         LEFT JOIN LATERAL (
             SELECT jsonb_agg(
-                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
                 ORDER BY a.priority
             ) as assignments
             FROM assignments a
@@ -769,8 +771,7 @@ export async function unassignGrassCuttingDb(
 	clientId: number,
 	organization_id: string,
 ) {
-	const sql = neon(`${process.env.DATABASE_URL}`)
-
+	const sql = neon(`${process.env.DATABASE_URL} `)
 	const result = await sql`
     DELETE FROM assignments
     WHERE client_id = ${clientId}

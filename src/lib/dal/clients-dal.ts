@@ -1,4 +1,5 @@
 import { auth } from '@clerk/nextjs/server'
+import { cacheTag } from 'next/cache'
 import {
 	fetchClientListDb,
 	fetchClientsClearingGroupsDb,
@@ -50,7 +51,7 @@ export async function fetchAllClients(
 }
 //TODO: Abstract this
 export async function fetchClientList(): Promise<ClientInfoList[]> {
-	const { orgId, userId } = await isOrgAdmin()
+	const { orgId, userId } = await isOrgAdmin(true)
 	if (!userId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
@@ -70,7 +71,7 @@ export async function fetchCuttingClients(
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
 ): Promise<{ clients: Client[] } | null> {
-	const { orgId, userId, isAdmin } = await isOrgAdmin()
+	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
 	if (!userId) throw new Error(' User ID is missing.')
 
@@ -99,7 +100,9 @@ export async function fetchSnowClearingClients(
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
 ): Promise<{ clients: Client[] } | null> {
-	const { orgId, userId, isAdmin } = await isOrgAdmin()
+	'use cache: private'
+	cacheTag('snow-clients')
+	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
 	if (!userId) throw new Error('User ID is missing.')
 	if (!isAdmin && userId !== searchTermAssignedTo)

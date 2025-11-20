@@ -15,6 +15,7 @@ import {
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { use, useEffect, useState } from 'react'
+import { useChangePriority } from '@/lib/mutations/mutations'
 import type { Client, ClientsReturn } from '@/types/clients-types'
 import type { ParsedClientListParams } from '@/types/params-types'
 import FormContainer from '../../containers/form-container'
@@ -36,7 +37,9 @@ export default function ClientCards({
 	const clients = use(clientsPromise)
 	const parseClientListParams = use(parseClientListParamsPromise)
 	const isAdmin = use(isAdminPromise ?? Promise.resolve({ isAdmin: false }))
+	const { mutate } = useChangePriority()
 
+	console.log('clients:', clients)
 	// State for managing client order
 	const [orderedClients, setOrderedClients] = useState<Client[]>(
 		clients?.clients ?? [],
@@ -68,16 +71,31 @@ export default function ClientCards({
 				)
 				const newIndex = items.findIndex((item) => item.id === over.id)
 
-				const newOrder = arrayMove(items, oldIndex, newIndex)
+				const newOrder = arrayMove(items, oldIndex, newIndex)				
 
-				// TODO: Call mutation here to update priority in the database
-				// Example:
-				// updateClientPriority({
-				//   clientId: active.id as string,
-				//   newPriority: newIndex,
-				//   serviceDate: parseClientListParams.serviceDate,
-				//   snow: snow
-				// })
+				const client = items.find((item) => item.id === active.id)
+
+				if (!client) {
+					console.error('Client not found')
+					return newOrder
+				}
+
+				// Get the assignment
+				const assignment =
+					client.snow_assignments?.[0] ||
+					client.grass_assignments?.[0]
+
+				if (!assignment) {
+					console.error('Client has no assignments')
+					return newOrder
+				}
+
+				// Get the assignment ID and new priority
+				const assignmentId = assignment.id
+				const newPriority = newIndex + 1 // assuming priorities start from 1
+
+				// Call the mutate function
+				mutate({ assignmentId, priority: newPriority })
 
 				console.log('Client order changed:', {
 					clientId: active.id,
