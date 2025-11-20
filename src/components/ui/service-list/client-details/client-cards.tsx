@@ -148,7 +148,7 @@ export default function ClientCards({
 				<FormContainer>
 					<div className="flex w-full flex-col items-center justify-center gap-4 p-2 align-middle md:flex-row">
 						<FormHeader
-							text={`Clients Left to Service Today: ${flattenedAddresses.length - 1}`}
+							text={`Clients Left to Service Today: ${flattenedAddresses.length}`}
 						/>
 						<ManyPointsMap addresses={flattenedAddresses} />
 					</div>
