@@ -25,7 +25,7 @@ export default function Page(props: PageProps<'/lists/clearing'>) {
 			</FormContainer>
 			<ClientListService
 				isAdminPromise={isAdminPromise}
-				props={props} 
+				props={props}
 				snow={true}
 			/>
 		</>

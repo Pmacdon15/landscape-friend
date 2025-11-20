@@ -9,6 +9,6 @@ export async function revalidateTagAction(tag: string) {
 	revalidateTag(tag, 'default')
 }
 
-export async function updateTagAction(tag:string){
+export async function updateTagAction(tag: string) {
 	await updateTag(tag)
 }

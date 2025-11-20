@@ -43,7 +43,7 @@ export async function fetchAllClients(
 	if (!result.clientsResult) return null
 
 	const { clients, totalPages } = processClientsResult(
-		result.clientsResult as ClientResult[],
+		result.clientsResult as Client[],
 		result.totalCount,
 		pageSize,
 	)
@@ -70,7 +70,7 @@ export async function fetchCuttingClients(
 	cuttingDate?: Date | undefined,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<{ clients: Client[] } | null> {
+): Promise<ClientResult[] | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
 	if (!userId) throw new Error(' User ID is missing.')
@@ -99,7 +99,7 @@ export async function fetchSnowClearingClients(
 	clearingDate?: Date,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<{ clients: Client[] } | null> {
+): Promise<ClientResult[] | null> {
 	'use cache: private'
 	cacheTag('snow-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)

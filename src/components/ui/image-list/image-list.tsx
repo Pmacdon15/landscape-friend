@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import type { Client } from '@/types/clients-types'
+import type { Client, ClientResult } from '@/types/clients-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
 import ImageGallery from './image-gallery'
 import AddSiteMap from './list-view/add-site-map'
@@ -11,7 +11,7 @@ export default function ImageList({
 	client,
 }: {
 	isAdmin?: boolean
-	client: Client
+	client: ClientResult | Client
 }) {
 	const [view, setView] = useState<string>('list')
 

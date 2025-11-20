@@ -181,7 +181,4 @@ export async function deleteSiteMap(clientId: number, siteMapId: number) {
 	}
 }
 
-
-export async function changePriority(){
-	
-}
+export async function changePriority() {}

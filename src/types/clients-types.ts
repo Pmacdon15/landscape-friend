@@ -26,8 +26,8 @@ export interface Client {
 	cutting_week: number
 	cutting_day: string
 	cutting_schedules: CuttingSchedule[]
-	snow_assignments: Assignment[] | null
-	grass_assignments: Assignment[] | null
+	snow_assigned_to: string
+	grass_assigned_to: string
 	images: Image[]
 	stripe_customer_id?: string
 }
@@ -82,7 +82,7 @@ export interface PaginatedClients {
 	totalClients?: number
 }
 export interface ClientsReturn {
-	clients: Client[]
+	clients: ClientResult[]
 	totalClients?: number
 }
 

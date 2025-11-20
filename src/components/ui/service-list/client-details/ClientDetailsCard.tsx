@@ -1,5 +1,5 @@
 import type React from 'react'
-import type { Client } from '@/types/clients-types'
+import type { ClientResult } from '@/types/clients-types'
 import ImageList from '../../image-list/image-list'
 import ClientAddress from './ClientAddress'
 import ClientEmail from './ClientEmail'
@@ -7,7 +7,7 @@ import ClientName from './ClientName'
 import ClientPhoneNumber from './ClientPhoneNumber'
 
 interface ClientDetailsCardProps {
-	client: Client
+	client: ClientResult
 	isAdmin?: boolean
 	searchTermIsServiced: boolean
 	serviceDate?: Date

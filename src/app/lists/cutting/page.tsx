@@ -14,8 +14,8 @@ export default function Page(props: PageProps<'/lists/cutting'>) {
 	return (
 		<>
 			<FormContainer>
-				<FormHeader text={'Clearing List'} />
-				<Suspense fallback={<SearchFormFallBack variant="clearing" />}>
+				<FormHeader text={'Cutting List'} />
+				<Suspense fallback={<SearchFormFallBack variant="cutting" />}>
 					<SearchForm
 						isAdminPromise={isAdminPromise}
 						orgMembersPromise={orgMembersPromise}

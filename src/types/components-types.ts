@@ -1,4 +1,4 @@
-import type { Client } from './clients-types'
+import type { Client, ClientResult } from './clients-types'
 
 export interface CuttingPeriodSelectorProps {
 	label: string
@@ -17,6 +17,6 @@ export interface MaterialField {
 
 export interface ImageGalleryProps {
 	isAdmin: boolean
-	client: Client
+	client: Client | ClientResult
 	setView: (view: string) => void
 }

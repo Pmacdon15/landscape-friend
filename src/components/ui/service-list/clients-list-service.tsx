@@ -37,11 +37,9 @@ export default async function ClientListService({
 				),
 			)
 
-	
-
 	return (
 		<Suspense>
-			<ClientCards				
+			<ClientCards
 				clientsPromise={promiseToPass}
 				isAdminPromise={isAdminPromise}
 				parseClientListParamsPromise={parseClientListParamsPromise}

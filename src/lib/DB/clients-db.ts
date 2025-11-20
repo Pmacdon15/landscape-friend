@@ -15,6 +15,7 @@ import type {
 	Account,
 	Client,
 	ClientInfoList,
+	ClientResult,
 	CustomerName,
 } from '@/types/clients-types'
 import type { NovuSubscriberIds } from '@/types/novu-types'
@@ -367,11 +368,11 @@ export async function fetchClientsClearingGroupsDb(
   ) img ON TRUE
   WHERE cwa.id IN (${selectQuery})
   ORDER BY (SELECT MIN((sa->>'priority')::int) FROM jsonb_array_elements(cwa.snow_assignments) AS sa)
-`;
+`
 
 	const clientsResult = await clientsQuery
 
-	return { clients: clientsResult as Client[] }
+	return clientsResult as ClientResult[]
 }
 
 //MARK: Fetch clients cutting
@@ -500,9 +501,14 @@ FROM(${selectQuery}) AS client_ids
     LIMIT ${pageSize} OFFSET ${offset}
 `
 
-	const paginatedClientIdsResult = await paginatedClientIdsQuery
+	interface ClientIdRow {
+		id: number
+	}
+
+	const paginatedClientIdsResult =
+		(await paginatedClientIdsQuery) as ClientIdRow[]
 	const paginatedClientIds = paginatedClientIdsResult.map(
-		(row: any) => row.id,
+		(row: ClientIdRow) => row.id,
 	)
 
 	const clientsQuery = sql`
@@ -685,7 +691,7 @@ export async function fetchClientsCuttingSchedules(
 
 	const clientsResult = await finalQuery
 
-	return { clients: clientsResult as Client[] }
+	return clientsResult as ClientResult[]
 }
 
 //MARK: Mark yard cut

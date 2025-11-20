@@ -1,12 +1,11 @@
-import { neon } from "@neondatabase/serverless"
+import { neon } from '@neondatabase/serverless'
 
 export async function changePriorityDb(
-  assignmentId: number,
-  newPriority: number,
-  
+	assignmentId: number,
+	newPriority: number,
 ) {
-  const sql = neon(`${process.env.DATABASE_URL}`)
-  const result = await sql`
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	const result = await sql`
     WITH current_assignment AS (
       SELECT client_id, service_type, priority 
       FROM assignments 
@@ -26,5 +25,5 @@ export async function changePriorityDb(
     )
     SELECT * FROM updates WHERE id = ${assignmentId};
   `
-  return result[0]
+	return result[0]
 }

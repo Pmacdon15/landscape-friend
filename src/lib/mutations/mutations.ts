@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import type { z } from 'zod'
+import { changePriority } from '@/lib/actions/assignment-action'
 import { uploadDrawing, uploadImage } from '@/lib/actions/blobs-action'
 import {
 	addClient,
@@ -9,7 +10,6 @@ import {
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
-import { changePriority } from '@/lib/actions/assignment-action'
 
 import {
 	sendEmailWithTemplate,
@@ -32,7 +32,10 @@ import type {
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
-import { revalidatePathAction, updateTagAction } from '../actions/revalidatePath-action'
+import {
+	revalidatePathAction,
+	updateTagAction,
+} from '../actions/revalidatePath-action'
 
 //MARK: Add client
 export const useAddClient = () => {
@@ -397,16 +400,20 @@ export const useCancelSubscription = () => {
 	})
 }
 
-
 //MARK: Change Priority
 export const useChangePriority = () => {
 	return useMutation({
-		mutationFn: ({ assignmentId, priority }: { assignmentId: number; priority: number }) => {
-            
+		mutationFn: ({
+			assignmentId,
+			priority,
+		}: {
+			assignmentId: number
+			priority: number
+		}) => {
 			return changePriority(assignmentId, priority)
 		},
 		onSuccess: () => {
-			updateTagAction("snow-clients")
+			updateTagAction('snow-clients')
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)

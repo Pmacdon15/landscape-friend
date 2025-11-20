@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useUploadDrawing } from '@/lib/mutations/mutations'
-import type { Client } from '@/types/clients-types'
+import type { Client, ClientResult } from '@/types/clients-types'
 
 declare global {
 	interface Window {
@@ -17,7 +17,7 @@ export function useImageSelector({
 }: {
 	setView: React.Dispatch<React.SetStateAction<string>>
 	address: string
-	client: Client
+	client: Client | ClientResult
 	mapContainer: React.RefObject<HTMLDivElement | null>
 }) {
 	const [geocodeOptions, setGeocodeOptions] = useState<

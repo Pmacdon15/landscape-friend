@@ -4,7 +4,7 @@ import type React from 'react'
 import { useRef } from 'react'
 import Spinner from '@/components/ui/loaders/spinner'
 import { useImageSelector } from '@/lib/hooks/useImageSelector'
-import type { Client } from '@/types/clients-types'
+import type { Client, ClientResult } from '@/types/clients-types'
 
 export default function ImageSelectorMain({
 	setView,
@@ -13,7 +13,7 @@ export default function ImageSelectorMain({
 }: {
 	setView: React.Dispatch<React.SetStateAction<string>>
 	address: string
-	client: Client
+	client: ClientResult | Client
 }) {
 	const mapContainerRef = useRef<HTMLDivElement | null>(null)
 	const {

@@ -2,13 +2,13 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Grip } from 'lucide-react'
-import type { Client } from '@/types/clients-types'
+import type { ClientResult } from '@/types/clients-types'
 import MarkYardServiced from '../../buttons/mark-yard-serviced'
 import FormContainer from '../../containers/form-container'
 import ClientDetailsCard from './ClientDetailsCard'
 
 interface DraggableClientItemProps {
-	client: Client
+	client: ClientResult
 	isAdmin: boolean
 	searchTermIsServiced: boolean
 	serviceDate?: Date
@@ -40,7 +40,7 @@ export default function DraggableClientItem({
 	return (
 		<FormContainer key={client.id}>
 			<li
-				className="w-full rounded-sm border bg-white/50 p-4 flex flex-col gap-4"
+				className="flex w-full flex-col gap-4 rounded-sm border bg-white/50 p-4"
 				ref={setNodeRef}
 				style={style}
 			>

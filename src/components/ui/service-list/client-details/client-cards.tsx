@@ -16,7 +16,7 @@ import {
 } from '@dnd-kit/sortable'
 import { use, useEffect, useState } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
-import type { Client, ClientsReturn } from '@/types/clients-types'
+import type { ClientResult } from '@/types/clients-types'
 import type { ParsedClientListParams } from '@/types/params-types'
 import FormContainer from '../../containers/form-container'
 import FormHeader from '../../header/form-header'
@@ -29,7 +29,7 @@ export default function ClientCards({
 	snow,
 	isAdminPromise,
 }: {
-	clientsPromise: Promise<ClientsReturn | null>
+	clientsPromise: Promise<ClientResult[] | null>
 	parseClientListParamsPromise: Promise<ParsedClientListParams>
 	snow: boolean
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
@@ -41,14 +41,14 @@ export default function ClientCards({
 
 	console.log('clients:', clients)
 	// State for managing client order
-	const [orderedClients, setOrderedClients] = useState<Client[]>(
-		clients?.clients ?? [],
+	const [orderedClients, setOrderedClients] = useState<ClientResult[]>(
+		clients || [],
 	)
 
 	// Update ordered clients when clients data changes
 	useEffect(() => {
-		if (clients?.clients) {
-			setOrderedClients(clients.clients)
+		if (clients) {
+			setOrderedClients(clients)
 		}
 	}, [clients])
 
@@ -71,7 +71,7 @@ export default function ClientCards({
 				)
 				const newIndex = items.findIndex((item) => item.id === over.id)
 
-				const newOrder = arrayMove(items, oldIndex, newIndex)				
+				const newOrder = arrayMove(items, oldIndex, newIndex)
 
 				const client = items.find((item) => item.id === active.id)
 
@@ -127,7 +127,7 @@ export default function ClientCards({
 			</FormContainer>
 		)
 
-	if (clients.clients.length < 1)
+	if (clients.length < 1)
 		return (
 			<FormContainer>
 				{' '}
@@ -135,7 +135,7 @@ export default function ClientCards({
 			</FormContainer>
 		)
 
-	const addresses = clients.clients.map((c: Client) => ({
+	const addresses = clients.map((c: ClientResult) => ({
 		id: c.id,
 		address: c.address,
 	}))
@@ -164,7 +164,7 @@ export default function ClientCards({
 					strategy={verticalListSortingStrategy}
 				>
 					<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
-						{orderedClients.map((client: Client) => (
+						{orderedClients.map((client: ClientResult) => (
 							<DraggableClientItem
 								client={client}
 								isAdmin={isAdmin?.isAdmin ?? false}
