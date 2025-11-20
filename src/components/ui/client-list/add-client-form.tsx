@@ -12,7 +12,11 @@ import { FormInput } from '../forms/form'
 import FormHeader from '../header/form-header'
 import EllipsisSpinner from '../loaders/EllipsisSpinner'
 
-export function AddClientForm() {
+export function AddClientForm({
+	setSheetOpen,
+}: {
+	setSheetOpen: (open: boolean) => void
+}) {
 	const form = useForm<AddClientFormValues>({
 		resolver: zodResolver(AddClientFormSchema),
 		defaultValues: {
@@ -23,7 +27,12 @@ export function AddClientForm() {
 		},
 	})
 
-	const { mutate, isPending, isError } = useAddClient()
+	const { mutate, isPending, isError } = useAddClient({
+		onSuccess: () => {
+			form.reset()
+			setSheetOpen(false)
+		},
+	})
 
 	const onSubmit = (data: AddClientFormValues) => {
 		const formData = new FormData()

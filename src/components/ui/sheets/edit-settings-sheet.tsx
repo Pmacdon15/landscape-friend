@@ -14,13 +14,18 @@ export function EditSettingSheet({
 	title,
 	prompt,
 	children,
+	open,
+	onOpenChange,
 }: {
 	title: string | React.ReactNode
 	prompt: string
 	children: React.ReactNode
+	open?: boolean
+	onOpenChange?: (open: boolean) => void
 }) {
+	// console.log(open)
 	return (
-		<Sheet>
+		<Sheet onOpenChange={onOpenChange} open={open}>
 			<SheetTrigger asChild>
 				<Button variant="outline">{title}</Button>
 			</SheetTrigger>

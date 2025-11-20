@@ -56,7 +56,7 @@ export default async function ClientListAlll({
 				<p>Please add clients</p>{' '}
 			</ContentContainer>
 		)
-	console.log('clients:', clients)
+	// console.log('clients:', clients)
 	return (
 		<>
 			<PaginationTabs
@@ -91,8 +91,10 @@ export default async function ClientListAlll({
 									<Suspense fallback={<AssignedToFallback />}>
 										<AssignedTo
 											clientAssignedTo={
-												client.grass_assigned_to !=="Unassigned" ? client.grass_assigned_to :
-												'not-assigned'
+												client.grass_assigned_to !==
+												'Unassigned'
+													? client.grass_assigned_to
+													: 'not-assigned'
 											}
 											clientId={client.id}
 											orgMembersPromise={
@@ -103,8 +105,10 @@ export default async function ClientListAlll({
 									<Suspense fallback={<AssignedToFallback />}>
 										<AssignedTo
 											clientAssignedTo={
-												client.snow_assigned_to  !== "Unassigned" ? client.snow_assigned_to :
-												'not-assigned'
+												client.snow_assigned_to !==
+												'Unassigned'
+													? client.snow_assigned_to
+													: 'not-assigned'
 											}
 											clientId={client.id}
 											orgMembersPromise={

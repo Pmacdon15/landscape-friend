@@ -12,6 +12,7 @@ import { isOrgAdmin } from '@/lib/utils/clerk'
 import type {
 	ClientInfoList,
 	ClientResult,
+	ClientResultListCLientPage,
 	CustomerName,
 	NamesAndEmails,
 	PaginatedClients,
@@ -26,8 +27,8 @@ export async function fetchAllClients(
 	searchTermAssignedTo: string,
 ): Promise<PaginatedClients | null> {
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
-	if (!isAdmin ) throw new Error('Not admin!')
-	if (!userId ) throw new Error('Not logged in!')
+	if (!isAdmin) throw new Error('Not admin!')
+	if (!userId) throw new Error('Not logged in!')
 	const pageSize = Number(process.env.PAGE_SIZE) || 10
 	const offset = (clientPageNumber - 1) * pageSize
 
@@ -44,7 +45,7 @@ export async function fetchAllClients(
 	if (!result.clientsResult) return null
 
 	const { clients, totalPages } = processClientsResult(
-		result.clientsResult as ClientResult[],
+		result.clientsResult as ClientResultListCLientPage[],
 		result.totalCount,
 		pageSize,
 	)

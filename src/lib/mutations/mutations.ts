@@ -38,16 +38,21 @@ import {
 } from '../actions/revalidatePath-action'
 
 //MARK: Add client
-export const useAddClient = () => {
+export const useAddClient = (options?: {
+	onSuccess?: () => void
+	onError?: (error: Error) => void
+}) => {
 	return useMutation({
 		mutationFn: (formData: FormData) => {
 			return addClient(formData)
 		},
 		onSuccess: () => {
 			revalidatePathAction('/lists/client')
+			options?.onSuccess?.()
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)
+			options?.onError?.(error)
 		},
 	})
 }

@@ -46,9 +46,26 @@ export interface ClientInfoList {
 
 export interface ClientResult {
 	id: number
-	full_name: string	
+	full_name: string
 	address: string
 	amount_owing: number
+	price_per_month_grass: number
+	price_per_month_snow: number
+	cutting_week: number
+	cutting_day: string
+	total_count: number
+	snow_assignments: Assignment[] | null
+	grass_assignments: Assignment[] | null
+	images: Image[]
+}
+
+export interface ClientResultListCLientPage {
+	id: number
+	full_name: string
+	address: string
+	amount_owing: number
+	phone_number: string
+	email_address: string
 	price_per_month_grass: number
 	price_per_month_snow: number
 	cutting_week: number
