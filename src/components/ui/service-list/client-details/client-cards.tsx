@@ -1,12 +1,26 @@
 'use client'
-import { use } from 'react'
+import {
+	closestCenter,
+	DndContext,
+	type DragEndEvent,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from '@dnd-kit/core'
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { use, useEffect, useState } from 'react'
 import type { Client, ClientsReturn } from '@/types/clients-types'
 import type { ParsedClientListParams } from '@/types/params-types'
-import MarkYardServiced from '../../buttons/mark-yard-serviced'
 import FormContainer from '../../containers/form-container'
 import FormHeader from '../../header/form-header'
 import ManyPointsMap from '../../map-component/many-points-map'
-import ClientDetailsCard from './ClientDetailsCard'
+import DraggableClientItem from './draggable-client-item'
 
 export default function ClientCards({
 	clientsPromise,
@@ -22,6 +36,61 @@ export default function ClientCards({
 	const clients = use(clientsPromise)
 	const parseClientListParams = use(parseClientListParamsPromise)
 	const isAdmin = use(isAdminPromise ?? Promise.resolve({ isAdmin: false }))
+
+	// State for managing client order
+	const [orderedClients, setOrderedClients] = useState<Client[]>(
+		clients?.clients ?? [],
+	)
+
+	// Update ordered clients when clients data changes
+	useEffect(() => {
+		if (clients?.clients) {
+			setOrderedClients(clients.clients)
+		}
+	}, [clients])
+
+	// Configure drag sensors
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		}),
+	)
+
+	// Handle drag end event
+	const handleDragEnd = (event: DragEndEvent) => {
+		const { active, over } = event
+
+		if (over && active.id !== over.id) {
+			setOrderedClients((items) => {
+				const oldIndex = items.findIndex(
+					(item) => item.id === active.id,
+				)
+				const newIndex = items.findIndex((item) => item.id === over.id)
+
+				const newOrder = arrayMove(items, oldIndex, newIndex)
+
+				// TODO: Call mutation here to update priority in the database
+				// Example:
+				// updateClientPriority({
+				//   clientId: active.id as string,
+				//   newPriority: newIndex,
+				//   serviceDate: parseClientListParams.serviceDate,
+				//   snow: snow
+				// })
+
+				console.log('Client order changed:', {
+					clientId: active.id,
+					oldPosition: oldIndex,
+					newPosition: newIndex,
+					message:
+						'Add your mutation call here to persist the new order',
+				})
+
+				return newOrder
+			})
+		}
+	}
 
 	if (!parseClientListParams.serviceDate)
 		return (
@@ -67,119 +136,31 @@ export default function ClientCards({
 					</div>
 				</FormContainer>
 			)}
-			<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
-				{clients?.clients.map((client: Client) => (
-					<FormContainer key={client.id}>
-						<li className="w-full rounded-sm border bg-white/50 p-4">
-							<ClientDetailsCard
+			<DndContext
+				collisionDetection={closestCenter}
+				onDragEnd={handleDragEnd}
+				sensors={sensors}
+			>
+				<SortableContext
+					items={orderedClients.map((c) => c.id)}
+					strategy={verticalListSortingStrategy}
+				>
+					<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
+						{orderedClients.map((client: Client) => (
+							<DraggableClientItem
 								client={client}
-								isAdmin={isAdmin?.isAdmin}
+								isAdmin={isAdmin?.isAdmin ?? false}
+								key={client.id}
 								searchTermIsServiced={
 									parseClientListParams.searchTermIsServiced
 								}
 								serviceDate={parseClientListParams.serviceDate}
 								snow={snow}
 							/>
-						</li>
-						
-						{parseClientListParams.serviceDate && (
-							<MarkYardServiced
-								clientId={client.id}
-								serviceDate={parseClientListParams.serviceDate}
-								snow={snow}
-							/>
-						)}
-						
-					</FormContainer>
-				))}
-			</ul>
+						))}
+					</ul>
+				</SortableContext>
+			</DndContext>
 		</>
 	)
 }
-
-// interface DraggableItemProps {
-// 	id: string
-// 	content: string
-// 	onDragStart: (e: React.DragEvent<HTMLDivElement>, id: string) => void
-// 	onDragOver: (e: React.DragEvent<HTMLDivElement>) => void
-// 	onDrop: (e: React.DragEvent<HTMLDivElement>) => void
-// }
-
-// function DraggableItem({
-// 	id,
-// 	content,
-// 	onDragStart,
-// 	onDragOver,
-// 	onDrop,
-// }: DraggableItemProps) {
-// 	return (
-// 		<div
-// 			draggable={true}
-// 			onDragOver={onDragOver}
-// 			onDragStart={(e) => onDragStart(e, id)}
-// 			onDrop={onDrop}
-// 			style={{
-// 				border: '1px solid black',
-// 				padding: '10px',
-// 				margin: '5px',
-// 			}}
-// 		>
-// 			{content}
-// 		</div>
-// 	)
-// }
-
-// interface Item {
-// 	id: string
-// 	content: string
-// }
-
-// function DraggableList() {
-// 	const [items, setItems] = useState<Item[]>([
-// 		{ id: 'item1', content: 'Item 1' },
-// 		{ id: 'item2', content: 'Item 2' },
-// 		{ id: 'item3', content: 'Item 3' },
-// 	])
-
-// 	const handleDragStart = (
-// 		e: React.DragEvent<HTMLDivElement>,
-// 		id: string,
-// 	) => {
-// 		e.dataTransfer.setData('text/plain', id)
-// 	}
-
-// 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-// 		e.preventDefault()
-// 	}
-
-// 	const handleDrop = (
-// 		e: React.DragEvent<HTMLDivElement>,
-// 		targetId: string,
-// 	) => {
-// 		const draggedId = e.dataTransfer.getData('text/plain')
-// 		const draggedIndex = items.findIndex((item) => item.id === draggedId)
-// 		const targetIndex = items.findIndex((item) => item.id === targetId)
-
-// 		if (draggedIndex !== targetIndex) {
-// 			const newItems = [...items]
-// 			const [draggedItem] = newItems.splice(draggedIndex, 1)
-// 			newItems.splice(targetIndex, 0, draggedItem)
-// 			setItems(newItems)
-// 		}
-// 	}
-
-// 	return (
-// 		<div>
-// 			{items.map((item) => (
-// 				<DraggableItem
-// 					content={item.content}
-// 					id={item.id}
-// 					key={item.id}
-// 					onDragOver={handleDragOver}
-// 					onDragStart={handleDragStart}
-// 					onDrop={(e) => handleDrop(e, item.id)}
-// 				/>
-// 			))}
-// 		</div>
-// 	)
-// }
