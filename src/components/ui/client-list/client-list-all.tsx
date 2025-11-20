@@ -91,7 +91,7 @@ export default async function ClientListAlll({
 									<Suspense fallback={<AssignedToFallback />}>
 										<AssignedTo
 											clientAssignedTo={
-												client.grass_assigned_to ||
+												client.grass_assigned_to !=="Unassigned" ? client.grass_assigned_to :
 												'not-assigned'
 											}
 											clientId={client.id}
@@ -103,7 +103,7 @@ export default async function ClientListAlll({
 									<Suspense fallback={<AssignedToFallback />}>
 										<AssignedTo
 											clientAssignedTo={
-												client.snow_assigned_to ||
+												client.snow_assigned_to  !== "Unassigned" ? client.snow_assigned_to :
 												'not-assigned'
 											}
 											clientId={client.id}

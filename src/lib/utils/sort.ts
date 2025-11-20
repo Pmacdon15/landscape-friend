@@ -14,12 +14,12 @@ export function processClientsResult(
 
 		const grassAssignedTo =
 			current.grass_assignments && current.grass_assignments.length > 0
-				? current.grass_assignments.map((a) => a.name).join(', ')
+				? current.grass_assignments[0].user_id
 				: 'Unassigned'
 
 		const snowAssignedTo =
 			current.snow_assignments && current.snow_assignments.length > 0
-				? current.snow_assignments.map((a) => a.name).join(', ')
+				? current.snow_assignments[0].user_id
 				: 'Unassigned'
 
 		if (existingClient) {
