@@ -73,13 +73,20 @@ export default async function ClientListAlll({
 							)}
 							<FormHeader text={client.full_name} />
 							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
-								<ClientListItemHeader
-									clientPhoneNumber={client.phone_number}
-								/>
-								<ClientListItemEmail
-									clientEmailAddress={client.email_address}
-									clientFullName={client.full_name}
-								/>
+								{client.phone_number !== "0" && (
+									<ClientListItemHeader
+										clientPhoneNumber={client.phone_number}
+									/>
+								)}
+								{client.email_address && (
+									<ClientListItemEmail
+										clientEmailAddress={
+											client.email_address
+										}
+										clientFullName={client.full_name}
+									/>
+								)}
+								
 								<ClientListItemAddress
 									clientAddress={client.address}
 									clientId={client.id}

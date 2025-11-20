@@ -44,8 +44,8 @@ CREATE TABLE organizations (
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
     full_name VARCHAR(75) NOT NULL,
-    phone_number VARCHAR(50) NOT NULL,
-    email_address VARCHAR(75) NOT NULL,
+    phone_number VARCHAR(50),
+    email_address VARCHAR(75),
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,    
     address VARCHAR(200) NOT NULL,   

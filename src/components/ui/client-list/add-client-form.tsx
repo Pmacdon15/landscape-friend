@@ -2,11 +2,9 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import type z from 'zod'
 import { useAddClient } from '@/lib/mutations/mutations'
-import {
-	AddClientFormSchema,
-	type AddClientFormValues,
-} from '@/lib/zod/client-schemas'
+import { AddClientFormSchema } from '@/lib/zod/client-schemas'
 import { Button } from '../button'
 import { FormInput } from '../forms/form'
 import FormHeader from '../header/form-header'
@@ -17,7 +15,7 @@ export function AddClientForm({
 }: {
 	setSheetOpen: (open: boolean) => void
 }) {
-	const form = useForm<AddClientFormValues>({
+	const form = useForm<z.infer<typeof AddClientFormSchema>>({
 		resolver: zodResolver(AddClientFormSchema),
 		defaultValues: {
 			full_name: '',
@@ -34,15 +32,8 @@ export function AddClientForm({
 		},
 	})
 
-	const onSubmit = (data: AddClientFormValues) => {
-		const formData = new FormData()
-		for (const key in data) {
-			formData.append(
-				key,
-				data[key as keyof AddClientFormValues] as string,
-			)
-		}
-		mutate(formData)
+	const onSubmit = (data: z.infer<typeof AddClientFormSchema>) => {
+		mutate(data)
 	}
 
 	return (

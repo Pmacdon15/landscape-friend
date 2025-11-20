@@ -36,6 +36,7 @@ import {
 	revalidatePathAction,
 	updateTagAction,
 } from '../actions/revalidatePath-action'
+import type { AddClientFormSchema } from '../zod/client-schemas'
 
 //MARK: Add client
 export const useAddClient = (options?: {
@@ -43,8 +44,8 @@ export const useAddClient = (options?: {
 	onError?: (error: Error) => void
 }) => {
 	return useMutation({
-		mutationFn: (formData: FormData) => {
-			return addClient(formData)
+		mutationFn: (data: z.infer<typeof AddClientFormSchema>) => {
+			return addClient(data)
 		},
 		onSuccess: () => {
 			revalidatePathAction('/lists/client')
