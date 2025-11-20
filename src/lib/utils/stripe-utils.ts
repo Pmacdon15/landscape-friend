@@ -120,7 +120,7 @@ export async function findOrCreateStripeCustomerAndLinkClient(
 			}
 		}
 	} else {
-		customerId = ""
+		customerId = ''
 	}
 	return customerId
 }

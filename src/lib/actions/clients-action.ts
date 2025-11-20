@@ -47,8 +47,6 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	if (!validatedFields.success) throw new Error('Invalid form data')
 
 	try {
-
-		
 		const customerId = await findOrCreateStripeCustomerAndLinkClient(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
