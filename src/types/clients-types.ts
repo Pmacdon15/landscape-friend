@@ -5,6 +5,12 @@ export interface Image {
 	url: string
 }
 
+export interface Assignment {
+	user_id: string
+	name: string
+	priority: number
+}
+
 export interface CustomerName {
 	stripe_customer_id: string
 	full_name?: string
@@ -19,8 +25,8 @@ export interface Client {
 	cutting_week: number
 	cutting_day: string
 	cutting_schedules: CuttingSchedule[]
-	snow_assigned_to: string | null
-	grass_assigned_to: string | null
+	snow_assignments: Assignment[] | null
+	grass_assignments: Assignment[] | null
 	images: Image[]
 	stripe_customer_id?: string
 }
@@ -49,8 +55,8 @@ export interface ClientResult {
 	cutting_week: number
 	cutting_day: string
 	total_count: number
-	snow_assigned_to: string | null
-	grass_assigned_to: string | null
+	snow_assignments: Assignment[] | null
+	grass_assignments: Assignment[] | null
 	images: Image[]
 }
 

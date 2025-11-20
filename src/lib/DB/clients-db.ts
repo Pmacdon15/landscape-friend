@@ -289,11 +289,19 @@ export async function fetchClientsClearingGroupsDb(
       WHERE clearing_date = ${clearingDate}
     ),
     clients_with_assignments AS(
-      SELECT 
-        cwb.*,
-        sca.user_id as assigned_to
-      FROM clients_with_balance cwb
-      INNER JOIN assignments sca ON cwb.id = sca.client_id AND sca.service_type = 'snow'
+        SELECT
+            cwb.*,
+            snow_assignments.assignments AS snow_assignments
+        FROM clients_with_balance cwb
+        , LATERAL (
+            SELECT jsonb_agg(
+                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                ORDER BY a.priority
+            ) as assignments
+            FROM assignments a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.client_id = cwb.id AND a.service_type = 'snow'
+        ) snow_assignments
     )
   `
 
@@ -316,14 +324,17 @@ export async function fetchClientsClearingGroupsDb(
     `)
 	}
 
-	if (searchTermAssignedTo !== '') {
-		whereClauses.push(sql`
-      cwa.assigned_to = ${searchTermAssignedTo}
-    `)
-	} else {
-		whereClauses.push(sql`
-      cwa.assigned_to = ${userId}
-    `)
+	const assignedToFilter = searchTermAssignedTo || userId
+	if (assignedToFilter) {
+		whereClauses.push(
+			sql`
+            EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements(cwa.snow_assignments) AS sa
+                WHERE sa->>'user_id' = ${assignedToFilter}
+            )
+        `,
+		)
 	}
 
 	if (whereClauses.length > 0) {
@@ -346,10 +357,11 @@ export async function fetchClientsClearingGroupsDb(
       cwa.phone_number,
       cwa.email_address,
       cwa.address,
-      COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
+      cwa.snow_assignments,
+      COALESCE(img.urls, '[]'::jsonb) AS images
     FROM clients_with_assignments cwa
     LEFT JOIN LATERAL(
-      SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
+      SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.imageURL)) as urls
       FROM images i
       WHERE i.customerid = cwa.id
     ) img ON TRUE
@@ -375,35 +387,47 @@ export async function fetchClientsWithSchedules(
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
 	const baseQuery = sql`
-    WITH clients_with_balance AS(
-    SELECT 
-        c.*,
-    a.current_balance AS amount_owing
-      FROM clients c
-      LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId}
-  ),
-  clients_with_schedules AS (
-    SELECT
-        cwb.*,
-    COALESCE(cs.cutting_week, 0) AS cutting_week,
-    COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-    grass_assign.user_id AS grass_assigned_to,
-    grass_user.name AS grass_assigned_to_name,
-    snow_assign.user_id AS snow_assigned_to,
-    snow_user.name as snow_assigned_to_name
-      FROM clients_with_balance cwb
-      LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-      LEFT JOIN assignments grass_assign ON cwb.id = grass_assign.client_id AND grass_assign.service_type = 'grass'
-      LEFT JOIN users grass_user ON grass_assign.user_id = grass_user.id
-      LEFT JOIN assignments snow_assign ON cwb.id = snow_assign.client_id AND snow_assign.service_type = 'snow'
-      LEFT JOIN users snow_user ON snow_assign.user_id = snow_user.id
-  )
+    WITH clients_with_balance AS (
+        SELECT 
+            c.*,
+            a.current_balance AS amount_owing
+        FROM clients c
+        LEFT JOIN accounts a ON c.id = a.client_id
+        WHERE c.organization_id = ${orgId}
+    ),
+    clients_with_schedules AS (
+        SELECT
+            cwb.*,
+            COALESCE(cs.cutting_week, 0) AS cutting_week,
+            COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
+            COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments,
+            COALESCE(snow_assignments.assignments, '[]'::jsonb) AS snow_assignments
+        FROM clients_with_balance cwb
+        LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+        LEFT JOIN LATERAL (
+            SELECT jsonb_agg(
+                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                ORDER BY a.priority
+            ) as assignments
+            FROM assignments a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.client_id = cwb.id AND a.service_type = 'grass'
+        ) grass_assignments ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT jsonb_agg(
+                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                ORDER BY a.priority
+            ) as assignments
+            FROM assignments a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.client_id = cwb.id AND a.service_type = 'snow'
+        ) snow_assignments ON TRUE
+    )
     `
 
 	let selectQuery = sql`
     SELECT DISTINCT
-cws.id
+        cws.id
     FROM clients_with_schedules cws
   `
 
@@ -435,7 +459,19 @@ cws.cutting_day = ${searchTermCuttingDay}
 
 	if (searchTermAssignedTo !== '') {
 		whereClauses.push(
-			sql`(cws.grass_assigned_to = ${searchTermAssignedTo} OR cws.snow_assigned_to = ${searchTermAssignedTo})`,
+			sql`(
+            EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements(cws.grass_assignments) AS ga
+                WHERE ga->>'user_id' = ${searchTermAssignedTo}
+            )
+            OR
+            EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements(cws.snow_assignments) AS sa
+                WHERE sa->>'user_id' = ${searchTermAssignedTo}
+            )
+        )`,
 		)
 	}
 
@@ -454,7 +490,7 @@ FROM(${selectQuery}) AS client_ids
   `
 
 	const countResult = await countQuery
-	const totalCount = countResult[0]?.total_count || 0
+	const totalCount = Number(countResult[0]?.total_count || 0)
 
 	const paginatedClientIdsQuery = sql`
     ${baseQuery}
@@ -465,55 +501,65 @@ FROM(${selectQuery}) AS client_ids
 `
 
 	const paginatedClientIdsResult = await paginatedClientIdsQuery
-	const paginatedClientIds = paginatedClientIdsResult.map((row) => row.id)
+	const paginatedClientIds = paginatedClientIdsResult.map((row: any) => row.id)
 
 	const clientsQuery = sql`
     WITH clients_with_balance AS(
-  SELECT 
-        c.*,
-  a.current_balance AS amount_owing
-      FROM clients c
-      LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId}
-),
-  clients_with_schedules AS(
-    SELECT
-        cwb.*,
-    COALESCE(cs.cutting_week, 0) AS cutting_week,
-    COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-    grass_assign.user_id as grass_assigned_to,
-    grass_user.name as grass_assigned_to_name,
-    snow_assign.user_id as snow_assigned_to,
-    snow_user.name as snow_assigned_to_name
-      FROM clients_with_balance cwb
-      LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-      LEFT JOIN assignments grass_assign ON cwb.id = grass_assign.client_id AND grass_assign.service_type = 'grass'
-      LEFT JOIN users grass_user ON grass_assign.user_id = grass_user.id
-      LEFT JOIN assignments snow_assign ON cwb.id = snow_assign.client_id AND snow_assign.service_type = 'snow'
-      LEFT JOIN users snow_user ON snow_assign.user_id = snow_user.id
-      WHERE cwb.id = ANY(${paginatedClientIds})
+        SELECT 
+            c.*,
+            a.current_balance AS amount_owing
+        FROM clients c
+        LEFT JOIN accounts a ON c.id = a.client_id
+        WHERE c.organization_id = ${orgId}
+    ),
+    clients_with_schedules AS (
+        SELECT
+            cwb.*,
+            COALESCE(cs.cutting_week, 0) AS cutting_week,
+            COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
+            COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments,
+            COALESCE(snow_assignments.assignments, '[]'::jsonb) AS snow_assignments
+        FROM clients_with_balance cwb
+        LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
+        LEFT JOIN LATERAL (
+            SELECT jsonb_agg(
+                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                ORDER BY a.priority
+            ) as assignments
+            FROM assignments a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.client_id = cwb.id AND a.service_type = 'grass'
+        ) grass_assignments ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT jsonb_agg(
+                jsonb_build_object('user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                ORDER BY a.priority
+            ) as assignments
+            FROM assignments a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.client_id = cwb.id AND a.service_type = 'snow'
+        ) snow_assignments ON TRUE
+        WHERE cwb.id = ANY(${paginatedClientIds})
   )
 SELECT
-cws.id,
-  cws.full_name,
-  cws.phone_number,
-  cws.email_address,
-  cws.address,
-  cws.amount_owing,  
-  cws.cutting_week,
-  cws.cutting_day,
-  cws.grass_assigned_to,
-  cws.grass_assigned_to_name,
-  cws.snow_assigned_to,
-  cws.snow_assigned_to_name,
-  COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
-    FROM clients_with_schedules cws
-    LEFT JOIN LATERAL(
-    SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
-      FROM images i
-      WHERE i.customerid = cws.id
-  ) img ON TRUE
-    ORDER BY cws.id
+    cws.id,
+    cws.full_name,
+    cws.phone_number,
+    cws.email_address,
+    cws.address,
+    cws.amount_owing,  
+    cws.cutting_week,
+    cws.cutting_day,
+    cws.grass_assignments,
+    cws.snow_assignments,
+    COALESCE(img.urls, '[]'::jsonb) AS images
+FROM clients_with_schedules cws
+LEFT JOIN LATERAL(
+    SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.imageURL)) as urls
+    FROM images i
+    WHERE i.customerid = cws.id
+) img ON TRUE
+ORDER BY cws.id
   `
 
 	const clientsResult = await clientsQuery
@@ -767,13 +813,18 @@ export async function assignSnowClearingDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
+	const priorityResult = await sql`
+        SELECT COALESCE(MAX(priority), 0) + 1 as next_priority
+        FROM assignments
+        WHERE client_id = ${data.clientId} AND service_type = 'snow'
+    `
+	const nextPriority = priorityResult[0].next_priority
+
 	const result = await sql`
-    INSERT INTO assignments(client_id, user_id, service_type)
-    SELECT ${data.clientId}, ${data.assignedTo}, 'snow'
+    INSERT INTO assignments(client_id, user_id, service_type, priority)
+    SELECT ${data.clientId}, ${data.assignedTo}, 'snow', ${nextPriority}
     FROM clients
     WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-    ON CONFLICT(client_id, service_type) DO UPDATE
-    SET user_id = EXCLUDED.user_id
     RETURNING *;
   `
 
@@ -791,13 +842,18 @@ export async function assignGrassCuttingDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
+	const priorityResult = await sql`
+        SELECT COALESCE(MAX(priority), 0) + 1 as next_priority
+        FROM assignments
+        WHERE client_id = ${data.clientId} AND service_type = 'grass'
+    `
+	const nextPriority = priorityResult[0].next_priority
+
 	const result = await sql`
-    INSERT INTO assignments(client_id, user_id, service_type)
-    SELECT ${data.clientId}, ${data.assignedTo}, 'grass'
+    INSERT INTO assignments(client_id, user_id, service_type, priority)
+    SELECT ${data.clientId}, ${data.assignedTo}, 'grass', ${nextPriority}
     FROM clients
     WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-    ON CONFLICT(client_id, service_type) DO UPDATE
-    SET user_id = EXCLUDED.user_id
     RETURNING *;
   `
 

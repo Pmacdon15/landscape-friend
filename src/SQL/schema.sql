@@ -123,10 +123,11 @@ CREATE TABLE assignments (
     id SERIAL PRIMARY KEY,
     client_id INT NOT NULL,
     user_id VARCHAR(100) NOT NULL,
+    priority INT NOT NULL,
     service_type VARCHAR(10) NOT NULL CHECK (service_type IN ('grass', 'snow')),
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    UNIQUE (client_id, service_type)
+    UNIQUE (client_id, service_type, priority)
 );
 
 CREATE TABLE images (
@@ -164,8 +165,8 @@ SELECT * FROM assignments;
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');
--- WHERE
---     organization_id = 'user_30G0wquvxAjdXFitpjBDklG0qzF';
+-- INSERT INTO organizations (organization_id, organization_name)
+-- VALUES ('user_35j5KGqeQ3VvGgZNifj5k54uYOc', 'Your Organization Name');
 -- -- SELECT * from price_per_cut ;
 -- SELECT * FROM stripe_api_keys;
 -- SELECT * FROM snow_clearing_assignments;
