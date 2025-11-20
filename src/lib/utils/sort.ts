@@ -1,7 +1,7 @@
-import type { Client } from '@/types/clients-types'
+import type { Client, ClientResult } from '@/types/clients-types'
 
 export function processClientsResult(
-	clientsResult: Client[],
+	clientsResult: ClientResult[],
 	totalCount: number,
 	pageSize: number,
 ): { clients: Client[]; totalPages: number } {
@@ -11,6 +11,17 @@ export function processClientsResult(
 		const existingClient = acc.find(
 			(client: Client) => client.id === current.id,
 		)
+
+		const grassAssignedTo =
+			current.grass_assignments && current.grass_assignments.length > 0
+				? current.grass_assignments.map((a) => a.name).join(', ')
+				: 'Unassigned'
+
+		const snowAssignedTo =
+			current.snow_assignments && current.snow_assignments.length > 0
+				? current.snow_assignments.map((a) => a.name).join(', ')
+				: 'Unassigned'
+
 		if (existingClient) {
 			existingClient.cutting_schedules.push({
 				cutting_week:
@@ -30,8 +41,8 @@ export function processClientsResult(
 				amount_owing: current.amount_owing,
 				cutting_week: current.cutting_week,
 				cutting_day: current.cutting_day,
-				snow_assigned_to: current.snow_assigned_to,
-				grass_assigned_to: current.grass_assigned_to,
+				snow_assigned_to: snowAssignedTo,
+				grass_assigned_to: grassAssignedTo,
 				images: current.images,
 				cutting_schedules: [
 					{

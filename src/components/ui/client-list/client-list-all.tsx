@@ -56,7 +56,7 @@ export default async function ClientListAlll({
 				<p>Please add clients</p>{' '}
 			</ContentContainer>
 		)
-
+	console.log('clients:', clients)
 	return (
 		<>
 			<PaginationTabs

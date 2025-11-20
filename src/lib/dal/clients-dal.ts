@@ -43,7 +43,7 @@ export async function fetchAllClients(
 	if (!result.clientsResult) return null
 
 	const { clients, totalPages } = processClientsResult(
-		result.clientsResult as Client[],
+		result.clientsResult as ClientResult[],
 		result.totalCount,
 		pageSize,
 	)

@@ -19,7 +19,7 @@ export default function Page(props: PageProps<'/lists/cutting'>) {
 					<SearchForm
 						isAdminPromise={isAdminPromise}
 						orgMembersPromise={orgMembersPromise}
-						variant="clearing"
+						variant="cutting"
 					/>
 				</Suspense>
 			</FormContainer>
