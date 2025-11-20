@@ -180,3 +180,8 @@ export async function deleteSiteMap(clientId: number, siteMapId: number) {
 		throw new Error(errorMessage)
 	}
 }
+
+
+export async function changePriority(){
+	
+}

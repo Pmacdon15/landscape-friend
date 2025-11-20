@@ -1,11 +1,12 @@
 'use client'
 import Image from 'next/image'
 import { Activity, useState } from 'react'
+import MapComponent from '../map-component/map-component'
 
 interface ClientListItemAddressProps {
 	clientId: number
 	clientAddress: string
-	children: React.ReactNode
+	children?: React.ReactNode
 }
 
 export default function ClientListItemAddress({
@@ -42,6 +43,7 @@ export default function ClientListItemAddress({
 			</label>
 			<Activity mode={isExpanded ? 'visible' : 'hidden'}>
 				{children}
+				<MapComponent address={clientAddress} />
 			</Activity>
 			{/* {isExpanded && <div className="w-full">{children}</div>} */}
 		</div>

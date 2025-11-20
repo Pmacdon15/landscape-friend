@@ -23,19 +23,11 @@ export default function Page(props: PageProps<'/lists/clearing'>) {
 					/>
 				</Suspense>
 			</FormContainer>
-			<Suspense
-				fallback={
-					<FormContainer>
-						<FormHeader text="Loading . . ." />
-					</FormContainer>
-				}
-			>
-				<ClientListService
-					isAdminPromise={isAdminPromise}
-					props={props}
-					snow={true}
-				/>
-			</Suspense>
+			<ClientListService
+				isAdminPromise={isAdminPromise}
+				props={props} 
+				snow={true}
+			/>
 		</>
 	)
 }

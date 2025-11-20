@@ -9,6 +9,7 @@ import {
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
+import { changePriority } from '@/lib/actions/assignment-action'
 
 import {
 	sendEmailWithTemplate,
@@ -31,7 +32,7 @@ import type {
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
-import { revalidatePathAction } from '../actions/revalidatePath-action'
+import { revalidatePathAction, updateTagAction } from '../actions/revalidatePath-action'
 
 //MARK: Add client
 export const useAddClient = () => {
@@ -392,6 +393,23 @@ export const useCancelSubscription = () => {
 			cancelSubscription(subscriptionId),
 		onSuccess: () => {
 			revalidatePathAction('/billing/manage/subscriptions')
+		},
+	})
+}
+
+
+//MARK: Change Priority
+export const useChangePriority = () => {
+	return useMutation({
+		mutationFn: ({ assignmentId, priority }: { assignmentId: number; priority: number }) => {
+            
+			return changePriority(assignmentId, priority)
+		},
+		onSuccess: () => {
+			updateTagAction("snow-clients")
+		},
+		onError: (error) => {
+			console.error('Mutation error:', error)
 		},
 	})
 }

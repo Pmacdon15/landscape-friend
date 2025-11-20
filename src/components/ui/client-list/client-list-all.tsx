@@ -10,13 +10,12 @@ import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
 import ImageList from '../image-list/image-list'
 import AssignedTo from '../inputs/AssignedToSelect'
-import MapComponent from '../map-component/map-component'
 import { PaginationTabs } from '../pagination/pagination-tabs'
 import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
 
-export default async function ClientListService({
+export default async function ClientListAlll({
 	props,
 	isAdminPromise,
 	orgMembersPromise,
@@ -84,9 +83,7 @@ export default async function ClientListService({
 								<ClientListItemAddress
 									clientAddress={client.address}
 									clientId={client.id}
-								>
-									<MapComponent address={client.address} />
-								</ClientListItemAddress>
+								/>
 							</div>
 							{isAdmin?.isAdmin && (
 								<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
