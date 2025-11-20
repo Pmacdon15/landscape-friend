@@ -1,3 +1,4 @@
+'use server'
 export async function fetchGeocode(address: string) {
 	try {
 		const response = await fetch(

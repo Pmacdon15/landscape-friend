@@ -1,9 +1,6 @@
 import type React from 'react'
-import { Suspense } from 'react'
 import type { Client } from '@/types/clients-types'
-import FormHeader from '../../header/form-header'
 import ImageList from '../../image-list/image-list'
-import MapComponent from '../../map-component/map-component'
 import ClientAddress from './ClientAddress'
 import ClientEmail from './ClientEmail'
 import ClientName from './ClientName'
@@ -34,9 +31,6 @@ const ClientDetailsCard: React.FC<ClientDetailsCardProps> = ({
 			</div>
 
 			<div className="flex flex-col gap-1 sm:flex-row">
-				<Suspense fallback={<FormHeader text="Loading..." />}>
-					<MapComponent address={client.address} />
-				</Suspense>
 				<ImageList client={client} isAdmin={isAdmin} />
 			</div>
 		</>

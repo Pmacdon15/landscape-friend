@@ -521,31 +521,31 @@ cws.id,
 	return { clientsResult, totalCount }
 }
 export async function fetchClientsCuttingSchedules(
-  orgId: string,
-  searchTerm: string,
-  cuttingDate: Date,
-  searchTermIsCut?: boolean,
-  searchTermAssignedTo?: string,
+	orgId: string,
+	searchTerm: string,
+	cuttingDate: Date,
+	searchTermIsCut?: boolean,
+	searchTermAssignedTo?: string,
 ) {
-  const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1)
-  const daysSinceStart = Math.floor(
-    (cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24),
-  )
-  const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1
-  const daysOfWeek = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ]
-  const cuttingDay = daysOfWeek[cuttingDate.getDay()]
+	const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1)
+	const daysSinceStart = Math.floor(
+		(cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24),
+	)
+	const cuttingWeek = Math.floor((daysSinceStart % 28) / 7) + 1
+	const daysOfWeek = [
+		'Sunday',
+		'Monday',
+		'Tuesday',
+		'Wednesday',
+		'Thursday',
+		'Friday',
+		'Saturday',
+	]
+	const cuttingDay = daysOfWeek[cuttingDate.getDay()]
 
-  const sql = neon(`${process.env.DATABASE_URL} `)
+	const sql = neon(`${process.env.DATABASE_URL} `)
 
-  const query = sql`
+	const query = sql`
     WITH clients_with_balance AS(
       SELECT
         c.*,
@@ -579,7 +579,7 @@ export async function fetchClientsCuttingSchedules(
     )
   `
 
-  let selectQuery = sql`
+	let selectQuery = sql`
     SELECT DISTINCT
       cws.id,
       cws.full_name,
@@ -602,42 +602,42 @@ export async function fetchClientsCuttingSchedules(
     WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
   `
 
-  const whereClauses = []
+	const whereClauses = []
 
-  if (searchTerm !== '') {
-    whereClauses.push(sql`
+	if (searchTerm !== '') {
+		whereClauses.push(sql`
       (cws.full_name ILIKE ${`%${searchTerm}%`}
         OR cws.phone_number ILIKE ${`%${searchTerm}%`}
         OR cws.email_address ILIKE ${`%${searchTerm}%`}
         OR cws.address ILIKE ${`%${searchTerm}%`})
     `)
-  }
+	}
 
-  if (searchTermAssignedTo !== '') {
-    whereClauses.push(sql`ga.assigned_to = ${searchTermAssignedTo}`)
-  }
+	if (searchTermAssignedTo !== '') {
+		whereClauses.push(sql`ga.assigned_to = ${searchTermAssignedTo}`)
+	}
 
-  if (whereClauses.length > 0) {
-    let whereClause = sql`AND ${whereClauses[0]}`
-    for (let i = 1; i < whereClauses.length; i++) {
-      whereClause = sql`${whereClause} AND ${whereClauses[i]}`
-    }
+	if (whereClauses.length > 0) {
+		let whereClause = sql`AND ${whereClauses[0]}`
+		for (let i = 1; i < whereClauses.length; i++) {
+			whereClause = sql`${whereClause} AND ${whereClauses[i]}`
+		}
 
-    selectQuery = sql`
+		selectQuery = sql`
       ${selectQuery}
       ${whereClause}
     `
-  }
+	}
 
-  const finalQuery = sql`
+	const finalQuery = sql`
     ${query}
     ${selectQuery}
     ORDER BY cws.id
   `
 
-  const clientsResult = await finalQuery
+	const clientsResult = await finalQuery
 
- 	return { clients: clientsResult as Client[] }
+	return { clients: clientsResult as Client[] }
 }
 
 //MARK: Mark yard cut

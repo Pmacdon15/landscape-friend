@@ -91,7 +91,6 @@ export async function fetchCuttingClients(
 		assignedTo,
 	)
 
-
 	return result
 }
 export async function fetchSnowClearingClients(

@@ -1,7 +1,7 @@
+import { useQuery } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type React from 'react'
 import { useEffect, useState } from 'react'
-
 import type { UseFormReset } from 'react-hook-form'
 import type { MaterialField } from '@/types/components-types'
 import type {
@@ -281,4 +281,11 @@ export function useResetFormOnSuccess<T extends object>(
 			reset(submittedData.current)
 		}
 	}, [isSuccess, reset, submittedData])
+}
+
+export const useFetchGeocode = (address: string) => {
+	return useQuery({
+		queryKey: ['geocodes', address],
+		queryFn: () => fetchGeocode(address),
+	})
 }

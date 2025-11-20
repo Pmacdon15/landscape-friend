@@ -1,13 +1,18 @@
-import { fetchGeocode } from '@/lib/utils/geocode'
+'use client'
 
-export default async function MapComponent({ address }: { address: string }) {
-	const result = await fetchGeocode(address)
+import { useFetchGeocode } from '@/lib/hooks/hooks'
 
-	if (result.error) {
-		return <div>Error: {result.error}</div>
+export default function MapComponent({ address }: { address: string }) {
+	const { data, isPending, isError, error } = useFetchGeocode(address)
+
+	if (isPending) {
+		return <div>Loading...</div>
+	}
+	if (isError) {
+		return <div>Error: {error.message}</div>
 	}
 
-	const { coordinates, zoom } = result
+	const { coordinates, zoom } = data
 
 	const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}&zoom=${zoom}`
 
