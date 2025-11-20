@@ -10,7 +10,6 @@ import {
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import type {
-	Client,
 	ClientInfoList,
 	ClientResult,
 	CustomerName,
@@ -26,7 +25,9 @@ export async function fetchAllClients(
 	searchTermCuttingDay: string,
 	searchTermAssignedTo: string,
 ): Promise<PaginatedClients | null> {
-	const { orgId, userId } = await auth.protect()
+	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
+	if (!isAdmin ) throw new Error('Not admin!')
+	if (!userId ) throw new Error('Not logged in!')
 	const pageSize = Number(process.env.PAGE_SIZE) || 10
 	const offset = (clientPageNumber - 1) * pageSize
 
