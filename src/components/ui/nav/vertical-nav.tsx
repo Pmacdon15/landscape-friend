@@ -63,12 +63,14 @@ export default function VerticalNav() {
 					</>
 				}
 			>
-				<Link
-					className="rounded-md p-2 hover:bg-accent"
-					href="/lists/client"
-				>
-					Client List
-				</Link>
+				{isAdmin && (
+					<Link
+						className="rounded-md p-2 hover:bg-accent"
+						href="/lists/client"
+					>
+						Client List
+					</Link>
+				)}
 				<Link
 					className="rounded-md p-2 hover:bg-accent"
 					href={{
@@ -89,21 +91,23 @@ export default function VerticalNav() {
 				</Link>
 			</CollapsibleSection>
 
-			<CollapsibleSection
-				title={
-					<>
-						<Mails />
-						Email
-					</>
-				}
-			>
-				<Link
-					className="rounded-md p-2 hover:bg-accent"
-					href="/email/individual"
+			{isAdmin && (
+				<CollapsibleSection
+					title={
+						<>
+							<Mails />
+							Email
+						</>
+					}
 				>
-					Send Individual
-				</Link>
-			</CollapsibleSection>
+					<Link
+						className="rounded-md p-2 hover:bg-accent"
+						href="/email/individual"
+					>
+						Send Individual
+					</Link>
+				</CollapsibleSection>
+			)}
 
 			{isAdmin && hasStripAPIKey && (
 				<CollapsibleSection

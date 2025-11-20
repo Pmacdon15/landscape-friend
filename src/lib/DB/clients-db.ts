@@ -354,9 +354,7 @@ export async function fetchClientsClearingGroupsDb(
   ${baseQuery}
   SELECT
     cwa.id,
-    cwa.full_name,
-    cwa.phone_number,
-    cwa.email_address,
+    cwa.full_name,   
     cwa.address,
     cwa.snow_assignments,
     COALESCE(img.urls, '[]'::jsonb) AS images
@@ -636,9 +634,7 @@ export async function fetchClientsCuttingSchedules(
 	let selectQuery = sql`
     SELECT DISTINCT
       cws.id,
-      cws.full_name,
-      cws.phone_number,
-      cws.email_address,
+      cws.full_name,     
       cws.address,
       cws.amount_owing,
       cws.cutting_week,

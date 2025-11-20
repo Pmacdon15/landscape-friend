@@ -46,9 +46,7 @@ export interface ClientInfoList {
 
 export interface ClientResult {
 	id: number
-	full_name: string
-	phone_number: string
-	email_address: string
+	full_name: string	
 	address: string
 	amount_owing: number
 	price_per_month_grass: number
