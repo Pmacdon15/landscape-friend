@@ -24,7 +24,7 @@ export default function EditClientFormContainer({
 				prompt={'Enter Client Information'}
 				title={
 					<div className="flex gap-2">
-						<Edit size={20}/> Edit a Client
+						<Edit size={20} /> Edit a Client
 					</div>
 				}
 				variant="link"

@@ -79,7 +79,7 @@ export default async function ClientListAll({
 								/>
 							</div>
 							{isAdmin?.isAdmin && (
-								<div className='flex flex-col items-center gap-2'>
+								<div className="flex flex-col items-center gap-2">
 									<p>Amount owing: ${client.amount_owing} </p>
 									<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
 										<Suspense

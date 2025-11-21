@@ -53,6 +53,7 @@ export function AddClientForm({
 					control={form.control}
 					label={'Phone Number'}
 					name={'phone_number'}
+					type="tel"
 				/>
 
 				<FormInput

@@ -4,8 +4,8 @@ import type z from 'zod'
 import {
 	addClientDB,
 	getClientByIdDb,
-	updateClientStripeIdByIdDb,
 	updateClientInfoDb,
+	updateClientStripeIdByIdDb,
 } from '@/lib/DB/clients-db'
 import {
 	deleteWebhookIdDb,
@@ -28,9 +28,9 @@ export async function getStripeInstanceUnprotected(
 		return null
 	}
 
-    if (!apiKeyResponse) {
-        return null;
-    }
+	if (!apiKeyResponse) {
+		return null
+	}
 
 	const apiKey = apiKeyResponse.api_key
 	if (!apiKey) {
@@ -160,12 +160,11 @@ export async function createOrUpdateStripeUser(
 			clientEmail,
 			phoneNumber,
 			address,
-		);
-		return;
+		)
+		return
 	}
 
 	const currentClient = await getClientByIdDb(clientId)
-
 
 	if (!currentClient) {
 		throw new Error(`Client with id ${clientId} not found.`)
@@ -212,8 +211,9 @@ export async function createOrUpdateStripeUser(
 		clientEmail,
 		phoneNumber,
 		address,
-	);
-}export async function createStripeWebhook(
+	)
+}
+export async function createStripeWebhook(
 	apiKey: string,
 	organizationId: string,
 ): Promise<void> {

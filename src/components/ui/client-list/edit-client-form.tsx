@@ -56,7 +56,7 @@ export function EditClientForm({
 					control={form.control}
 					label={'Phone Number'}
 					name={'phone_number'}
-					type='number'
+					type="tel"
 				/>
 
 				<FormInput

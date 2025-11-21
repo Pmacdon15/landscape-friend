@@ -33,7 +33,7 @@ export function EditSettingSheet({
 					<Button variant="outline">{title}</Button>
 				) : (
 					<button
-						className="text-blue-500 hover:cursor-pointer underline"
+						className="text-blue-500 underline hover:cursor-pointer"
 						type="button"
 					>
 						{title}
