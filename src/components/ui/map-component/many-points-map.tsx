@@ -36,13 +36,15 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap&${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 
 	const origin = `${userLocation.lat},${userLocation.lng}`
-	const destination = `${geocodeResults[geocodeResults.length - 1].coordinates.lat},${geocodeResults[geocodeResults.length - 1].coordinates.lng}`
+
+	// Use addresses for Google Maps directions (not coordinates)
+	// This prevents reverse geocoding issues where coordinates get mapped to wrong addresses
+	const destination = encodeURIComponent(
+		geocodeResults[geocodeResults.length - 1].address,
+	)
 	const waypoints = geocodeResults
 		.slice(0, -1)
-		.map(
-			(result: GeocodeResult) =>
-				`${result.coordinates.lat},${result.coordinates.lng}`,
-		)
+		.map((result: GeocodeResult) => encodeURIComponent(result.address))
 		.join('|')
 
 	const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`

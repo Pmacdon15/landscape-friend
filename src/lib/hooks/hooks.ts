@@ -101,23 +101,34 @@ export function useGetLonAndLatFromAddresses(addresses: string[]): {
 	useEffect(() => {
 		const fetchGeocodes = async () => {
 			try {
-				const results = await Promise.all(addresses.map(fetchGeocode))
+				const results = await Promise.all(
+					addresses.map(async (address) => ({
+						address,
+						result: await fetchGeocode(address),
+					})),
+				)
 				const validResults = results
 					.filter(
 						(
-							result,
-						): result is FetchGeocodeResult & {
-							coordinates: Location
-						} => !!result.coordinates && result.error === false,
+							item,
+						): item is {
+							address: string
+							result: FetchGeocodeResult & {
+								coordinates: Location
+							}
+						} =>
+							!!item.result.coordinates &&
+							item.result.error === false,
 					)
 					.map(
-						(result): GeocodeResult => ({
-							coordinates: result.coordinates,
+						(item): GeocodeResult => ({
+							address: item.address,
+							coordinates: item.result.coordinates,
 							error:
-								typeof result.error === 'string'
-									? result.error
+								typeof item.result.error === 'string'
+									? item.result.error
 									: undefined,
-							zoom: result.zoom,
+							zoom: item.result.zoom,
 						}),
 					)
 				setGeocodeResults(validResults)

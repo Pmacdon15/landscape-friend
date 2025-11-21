@@ -8,6 +8,7 @@ export interface Location {
 }
 
 export interface GeocodeResult {
+	address: string
 	coordinates: Location
 	error?: string
 	zoom?: number
