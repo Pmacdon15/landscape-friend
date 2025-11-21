@@ -974,3 +974,67 @@ export async function getClientsBlobsDB(orgId: string): Promise<BlobUrl[]> {
 
 	return result
 }
+
+export async function getClientByIdDb(
+	clientId: number,
+): Promise<Client | null> {
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	try {
+		const result = await sql`
+            SELECT * FROM clients WHERE id = ${clientId}
+        `
+		if (result.length === 0) {
+			return null
+		}
+		return result[0] as unknown as Client
+	} catch (error) {
+		console.error('Error in getClientByIdDb SQL query:', error)
+		throw error
+	}
+}
+
+export async function updateClientStripeIdByIdDb(
+	clientId: number,
+	stripe_customer_id: string,
+) {
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	try {
+		const result = await sql`
+            UPDATE clients
+            SET stripe_customer_id = ${stripe_customer_id}
+            WHERE id = ${clientId}
+            RETURNING *;
+        `
+		return result
+	} catch (error) {
+		console.error('Error in updateClientStripeIdByIdDb SQL query:', error)
+		throw error
+	}
+}
+
+export async function updateClientInfoDb(
+	clientId: number,
+	clientName: string,
+	clientEmail: string | null | undefined,
+	phoneNumber: number | null | undefined, // Assuming this is number and needs conversion
+	address: string,
+) {
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	const stringPhoneNumber = phoneNumber ? String(phoneNumber) : null
+	try {
+		const result = await sql`
+            UPDATE clients
+            SET
+                full_name = ${clientName},
+                email_address = ${clientEmail},
+                phone_number = ${stringPhoneNumber},
+                address = ${address}
+            WHERE id = ${clientId}
+            RETURNING *;
+        `
+		return result
+	} catch (error) {
+		console.error('Error in updateClientInfoDb SQL query:', error)
+		throw error
+	}
+}

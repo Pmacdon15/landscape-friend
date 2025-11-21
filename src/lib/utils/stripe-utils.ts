@@ -1,7 +1,12 @@
 import type { JwtPayload } from '@clerk/types'
 import Stripe from 'stripe'
 import type z from 'zod'
-import { addClientDB } from '@/lib/DB/clients-db'
+import {
+	addClientDB,
+	getClientByIdDb,
+	updateClientInfoDb,
+	updateClientStripeIdByIdDb,
+} from '@/lib/DB/clients-db'
 import {
 	deleteWebhookIdDb,
 	fetchStripAPIKeyDb,
@@ -23,6 +28,10 @@ export async function getStripeInstanceUnprotected(
 		return null
 	}
 
+	if (!apiKeyResponse) {
+		return null
+	}
+
 	const apiKey = apiKeyResponse.api_key
 	if (!apiKey) {
 		return null
@@ -36,8 +45,8 @@ export async function getStripeInstanceUnprotected(
 
 export async function findOrCreateStripeCustomerAndLinkClient(
 	clientName: string,
-	clientEmail: string,
-	phoneNumber: string,
+	clientEmail: string | null | undefined,
+	phoneNumber: number | null | undefined,
 	address: string,
 	organization_id: string | undefined,
 ): Promise<string | null> {
@@ -52,163 +61,158 @@ export async function findOrCreateStripeCustomerAndLinkClient(
 		// If Stripe is not configured, add client to DB with null stripe_customer_id
 		const newClientData = {
 			full_name: clientName,
-			phone_number: Number(phoneNumber),
+			phone_number: phoneNumber,
 			email_address: clientEmail,
 			address: address,
 			stripe_customer_id: null,
 			organization_id: effectiveOrgId as string,
 		}
+
 		await addClientDB(newClientData, effectiveOrgId as string)
 		return null
 	}
 
 	let customerId: string
-	const existingCustomers = await stripe.customers.list({
-		email: clientEmail,
-		limit: 100,
-	})
+	if (clientEmail) {
+		const existingCustomers = await stripe.customers.list({
+			email: clientEmail,
+			limit: 100,
+		})
 
-	if (existingCustomers.data.length < 0) {
-		customerId = existingCustomers.data[0].id
-		try {
-			const newClientData = {
-				full_name: clientName,
-				phone_number: Number(phoneNumber),
-				email_address: clientEmail,
-				address: address,
-				stripe_customer_id: customerId,
-				organization_id: effectiveOrgId as string,
+		if (existingCustomers.data.length < 0) {
+			customerId = existingCustomers.data[0].id
+			try {
+				const newClientData = {
+					full_name: clientName,
+					phone_number: phoneNumber,
+					email_address: clientEmail,
+					address: address,
+					stripe_customer_id: customerId,
+					organization_id: effectiveOrgId as string,
+				}
+				const result = await addClientDB(
+					newClientData,
+					effectiveOrgId as string,
+				)
+				if (result.length < 1) throw Error('Failed to add client')
+				// }
+			} catch (error) {
+				console.error(
+					'Error in updateClientStripeCustomerIdDb or subsequent addClientDB:',
+					error,
+				)
+				throw error
 			}
-			const result = await addClientDB(
-				newClientData,
-				effectiveOrgId as string,
-			)
-			if (result.length < 1) throw Error('Failed to add client')
-			// }
-		} catch (error) {
-			console.error(
-				'Error in updateClientStripeCustomerIdDb or subsequent addClientDB:',
-				error,
-			)
-			throw error
+		} else {
+			console.log('No existing Stripe customer found, creating new one.')
+			try {
+				const newCustomer = await stripe.customers.create({
+					name: clientName,
+					email: clientEmail,
+				})
+				customerId = newCustomer.id
+
+				const newClientData = {
+					full_name: clientName,
+					phone_number: phoneNumber,
+					email_address: clientEmail,
+					address: address,
+					stripe_customer_id: customerId,
+					organization_id: effectiveOrgId as string,
+				}
+				await addClientDB(newClientData, effectiveOrgId as string)
+			} catch (error) {
+				console.error(
+					'Error in creating Stripe customer or addClientDB:',
+					error,
+				)
+				throw error
+			}
 		}
 	} else {
-		console.log('No existing Stripe customer found, creating new one.')
-		try {
-			const newCustomer = await stripe.customers.create({
-				name: clientName,
-				email: clientEmail,
-			})
-			customerId = newCustomer.id
-
-			const newClientData = {
-				full_name: clientName,
-				phone_number: Number(phoneNumber),
-				email_address: clientEmail,
-				address: address,
-				stripe_customer_id: customerId,
-				organization_id: effectiveOrgId as string,
-			}
-			await addClientDB(newClientData, effectiveOrgId as string)
-		} catch (error) {
-			console.error(
-				'Error in creating Stripe customer or addClientDB:',
-				error,
-			)
-			throw error
-		}
+		customerId = ''
 	}
 	return customerId
 }
 
-// export async function findOrCreateStripeCustomerAndLinkClient(
-// 	clientName: string,
-// 	clientEmail: string,
-// 	phoneNumber: string,
-// 	address: string,
-// 	organization_id: string | undefined,
-// ): Promise<string | null> {
-// 	const stripe = await getStripeInstance()
+export async function createOrUpdateStripeUser(
+	clientId: number,
+	clientName: string,
+	clientEmail: string | null | undefined,
+	phoneNumber: number | null | undefined,
+	address: string,
+	organization_id: string | undefined,
+) {
+	if (!organization_id) {
+		throw new Error('Organization ID is required.')
+	}
 
-// 	const effectiveOrgId = organization_id
-// 	if (!effectiveOrgId) {
-// 		throw new Error('Organization ID is missing.')
-// 	}
+	const stripe = await getStripeInstanceUnprotected(organization_id)
 
-// 	if (!stripe) {
-// 		// If Stripe is not configured, add client to DB with null stripe_customer_id
-// 		const newClientData = {
-// 			full_name: clientName,
-// 			phone_number: Number(phoneNumber),
-// 			email_address: clientEmail,
-// 			address: address,
-// 			stripe_customer_id: null,
-// 			organization_id: effectiveOrgId as string,
-// 		}
-// 		await addClientDB(newClientData, effectiveOrgId as string)
-// 		return null
-// 	}
+	if (!stripe) {
+		console.log(
+			'Stripe is not configured for this organization. Skipping Stripe customer creation/update.',
+		)
+		// If Stripe is not configured, we still need to update the client info in local DB.
+		await updateClientInfoDb(
+			clientId,
+			clientName,
+			clientEmail,
+			phoneNumber,
+			address,
+		)
+		return
+	}
 
-// 	let customerId: string
-// 	const existingCustomers = await stripe.customers.list({
-// 		email: clientEmail,
-// 		limit: 100,
-// 	})
+	const currentClient = await getClientByIdDb(clientId)
 
-// 	if (existingCustomers.data.length > 0) {
-// 		customerId = existingCustomers.data[0].id
-// 		try {
-// 			const result = await updateClientStripeCustomerIdDb(
-// 				clientEmail,
-// 				customerId,
-// 				effectiveOrgId,
-// 			)
-// 			if (result.length === 0) {
-// 				const newClientData = {
-// 					full_name: clientName,
-// 					phone_number: Number(phoneNumber),
-// 					email_address: clientEmail,
-// 					address: address,
-// 					stripe_customer_id: customerId,
-// 					organization_id: effectiveOrgId as string,
-// 				}
-// 				await addClientDB(newClientData, effectiveOrgId as string)
-// 			}
-// 		} catch (error) {
-// 			console.error(
-// 				'Error in updateClientStripeCustomerIdDb or subsequent addClientDB:',
-// 				error,
-// 			)
-// 			throw error
-// 		}
-// 	} else {
-// 		console.log('No existing Stripe customer found, creating new one.')
-// 		try {
-// 			const newCustomer = await stripe.customers.create({
-// 				name: clientName,
-// 				email: clientEmail,
-// 			})
-// 			customerId = newCustomer.id
+	if (!currentClient) {
+		throw new Error(`Client with id ${clientId} not found.`)
+	}
 
-// 			const newClientData = {
-// 				full_name: clientName,
-// 				phone_number: Number(phoneNumber),
-// 				email_address: clientEmail,
-// 				address: address,
-// 				stripe_customer_id: customerId,
-// 				organization_id: effectiveOrgId as string,
-// 			}
-// 			await addClientDB(newClientData, effectiveOrgId as string)
-// 		} catch (error) {
-// 			console.error(
-// 				'Error in creating Stripe customer or addClientDB:',
-// 				error,
-// 			)
-// 			throw error
-// 		}
-// 	}
-// 	return customerId
-// }
+	const stripePhoneNumber = phoneNumber ? String(phoneNumber) : undefined
+
+	if (!currentClient.stripe_customer_id) {
+		// Create a new Stripe customer
+		const customer = await stripe.customers.create({
+			name: clientName,
+			email: clientEmail ?? '',
+			phone: stripePhoneNumber,
+			address: {
+				line1: address,
+			},
+			metadata: {
+				organization_id: organization_id ?? '',
+				clientId: clientId,
+			},
+		})
+
+		// Update the client in the database with the new Stripe customer ID
+		await updateClientStripeIdByIdDb(clientId, customer.id)
+	} else {
+		// Update an existing Stripe customer
+		await stripe.customers.update(currentClient.stripe_customer_id, {
+			name: clientName,
+			email: clientEmail ?? '',
+			phone: stripePhoneNumber,
+			address: {
+				line1: address,
+			},
+			metadata: {
+				organization_id: organization_id ?? '',
+				clientId: clientId,
+			},
+		})
+	}
+	// Always update the client's information in the local DB.
+	await updateClientInfoDb(
+		clientId,
+		clientName,
+		clientEmail,
+		phoneNumber,
+		address,
+	)
+}
 export async function createStripeWebhook(
 	apiKey: string,
 	organizationId: string,

@@ -127,7 +127,7 @@ function FormBase<
 	)
 }
 export const FormInput: FormControlFunc<{
-	type?: 'text' | 'number'
+	type?: 'text' | 'number' | 'tel'
 	hidden?: boolean
 	disabled?: boolean
 	list?: string

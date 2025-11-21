@@ -1,4 +1,5 @@
 import type { OrgMember } from './clerk-types'
+import type { ParsedClientListParams } from './params-types'
 
 export interface Image {
 	id: number
@@ -19,8 +20,24 @@ export interface CustomerName {
 export interface Client {
 	id: number
 	full_name: string
-	phone_number: string
-	email_address: string
+	phone_number: number | undefined
+	email_address?: string
+	address: string
+	amount_owing: number
+	cutting_week: number
+	cutting_day: string
+	cutting_schedules: CuttingSchedule[]
+	snow_assigned_to: string
+	grass_assigned_to: string
+	images: Image[]
+	stripe_customer_id?: string
+}
+
+export interface EditClientInfo {
+	id: number
+	full_name: string
+	phone_number?: string
+	email_address?: string
 	address: string
 	amount_owing: number
 	cutting_week: number
@@ -78,8 +95,10 @@ export interface ClientResultListCLientPage {
 
 export interface ClientListServiceProps {
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
-	props: PageProps<'/lists/client'>
+	// props: PageProps<'/lists/client'>
+	clientsPromise: Promise<PaginatedClients | null>
 	orgMembersPromise?: Promise<OrgMember[]>
+	searchParamsPromise: Promise<ParsedClientListParams>
 }
 export interface CuttingSchedule {
 	cutting_week: number | null

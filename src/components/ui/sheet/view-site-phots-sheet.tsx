@@ -1,3 +1,4 @@
+import { Camera } from 'lucide-react'
 import {
 	Sheet,
 	SheetClose,
@@ -22,9 +23,10 @@ export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
 		<Sheet>
 			<SheetTrigger asChild>
 				<button
-					className="w-full text-blue-500 underline"
+					className="mx-auto flex gap-2 text-blue-500 underline"
 					type="button"
 				>
+					<Camera />
 					View Site Service Photos
 				</button>
 			</SheetTrigger>

@@ -1,4 +1,5 @@
 'use server'
+import type z from 'zod'
 import {
 	countClientsByOrgId,
 	deleteClientDB,
@@ -9,53 +10,56 @@ import {
 import { getOrganizationSettings } from '@/lib/DB/org-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import {
-	schemaAddClient,
 	schemaDeleteClient,
 	schemaDeleteSiteMap,
 	schemaUpdateCuttingDay,
 	schemaUpdatePricePerMonth,
 } from '@/lib/zod/schemas'
 import { triggerNotificationSendToAdmin } from '../utils/novu'
+import {
+	createOrUpdateStripeUser,
+	findOrCreateStripeCustomerAndLinkClient,
+} from '../utils/stripe-utils'
+import { AddClientFormSchema } from '../zod/client-schemas'
 
-import { findOrCreateStripeCustomerAndLinkClient } from '../utils/stripe-utils'
-
-export async function addClient(formData: FormData) {
-	const { orgId, userId } = await isOrgAdmin()
+export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
+	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	const organizationId = orgId || userId
-	if (!organizationId)
-		throw new Error('Organization ID or User ID is missing.')
+	if (!userId) throw new Error('Not logged in')
 
-	const orgSettings = await getOrganizationSettings(organizationId)
+	if (!isAdmin) throw new Error('Not Admin.')
+
+	const orgSettings = await getOrganizationSettings(orgId || userId)
 	if (!orgSettings) throw new Error('Organization not found.')
 
-	const clientCount = await countClientsByOrgId(organizationId)
+	const clientCount = await countClientsByOrgId(orgId || userId)
 	if (clientCount >= orgSettings.max_allowed_clients) {
 		throw new Error(
 			'Maximum number of clients reached for this organization.',
 		)
 	}
 
-	const validatedFields = schemaAddClient.safeParse({
-		full_name: formData.get('full_name'),
-		phone_number: Number(formData.get('phone_number')),
-		email_address: formData.get('email_address'),
-		address: formData.get('address'),
+	const validatedFields = AddClientFormSchema.safeParse({
+		full_name: data.full_name,
+		phone_number: data.phone_number,
+		email_address: data.email_address,
+		address: data.address,
 		organization_id: organizationId,
 	})
 
-	// console.log("validatedFields: ", validatedFields)
+	console.log('validatedFields: ', validatedFields)
 	if (!validatedFields.success) throw new Error('Invalid form data')
 
 	try {
 		const customerId = await findOrCreateStripeCustomerAndLinkClient(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
-			validatedFields.data.phone_number.toString(),
+			validatedFields.data.phone_number,
 			validatedFields.data.address,
-			organizationId,
+			orgId || userId,
 		)
 
-		triggerNotificationSendToAdmin(organizationId, 'client-added', {
+		triggerNotificationSendToAdmin(orgId || userId, 'client-added', {
 			client: {
 				name: validatedFields.data.full_name,
 				encodedName: encodeURIComponent(validatedFields.data.full_name),
@@ -67,6 +71,33 @@ export async function addClient(formData: FormData) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		throw new Error(errorMessage)
 	}
+}
+export async function updateClient(
+	data: z.infer<typeof AddClientFormSchema>,
+	clientId: number,
+) {
+	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
+
+	if (!isAdmin) throw new Error('Not Admin.')
+
+	const validatedFields = AddClientFormSchema.safeParse({
+		full_name: data.full_name,
+		phone_number: data.phone_number,
+		email_address: data.email_address,
+		address: data.address,
+	})
+
+	console.log('validatedFields: ', validatedFields)
+	if (!validatedFields.success) throw new Error('Invalid form data')
+
+	await createOrUpdateStripeUser(
+		clientId,
+		validatedFields.data.full_name,
+		validatedFields.data.email_address,
+		validatedFields.data.phone_number,
+		validatedFields.data.address,
+		(orgId ?? '') || (userId ?? ''),
+	)
 }
 
 export async function deleteClient(clientId: number) {
