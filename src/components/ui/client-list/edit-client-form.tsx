@@ -18,7 +18,7 @@ export function EditClientForm({
 	client: Client
 	setSheetOpen: (open: boolean) => void
 }) {
-	const form = useForm<z.infer<typeof AddClientFormSchema>>({
+	const form = useForm({
 		resolver: zodResolver(AddClientFormSchema),
 		defaultValues: {
 			full_name: client.full_name,
