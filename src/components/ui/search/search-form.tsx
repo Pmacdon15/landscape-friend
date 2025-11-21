@@ -38,12 +38,13 @@ export default async function SearchForm({
 					<CuttingPeriodSelector variant="day" />
 				</>
 			)}
-			{variant === 'cutting' && (
-				<>
-					<ServiceListDatePicker />
-					<ServiceStatusSelector />
-				</>
-			)}
+			{variant === 'cutting' ||
+				(variant === 'clearing' && isAdmin && (
+					<>
+						<ServiceListDatePicker />
+						<ServiceStatusSelector />
+					</>
+				))}
 			{variant === 'clearing' && <ServiceStatusSelector />}
 			{variant === 'invoices' && (
 				<BillingStatusSelector variant="invoices" />
