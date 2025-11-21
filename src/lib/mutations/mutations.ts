@@ -6,6 +6,7 @@ import {
 	addClient,
 	deleteClient,
 	deleteSiteMap,
+	updateClient,
 	updateClientPricePerMonth,
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
@@ -37,7 +38,7 @@ import {
 	updateTagAction,
 } from '../actions/revalidatePath-action'
 import type { AddClientFormSchema } from '../zod/client-schemas'
-
+//TODO: Use update tag instead of revalidate
 //MARK: Add client
 export const useAddClient = (options?: {
 	onSuccess?: () => void
@@ -46,6 +47,31 @@ export const useAddClient = (options?: {
 	return useMutation({
 		mutationFn: (data: z.infer<typeof AddClientFormSchema>) => {
 			return addClient(data)
+		},
+		onSuccess: () => {
+			revalidatePathAction('/lists/client')
+			options?.onSuccess?.()
+		},
+		onError: (error) => {
+			console.error('Mutation error:', error)
+			options?.onError?.(error)
+		},
+	})
+}
+//TODO: USE UPDATE TAG
+export const useUpdateClient = (options?: {
+	onSuccess?: () => void
+	onError?: (error: Error) => void
+}) => {
+	return useMutation({
+		mutationFn: ({
+			data,
+			clientId,
+		}: {
+			data: z.infer<typeof AddClientFormSchema>
+			clientId: number
+		}) => {
+			return updateClient(data, clientId)
 		},
 		onSuccess: () => {
 			revalidatePathAction('/lists/client')

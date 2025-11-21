@@ -1,5 +1,8 @@
 import { auth } from '@clerk/nextjs/server'
 import { cacheTag } from 'next/cache'
+import { db } from '@/lib/DB'
+import { clients } from '@/lib/DB/schema'
+import { eq } from 'drizzle-orm'
 import {
 	fetchClientListDb,
 	fetchClientsClearingGroupsDb,

@@ -16,18 +16,29 @@ export function EditSettingSheet({
 	children,
 	open,
 	onOpenChange,
+	variant = 'button',
 }: {
 	title: string | React.ReactNode
 	prompt: string
 	children: React.ReactNode
 	open?: boolean
 	onOpenChange?: (open: boolean) => void
+	variant?: 'button' | 'link'
 }) {
 	// console.log(open)
 	return (
 		<Sheet onOpenChange={onOpenChange} open={open}>
 			<SheetTrigger asChild>
-				<Button variant="outline">{title}</Button>
+				{variant === 'button' ? (
+					<Button variant="outline">{title}</Button>
+				) : (
+					<button
+						className="text-blue-500 hover:cursor-pointer underline"
+						type="button"
+					>
+						{title}
+					</button>
+				)}
 			</SheetTrigger>
 			<SheetContent>
 				<SheetHeader>

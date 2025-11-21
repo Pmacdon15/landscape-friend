@@ -1,40 +1,36 @@
 'use client'
 
-import { Plus } from 'lucide-react'
-import { use, useState } from 'react'
-import FormContainer from '../containers/form-container'
+import { Edit } from 'lucide-react'
+import { useState } from 'react'
+import type { Client } from '@/types/clients-types'
 import { EditSettingSheet } from '../sheets/edit-settings-sheet'
 import { EditClientForm } from './edit-client-form'
-import { Client } from '@/types/clients-types'
 
 export default function EditClientFormContainer({
 	client,
-	isAdminPromise,
+	isAdmin,
 }: {
 	client: Client
-	isAdminPromise?: Promise<{ isAdmin: boolean }>
+	isAdmin: boolean
 }) {
-	const isAdmin = use(isAdminPromise || Promise.resolve({ isAdmin: false }))
-
 	const [open, setOpen] = useState(false)
 
-	if (!isAdmin.isAdmin) return null
+	if (!isAdmin) return null
 	return (
-		<FormContainer>
-			<div className="flex w-full justify-end">
-				<EditSettingSheet
-					onOpenChange={setOpen}
-					open={open}
-					prompt={'Enter Client Information'}
-					title={
-						<>
-							<Plus /> Edit a Client
-						</>
-					}
-				>
-					<EditClientForm setSheetOpen={setOpen} />
-				</EditSettingSheet>
-			</div>
-		</FormContainer>
+		<div className="flex w-full justify-center">
+			<EditSettingSheet
+				onOpenChange={setOpen}
+				open={open}
+				prompt={'Enter Client Information'}
+				title={
+					<div className="flex gap-2">
+						<Edit size={20}/> Edit a Client
+					</div>
+				}
+				variant="link"
+			>
+				<EditClientForm client={client} setSheetOpen={setOpen} />
+			</EditSettingSheet>
+		</div>
 	)
 }

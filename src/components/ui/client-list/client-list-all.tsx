@@ -12,6 +12,7 @@ import { PaginationTabs } from '../pagination/pagination-tabs'
 import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
+import EditClientFormContainer from './edit-client-form-container'
 
 export default async function ClientListAll({
 	clientsPromise,
@@ -58,14 +59,11 @@ export default async function ClientListAll({
 							)}
 							<FormHeader text={client.full_name} />
 							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
-								{client.phone_number &&
-									client.phone_number !== '0' && (
-										<ClientListItemHeader
-											clientPhoneNumber={
-												client.phone_number
-											}
-										/>
-									)}
+								{client.phone_number && client.phone_number && (
+									<ClientListItemHeader
+										clientPhoneNumber={client.phone_number}
+									/>
+								)}
 								{client.email_address && (
 									<ClientListItemEmail
 										clientEmailAddress={
@@ -81,37 +79,43 @@ export default async function ClientListAll({
 								/>
 							</div>
 							{isAdmin?.isAdmin && (
-								<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+								<div className='flex flex-col items-center gap-2'>
 									<p>Amount owing: ${client.amount_owing} </p>
-									<Suspense fallback={<AssignedToFallback />}>
-										<AssignedTo
-											clientAssignedTo={
-												client.grass_assigned_to !==
-												'Unassigned'
-													? client.grass_assigned_to
-													: 'not-assigned'
-											}
-											clientId={client.id}
-											orgMembersPromise={
-												orgMembersPromise
-											}
-										/>
-									</Suspense>
-									<Suspense fallback={<AssignedToFallback />}>
-										<AssignedTo
-											clientAssignedTo={
-												client.snow_assigned_to !==
-												'Unassigned'
-													? client.snow_assigned_to
-													: 'not-assigned'
-											}
-											clientId={client.id}
-											orgMembersPromise={
-												orgMembersPromise
-											}
-											snow
-										/>
-									</Suspense>
+									<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+										<Suspense
+											fallback={<AssignedToFallback />}
+										>
+											<AssignedTo
+												clientAssignedTo={
+													client.grass_assigned_to !==
+													'Unassigned'
+														? client.grass_assigned_to
+														: 'not-assigned'
+												}
+												clientId={client.id}
+												orgMembersPromise={
+													orgMembersPromise
+												}
+											/>
+										</Suspense>
+										<Suspense
+											fallback={<AssignedToFallback />}
+										>
+											<AssignedTo
+												clientAssignedTo={
+													client.snow_assigned_to !==
+													'Unassigned'
+														? client.snow_assigned_to
+														: 'not-assigned'
+												}
+												clientId={client.id}
+												orgMembersPromise={
+													orgMembersPromise
+												}
+												snow
+											/>
+										</Suspense>
+									</div>
 								</div>
 							)}
 							<CuttingWeekDropDownContainer
@@ -121,7 +125,13 @@ export default async function ClientListAll({
 								}}
 								isAdmin={isAdmin?.isAdmin}
 							/>
-							<ViewSitePhotoSheet clientId={client.id} />
+							<div className="flex flex-col gap-2">
+								<EditClientFormContainer
+									client={client}
+									isAdmin={isAdmin?.isAdmin || false}
+								/>
+								<ViewSitePhotoSheet clientId={client.id} />
+							</div>
 							<ImageList
 								client={client}
 								isAdmin={isAdmin?.isAdmin}

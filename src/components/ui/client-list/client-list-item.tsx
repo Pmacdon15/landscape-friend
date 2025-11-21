@@ -4,7 +4,7 @@ import { ClientEmailPopover } from '@/components/ui/popovers/client-email-popove
 const ClientListItemHeader = ({
 	clientPhoneNumber,
 }: {
-	clientPhoneNumber: string
+	clientPhoneNumber: number
 }) => {
 	return (
 		<div className="relative flex w-full flex-row items-center gap-2">

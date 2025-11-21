@@ -20,7 +20,7 @@ export interface CustomerName {
 export interface Client {
 	id: number
 	full_name: string
-	phone_number?: string
+	phone_number: number | undefined
 	email_address?: string
 	address: string
 	amount_owing: number

@@ -3,29 +3,32 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import type z from 'zod'
-import { useAddClient } from '@/lib/mutations/mutations'
+import { useUpdateClient } from '@/lib/mutations/mutations'
 import { AddClientFormSchema } from '@/lib/zod/client-schemas'
+import type { Client } from '@/types/clients-types'
 import { Button } from '../button'
 import { FormInput } from '../forms/form'
 import FormHeader from '../header/form-header'
 import EllipsisSpinner from '../loaders/EllipsisSpinner'
 
 export function EditClientForm({
+	client,
 	setSheetOpen,
 }: {
+	client: Client
 	setSheetOpen: (open: boolean) => void
 }) {
 	const form = useForm<z.infer<typeof AddClientFormSchema>>({
 		resolver: zodResolver(AddClientFormSchema),
 		defaultValues: {
-			full_name: '',
-			phone_number: '',
-			email_address: '',
-			address: '',
+			full_name: client.full_name,
+			phone_number: client.phone_number,
+			email_address: client.email_address || '',
+			address: client.address,
 		},
 	})
 
-	const { mutate, isPending, isError } = useAddClient({
+	const { mutate, isPending, isError } = useUpdateClient({
 		onSuccess: () => {
 			form.reset()
 			setSheetOpen(false)
@@ -33,7 +36,7 @@ export function EditClientForm({
 	})
 
 	const onSubmit = (data: z.infer<typeof AddClientFormSchema>) => {
-		mutate(data)
+		mutate({ data, clientId: client.id })
 	}
 
 	return (
@@ -53,6 +56,7 @@ export function EditClientForm({
 					control={form.control}
 					label={'Phone Number'}
 					name={'phone_number'}
+					type='number'
 				/>
 
 				<FormInput
