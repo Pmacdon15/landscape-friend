@@ -1,17 +1,16 @@
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { use, useEffect } from 'react'
+import { use, useEffect, useMemo } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import type Stripe from 'stripe'
 import type { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { FormInput, FormSelect } from '@/components/ui/forms/form'
+import { useProductPrices } from '@/lib/hooks/useStripe'
 import { useCreateStripeQuote } from '@/lib/mutations/mutations'
 import { schemaCreateQuote } from '@/lib/zod/schemas'
 import type { CreateSubscriptionFormProps } from '@/types/forms-types'
 import Spinner from '../../loaders/spinner'
 import { AlertMessage } from '../shared/alert-message'
-import { QuoteLineItem } from './quote-line-item'
 
 export function CreateQuoteForm({
 	organizationIdPromise,
@@ -26,10 +25,10 @@ export function CreateQuoteForm({
 		})
 	const organizationId = use(organizationIdPromise)
 	const clients = use(clientsPromise)
-	let products: Stripe.Product[]
-	if (productsPromise) products = use(productsPromise)
+	// let products: Stripe.Product[]
+	const products = use(productsPromise || Promise.resolve([]))
 
-	const form = useForm<z.infer<typeof schemaCreateQuote>>({
+	const form = useForm({
 		resolver: zodResolver(schemaCreateQuote),
 		mode: 'onBlur',
 		defaultValues: {
@@ -81,9 +80,30 @@ export function CreateQuoteForm({
 			return acc + cost * units
 		}, 0) ?? 0)
 
-	const _isClientSelected = clients.some(
-		(client) => client.full_name === clientName,
-	)
+	// const materialTypes = watchedValues.materials.map((_material, index) =>
+	// 	form.watch(`materials.${index}.materialType`),
+	// )
+	// const selectedProducts = products?.filter(
+	// 	(product, index) => product.name === materialTypes[index],
+	// )
+	const materialIds = useMemo(() => {
+		return watchedValues.materials.map((material) => material.materialType)
+	}, [watchedValues.materials])
+
+	const { data: prices,  } = useProductPrices(materialIds)
+
+	useEffect(() => {
+		if (prices) {
+			Object.keys(prices).forEach((productId, index) => {
+				if (prices[productId]?.unit_amount) {
+					form.setValue(
+						`materials.${index}.materialCostPerUnit`,
+						prices[productId].unit_amount / 100,
+					)
+				}
+			})
+		}
+	}, [prices, form.setValue])
 
 	return (
 		<>
@@ -152,12 +172,36 @@ export function CreateQuoteForm({
 				<section>
 					<h3 className="mb-2 font-semibold text-md">Materials</h3>
 					{fields.map((item, index) => (
-						<div key={item.id}>
-							<QuoteLineItem
+						<div
+							className="mb-4 rounded-md border p-4"
+							key={item.id}
+						>
+							<div>
+								<FormSelect
+									control={form.control}
+									label="Material"
+									name={`materials.${index}.materialType`}
+									options={products?.map((product) => ({
+										value: product.name + product.id,
+										label: product.name,
+									}))}
+								/>
+							</div>
+
+							<FormInput
 								control={form.control}
-								index={index}
-								products={products}
-								setValue={form.setValue}
+								// disabled={prices?.[index]?.isLoading}
+								label="Material Cost (per unit)"
+								name={`materials.${index}.materialCostPerUnit`}
+								step="0.01"
+								type="number"
+							/>
+
+							<FormInput
+								control={form.control}
+								label="Material Units"
+								name={`materials.${index}.materialUnits`}
+								type="number"
 							/>
 							{fields.length > 1 && (
 								<Button

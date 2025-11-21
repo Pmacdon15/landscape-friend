@@ -1,7 +1,7 @@
-import type { Client, ClientResultListCLientPage } from '@/types/clients-types'
+import type { Client, ClientResultListClientPage } from '@/types/clients-types'
 
 export function processClientsResult(
-	clientsResult: ClientResultListCLientPage[],
+	clientsResult: ClientResultListClientPage[],
 	totalCount: number,
 	pageSize: number,
 ): { clients: Client[]; totalPages: number } {

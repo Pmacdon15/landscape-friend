@@ -76,12 +76,12 @@ export interface ClientResult {
 	images: Image[]
 }
 
-export interface ClientResultListCLientPage {
+export interface ClientResultListClientPage {
 	id: number
 	full_name: string
 	address: string
 	amount_owing: number
-	phone_number: string
+	phone_number: number
 	email_address: string
 	price_per_month_grass: number
 	price_per_month_snow: number

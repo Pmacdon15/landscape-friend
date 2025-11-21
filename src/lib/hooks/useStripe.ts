@@ -15,13 +15,35 @@ export const useIsSnowService = (serviceType: string) => {
 	return serviceType === 'snow-as-needed'
 }
 
-export const useProductPrice = (productId: string | null) => {
-	return useQuery({
-		queryKey: ['productPrice', productId],
-		queryFn: () => {
-			if (!productId) return null
-			return getProductPrice(productId)
-		},
-		enabled: !!productId, // Only run the query if productId is not null
-	})
+
+
+
+interface ProductPrice {
+  unit_amount: number | null;
+  // Add other properties as needed
 }
+
+export const useProductPrices = (productIds: (string | undefined)[]) => {
+  const filteredProductIds = productIds.filter((id): id is string => id !== null);
+
+  return useQuery({
+    queryKey: ['productPrices', filteredProductIds],
+    queryFn: async () => {
+      const prices = await Promise.all(
+        filteredProductIds.map(async (productId) => {
+          try {
+            return await getProductPrice(productId);
+          } catch (e) {
+            console.error(`Error fetching price for ${productId}:`, e);
+            return null;
+          }
+        }),
+      );
+      return filteredProductIds.reduce((acc, productId, index) => {
+        acc[productId] = prices[index];
+        return acc;
+      }, {} as Record<string, ProductPrice | null>);
+    },
+    enabled: filteredProductIds.length > 0,
+  });
+};

@@ -15,11 +15,11 @@ export function AddClientForm({
 }: {
 	setSheetOpen: (open: boolean) => void
 }) {
-	const form = useForm<z.infer<typeof AddClientFormSchema>>({
+	const form = useForm({
 		resolver: zodResolver(AddClientFormSchema),
 		defaultValues: {
 			full_name: '',
-			phone_number: '',
+			phone_number: undefined,
 			email_address: '',
 			address: '',
 		},

@@ -66,10 +66,29 @@ export const materialSchema = z.object({
 
 export const schemaCreateQuote = z.object({
 	clientName: z.string().min(3).max(25),
-	clientEmail: z.email(),
+	clientEmail: z
+		.string()
+		.refine(
+			(email) =>
+				!email ||
+				/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email),
+			{
+				message: 'Invalid email address',
+			},
+		)
+		.nullable()
+		.optional(),
 	phone_number: z
 		.string()
-		.regex(/^\d{10}$/, 'Invalid phone number format use 123456789'),
+		.trim()
+		.transform((val) => {
+			if (val === '') return null
+			const parsed = parseFloat(val)
+			return isNaN(parsed) ? null : parsed
+		})
+		.nullable()
+		.optional()
+		.pipe(z.number().nullable().optional()),
 	address: z.string().min(3),
 	labourCostPerUnit: z.number(),
 	labourUnits: z.number(),

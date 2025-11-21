@@ -12,7 +12,7 @@ import { isOrgAdmin } from '@/lib/utils/clerk'
 import type {
 	ClientInfoList,
 	ClientResult,
-	ClientResultListCLientPage,
+	ClientResultListClientPage,
 	CustomerName,
 	NamesAndEmails,
 	PaginatedClients,
@@ -45,7 +45,7 @@ export async function fetchAllClients(
 	if (!result.clientsResult) return null
 
 	const { clients, totalPages } = processClientsResult(
-		result.clientsResult as ClientResultListCLientPage[],
+		result.clientsResult as ClientResultListClientPage[],
 		result.totalCount,
 		pageSize,
 	)
