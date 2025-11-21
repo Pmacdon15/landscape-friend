@@ -37,17 +37,74 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 
 	const origin = `${userLocation.lat},${userLocation.lng}`
 
-	// Use addresses for Google Maps directions (not coordinates)
-	// This prevents reverse geocoding issues where coordinates get mapped to wrong addresses
-	const destination = encodeURIComponent(
-		geocodeResults[geocodeResults.length - 1].address,
-	)
-	const waypoints = geocodeResults
-		.slice(0, -1)
-		.map((result: GeocodeResult) => encodeURIComponent(result.address))
-		.join('|')
+	// Google Maps URL API has a limit of 10 waypoints
+	// Split routes into chunks if there are more than 10 stops
+	const MAX_WAYPOINTS = 10
+	const routeChunks: { url: string; label: string }[] = []
 
-	const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`
+	// If we have 10 or fewer addresses, create a single route
+	if (geocodeResults.length <= MAX_WAYPOINTS) {
+		const destination = encodeURIComponent(
+			geocodeResults[geocodeResults.length - 1].address,
+		)
+		const waypoints = geocodeResults
+			.slice(0, -1)
+			.map((result: GeocodeResult) => encodeURIComponent(result.address))
+			.join('|')
+
+		const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=optimize:true|${waypoints}&travelmode=driving`
+		routeChunks.push({
+			url,
+			label: `View Route (${geocodeResults.length} stops)`,
+		})
+	} else {
+		// Split into multiple routes
+		let currentIndex = 0
+		let routeNumber = 1
+
+		while (currentIndex < geocodeResults.length) {
+			// Take up to MAX_WAYPOINTS addresses for this chunk
+			const chunkSize = Math.min(
+				MAX_WAYPOINTS,
+				geocodeResults.length - currentIndex,
+			)
+			const chunk = geocodeResults.slice(
+				currentIndex,
+				currentIndex + chunkSize,
+			)
+
+			// For the first chunk, use user location as origin
+			// For subsequent chunks, use the last stop of previous chunk as origin
+			const chunkOrigin =
+				currentIndex === 0
+					? origin
+					: encodeURIComponent(
+							geocodeResults[currentIndex - 1].address,
+						)
+
+			const destination = encodeURIComponent(
+				chunk[chunk.length - 1].address,
+			)
+			const waypoints = chunk
+				.slice(0, -1)
+				.map((result: GeocodeResult) =>
+					encodeURIComponent(result.address),
+				)
+				.join('|')
+
+			const url = `https://www.google.com/maps/dir/?api=1&origin=${chunkOrigin}&destination=${destination}&waypoints=optimize:true|${waypoints}&travelmode=driving`
+
+			const startStop = currentIndex + 1
+			const endStop = currentIndex + chunkSize
+			routeChunks.push({
+				url,
+				label: `Route ${routeNumber} (Stops ${startStop}-${endStop})`,
+			})
+
+			currentIndex += chunkSize
+			routeNumber++
+		}
+	}
 
 	return (
 		<div className="relative">
@@ -59,19 +116,22 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 				title="Map View"
 				width={800}
 			/>
-			<div className="absolute top-2 right-2">
-				<a
-					href={googleMapsUrl}
-					rel="noopener noreferrer"
-					target="_blank"
-				>
-					<button
-						className="rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs hover:bg-blue-700"
-						type="button"
+			<div className="absolute top-2 right-2 flex flex-col gap-1">
+				{routeChunks.map((route, index) => (
+					<a
+						href={route.url}
+						key={index}
+						rel="noopener noreferrer"
+						target="_blank"
 					>
-						View in Google Maps
-					</button>
-				</a>
+						<button
+							className="rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs hover:bg-blue-700 whitespace-nowrap"
+							type="button"
+						>
+							{route.label}
+						</button>
+					</a>
+				))}
 			</div>
 		</div>
 	)
