@@ -1,4 +1,4 @@
--- Active: 1759456932153@@ep-snowy-poetry-adb5ubzx-pooler.c-2.us-east-1.aws.neon.tech@5432@neondb
+-- Active: 1759456932153@@ep-snowy-poetry-adb5ubzx-pooler.c-2.us-east-1.aws.neon.tech@5432@neondb@public
 DROP TABLE IF EXISTS stripe_api_keys CASCADE;
 
 DROP TABLE IF EXISTS yards_marked_cut CASCADE;
@@ -152,7 +152,7 @@ CREATE TABLE images_serviced (
     )
 );
 
--- SELECT* FROM users;
+SELECT* FROM users;
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
@@ -175,3 +175,4 @@ SELECT * FROM assignments;
 
 -- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
 -- SELECT * FROM charges;
+

@@ -100,6 +100,7 @@ export function useGetLonAndLatFromAddresses(addresses: string[]): {
 
 	useEffect(() => {
 		const fetchGeocodes = async () => {
+			setLoading(true)
 			try {
 				const results = await Promise.all(
 					addresses.map(async (address) => ({
@@ -107,6 +108,7 @@ export function useGetLonAndLatFromAddresses(addresses: string[]): {
 						result: await fetchGeocode(address),
 					})),
 				)
+				console.log(results)
 				const validResults = results
 					.filter(
 						(
