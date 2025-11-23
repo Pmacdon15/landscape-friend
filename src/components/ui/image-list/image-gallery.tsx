@@ -14,7 +14,7 @@ export default function ImageGallery({
 }: ImageGalleryProps) {
 	const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 	return (
-		<div className="relative mx-auto h-[300px] w-full overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
+		<div className="relative mx-auto h-fit w-full overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
 			{isAdmin && (
 				<div
 					className={`absolute top-1 right-1 z-10 flex flex-nowrap px-4 py-2`}
