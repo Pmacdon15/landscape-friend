@@ -20,10 +20,9 @@ export async function fetchOrgMembers(): Promise<OrgMember[]> {
 			await clerk.organizations.getOrganizationMembershipList({
 				organizationId: orgId,
 			})
-
+		console.log('Org Members: ', response)
 		// Transform OrganizationMembership objects into the simplified OrgMember type
 		const orgMembers: OrgMember[] = response.data.flatMap((member) => {
-			// console.log('Org Members: ', orgMembers)
 			const userId = member.publicUserData?.userId
 			if (!userId) {
 				return [] // Skip this member if userId is not available
