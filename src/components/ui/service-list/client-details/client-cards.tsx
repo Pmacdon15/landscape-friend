@@ -39,7 +39,7 @@ export default function ClientCards({
 	const isAdmin = use(isAdminPromise ?? Promise.resolve({ isAdmin: false }))
 	const { mutate } = useChangePriority()
 
-	// console.log('clients:', clients)
+		// console.log('clients:', clients)
 	// State for managing client order
 	const [orderedClients, setOrderedClients] = useState<ClientResult[]>(
 		clients || [],

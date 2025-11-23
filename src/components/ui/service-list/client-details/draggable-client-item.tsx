@@ -37,6 +37,7 @@ export default function DraggableClientItem({
 		opacity: isDragging ? 0.5 : 1,
 	}
 
+	
 	return (
 		<FormContainer key={client.id}>
 			<li
