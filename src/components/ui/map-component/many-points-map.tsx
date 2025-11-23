@@ -22,7 +22,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	if (!userLocation || geocodeResults.length === 0) {
 		return (
 			<FormHeader>
-				Unable to get your location or retrying...
+				Unable to get your location or retrying . . .
 			</FormHeader>
 		)
 	}

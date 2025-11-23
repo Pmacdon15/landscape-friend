@@ -36,7 +36,7 @@ export function NavBar() {
 					</SheetContent>
 				</Sheet>
 			</div>
-			{/* //TODO fix the desktop nac bar to not be behind the images */}
+			
 			{/* <div className="hidden lg:flex lg:flex-row lg:justify-start"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div> */}
 		</>
 	)

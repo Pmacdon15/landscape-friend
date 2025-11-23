@@ -12,6 +12,7 @@ import { useState } from 'react'
 import { useGetIsAdmin } from '@/lib/hooks/useClerk'
 import { useHasStripeApiKey } from '@/lib/hooks/useStripe'
 import SheetLogoHeader from '../header/sheet-logo-header'
+import { SheetClose } from '../sheet'
 
 const CollapsibleSection = ({
 	title,
@@ -64,31 +65,37 @@ export default function VerticalNav() {
 				}
 			>
 				{isAdmin && (
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/lists/client"
+						>
+							Client List
+						</Link>
+					</SheetClose>
+				)}
+				<SheetClose asChild>
 					<Link
 						className="rounded-md p-2 hover:bg-accent"
-						href="/lists/client"
+						href={{
+							pathname: '/lists/cutting',
+							query: { date: today },
+						}}
 					>
-						Client List
+						Cutting List
 					</Link>
-				)}
-				<Link
-					className="rounded-md p-2 hover:bg-accent"
-					href={{
-						pathname: '/lists/cutting',
-						query: { date: today },
-					}}
-				>
-					Cutting List
-				</Link>
-				<Link
-					className="rounded-md p-2 hover:bg-accent"
-					href={{
-						pathname: '/lists/clearing',
-						query: { date: today },
-					}}
-				>
-					Clearing List
-				</Link>
+				</SheetClose>
+				<SheetClose asChild>
+					<Link
+						className="rounded-md p-2 hover:bg-accent"
+						href={{
+							pathname: '/lists/clearing',
+							query: { date: today },
+						}}
+					>
+						Clearing List
+					</Link>
+				</SheetClose>
 			</CollapsibleSection>
 
 			{isAdmin && (
@@ -100,12 +107,14 @@ export default function VerticalNav() {
 						</>
 					}
 				>
-					<Link
-						className="rounded-md p-2 hover:bg-accent"
-						href="/email/individual"
-					>
-						Send Individual
-					</Link>
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/email/individual"
+						>
+							Send Individual
+						</Link>
+					</SheetClose>
 				</CollapsibleSection>
 			)}
 
@@ -117,30 +126,38 @@ export default function VerticalNav() {
 						</>
 					}
 				>
-					<Link
-						className="rounded-md p-2 hover:bg-accent"
-						href="/billing/create-quote"
-					>
-						Create a Quote
-					</Link>
-					<Link
-						className="rounded-md p-2 hover:bg-accent"
-						href="/billing/manage/quotes"
-					>
-						Manage Quotes
-					</Link>
-					<Link
-						className="rounded-md p-2 hover:bg-accent"
-						href="/billing/manage/invoices"
-					>
-						Manage Invoices
-					</Link>
-					<Link
-						className="rounded-md p-2 hover:bg-accent"
-						href="/billing/manage/subscriptions"
-					>
-						Manage Subscriptions
-					</Link>
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/billing/create-quote"
+						>
+							Create a Quote
+						</Link>
+					</SheetClose>
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/billing/manage/quotes"
+						>
+							Manage Quotes
+						</Link>
+					</SheetClose>
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/billing/manage/invoices"
+						>
+							Manage Invoices
+						</Link>
+					</SheetClose>
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/billing/manage/subscriptions"
+						>
+							Manage Subscriptions
+						</Link>
+					</SheetClose>
 				</CollapsibleSection>
 			)}
 
@@ -151,18 +168,22 @@ export default function VerticalNav() {
 					</>
 				}
 			>
-				<Link
-					className="rounded-md p-2 hover:bg-accent"
-					href="/documentation/plans"
-				>
-					Plans
-				</Link>
-				<Link
-					className="rounded-md p-2 hover:bg-accent"
-					href="/documentation/stripe"
-				>
-					Stripe
-				</Link>
+				<SheetClose asChild>
+					<Link
+						className="rounded-md p-2 hover:bg-accent"
+						href="/documentation/plans"
+					>
+						Plans
+					</Link>
+				</SheetClose>
+				<SheetClose asChild>
+					<Link
+						className="rounded-md p-2 hover:bg-accent"
+						href="/documentation/stripe"
+					>
+						Stripe
+					</Link>
+				</SheetClose>
 			</CollapsibleSection>
 
 			{isAdmin && (
@@ -173,14 +194,17 @@ export default function VerticalNav() {
 						</>
 					}
 				>
-					<Link
-						className="rounded-md p-2 hover:bg-accent"
-						href="/settings"
-					>
-						Manage settings
-					</Link>
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/settings"
+						>
+							Manage settings
+						</Link>
+					</SheetClose>
 				</CollapsibleSection>
 			)}
 		</nav>
 	)
 }
+
