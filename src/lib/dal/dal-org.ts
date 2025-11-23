@@ -28,6 +28,7 @@ export async function fetchOrgMembers(): Promise<OrgMember[]> {
 				return [] // Skip this member if userId is not available
 			}
 
+			console.log('Public User Data:', member.publicUserData)
 			const userName =
 				member.publicUserData?.firstName &&
 				member.publicUserData?.lastName
