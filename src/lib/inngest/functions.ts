@@ -84,7 +84,7 @@ const cutReminders = inngest.createFunction(
 )
 const snowfallCheck = inngest.createFunction(
 	{ id: 'snowfall-check', retries: 2 },
-	{ cron: '0 */4 * * *' },
+	{ cron: '0 */12 * * *' },
 	async ({ step }) => {
 		console.log('Running snowfall check function')
 		const now = new Date()
