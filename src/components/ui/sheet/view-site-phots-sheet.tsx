@@ -23,7 +23,7 @@ export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
 		<Sheet>
 			<SheetTrigger asChild>
 				<button
-					className="mx-auto flex text-blue-500 underline hover:cursor-pointer"
+					className="mx-auto flex gap-2 text-blue-500 underline hover:cursor-pointer"
 					type="button"
 				>
 					<Camera />
