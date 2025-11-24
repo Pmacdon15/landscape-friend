@@ -1,29 +1,29 @@
--- Active: 1759456932153@@ep-snowy-poetry-adb5ubzx-pooler.c-2.us-east-1.aws.neon.tech@5432@neondb@public
-DROP TABLE IF EXISTS stripe_api_keys CASCADE;
+-- -- Active: 1759456932153@@ep-snowy-poetry-adb5ubzx-pooler.c-2.us-east-1.aws.neon.tech@5432@neondb@public
+-- DROP TABLE IF EXISTS stripe_api_keys CASCADE;
 
-DROP TABLE IF EXISTS yards_marked_cut CASCADE;
+-- DROP TABLE IF EXISTS yards_marked_cut CASCADE;
 
-DROP TABLE IF EXISTS yards_marked_clear CASCADE;
+-- DROP TABLE IF EXISTS yards_marked_clear CASCADE;
 
-DROP TABLE IF EXISTS cutting_schedule CASCADE;
+-- DROP TABLE IF EXISTS cutting_schedule CASCADE;
 
-DROP TABLE IF EXISTS charges CASCADE;
+-- DROP TABLE IF EXISTS charges CASCADE;
 
-DROP TABLE IF EXISTS payments CASCADE;
+-- DROP TABLE IF EXISTS payments CASCADE;
 
-DROP TABLE IF EXISTS accounts CASCADE;
+-- DROP TABLE IF EXISTS accounts CASCADE;
 
-DROP TABLE IF EXISTS clients CASCADE;
+-- DROP TABLE IF EXISTS clients CASCADE;
 
-DROP TABLE IF EXISTS organizations CASCADE;
+-- DROP TABLE IF EXISTS organizations CASCADE;
 
-DROP TABLE IF EXISTS users CASCADE;
+-- DROP TABLE IF EXISTS users CASCADE;
 
-DROP TABLE IF EXISTS images CASCADE;
+-- DROP TABLE IF EXISTS images CASCADE;
 
-DROP TABLE IF EXISTS assignments CASCADE;
+-- DROP TABLE IF EXISTS assignments CASCADE;
 
-DROP TABLE IF EXISTS images_serviced CASCADE;
+-- DROP TABLE IF EXISTS images_serviced CASCADE;
 
 
 
@@ -122,12 +122,14 @@ CREATE TABLE yards_marked_clear (
 CREATE TABLE assignments (
     id SERIAL PRIMARY KEY,
     client_id INT NOT NULL,
+    org_id VARCHAR(150) NOT NULL,
     user_id VARCHAR(100) NOT NULL,
     priority INT NOT NULL,
     service_type VARCHAR(10) NOT NULL CHECK (service_type IN ('grass', 'snow')),
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    FOREIGN KEY (org_id) REFERENCES  organizations (organization_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    UNIQUE (client_id, service_type, priority)
+    UNIQUE (client_id, service_type, priority, org_id)
 );
 
 CREATE TABLE images (
@@ -159,9 +161,9 @@ SELECT* FROM users;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
 SELECT * FROM assignments;
--- SELECT * FROM clients;
+SELECT * FROM clients;
 -- SELECT * FROM users;
--- SELECT * FROM organizations;
+SELECT * FROM organizations;
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');
@@ -176,3 +178,6 @@ SELECT * FROM assignments;
 -- SELECT novu_subscriber_id FROM users where id = 'user_31aEmuYV7QaHGA5g3eweBq5bZSr' ;
 -- SELECT * FROM charges;
 
+-- UPDATE organizations
+-- SET max_allowed_clients = 200
+-- WHERE organization_id = 'org_35lkfCNDV6WjfG9iEKaXZRGnf4A';

@@ -2,7 +2,7 @@
 import {
 	assignSnowClearingDb,
 	unassignSnowClearingDb,
-} from '@/lib/DB/clients-db'
+} from '@/lib/DB/assignment-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import { schemaAssignSnow } from '../zod/schemas'
 
