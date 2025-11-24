@@ -12,7 +12,7 @@ export default function MapComponent({ address }: { address: string }) {
 		return <div>Error: {error.message}</div>
 	}
 
-	const { coordinates, zoom } = data
+	const { coordinates } = data
 
 	const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}`
 
