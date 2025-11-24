@@ -81,9 +81,9 @@ export default function ClientCards({
 				}
 
 				// Get the assignment
-				const assignment =
-					client.snow_assignments?.[0] ||
-					client.grass_assignments?.[0]
+				const assignment = snow
+					? client.snow_assignments?.[0]
+					: client.grass_assignments?.[0]
 
 				if (!assignment) {
 					console.error('Client has no assignments')

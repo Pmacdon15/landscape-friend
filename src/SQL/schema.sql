@@ -21,7 +21,7 @@
 
 -- DROP TABLE IF EXISTS images CASCADE;
 
--- DROP TABLE IF EXISTS assignments CASCADE;
+DROP TABLE IF EXISTS assignments CASCADE;
 
 -- DROP TABLE IF EXISTS images_serviced CASCADE;
 
