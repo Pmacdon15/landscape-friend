@@ -14,7 +14,7 @@ export default function MapComponent({ address }: { address: string }) {
 
 	const { coordinates, zoom } = data
 
-	const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}&zoom=${zoom}`
+	const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${coordinates?.lat},${coordinates?.lng}`
 
 	return (
 		<div className="flex max-h-[300px] w-full flex-col rounded-md bg-background p-2 md:flex-row">
