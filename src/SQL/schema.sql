@@ -154,16 +154,16 @@ CREATE TABLE images_serviced (
     )
 );
 
-SELECT* FROM users;
+-- SELECT* FROM users;
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
-SELECT * FROM assignments;
-SELECT * FROM clients;
+-- SELECT * FROM assignments;
+-- SELECT * FROM clients;
 -- SELECT * FROM users;
-SELECT * FROM organizations;
+-- SELECT * FROM organizations;
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');

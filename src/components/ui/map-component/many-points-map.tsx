@@ -19,33 +19,53 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 		return <div>Error: Google Maps API key is missing</div>
 	}
 
-	if (geocodeResults.length === 0) {
-		return (
-			<FormHeader>
-				Unable to get your location or retrying . . .
-			</FormHeader>
-		)
+	// If we have no addresses at all, show a message
+	if (addresses.length === 0) {
+		return <FormHeader>No addresses to display</FormHeader>
 	}
 
-	// Center the map on the user's location or the first address
-	const center = userLocation || geocodeResults[0].coordinates
-	const markers = geocodeResults
-		.map((result: GeocodeResult) => {
-			const { coordinates } = result
-			return `markers=size:mid%7Ccolor:red%7C${coordinates.lat},${coordinates.lng}`
-		})
-		.join('&')
+	// Determine if we are using geocoded results or falling back to raw addresses
+	const useGeocoded = geocodeResults.length > 0
+	const validAddresses = useGeocoded
+		? geocodeResults.map((r) => r.address)
+		: addresses
+
+	// Center the map
+	let centerParam = ''
+	if (userLocation) {
+		centerParam = `${userLocation.lat},${userLocation.lng}`
+	} else if (useGeocoded) {
+		const { lat, lng } = geocodeResults[0].coordinates
+		centerParam = `${lat},${lng}`
+	} else {
+		centerParam = encodeURIComponent(addresses[0])
+	}
+
+	// Generate markers
+	const markers = useGeocoded
+		? geocodeResults
+				.map((result: GeocodeResult) => {
+					const { coordinates } = result
+					return `markers=size:mid%7Ccolor:red%7C${coordinates.lat},${coordinates.lng}`
+				})
+				.join('&')
+		: addresses
+				.map(
+					(addr) =>
+						`markers=size:mid%7Ccolor:red%7C${encodeURIComponent(addr)}`,
+				)
+				.join('&')
 
 	// Only add user marker if we have user location
 	const userMarker = userLocation
 		? `&markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`
 		: ''
 
-	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${center.lat},${center.lng}&zoom=&size=500x200&maptype=roadmap${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerParam}&zoom=&size=500x200&maptype=roadmap${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 
 	const origin = userLocation
 		? `${userLocation.lat},${userLocation.lng}`
-		: encodeURIComponent(geocodeResults[0].address)
+		: encodeURIComponent(validAddresses[0])
 
 	// Google Maps URL API has a limit of 10 waypoints
 	// Split routes into chunks if there are more than 10 stops
@@ -53,37 +73,37 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	const routeChunks: { url: string; label: string }[] = []
 
 	// If we have 10 or fewer addresses, create a single route
-	if (geocodeResults.length <= MAX_WAYPOINTS) {
+	if (validAddresses.length <= MAX_WAYPOINTS) {
 		const destination = encodeURIComponent(
-			geocodeResults[geocodeResults.length - 1].address,
+			validAddresses[validAddresses.length - 1],
 		)
 
 		// If using user location, we include all addresses as waypoints (except destination)
 		// If using first address as origin, we skip the first address in waypoints
 		const startIndex = userLocation ? 0 : 1
 
-		const waypoints = geocodeResults
+		const waypoints = validAddresses
 			.slice(startIndex, -1)
-			.map((result: GeocodeResult) => encodeURIComponent(result.address))
+			.map((addr) => encodeURIComponent(addr))
 			.join('|')
 
 		const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`
 		routeChunks.push({
 			url,
-			label: `View Route (${geocodeResults.length} stops)`,
+			label: `View Route (${validAddresses.length} stops)`,
 		})
 	} else {
 		// Split into multiple routes
 		let currentIndex = 0
 		let routeNumber = 1
 
-		while (currentIndex < geocodeResults.length) {
+		while (currentIndex < validAddresses.length) {
 			// Take up to MAX_WAYPOINTS addresses for this chunk
 			const chunkSize = Math.min(
 				MAX_WAYPOINTS,
-				geocodeResults.length - currentIndex,
+				validAddresses.length - currentIndex,
 			)
-			const chunk = geocodeResults.slice(
+			const chunk = validAddresses.slice(
 				currentIndex,
 				currentIndex + chunkSize,
 			)
@@ -96,7 +116,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 
 			if (currentIndex > 0) {
 				chunkOrigin = encodeURIComponent(
-					geocodeResults[currentIndex - 1].address,
+					validAddresses[currentIndex - 1],
 				)
 			} else if (!userLocation) {
 				// If no user location and this is first chunk, origin is already set to first address
@@ -104,9 +124,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 				// actually the logic below handles waypoints from the chunk
 			}
 
-			const destination = encodeURIComponent(
-				chunk[chunk.length - 1].address,
-			)
+			const destination = encodeURIComponent(chunk[chunk.length - 1])
 
 			// If this is the first chunk and we're using first address as origin,
 			// we need to exclude the first address from waypoints
@@ -116,9 +134,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 			}
 
 			const waypoints = waypointsChunk
-				.map((result: GeocodeResult) =>
-					encodeURIComponent(result.address),
-				)
+				.map((addr) => encodeURIComponent(addr))
 				.join('|')
 
 			const url = `https://www.google.com/maps/dir/?api=1&origin=${chunkOrigin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`
@@ -140,7 +156,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	return (
 		<div className="relative">
 			<Image
-				alt="Map of uncut yards"
+				alt="Map of unserviced yards"
 				className="h-[200px] w-full"
 				height={800}
 				src={mapUrl}
