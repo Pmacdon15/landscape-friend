@@ -2,8 +2,6 @@ import { neon } from '@neondatabase/serverless'
 import type z from 'zod'
 import type {
 	schemaAddClient,
-	schemaAssign,
-	schemaAssignSnow,
 	schemaDeleteClient,
 	schemaDeleteSiteMap,
 	schemaMarkYardCut,
@@ -682,7 +680,10 @@ export async function fetchClientsCuttingSchedules(
 	const finalQuery = sql`
     ${query}
     ${selectQuery}
-    ORDER BY cws.id
+    ORDER BY (
+      SELECT MIN((ga->>'priority')::int)
+      FROM jsonb_array_elements(cws.grass_assignments) AS ga
+    ) NULLS LAST, cws.id
   `
 
 	const clientsResult = await finalQuery
