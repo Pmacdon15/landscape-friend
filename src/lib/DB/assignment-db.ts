@@ -10,42 +10,20 @@ export async function changePriorityDb(
 
 	const result = await sql`
     WITH target AS (
-      SELECT client_id, service_type 
+      SELECT client_id, service_type, priority 
       FROM assignments 
       WHERE id = ${assignmentId} AND org_id = ${orgId}
     ),
-    ordered AS (
-      SELECT 
-        id,
-        ROW_NUMBER() OVER (ORDER BY priority) AS pos
-      FROM assignments a
-      JOIN target t 
-        ON a.client_id = t.client_id
-       AND a.service_type = t.service_type
-       AND a.org_id = ${orgId}
-    ),
-    removed AS (
-      -- remove the target from the list
-      SELECT id
-      FROM ordered
-      WHERE id <> ${assignmentId}
-    ),
-    reinsert AS (
-      -- build the new list with the target inserted at the new position
-      SELECT id, 
-             ROW_NUMBER() OVER (ORDER BY (pos >= ${newPriority})::int, pos) AS new_pos
-      FROM (
-        SELECT id, pos FROM ordered WHERE id = ${assignmentId}
-        UNION ALL
-        SELECT id, pos FROM removed
-      ) x
-    ),
     updated AS (
       UPDATE assignments a
-      SET priority = r.new_pos
-      FROM reinsert r
-      WHERE a.id = r.id AND a.org_id = ${orgId}
-      RETURNING a.*
+      SET priority = CASE 
+        WHEN id = ${assignmentId} THEN ${newPriority}
+        WHEN priority >= ${newPriority} AND priority < (SELECT priority FROM target) THEN priority + 1
+        WHEN priority <= ${newPriority} AND priority > (SELECT priority FROM target) THEN priority - 1
+        ELSE priority
+      END
+      WHERE org_id = ${orgId} AND service_type = (SELECT service_type FROM target)
+      RETURNING *
     )
     SELECT * FROM updated WHERE id = ${assignmentId};
   `
