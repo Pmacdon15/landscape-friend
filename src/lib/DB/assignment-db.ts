@@ -1,6 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import type z from 'zod'
 import type { schemaAssign, schemaAssignSnow } from '../zod/schemas'
+
 export async function changePriorityDb(
 	orgId: string,
 	assignmentId: number,
@@ -8,25 +9,44 @@ export async function changePriorityDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	await sql`
-    UPDATE assignments
-    SET priority = priority + 1
-    WHERE org_id = ${orgId} AND service_type = 'snow' AND priority >= ${newPriority};
-  `
-
-	await sql`
-    UPDATE assignments
-    SET priority = ${newPriority}
+	const currentAssignment = await sql`
+    SELECT priority, service_type FROM assignments
     WHERE id = ${assignmentId};
   `
+
+	const currentPriority = currentAssignment[0].priority
+	const serviceType = currentAssignment[0].service_type
+
+	if (newPriority === currentPriority) {
+		return currentAssignment[0]
+	}
+
+	if (newPriority < currentPriority) {
+		await sql`
+      UPDATE assignments
+      SET priority = priority + 1
+      WHERE org_id = ${orgId} AND service_type = ${serviceType} 
+        AND priority >= ${newPriority} AND priority < ${currentPriority};
+    `
+	} else {
+		await sql`
+      UPDATE assignments
+      SET priority = priority - 1
+      WHERE org_id = ${orgId} AND service_type = ${serviceType} 
+        AND priority > ${currentPriority} AND priority <= ${newPriority};
+    `
+	}
 
 	const result = await sql`
-    SELECT * FROM assignments
-    WHERE id = ${assignmentId};
+    UPDATE assignments
+    SET priority = ${newPriority}
+    WHERE id = ${assignmentId}
+    RETURNING *;
   `
 
 	return result[0]
 }
+
 export async function assignGrassCuttingDb(
 	data: z.infer<typeof schemaAssign>,
 	organization_id: string,
