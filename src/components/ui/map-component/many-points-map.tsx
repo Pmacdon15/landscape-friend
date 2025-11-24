@@ -30,17 +30,6 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 		? geocodeResults.map((r) => r.address)
 		: addresses
 
-	// Center the map
-	let centerParam = ''
-	if (userLocation) {
-		centerParam = `${userLocation.lat},${userLocation.lng}`
-	} else if (useGeocoded) {
-		const { lat, lng } = geocodeResults[0].coordinates
-		centerParam = `${lat},${lng}`
-	} else {
-		centerParam = encodeURIComponent(addresses[0])
-	}
-
 	// Generate markers
 	const markers = useGeocoded
 		? geocodeResults
@@ -61,7 +50,8 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 		? `&markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`
 		: ''
 
-	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${centerParam}&zoom=&size=500x200&maptype=roadmap${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	// We remove center and zoom to let Google Maps auto-fit all markers
+	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=500x200&maptype=roadmap${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 
 	const origin = userLocation
 		? `${userLocation.lat},${userLocation.lng}`
