@@ -121,7 +121,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 				)
 				.join('|')
 
-			const url = `https://www.google.com/maps/dir/?api=1&origin=${chunkOrigin}&destination=${destination}&waypoints=optimize:true|${waypoints}&travelmode=driving`
+			const url = `https://www.google.com/maps/dir/?api=1&origin=${chunkOrigin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`
 
 			const startStop = currentIndex + 1
 			const endStop = currentIndex + chunkSize
