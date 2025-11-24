@@ -32,7 +32,7 @@ export default function TestMapPage() {
 					location cannot be determined (simulating laptop
 					environment).
 				</p>
-				<p className="mb-4 text-sm text-gray-600">
+				<p className="mb-4 text-gray-600 text-sm">
 					<strong>Instructions:</strong>
 					<br />
 					1. Check if the map loads below.

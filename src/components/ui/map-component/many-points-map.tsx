@@ -156,7 +156,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 						target="_blank"
 					>
 						<button
-							className="rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs hover:bg-blue-700 whitespace-nowrap"
+							className="whitespace-nowrap rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs hover:bg-blue-700"
 							type="button"
 						>
 							{route.label}
@@ -164,7 +164,6 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 					</a>
 				))}
 			</div>
-			
 		</div>
 	)
 }

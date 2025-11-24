@@ -84,7 +84,7 @@ export const schemaCreateQuote = z.object({
 		.transform((val) => {
 			if (val === '') return null
 			const parsed = parseFloat(val)
-			return isNaN(parsed) ? null : parsed
+			return Number.isNaN(parsed) ? null : parsed
 		})
 		.nullable()
 		.optional()

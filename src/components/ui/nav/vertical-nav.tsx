@@ -207,4 +207,3 @@ export default function VerticalNav() {
 		</nav>
 	)
 }
-

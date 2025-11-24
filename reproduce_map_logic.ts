@@ -16,7 +16,7 @@ const mockGeocodeResults: GeocodeResult[] = mockAddresses.map((addr, i) => ({
 }))
 
 // Mock user location (can be null)
-const userLocation = null // Simulate laptop without location
+const _userLocation = null // Simulate laptop without location
 // const userLocation = { lat: 40.7128, lng: -74.0060 }; // Simulate with location
 
 // Logic from many-points-map.tsx

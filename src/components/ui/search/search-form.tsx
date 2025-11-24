@@ -40,7 +40,7 @@ export default async function SearchForm({
 			)}
 			{variant === 'cutting' && (
 				<>
-					{isAdmin&&<ServiceListDatePicker />}
+					{isAdmin && <ServiceListDatePicker />}
 					<ServiceStatusSelector />
 				</>
 			)}

@@ -90,7 +90,7 @@ export function CreateQuoteForm({
 		return watchedValues.materials.map((material) => material.materialType)
 	}, [watchedValues.materials])
 
-	const { data: prices,  } = useProductPrices(materialIds)
+	const { data: prices } = useProductPrices(materialIds)
 
 	useEffect(() => {
 		if (prices) {

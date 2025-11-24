@@ -36,7 +36,7 @@ export function NavBar() {
 					</SheetContent>
 				</Sheet>
 			</div>
-			
+
 			{/* <div className="hidden lg:flex lg:flex-row lg:justify-start"><Suspense><NavigationMenuComponent userId={userId} /></Suspense></div> */}
 		</>
 	)

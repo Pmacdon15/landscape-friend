@@ -33,7 +33,7 @@ export async function fetchOrgMembers(): Promise<OrgMember[]> {
 				member.publicUserData?.firstName &&
 				member.publicUserData?.lastName
 					? `${member.publicUserData.firstName} ${member.publicUserData.lastName}`
-					: member.publicUserData?.identifier ?? null
+					: (member.publicUserData?.identifier ?? null)
 
 			return [
 				{

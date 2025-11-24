@@ -3,7 +3,6 @@
 import { auth } from '@clerk/nextjs/server'
 
 export async function fetchGeocode(address: string) {
-	
 	await auth.protect()
 	try {
 		const response = await fetch(
