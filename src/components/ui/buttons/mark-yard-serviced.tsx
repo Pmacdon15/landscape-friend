@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useRef, useState } from 'react'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
+import Spinner from '../loaders/spinner'
 
 export default function MarkYardServiced({
 	clientId,
@@ -157,7 +158,7 @@ export default function MarkYardServiced({
 						}
 						variant={'outline'}
 					>
-						Mark Yard Serviced
+						Mark Yard Serviced{isPending && <Spinner />}
 					</Button>
 				</>
 			)}
