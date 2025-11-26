@@ -80,6 +80,7 @@ export default function MarkYardServiced({
 
 	function isMobileDevice() {
 		return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		// return true
 	}
 
 	async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -123,11 +124,11 @@ export default function MarkYardServiced({
 					required
 					type="file"
 				/>
-				<div className="flex select-none flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-3 shadow-sm transition duration-300 ease-in-out hover:bg-green-200">
-					<div className="text-6xl">📸</div>
+				<div className="flex select-none flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-2 shadow-sm transition duration-300 ease-in-out hover:bg-green-200">
+					<div className="text-4xl">📸</div>
 					<div className="max-w-full truncate px-2">
 						{images.length === 0
-							? 'Take a photo to complete the service'
+							? 'Mark service complete'
 							: 'Add more photos'}
 					</div>
 				</div>
