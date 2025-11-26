@@ -89,7 +89,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
   return (
     <div className="relative">
       <Image
-        alt="Map of unserviced yards"
+        alt="Map of un-serviced yards"
         className="h-[200px] w-full"
         height={800}
         src={mapUrl}

@@ -73,26 +73,33 @@ export default function ClientCards({
 
 				const newOrder = arrayMove(items, oldIndex, newIndex)
 
-				const client = items.find((item) => item.id === active.id)
+				const draggedClient = items.find(
+					(item) => item.id === active.id,
+				)
+				const targetClient = items.find((item) => item.id === over.id)
 
-				if (!client) {
+				if (!draggedClient || !targetClient) {
 					console.error('Client not found')
 					return newOrder
 				}
 
-				// Get the assignment
-				const assignment = snow
-					? client.snow_assignments?.[0]
-					: client.grass_assignments?.[0]
+				// Get the assignment of the dragged client
+				const draggedAssignment = snow
+					? draggedClient.snow_assignments?.[0]
+					: draggedClient.grass_assignments?.[0]
 
-				if (!assignment) {
+				// Get the priority of the target client
+				const targetAssignment = snow
+					? targetClient.snow_assignments?.[0]
+					: targetClient.grass_assignments?.[0]
+
+				if (!draggedAssignment || !targetAssignment) {
 					console.error('Client has no assignments')
 					return newOrder
 				}
 
-				// Get the assignment ID and new priority
-				const assignmentId = assignment.id
-				const newPriority = newIndex + 1 // assuming priorities start from 1
+				const assignmentId = draggedAssignment.id
+				const newPriority = targetAssignment.priority
 
 				// Call the mutate function
 				mutate({ assignmentId, priority: newPriority })
@@ -101,6 +108,7 @@ export default function ClientCards({
 					clientId: active.id,
 					oldPosition: oldIndex,
 					newPosition: newIndex,
+					newPriority,
 				})
 
 				return newOrder
