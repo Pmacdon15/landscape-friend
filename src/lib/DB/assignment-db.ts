@@ -132,11 +132,11 @@ export async function assignSnowClearingDb(
 		SELECT client_id, priority FROM assignments
 		WHERE org_id = ${organization_id} AND service_type = 'snow'
 	`
-	console.log('All assignments for org:', allAssignmentsForOrg);
+	console.log('All assignments for org:', allAssignmentsForOrg)
 
-	const priorities = allAssignmentsForOrg.map(a => a.priority);
-	const maxPriority = Math.max(0, ...priorities);
-	const nextPriority = maxPriority + 1;
+	const priorities = allAssignmentsForOrg.map((a) => a.priority)
+	const maxPriority = Math.max(0, ...priorities)
+	const nextPriority = maxPriority + 1
 
 	console.log('Next priority:', nextPriority)
 

@@ -7,7 +7,7 @@ export async function changePriority(assignmentId: number, priority: number) {
 	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
 	try {
-		await changePriorityDb(orgId||userId, assignmentId, priority)
+		await changePriorityDb(orgId || userId, assignmentId, priority)
 	} catch (error) {
 		console.error('Error changing priority:', error)
 	}

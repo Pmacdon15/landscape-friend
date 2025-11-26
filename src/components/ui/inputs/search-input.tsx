@@ -8,9 +8,9 @@ export function SearchInput() {
 	const { searchTerm, setSearchTerm } = useSearchInput()
 
 	return (
-		<div className="flex items-center sm:w-1/2 md:w-2/6">
+		<div className="relative sm:w-1/2 md:w-2/6">
 			<Input
-				className="grow p-2 focus:outline-none"
+				className="w-full p-2 pr-8 focus:outline-none"
 				name="search"
 				onChange={(e) => setSearchTerm(e.target.value)}
 				placeholder="Search"
@@ -18,7 +18,7 @@ export function SearchInput() {
 			/>
 			{searchTerm && (
 				<button
-					className="p-2 text-gray-500 hover:text-gray-700"
+					className="-translate-y-1/2 absolute top-1/2 right-2 rounded-sm p-0.5 text-gray-500 hover:border hover:text-gray-700"
 					onClick={() => setSearchTerm('')}
 					type="button"
 				>

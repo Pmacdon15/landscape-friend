@@ -1,9 +1,4 @@
-// 'use client'
-
-// import { useFetchGeocode } from '@/lib/hooks/hooks'
-
 export default function MapComponent({ address }: { address: string }) {
-	
 	const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${address}`
 
 	return (

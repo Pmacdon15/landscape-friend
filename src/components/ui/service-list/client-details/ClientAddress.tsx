@@ -11,7 +11,11 @@ const ClientAddress: React.FC<ClientAddressProps> = ({ address }) => {
 	const [isShowing, setIsShowing] = useState(false)
 	return (
 		<>
-			<button className="flex w-full items-center justify-center gap-2" onClick={() => setIsShowing(!isShowing)} type='button'>
+			<button
+				className="flex w-full items-center justify-center gap-2"
+				onClick={() => setIsShowing(!isShowing)}
+				type="button"
+			>
 				<Image
 					alt="Address Icon"
 					className="h-8 w-8"

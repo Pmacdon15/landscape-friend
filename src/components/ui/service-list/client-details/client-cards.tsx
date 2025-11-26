@@ -100,7 +100,7 @@ export default function ClientCards({
 				console.log('Client order changed:', {
 					clientId: active.id,
 					oldPosition: oldIndex,
-					newPosition: newIndex,					
+					newPosition: newIndex,
 				})
 
 				return newOrder
