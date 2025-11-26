@@ -1,15 +1,10 @@
-import { useQuery } from '@tanstack/react-query'
 import { useRouter, useSearchParams } from 'next/navigation'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import type { UseFormReset } from 'react-hook-form'
 import type { MaterialField } from '@/types/components-types'
-import type {
-	FetchGeocodeResult,
-	GeocodeResult,
-	Location,
-} from '@/types/google-map-iframe-types'
-import { fetchGeocode } from '../actions/geo-codes-action'
+import type { Location } from '@/types/google-map-iframe-types'
+// import { fetchGeocode } from '../actions/geo-codes-action'
 
 export const useDebouncedMutation = <TData>(
 	mutate: (data: TData) => void,
@@ -91,60 +86,60 @@ export function useGetLocation(): { userLocation: Location | null } {
 	return { userLocation }
 }
 
-export function useGetLonAndLatFromAddresses(addresses: string[]): {
-	loading: boolean
-	geocodeResults: GeocodeResult[]
-} {
-	const [geocodeResults, setGeocodeResults] = useState<GeocodeResult[]>([])
-	const [loading, setLoading] = useState(true)
+// export function useGetLonAndLatFromAddresses(addresses: string[]): {
+// 	loading: boolean
+// 	geocodeResults: GeocodeResult[]
+// } {
+// 	const [geocodeResults, setGeocodeResults] = useState<GeocodeResult[]>([])
+// 	const [loading, setLoading] = useState(true)
 
-	useEffect(() => {
-		const fetchGeocodes = async () => {
-			setLoading(true)
-			try {
-				const results = await Promise.all(
-					addresses.map(async (address) => ({
-						address,
-						result: await fetchGeocode(address),
-					})),
-				)
-				console.log(results)
-				const validResults = results
-					.filter(
-						(
-							item,
-						): item is {
-							address: string
-							result: FetchGeocodeResult & {
-								coordinates: Location
-							}
-						} =>
-							!!item.result.coordinates &&
-							item.result.error === false,
-					)
-					.map(
-						(item): GeocodeResult => ({
-							address: item.address,
-							coordinates: item.result.coordinates,
-							error:
-								typeof item.result.error === 'string'
-									? item.result.error
-									: undefined,
-							zoom: item.result.zoom,
-						}),
-					)
-				setGeocodeResults(validResults)
-				setLoading(false)
-			} catch (error) {
-				console.error('Geocode error:', error)
-				setLoading(false)
-			}
-		}
-		fetchGeocodes()
-	}, [addresses])
+// 	useEffect(() => {
+// 		const fetchGeocodes = async () => {
+// 			setLoading(true)
+// 			try {
+// 				const results = await Promise.all(
+// 					addresses.map(async (address) => ({
+// 						address,
+// 						result: await fetchGeocode(address),
+// 					})),
+// 				)
+// 				console.log(results)
+// 				const validResults = results
+// 					.filter(
+// 						(
+// 							item,
+// 						): item is {
+// 							address: string
+// 							result: FetchGeocodeResult & {
+// 								coordinates: Location
+// 							}
+// 						} =>
+// 							!!item.result.coordinates &&
+// 							item.result.error === false,
+// 					)
+// 					.map(
+// 						(item): GeocodeResult => ({
+// 							address: item.address,
+// 							coordinates: item.result.coordinates,
+// 							error:
+// 								typeof item.result.error === 'string'
+// 									? item.result.error
+// 									: undefined,
+// 							zoom: item.result.zoom,
+// 						}),
+// 					)
+// 				setGeocodeResults(validResults)
+// 				setLoading(false)
+// 			} catch (error) {
+// 				console.error('Geocode error:', error)
+// 				setLoading(false)
+// 			}
+// 		}
+// 		fetchGeocodes()
+// 	}, [addresses])
 
-	return { loading, geocodeResults }
-}
+// 	return { loading, geocodeResults }
+// }
 
 export function useMediaQuery(query: string) {
 	const [matches, setMatches] = useState(false)
@@ -296,9 +291,9 @@ export function useResetFormOnSuccess<T extends object>(
 	}, [isSuccess, reset, submittedData])
 }
 
-export const useFetchGeocode = (address: string) => {
-	return useQuery({
-		queryKey: ['geocodes', address],
-		queryFn: () => fetchGeocode(address),
-	})
-}
+// export const useFetchGeocode = (address: string) => {
+// 	return useQuery({
+// 		queryKey: ['geocodes', address],
+// 		queryFn: () => fetchGeocode(address),
+// 	})
+// }
