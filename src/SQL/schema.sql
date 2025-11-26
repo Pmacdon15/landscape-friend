@@ -160,6 +160,18 @@ CREATE TABLE images_serviced (
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
 -- SELECT * FROM cutting_schedule;
 -- SELECT * FROM clients;
+
+-- SELECT 
+--   c.full_name, 
+--   c.address, 
+--   a.priority, 
+--   a.user_id AS assigned_to
+-- FROM 
+--   clients c
+-- JOIN 
+--   assignments a ON c.id = a.client_id
+-- WHERE 
+--   a.org_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
 -- SELECT * FROM assignments;
 -- SELECT * FROM clients;
 -- SELECT * FROM users;

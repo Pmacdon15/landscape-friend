@@ -100,9 +100,7 @@ export default function ClientCards({
 				console.log('Client order changed:', {
 					clientId: active.id,
 					oldPosition: oldIndex,
-					newPosition: newIndex,
-					message:
-						'Add your mutation call here to persist the new order',
+					newPosition: newIndex,					
 				})
 
 				return newOrder
