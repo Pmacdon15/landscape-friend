@@ -79,8 +79,8 @@ export default function MarkYardServiced({
 	}
 
 	function isMobileDevice() {
-		// return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-		return true
+		return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		// return true
 	}
 
 	async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
