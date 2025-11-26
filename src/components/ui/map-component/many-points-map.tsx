@@ -9,11 +9,8 @@ import FormHeader from '../header/form-header'
 
 export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	const { userLocation } = useGetLocation()
-	const { loading, geocodeResults } = useGetLonAndLatFromAddresses(addresses)
+	const { geocodeResults } = useGetLonAndLatFromAddresses(addresses)
 
-	if (loading) {
-		return <FormHeader text="Loading . . ." />
-	}
 
 	if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
 		return <div>Error: Google Maps API key is missing</div>

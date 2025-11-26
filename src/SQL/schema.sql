@@ -172,7 +172,7 @@ CREATE TABLE images_serviced (
 --   assignments a ON c.id = a.client_id
 -- WHERE 
 --   a.org_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
--- SELECT * FROM assignments;
+SELECT * FROM assignments;
 -- SELECT * FROM clients;
 -- SELECT * FROM users;
 -- SELECT * FROM organizations;
