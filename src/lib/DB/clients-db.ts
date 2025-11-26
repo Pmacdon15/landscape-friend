@@ -363,7 +363,7 @@ export async function fetchClientsClearingGroupsDb(
     WHERE i.customerid = cwa.id
   ) img ON TRUE
   WHERE cwa.id IN (${selectQuery})
-  ORDER BY (SELECT MIN((sa->>'priority')::int) FROM jsonb_array_elements(cwa.snow_assignments) AS sa)
+  ORDER BY (SELECT MIN((sa->>'priority')::int) FROM jsonb_array_elements(cwa.snow_assignments) AS sa) NULLS LAST, cwa.id
 `
 
 	const clientsResult = await clientsQuery
