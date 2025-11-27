@@ -3,6 +3,9 @@ import Image from 'next/image'
 import { useGetLocation } from '@/lib/hooks/hooks'
 import type { MapComponentProps } from '@/types/google-map-iframe-types'
 import FormHeader from '../header/form-header'
+const MAX_STATIC_MARKERS = 15;
+
+// Slice the array to include only the first 15 addresses.
 
 export default function ManyPointsMap({ addresses }: MapComponentProps) {
   const { userLocation } = useGetLocation()
@@ -15,7 +18,9 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     return <FormHeader>No addresses to display</FormHeader>
   }
 
-  const markers = addresses
+  const addressesForStaticMap = addresses.slice(0, MAX_STATIC_MARKERS);
+  
+  const markers = addressesForStaticMap
     .map((addr) => `markers=size:mid%7Ccolor:red%7C${encodeURIComponent(addr)}`)
     .join('&')
 
