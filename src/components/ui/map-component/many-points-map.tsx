@@ -1,11 +1,53 @@
 'use client'
-import Image from 'next/image'
 import { useGetLocation } from '@/lib/hooks/hooks'
 import type { MapComponentProps } from '@/types/google-map-iframe-types'
+import { useLoadScript } from '@react-google-maps/api'
 import FormHeader from '../header/form-header'
+import { useEffect, useRef } from 'react'
+
+const libraries: ('places' | 'drawing' | 'geometry')[] = ['places']
 
 export default function ManyPointsMap({ addresses }: MapComponentProps) {
   const { userLocation } = useGetLocation()
+  const mapRef = useRef<HTMLDivElement>(null)
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+    libraries,
+  })
+
+  useEffect(() => {
+    if (isLoaded && mapRef.current) {
+      const map = new google.maps.Map(mapRef.current, {
+        center: { lat: 37.7749, lng: -122.4194 },
+        zoom: 12,
+      })
+
+      addresses.forEach((address) => {
+        const geocoder = new google.maps.Geocoder()
+        geocoder.geocode({ address }, (results, status) => {
+          if (status === 'OK') {
+            const marker = new google.maps.Marker({
+              map,
+              position: results[0].geometry.location,
+            })
+          } else {
+            console.error('Geocode was not successful for the following reason:', status)
+          }
+        })
+      })
+
+      if (userLocation) {
+        const userMarker = new google.maps.Marker({
+          map,
+          position: { lat: userLocation.lat, lng: userLocation.lng },
+          icon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+          },
+        })
+      }
+    }
+  }, [isLoaded, addresses, userLocation])
 
   if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
     return <div>Error: Google Maps API key is missing</div>
@@ -15,15 +57,13 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     return <FormHeader>No addresses to display</FormHeader>
   }
 
-  const markers = addresses
-    .map((addr) => `markers=size:mid%7Ccolor:red%7C${encodeURIComponent(addr)}`)
-    .join('&')
+  if (loadError) {
+    return <div>Error loading maps</div>
+  }
 
-  const userMarker = userLocation
-    ? `&markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`
-    : ''
-
-  const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=500x200&maptype=roadmap${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+  if (!isLoaded) {
+    return <div>Loading...</div>
+  }
 
   const origin = userLocation ? `${userLocation.lat},${userLocation.lng}` : encodeURIComponent(addresses[0])
 
@@ -84,17 +124,11 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
     }
   }
 
-  console.log('Generated Route Chunks:', routeChunks)
-
   return (
     <div className="relative">
-      <Image
-        alt="Map of un-serviced yards"
-        className="h-[200px] w-full"
-        height={800}
-        src={mapUrl}
-        title="Map View"
-        width={800}
+      <div
+        ref={mapRef}
+        style={{ height: '200px', width: '100%' }}
       />
       <div className="absolute top-2 right-2 flex flex-col gap-1">
         {routeChunks.map((route, index) => (
