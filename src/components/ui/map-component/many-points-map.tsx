@@ -1,9 +1,9 @@
 'use client'
+import { useLoadScript } from '@react-google-maps/api'
+import { useEffect, useRef } from 'react'
 import { useGetLocation } from '@/lib/hooks/hooks'
 import type { MapComponentProps } from '@/types/google-map-iframe-types'
-import { useLoadScript } from '@react-google-maps/api'
 import FormHeader from '../header/form-header'
-import { useEffect, useRef } from 'react'
 
 const libraries: ('places' | 'drawing' | 'geometry')[] = ['places']
 
@@ -27,8 +27,8 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
         const geocoder = new google.maps.Geocoder()
         geocoder.geocode({ address }, (results, status) => {
           if (status === 'OK' && results) {
-            const icon = document.createElement('img');
-            icon.src = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+            const icon = document.createElement('img')
+            icon.src = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
 
             new google.maps.marker.AdvancedMarkerElement({
               map,
@@ -42,8 +42,8 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
       })
 
       if (userLocation) {
-        const icon = document.createElement('img');
-        icon.src = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+        const icon = document.createElement('img')
+        icon.src = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
 
         new google.maps.marker.AdvancedMarkerElement({
           map,
@@ -131,18 +131,10 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 
   return (
     <div className="relative">
-      <div
-        ref={mapRef}
-        style={{ height: '200px', width: '100%' }}
-      />
+      <div ref={mapRef} style={{ height: '200px', width: '100%' }} />
       <div className="absolute top-2 right-2 flex flex-col gap-1">
         {routeChunks.map((route, index) => (
-          <a
-            href={route.url}
-            key={index}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
+          <a href={route.url} key={index} rel="noopener noreferrer" target="_blank">
             <button
               className="whitespace-nowrap rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs hover:bg-blue-700"
               type="button"
