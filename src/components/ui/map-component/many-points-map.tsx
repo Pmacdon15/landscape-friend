@@ -1,149 +1,156 @@
 'use client'
-import { useLoadScript } from '@react-google-maps/api'
-import { useEffect, useRef } from 'react'
-import { useGetLocation } from '@/lib/hooks/hooks'
-import type { MapComponentProps } from '@/types/google-map-iframe-types'
+
+import { GoogleMap, LoadScript, MarkerF } from '@react-google-maps/api'
 import FormHeader from '../header/form-header'
 
-const libraries: ('places' | 'drawing' | 'geometry')[] = ['places']
+// --- 1. Define and Export the Prop Types ---
 
-export default function ManyPointsMap({ addresses }: MapComponentProps) {
-  const { userLocation } = useGetLocation()
-  const mapRef = useRef<HTMLDivElement>(null)
+// A helper function to safely check if a coordinate value is a valid, finite number
+const isValidCoordinate = (value: number | undefined): value is number =>
+	typeof value === 'number' && isFinite(value) && value !== null
 
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
-    libraries,
-  })
+// The structure for a single address point (with pre-geocoded coordinates)
+interface AddressPoint {
+	address: string
+	lat: number
+	lng: number
+}
 
-  useEffect(() => {
-    if (isLoaded && mapRef.current) {
-      const map = new google.maps.Map(mapRef.current, {
-        center: { lat: 37.7749, lng: -122.4194 },
-        zoom: 12,
-      })
+// The structure for the user's location
+interface UserLocation {
+	lat: number
+	lng: number
+}
 
-      addresses.forEach((address) => {
-        const geocoder = new google.maps.Geocoder()
-        geocoder.geocode({ address }, (results, status) => {
-          if (status === 'OK' && results) {
-            const icon = document.createElement('img')
-            icon.src = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+// The unified type for map markers (icon is optional)
+interface CustomMarker {
+	id: string | number
+	position: { lat: number; lng: number }
+	title: string
+	icon?: string
+}
 
-            new google.maps.marker.AdvancedMarkerElement({
-              map,
-              position: results[0].geometry.location,
-              content: icon,
-            })
-          } else {
-            console.error('Geocode was not successful for the following reason:', status)
-          }
-        })
-      })
+// The main component props type
+export interface MapComponentProps {
+	addresses: AddressPoint[]
+	// Assuming useGetLocation returns an object matching UserLocation or null
+	userLocation: UserLocation | null
+}
+// -------------------------------------------
 
-      if (userLocation) {
-        const icon = document.createElement('img')
-        icon.src = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+const containerStyle = {
+	width: '100%',
+	height: '400px', // Increased height for better visibility
+}
 
-        new google.maps.marker.AdvancedMarkerElement({
-          map,
-          position: { lat: userLocation.lat, lng: userLocation.lng },
-          content: icon,
-        })
-      }
-    }
-  }, [isLoaded, addresses, userLocation])
+// Libraries array should be defined outside the component to prevent reload warnings
+const LIBRARIES: ('places' | 'drawing' | 'geometry' | 'visualization')[] = [
+	'places', // Add common libraries needed
+]
 
-  if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
-    return <div>Error: Google Maps API key is missing</div>
-  }
+// Apply the MapComponentProps type
+export default function ManyPointsMap({
+	addresses,
+	userLocation,
+}: MapComponentProps) {
+	if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+		return <div>Error: Google Maps API key is missing</div>
+	}
 
-  if (addresses.length === 0) {
-    return <FormHeader>No addresses to display</FormHeader>
-  }
+	if (addresses.length === 0) {
+		return <FormHeader>No addresses to display</FormHeader>
+	}
 
-  if (loadError) {
-    return <div>Error loading maps</div>
-  }
+	// --- 2. Calculate Safe Map Center (Fixes setCenter InvalidValueError) ---
 
-  if (!isLoaded) {
-    return <div>Loading...</div>
-  }
+	let centerLat = 0
+	let centerLng = 0
+	let isCenterValid = false
 
-  const origin = userLocation ? `${userLocation.lat},${userLocation.lng}` : encodeURIComponent(addresses[0])
+	// 1. Try to use user location
+	if (
+		userLocation &&
+		isValidCoordinate(userLocation.lat) &&
+		isValidCoordinate(userLocation.lng)
+	) {
+		centerLat = userLocation.lat
+		centerLng = userLocation.lng
+		isCenterValid = true
+	}
+	// 2. Otherwise, try to use the first address's coordinates
+	else if (
+		addresses.length > 0 &&
+		isValidCoordinate(addresses[0].lat) &&
+		isValidCoordinate(addresses[0].lng)
+	) {
+		centerLat = addresses[0].lat
+		centerLng = addresses[0].lng
+		isCenterValid = true
+	}
 
-  const MAX_WAYPOINTS = 10
-  const routeChunks: { url: string; label: string }[] = []
+	// Set a safe fallback center (e.g., a known, reliable coordinate)
+	const defaultCenter = isCenterValid
+		? { lat: centerLat, lng: centerLng }
+		: { lat: 34.0522, lng: -118.2437 } // Example fallback to Los Angeles, CA
 
-  if (addresses.length <= MAX_WAYPOINTS) {
-    const destination = encodeURIComponent(addresses[addresses.length - 1])
+	// --- 3. Prepare Marker Data (Fixes setPosition InvalidValueError) ---
 
-    const startIndex = userLocation ? 0 : 1
+	// Create markers from addresses, only including those with valid coordinates
+	const addressMarkers: CustomMarker[] = addresses
+		.filter(
+			(addr) =>
+				isValidCoordinate(addr.lat) && isValidCoordinate(addr.lng),
+		)
+		.map((addr: AddressPoint, index: number) => ({
+			id: index,
+			position: { lat: addr.lat, lng: addr.lng },
+			title: addr.address,
+		}))
 
-    const waypoints = addresses
-      .slice(startIndex, -1)
-      .map((addr) => encodeURIComponent(addr))
-      .join('|')
+	// Build the array of all markers, including the optional user marker.
+	let allMarkers: CustomMarker[] = addressMarkers
 
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`
-    routeChunks.push({
-      url,
-      label: `View Route (${addresses.length} stops)`,
-    })
-  } else {
-    let currentIndex = 0
-    let routeNumber = 1
+	if (
+		userLocation &&
+		isValidCoordinate(userLocation.lat) &&
+		isValidCoordinate(userLocation.lng)
+	) {
+		// Prepend user marker if location is valid
+		allMarkers = [
+			{
+				id: 'user-location',
+				position: { lat: userLocation.lat, lng: userLocation.lng },
+				title: 'Your Location',
+				icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png', // A standard blue pin URL
+			},
+			...addressMarkers,
+		]
+	}
 
-    while (currentIndex < addresses.length) {
-      const chunkSize = Math.min(MAX_WAYPOINTS, addresses.length - currentIndex)
-      const chunk = addresses.slice(currentIndex, currentIndex + chunkSize)
-
-      let chunkOrigin = origin
-
-      if (currentIndex > 0) {
-        chunkOrigin = encodeURIComponent(addresses[currentIndex - 1])
-      }
-
-      const destination = encodeURIComponent(chunk[chunk.length - 1])
-
-      let waypointsChunk = chunk.slice(0, -1)
-      if (currentIndex === 0 && !userLocation) {
-        waypointsChunk = chunk.slice(1, -1)
-      }
-
-      const waypoints = waypointsChunk
-        .map((addr) => encodeURIComponent(addr))
-        .join('|')
-
-      const url = `https://www.google.com/maps/dir/?api=1&origin=${chunkOrigin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`
-
-      const startStop = currentIndex + 1
-      const endStop = currentIndex + chunkSize
-      routeChunks.push({
-        url,
-        label: `Route ${routeNumber} (Stops ${startStop}-${endStop})`,
-      })
-
-      currentIndex += chunkSize
-      routeNumber++
-    }
-  }
-
-  return (
-    <div className="relative">
-      <div ref={mapRef} style={{ height: '200px', width: '100%' }} />
-      <div className="absolute top-2 right-2 flex flex-col gap-1">
-        {routeChunks.map((route, index) => (
-          <a href={route.url} key={index} rel="noopener noreferrer" target="_blank">
-            <button
-              className="whitespace-nowrap rounded bg-blue-500 px-2 py-1 font-bold text-white text-xs hover:bg-blue-700"
-              type="button"
-            >
-              {route.label}
-            </button>
-          </a>
-        ))}
-      </div>
-    </div>
-  )
+	return (
+		// LoadScript usage is corrected (removed invalid 'as' and 'string' props)
+		<LoadScript
+			googleMapsApiKey={
+				process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string
+			}
+			libraries={LIBRARIES}
+		>
+			<GoogleMap
+				center={defaultCenter}
+				mapContainerStyle={containerStyle}
+				zoom={10}
+				// You might want to use the 'options' prop to set default map options
+			>
+				{/* Render only the markers that passed the coordinate checks */}
+				{allMarkers.map((marker) => (
+					<MarkerF
+						icon={marker.icon}
+						key={marker.id}
+						position={marker.position}
+						title={marker.title}
+					/>
+				))}
+			</GoogleMap>
+		</LoadScript>
+	)
 }
