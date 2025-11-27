@@ -26,10 +26,14 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
       addresses.forEach((address) => {
         const geocoder = new google.maps.Geocoder()
         geocoder.geocode({ address }, (results, status) => {
-          if (status === 'OK') {
-            const marker = new google.maps.Marker({
+          if (status === 'OK' && results) {
+            const icon = document.createElement('img');
+            icon.src = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
+
+            new google.maps.marker.AdvancedMarkerElement({
               map,
               position: results[0].geometry.location,
+              content: icon,
             })
           } else {
             console.error('Geocode was not successful for the following reason:', status)
@@ -38,12 +42,13 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
       })
 
       if (userLocation) {
-        const userMarker = new google.maps.Marker({
+        const icon = document.createElement('img');
+        icon.src = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+
+        new google.maps.marker.AdvancedMarkerElement({
           map,
           position: { lat: userLocation.lat, lng: userLocation.lng },
-          icon: {
-            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-          },
+          content: icon,
         })
       }
     }
