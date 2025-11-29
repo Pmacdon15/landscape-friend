@@ -42,14 +42,13 @@ export default async function SearchForm({
 			)}
 			{variant === 'cutting' && (
 				<>
-					{isAdmin && <ServiceListDatePicker />}
+					<ServiceListDatePicker />
 					<ServiceStatusSelector />
 				</>
 			)}
 			{variant === 'clearing' && (
 				<>
-					<ServiceStatusSelector />{' '}
-					{!isAdmin && <ServiceListDatePicker />}
+					<ServiceStatusSelector /> <ServiceListDatePicker />
 				</>
 			)}
 			{variant === 'invoices' && (
