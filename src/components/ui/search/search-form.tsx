@@ -27,9 +27,11 @@ export default async function SearchForm({
 				variant !== 'quotes' &&
 				variant !== 'subscriptions' && (
 					<Suspense fallback={<AssignedToSelectorFallback />}>
-						<AssignedToSelector
-							orgMembersPromise={orgMembersPromise}
-						/>
+						{!isAdmin && (
+							<AssignedToSelector
+								orgMembersPromise={orgMembersPromise}
+							/>
+						)}
 					</Suspense>
 				)}
 			{variant === 'default' && (
@@ -46,7 +48,8 @@ export default async function SearchForm({
 			)}
 			{variant === 'clearing' && (
 				<>
-					<ServiceStatusSelector /> <ServiceListDatePicker />
+					<ServiceStatusSelector />{' '}
+					{!isAdmin && <ServiceListDatePicker />}
 				</>
 			)}
 			{variant === 'invoices' && (
