@@ -44,7 +44,11 @@ export default async function SearchForm({
 					<ServiceStatusSelector />
 				</>
 			)}
-			{variant === 'clearing' && <ServiceStatusSelector />}
+			{variant === 'clearing' && (
+				<>
+					<ServiceStatusSelector /> <ServiceListDatePicker />
+				</>
+			)}
 			{variant === 'invoices' && (
 				<BillingStatusSelector variant="invoices" />
 			)}
