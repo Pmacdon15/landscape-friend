@@ -77,7 +77,11 @@ export async function fetchCuttingClients(
 
 	if (!userId) throw new Error(' User ID is missing.')
 
-	if (!isAdmin && userId !== searchTermAssignedTo)
+	if (
+		!isAdmin &&
+		userId !== searchTermAssignedTo &&
+		searchTermAssignedTo !== ''
+	)
 		throw new Error('Not admin can not view other coworkers list')
 
 	let assignedTo: string
