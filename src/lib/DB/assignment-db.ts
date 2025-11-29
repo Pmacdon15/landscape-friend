@@ -10,12 +10,13 @@ export async function changePriorityDb(
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
 	const currentAssignment = await sql`
-    SELECT priority, service_type FROM assignments
+    SELECT priority, service_type, user_id FROM assignments
     WHERE id = ${assignmentId};
   `
 
 	const currentPriority = currentAssignment[0].priority
 	const serviceType = currentAssignment[0].service_type
+	const userId = currentAssignment[0].user_id
 
 	if (newPriority === currentPriority) {
 		return currentAssignment[0]
@@ -26,14 +27,16 @@ export async function changePriorityDb(
       UPDATE assignments
       SET priority = priority + 1
       WHERE org_id = ${orgId} AND service_type = ${serviceType} 
-        AND priority >= ${newPriority} AND priority < ${currentPriority};
+        AND priority >= ${newPriority} AND priority < ${currentPriority}
+		AND user_id = ${userId};
     `
 	} else {
 		await sql`
       UPDATE assignments
       SET priority = priority - 1
       WHERE org_id = ${orgId} AND service_type = ${serviceType} 
-        AND priority > ${currentPriority} AND priority <= ${newPriority};
+        AND priority > ${currentPriority} AND priority <= ${newPriority}
+		AND user_id = ${userId};
     `
 	}
 

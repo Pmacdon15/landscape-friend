@@ -193,3 +193,12 @@ SELECT * FROM assignments;
 -- UPDATE organizations
 -- SET max_allowed_clients = 200
 -- WHERE organization_id = 'org_35lkfCNDV6WjfG9iEKaXZRGnf4A';
+
+-- UPDATE assignments 
+-- SET priority = subquery.new_priority
+-- FROM (
+--     SELECT id, ROW_NUMBER() OVER (ORDER BY id) as new_priority
+--     FROM assignments 
+--     WHERE user_id = 'user_35ztBRmjTd5SX4Ik0KffVpHRQI6'
+-- ) subquery
+-- WHERE assignments.id = subquery.id;
