@@ -172,9 +172,9 @@ CREATE TABLE images_serviced (
 --   assignments a ON c.id = a.client_id
 -- WHERE 
 --   a.org_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
-SELECT * FROM assignments;
+-- SELECT * FROM assignments;
 -- SELECT * FROM clients;
--- SELECT * FROM users;
+SELECT * FROM users;
 -- SELECT * FROM organizations;
 -- SELECT id, novu_subscriber_id
 --             FROM users
@@ -202,3 +202,10 @@ SELECT * FROM assignments;
 --     WHERE user_id = 'user_35ztBRmjTd5SX4Ik0KffVpHRQI6'
 -- ) subquery
 -- WHERE assignments.id = subquery.id;
+
+
+-- INSERT INTO organizations (organization_id, organization_name, max_allowed_clients)
+-- VALUES ('org_368RDFv9J3wphFLXKbYL2XCnqeJ', 'New Organization', 100);
+
+-- INSERT INTO users (id, name, email)
+-- VALUES ('user_368RTyyYd3bUdazs9qaAqGI5D9S', 'New User', 'pmacdonald15@proton.me');
