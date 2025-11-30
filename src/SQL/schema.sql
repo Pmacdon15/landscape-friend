@@ -174,8 +174,11 @@ CREATE TABLE images_serviced (
 --   a.org_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
 -- SELECT * FROM assignments;
 -- SELECT * FROM clients;
-SELECT * FROM users;
--- SELECT * FROM organizations;
+-- SELECT * FROM users;
+SELECT * FROM organizations;
+UPDATE organizations
+SET max_allowed_clients = 150
+WHERE organization_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');
