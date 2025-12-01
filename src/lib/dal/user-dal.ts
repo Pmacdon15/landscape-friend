@@ -4,11 +4,16 @@ import type { UserNovuId } from '@/types/novu-types'
 
 export async function fetchNovuId(userId: string): Promise<UserNovuId | null> {
 	await auth.protect()
-	const sql = neon(`${process.env.DATABASE_URL} `)
-	const result =
-		await sql` SELECT novu_subscriber_id FROM users where id = ${userId} `
-	if (result.length > 0) {
-		return { UserNovuId: result[0].novu_subscriber_id }
+	try {
+		const sql = neon(`${process.env.DATABASE_URL} `)
+		const result =
+			await sql` SELECT novu_subscriber_id FROM users where id = ${userId} `
+		if (result.length > 0) {
+			return { UserNovuId: result[0].novu_subscriber_id }
+		}
+	} catch (e: unknown) {
+		console.error(e)
+		return null
 	}
 	return null
 }
