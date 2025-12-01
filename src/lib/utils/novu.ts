@@ -108,15 +108,19 @@ export async function triggerNotificationSendToAdmin(
 export async function triggerNovuEvent(
 	workFlow: string,
 	recipient: string,
-	payload: PayloadType,
+	payload?: PayloadType,
 ) {
-	await novu.trigger({
-		workflowId: workFlow,
-		to: {
-			subscriberId: recipient,
-		},
-		payload: payload,
-	})
+	try {
+		await novu.trigger({
+			workflowId: workFlow,
+			to: {
+				subscriberId: recipient,
+			},
+			payload: payload,
+		})
+	} catch (e: unknown) {
+		console.error(e)
+	}
 }
 
 export async function sendWelcomeNotification(novuId: string) {
