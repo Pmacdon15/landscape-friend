@@ -21,7 +21,8 @@ export async function getStripeInstance(): Promise<Stripe | null> {
 		return null
 	}
 
-	const apiKey = apiKeyResponse.apk_key
+	if ('errorMessage' in apiKeyResponse) return null
+	const apiKey = apiKeyResponse.apk_key ?? null
 	if (!apiKey) {
 		return null
 	}
@@ -30,15 +31,19 @@ export async function getStripeInstance(): Promise<Stripe | null> {
 	return stripe
 }
 
-export async function fetchStripeAPIKey(): Promise<APIKey | Error> {
+export async function fetchStripeAPIKey(): Promise<
+	APIKey | { errorMessage: string }
+> {
 	const { orgId, userId } = await auth.protect()
 	try {
 		const result = await fetchStripAPIKeyDb(orgId || userId)
-		if (!result || !result.api_key) return new Error('API key not found')
+		if (!result || !result.api_key)
+			return { errorMessage: 'API key not found' }
 		return { apk_key: result.api_key }
-	} catch (e) {
-		if (e instanceof Error) return e
-		return new Error('An unknown error occurred')
+	} catch (e: unknown) {
+		console.error(e)
+		// if (e instanceof Error) return e
+		return { errorMessage: 'An unknown error occurred' }
 	}
 }
 
