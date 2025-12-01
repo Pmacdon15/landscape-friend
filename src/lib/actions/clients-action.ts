@@ -22,21 +22,29 @@ import {
 } from '../utils/stripe-utils'
 import { AddClientFormSchema } from '../zod/client-schemas'
 
+const testValue = true
 export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	const organizationId = orgId || userId
-	if (!userId) throw new Error('Not logged in')
-
+	if (!userId)
+		return {
+			errorMessage: 'Not logged in',
+		}
 	if (!isAdmin) throw new Error('Not Admin.')
 
 	const orgSettings = await getOrganizationSettings(orgId || userId)
-	if (!orgSettings) throw new Error('Organization not found.')
+	if (!orgSettings)
+		return {
+			errorMessage: 'Organization not found.',
+		}
 
 	const clientCount = await countClientsByOrgId(orgId || userId)
-	if (clientCount >= orgSettings.max_allowed_clients) {
-		throw new Error(
-			'Maximum number of clients reached for this organization.',
-		)
+	// if (clientCount >= orgSettings.max_allowed_clients) {
+	if (testValue) {
+		return {
+			errorMessage:
+				'Maximum number of clients reached for this organization.',
+		}
 	}
 
 	const validatedFields = AddClientFormSchema.safeParse({
@@ -48,7 +56,10 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	})
 
 	console.log('validatedFields: ', validatedFields)
-	if (!validatedFields.success) throw new Error('Invalid form data')
+	if (!validatedFields.success)
+		return {
+			errorMessage: 'Invalid form data',
+		}
 
 	try {
 		const customerId = await findOrCreateStripeCustomerAndLinkClient(

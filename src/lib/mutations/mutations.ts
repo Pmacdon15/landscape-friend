@@ -45,8 +45,12 @@ export const useAddClient = (options?: {
 	onError?: (error: Error) => void
 }) => {
 	return useMutation({
-		mutationFn: (data: z.infer<typeof AddClientFormSchema>) => {
-			return addClient(data)
+		mutationFn: async (data: z.infer<typeof AddClientFormSchema>) => {
+			const result = await addClient(data)
+			if (result.errorMessage) {
+				throw new Error(result.errorMessage)
+			}
+			return result // return the result instead of calling addClient again
 		},
 		onSuccess: () => {
 			revalidatePathAction('/lists/client')
