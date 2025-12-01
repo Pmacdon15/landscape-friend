@@ -38,7 +38,7 @@ import {
 	updateTagAction,
 } from '../actions/revalidatePath-action'
 import type { AddClientFormSchema } from '../zod/client-schemas'
-//TODO: Use update tag instead of revalidate
+
 //MARK: Add client
 export const useAddClient = (options?: {
 	onSuccess?: () => void
@@ -53,7 +53,8 @@ export const useAddClient = (options?: {
 			return result
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			// revalidatePathAction('/lists/client')
+			updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -62,7 +63,7 @@ export const useAddClient = (options?: {
 		},
 	})
 }
-//TODO: USE UPDATE TAG
+
 export const useUpdateClient = (options?: {
 	onSuccess?: () => void
 	onError?: (error: Error) => void
@@ -82,7 +83,7 @@ export const useUpdateClient = (options?: {
 			return result
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -102,7 +103,7 @@ export const useDeleteClient = (options?: {
 			return deleteClient(clientId)
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -132,6 +133,7 @@ export const useUploadImage = ({
 		},
 		onSuccess: () => {
 			// revalidatePathAction("/lists/client");
+			updateTagAction('clients')
 			onSuccess?.()
 		},
 		onError: (error) => {
@@ -153,7 +155,7 @@ export const useDeleteSiteMap = () => {
 			return deleteSiteMap(clientId, siteMapId)
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			updateTagAction('clients')
 			revalidatePathAction('/lists/clearing')
 			revalidatePathAction('/lists/cutting')
 		},
@@ -168,7 +170,7 @@ export const useUploadDrawing = () => {
 			return uploadDrawing(file, clientId)
 		},
 		onSuccess: () => {
-			// revalidatePathAction("/lists/client");
+			updateTagAction('clients')
 			// onSuccess?.();
 		},
 		onError: () => {

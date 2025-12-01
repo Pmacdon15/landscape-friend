@@ -26,33 +26,41 @@ export async function fetchAllClients(
 	searchTermCuttingDay: string,
 	searchTermAssignedTo: string,
 ): Promise<PaginatedClients | null> {
+	'use cache: private'
+	cacheTag(`clients`)
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not admin!')
 	if (!userId) throw new Error('Not logged in!')
 	const pageSize = Number(process.env.PAGE_SIZE) || 10
 	const offset = (clientPageNumber - 1) * pageSize
 
-	const result = await fetchClientsWithSchedules(
-		orgId || userId,
-		pageSize,
-		offset,
-		searchTerm,
-		searchTermCuttingWeek,
-		searchTermCuttingDay,
-		searchTermAssignedTo,
-	)
+	try {
+		const result = await fetchClientsWithSchedules(
+			orgId || userId,
+			pageSize,
+			offset,
+			searchTerm,
+			searchTermCuttingWeek,
+			searchTermCuttingDay,
+			searchTermAssignedTo,
+		)
 
-	if (!result.clientsResult) return null
+		if (!result.clientsResult) return null
 
-	const { clients, totalPages } = processClientsResult(
-		result.clientsResult as ClientResultListClientPage[],
-		result.totalCount,
-		pageSize,
-	)
-	return { clients, totalPages }
+		const { clients, totalPages } = processClientsResult(
+			result.clientsResult as ClientResultListClientPage[],
+			result.totalCount,
+			pageSize,
+		)
+		return { clients, totalPages }
+	} catch (e: unknown) {
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return null
+	}
 }
-//TODO: Abstract this
-export async function fetchClientList(): Promise<ClientInfoList[]> {
+
+export async function fetchClientList(): Promise<ClientInfoList[] | []> {
 	const { orgId, userId } = await isOrgAdmin(true)
 	if (!userId) {
 		throw new Error('Organization ID or User ID is missing.')
@@ -61,11 +69,17 @@ export async function fetchClientList(): Promise<ClientInfoList[]> {
 	if (!organizationId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
-	const result = await fetchClientListDb(organizationId)
-	if (!result) {
-		throw new Error('Failed to fetch client list.')
+	try {
+		const result = await fetchClientListDb(organizationId)
+		if (!result) {
+			return []
+		}
+		return result
+	} catch (e: unknown) {
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return []
 	}
-	return result
 }
 export async function fetchCuttingClients(
 	searchTerm: string,

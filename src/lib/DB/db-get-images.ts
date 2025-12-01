@@ -24,7 +24,7 @@ export async function getServicedImagesUrls(
       )
       ORDER BY date DESC
     `) as { date: Date; imageurl: string }[]
-		console.log(result)
+		// console.log(result)
 		return result
 	} catch (error) {
 		console.error('Error in getting Serviced Images Urls:', error)
