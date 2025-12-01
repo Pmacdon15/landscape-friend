@@ -14,8 +14,8 @@ export async function markYardServiced(
 	snow = false,
 	images: File[],
 ) {
-	const { isAdmin, orgId, userId } = await isOrgAdmin()
-	if (!isAdmin) return { errorMessage: 'Not Admin' }
+	const { orgId, userId } = await isOrgAdmin()
+	
 	if (!userId)
 		return { errorMessage: 'Organization ID or User ID is missing.' }
 
