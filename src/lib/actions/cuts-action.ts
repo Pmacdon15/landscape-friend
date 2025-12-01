@@ -15,22 +15,22 @@ export async function markYardServiced(
 	images: File[],
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
-	if (!isAdmin) throw new Error('Not Admin')
-	if (!userId) throw new Error('Organization ID or User ID is missing.')
+	if (!isAdmin) return { errorMessage: 'Not Admin' }
+	if (!userId)
+		return { errorMessage: 'Organization ID or User ID is missing.' }
 
 	const validatedFields = schemaMarkYardCut.safeParse({
 		clientId: clientId,
 		date: date,
 	})
 
-	if (!validatedFields.success) throw new Error('Invalid input data')
+	if (!validatedFields.success) return { errorMessage: 'Invalid input data' }
+	// if (isTrue) return { errorMessage: 'Invalid input data' }
 
 	const images_url = []
 	const result_upload = []
 	/// Try upload Image to Vercel Blob
 	try {
-		// var result_upload = [];
-
 		for (let i = 0; i < images.length; i++) {
 			result_upload[i] = await uploadImageBlobServiceDone(
 				orgId || userId,
@@ -40,10 +40,14 @@ export async function markYardServiced(
 			)
 			images_url[i] = result_upload[i].url
 		}
-		if (!result_upload) throw new Error('Failed to update Client cut day')
+		if (!result_upload)
+			return {
+				errorMessage: 'Failed to mark client serviced',
+			}
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
-		throw new Error(errorMessage)
+		console.error('Error marking yard serviced: ', errorMessage)
+		return { errorMessage: 'Error marking yard serviced' }
 	}
 
 	// Try save information into Database
@@ -64,11 +68,13 @@ export async function markYardServiced(
 			)
 		}
 
-		if (!result_url) throw new Error('Failed to update Client cut day')
-		return result_url
+		if (!result_url)
+			return { errorMessage: 'Failed to update client serviced' }
+		return { success: true }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
-		throw new Error(errorMessage)
+		console.error(errorMessage)
+		return { errorMessage: 'Failed to update client serviced' }
 	}
 }
 

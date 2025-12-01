@@ -2,6 +2,7 @@
 import imageCompression from 'browser-image-compression'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
 import Spinner from '../loaders/spinner'
@@ -15,7 +16,15 @@ export default function MarkYardServiced({
 	serviceDate: Date
 	snow?: boolean
 }) {
-	const { mutate, isError, isPending } = useMarkYardServiced()
+	const { mutate, isError, isPending, error } = useMarkYardServiced({
+		onSuccess: () => {
+			toast.success('Yard marked serviced!', { duration: 1500 })
+		},
+		onError: (error) => {
+			console.error('Error marking yard serviced', error)
+			toast.error('Error marking yard serviced!', { duration: 1500 })
+		},
+	})
 	const [images, setImages] = useState<File[]>([])
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -112,7 +121,6 @@ export default function MarkYardServiced({
 
 	return (
 		<>
-			{isError && <p className="text-red-500">Error Marking Cut</p>}
 			<label>
 				<input
 					accept="image/*"
@@ -161,6 +169,11 @@ export default function MarkYardServiced({
 					>
 						Mark Yard Serviced{isPending && <Spinner />}
 					</Button>
+					{isError && (
+						<p className="text-red-500">
+							{error.message ?? 'Error Marking Serviced'}
+						</p>
+					)}
 				</>
 			)}
 		</>

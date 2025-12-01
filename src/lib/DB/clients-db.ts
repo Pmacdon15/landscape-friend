@@ -717,10 +717,10 @@ export async function markYardServicedDb(
           RETURNING id;
           `
 
-		const result = await query	
+		const result = await query
 
 		if (!result || result.length === 0) {
-			throw new Error(
+			console.error(
 				'Error inserting data on table yards_marked_cut or yards_marked_clear',
 			)
 		}
