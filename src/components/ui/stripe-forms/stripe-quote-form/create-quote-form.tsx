@@ -80,12 +80,6 @@ export function CreateQuoteForm({
 			return acc + cost * units
 		}, 0) ?? 0)
 
-	// const materialTypes = watchedValues.materials.map((_material, index) =>
-	// 	form.watch(`materials.${index}.materialType`),
-	// )
-	// const selectedProducts = products?.filter(
-	// 	(product, index) => product.name === materialTypes[index],
-	// )
 	const materialIds = useMemo(() => {
 		return watchedValues.materials.map((material) => material.materialType)
 	}, [watchedValues.materials])
@@ -181,10 +175,16 @@ export function CreateQuoteForm({
 									control={form.control}
 									label="Material"
 									name={`materials.${index}.materialType`}
-									options={products?.map((product) => ({
-										value: product.name + product.id,
-										label: product.name,
-									}))}
+									options={
+										Array.isArray(products)
+											? products.map((product) => ({
+													value:
+														product.name +
+														product.id,
+													label: product.name,
+												}))
+											: []
+									}
 								/>
 							</div>
 

@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { getServicedImagesUrls } from '@/lib/DB/db-get-images'
+import { getServicedImagesUrls } from '@/lib/dal/clients-dal'
 import type { Client } from '@/types/clients-types'
 
 export default async function ListServices({ client }: { client: Client }) {
