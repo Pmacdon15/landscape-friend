@@ -10,6 +10,7 @@ import { Button } from '../button'
 import { FormInput } from '../forms/form'
 import FormHeader from '../header/form-header'
 import EllipsisSpinner from '../loaders/EllipsisSpinner'
+import { toast } from 'sonner'
 
 export function EditClientForm({
 	client,
@@ -28,10 +29,15 @@ export function EditClientForm({
 		},
 	})
 
-	const { mutate, isPending, isError } = useUpdateClient({
+	const { mutate, isPending, isError, error } = useUpdateClient({
 		onSuccess: () => {
 			form.reset()
 			setSheetOpen(false)
+			toast.success('Client updated!', { duration: 1500 })
+		},
+		onError: (error) => {
+			console.error('Error updating client', error)
+			toast.error('Error updating client!', { duration: 1500 })
 		},
 	})
 
@@ -71,7 +77,7 @@ export function EditClientForm({
 					name={'address'}
 				/>
 			</div>
-			<div className="flex justify-end">
+			<div className="flex justify-end gap-2">
 				<Button disabled={isPending} type="submit" variant={'outline'}>
 					{!isPending ? (
 						'Submit'
@@ -82,7 +88,11 @@ export function EditClientForm({
 						</div>
 					)}
 				</Button>
-				{isError && <p className="text-red-500">Error Submitting</p>}
+				{isError && (
+					<p className="text-red-500">
+						{error.message ?? 'Error updating client'}
+					</p>
+				)}
 			</div>
 		</form>
 	)

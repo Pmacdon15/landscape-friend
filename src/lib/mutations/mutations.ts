@@ -50,7 +50,7 @@ export const useAddClient = (options?: {
 			if (result.errorMessage) {
 				throw new Error(result.errorMessage)
 			}
-			return result // return the result instead of calling addClient again
+			return result
 		},
 		onSuccess: () => {
 			revalidatePathAction('/lists/client')
@@ -68,14 +68,18 @@ export const useUpdateClient = (options?: {
 	onError?: (error: Error) => void
 }) => {
 	return useMutation({
-		mutationFn: ({
+		mutationFn: async ({
 			data,
 			clientId,
 		}: {
 			data: z.infer<typeof AddClientFormSchema>
 			clientId: number
 		}) => {
-			return updateClient(data, clientId)
+			const result = await updateClient(data, clientId)
+			if (result.errorMessage) {
+				throw new Error(result.errorMessage)
+			}
+			return result
 		},
 		onSuccess: () => {
 			revalidatePathAction('/lists/client')
@@ -89,16 +93,21 @@ export const useUpdateClient = (options?: {
 }
 
 //MARK: Delete client
-export const useDeleteClient = () => {
+export const useDeleteClient = (options?: {
+	onSuccess?: () => void
+	onError?: (error: Error) => void
+}) => {
 	return useMutation({
 		mutationFn: (clientId: number) => {
 			return deleteClient(clientId)
 		},
 		onSuccess: () => {
 			revalidatePathAction('/lists/client')
+			options?.onSuccess?.()
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)
+			options?.onError?.(error)
 		},
 	})
 }

@@ -4,9 +4,7 @@ import type { Client } from '@/types/clients-types'
 
 export default async function ListServices({ client }: { client: Client }) {
 	const imagesUrls = await getServicedImagesUrls(client.id)
-	console.log(`imagesUrls`)
-	console.log(imagesUrls)
-
+	
 	if (imagesUrls.length === 0) {
 		return (
 			<div className="mx-auto mt-2 flex min-h-[300px] w-full flex-col items-center justify-center overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
