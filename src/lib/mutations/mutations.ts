@@ -84,6 +84,8 @@ export const useUpdateClient = (options?: {
 		},
 		onSuccess: () => {
 			updateTagAction('clients')
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -104,6 +106,8 @@ export const useDeleteClient = (options?: {
 		},
 		onSuccess: () => {
 			updateTagAction('clients')
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -134,6 +138,8 @@ export const useUploadImage = ({
 		onSuccess: () => {
 			// revalidatePathAction("/lists/client");
 			updateTagAction('clients')
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
 			onSuccess?.()
 		},
 		onError: (error) => {
@@ -171,6 +177,8 @@ export const useUploadDrawing = () => {
 		},
 		onSuccess: () => {
 			updateTagAction('clients')
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
 			// onSuccess?.();
 		},
 		onError: () => {
@@ -214,7 +222,9 @@ export const useUpdateCuttingDay = () => {
 			return updateCuttingDay(clientId, cuttingWeek, cuttingDay)
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			updateTagAction('clients')
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)
@@ -234,6 +244,11 @@ export const useAssignSnowClearing = () => {
 		}) => {
 			return assignSnowClearing(clientId, assignedTo)
 		},
+		onSuccess: () => {
+			updateTagAction('clients')
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
+		},
 	})
 }
 
@@ -248,6 +263,11 @@ export const useAssignGrassCutting = () => {
 			assignedTo: string
 		}) => {
 			return assignGrassCutting(clientId, assignedTo)
+		},
+		onSuccess: () => {
+			updateTagAction('clients')
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
 		},
 	})
 }

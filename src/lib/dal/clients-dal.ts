@@ -91,7 +91,7 @@ export async function fetchCuttingClients(
 	cacheTag('grass-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
-	if (!userId) return { errorMessage: ' User ID is missing.' }
+	if (!userId) return { errorMessage: 'User ID is missing.' }
 
 	if (
 		!isAdmin &&
@@ -133,43 +133,50 @@ export async function fetchSnowClearingClients(
 	cacheTag('snow-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
-	if (!userId) throw new Error('User ID is missing.')
+	if (!userId) return { errorMessage: 'User ID is missing.' }
 	if (
 		!isAdmin &&
 		userId !== searchTermAssignedTo &&
 		searchTermAssignedTo !== ''
 	)
-		throw new Error('Not admin can not view other coworkers list')
+		return { errorMessage: 'Not admin can not view other coworkers list' }
+	try {
+		const result = await fetchClientsClearingGroupsDb(
+			orgId || userId,
+			searchTerm,
+			clearingDate || new Date(),
+			userId,
+			searchTermIsServiced,
+			searchTermAssignedTo,
+		)
 
-	const result = await fetchClientsClearingGroupsDb(
-		orgId || userId,
-		searchTerm,
-		clearingDate || new Date(),
-		userId,
-		searchTermIsServiced,
-		searchTermAssignedTo,
-	)
-
-	return result
+		return result
+	} catch (e: unknown) {
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'Failed to fetch clearing clients' }
+	}
 }
 
 export async function fetchClientsNamesAndEmails(): Promise<
-	NamesAndEmails[] | Error
+	NamesAndEmails[] | { errorMessage: string }
 > {
 	const { orgId, userId } = await auth.protect()
 	try {
 		const result = await fetchClientNamesAndEmailsDb(orgId || userId)
-		if (!result) return []
+		if (!result)
+			return { errorMessage: 'DB Error fetching client names and email' }
 		return result
 	} catch (e) {
-		if (e instanceof Error) return e
-		return new Error('An unknown error occurred') // Return a generic error
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'An unknown error occurred' }
 	}
 }
 
 export async function fetchClientNamesByStripeIds(
 	stripeCustomerIds: string[],
-): Promise<CustomerName[] | Error> {
+): Promise<CustomerName[] | { errorMessage: string }> {
 	const { orgId, userId } = await auth.protect()
 	try {
 		const result = await fetchStripeCustomerNamesDB(
@@ -179,7 +186,8 @@ export async function fetchClientNamesByStripeIds(
 		if (!result) return []
 		return result
 	} catch (e) {
-		if (e instanceof Error) return e
-		return new Error('An unknown error occurred')
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'An unknown error occurred' }
 	}
 }

@@ -10,7 +10,7 @@ export default function SendIndividualEmail({
 	namesAndEmailsPromise,
 }: {
 	children: React.ReactNode
-	namesAndEmailsPromise: Promise<NamesAndEmails[] | Error>
+	namesAndEmailsPromise: Promise<NamesAndEmails[] | { errorMessage: string }>
 }) {
 	const data = use(namesAndEmailsPromise)
 	const [clientEmail, setClientEmail] = useState('')
@@ -19,11 +19,11 @@ export default function SendIndividualEmail({
 		setClientEmail(e.target.value)
 	}
 
-	if (data instanceof Error) {
+	if (data && 'errorMessage' in data) {
 		return (
 			<FormContainer>
 				<FormHeader text={`Error`} />
-				<p>Error: {data.message}</p>
+				<p>Error: {data.errorMessage}</p>
 			</FormContainer>
 		)
 	}

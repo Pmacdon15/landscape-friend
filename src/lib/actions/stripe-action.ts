@@ -277,7 +277,9 @@ export async function updateStripeDocument(
 					customerId,
 				])
 				if (
-					!(clientNamesResult instanceof Error) &&
+					!(
+						clientNamesResult && 'errorMessage' in clientNamesResult
+					) &&
 					clientNamesResult.length > 0
 				) {
 					clientName = clientNamesResult[0].full_name || ''
@@ -330,7 +332,7 @@ export async function updateStripeDocument(
 					customerId,
 				])
 				if (
-					!(clientNamesResult instanceof Error) &&
+					!(clientNamesResult && 'errorMessage' in clientNamesResult) &&
 					clientNamesResult.length > 0
 				) {
 					clientName = clientNamesResult[0].full_name || ''
@@ -492,7 +494,7 @@ async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
 			customerId,
 		])
 		if (
-			!(clientNamesResult instanceof Error) &&
+			!(clientNamesResult && 'errorMessage' in clientNamesResult) &&
 			clientNamesResult.length > 0
 		) {
 			clientName = clientNamesResult[0].full_name || ''

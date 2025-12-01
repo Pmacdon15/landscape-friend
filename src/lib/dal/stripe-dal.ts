@@ -200,7 +200,7 @@ export async function fetchInvoices(
 		const clientNamesResult =
 			await fetchClientNamesByStripeIds(uniqueCustomerIds)
 
-		if (clientNamesResult instanceof Error) {
+		if (clientNamesResult && 'errorMessage' in clientNamesResult) {
 			throw clientNamesResult
 		}
 
@@ -313,7 +313,7 @@ export async function fetchQuotes(
 
 		const clientNamesResult =
 			await fetchClientNamesByStripeIds(uniqueCustomerIds)
-		if (clientNamesResult instanceof Error) {
+		if (clientNamesResult && 'errorMessage' in clientNamesResult) {
 			throw clientNamesResult
 		}
 		const clientNamesMap = new Map<string, string>()
