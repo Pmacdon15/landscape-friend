@@ -22,7 +22,7 @@ export default function AssignedTo({
 }: {
 	clientAssignedTo: string
 	clientId: number
-	orgMembersPromise?: Promise<OrgMember[]>
+	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
 	snow?: boolean
 }) {
 	const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
@@ -57,15 +57,21 @@ export default function AssignedTo({
 					<SelectGroup>
 						<SelectItem value="not-assigned">
 							Not Assigned
-						</SelectItem>
-						{orgMembers?.map((member) => (
-							<SelectItem
-								key={member.userId}
-								value={member.userId.toString()}
-							>
-								{member.userName}
+						</SelectItem>						
+						{Array.isArray(orgMembers) ? (
+							orgMembers.map((orgMember) => (
+								<SelectItem
+									key={orgMember.userId}
+									value={orgMember.userId || ''}
+								>
+									{orgMember.userName}
+								</SelectItem>
+							))
+						) : (
+							<SelectItem disabled value="error">
+								{'Error loading members'}
 							</SelectItem>
-						))}
+						)}
 					</SelectGroup>
 				</SelectContent>
 			</Select>

@@ -97,7 +97,7 @@ export interface ClientListServiceProps {
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
 	// props: PageProps<'/lists/client'>
 	clientsPromise: Promise<PaginatedClients | null>
-	orgMembersPromise?: Promise<OrgMember[]>
+	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
 	searchParamsPromise: Promise<ParsedClientListParams>
 }
 export interface CuttingSchedule {
