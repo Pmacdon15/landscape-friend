@@ -65,7 +65,7 @@ export async function fetchClientList(): Promise<ClientInfoList[] | []> {
 	if (!userId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
-	const organizationId = orgId || userId
+	const organizationId = orgId
 	if (!organizationId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
@@ -86,40 +86,49 @@ export async function fetchCuttingClients(
 	cuttingDate?: Date | undefined,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | null> {
+): Promise<ClientResult[] | { errorMessage: string }> {
+	'use cache: private'
+	cacheTag('grass-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
-	if (!userId) throw new Error(' User ID is missing.')
+	if (!userId) return { errorMessage: ' User ID is missing.' }
 
 	if (
 		!isAdmin &&
 		userId !== searchTermAssignedTo &&
 		searchTermAssignedTo !== ''
 	)
-		throw new Error('Not admin can not view other coworkers list')
+		return { errorMessage: 'Not admin can not view other coworkers list' }
 
-	let assignedTo: string
-	if (searchTermAssignedTo === '') assignedTo = userId
-	else assignedTo = String(searchTermAssignedTo)
+	try {
+		let assignedTo: string
+		if (searchTermAssignedTo === '') assignedTo = userId
+		else assignedTo = String(searchTermAssignedTo)
 
-	if (!assignedTo) throw new Error('Can not search with no one assigned.')
+		if (!assignedTo)
+			return { errorMessage: 'Can not search with no one assigned.' }
 
-	const result = await fetchClientsCuttingSchedules(
-		orgId || userId,
-		searchTerm,
-		cuttingDate || new Date(),
-		searchTermIsCut,
-		assignedTo,
-	)
+		const result = await fetchClientsCuttingSchedules(
+			orgId || userId,
+			searchTerm,
+			cuttingDate || new Date(),
+			searchTermIsCut,
+			assignedTo,
+		)
 
-	return result
+		return result
+	} catch (e: unknown) {
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'could not fetch cutting clients' }
+	}
 }
 export async function fetchSnowClearingClients(
 	searchTerm: string,
 	clearingDate?: Date,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | null> {
+): Promise<ClientResult[] | { errorMessage: string }> {
 	'use cache: private'
 	cacheTag('snow-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)

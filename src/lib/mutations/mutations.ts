@@ -253,37 +253,37 @@ export const useAssignGrassCutting = () => {
 }
 //MARK:Mark yard serviced
 export const useMarkYardServiced = (options?: {
-  onSuccess?: () => void
-  onError?: (error: Error) => void
+	onSuccess?: () => void
+	onError?: (error: Error) => void
 }) => {
-  return useMutation({
-    mutationFn: async ({
-      clientId,
-      date,
-      snow = false,
-      images,
-    }: {
-      clientId: number
-      date: Date
-      snow?: boolean
-      images: File[]
-    }) => {
-      const result = await markYardServiced(clientId, date, snow, images)
-      if (result?.errorMessage) {
-        throw new Error(result.errorMessage)
-      }
-      return result // Return the result to indicate success
-    },
-    onSuccess: () => {
-      options?.onSuccess?.()
-      updateTagAction('snow-clients')
-      revalidatePathAction('/lists/cutting')
-    },
-    onError: (error) => {
-      console.error('Mutation error:', error)
-      options?.onError?.(error)
-    },
-  })
+	return useMutation({
+		mutationFn: async ({
+			clientId,
+			date,
+			snow = false,
+			images,
+		}: {
+			clientId: number
+			date: Date
+			snow?: boolean
+			images: File[]
+		}) => {
+			const result = await markYardServiced(clientId, date, snow, images)
+			if (result?.errorMessage) {
+				throw new Error(result.errorMessage)
+			}
+			return result // Return the result to indicate success
+		},
+		onSuccess: () => {
+			options?.onSuccess?.()
+			updateTagAction('snow-clients')
+			updateTagAction('grass-clients')
+		},
+		onError: (error) => {
+			console.error('Mutation error:', error)
+			options?.onError?.(error)
+		},
+	})
 }
 
 //MARK: Send email with template
