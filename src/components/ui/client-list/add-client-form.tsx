@@ -25,7 +25,7 @@ export function AddClientForm({
 		},
 	})
 
-	const { mutate, isPending, isError } = useAddClient({
+	const { mutate, isPending, isError, error } = useAddClient({
 		onSuccess: () => {
 			form.reset()
 			setSheetOpen(false)
@@ -79,7 +79,7 @@ export function AddClientForm({
 						</div>
 					)}
 				</Button>
-				{isError && <p className="text-red-500">Error Submitting</p>}
+				{isError && <p className="text-red-500">{error.message}</p>}
 			</div>
 		</form>
 	)

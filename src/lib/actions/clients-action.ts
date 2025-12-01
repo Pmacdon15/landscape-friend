@@ -43,7 +43,7 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	if (testValue) {
 		return {
 			errorMessage:
-				'Maximum number of clients reached for this organization.',
+				'Maximum number of clients reached consider plan upgrade.',
 		}
 	}
 
