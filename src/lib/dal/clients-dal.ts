@@ -17,6 +17,7 @@ import type {
 	NamesAndEmails,
 	PaginatedClients,
 } from '@/types/clients-types'
+import { getServicedImagesUrlsDb } from '../DB/db-get-images'
 import { processClientsResult } from '../utils/sort'
 
 export async function fetchAllClients(
@@ -189,5 +190,18 @@ export async function fetchClientNamesByStripeIds(
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)
 		return { errorMessage: 'An unknown error occurred' }
+	}
+}
+
+//MARK: Get Serviced URLs
+export async function getServicedImagesUrls(
+	clientId: number,
+): Promise<{ date: Date; imageurl: string }[]> {
+	await auth.protect()
+	try {
+		return await getServicedImagesUrlsDb(clientId)
+	} catch (error) {
+		console.error('Error in getting Serviced Images Urls:', error)
+		return []
 	}
 }

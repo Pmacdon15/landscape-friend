@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 
 //MARK: Get Serviced URLs
-export async function getServicedImagesUrls(
+export async function getServicedImagesUrlsDb(
 	clientId: number,
 ): Promise<{ date: Date; imageurl: string }[]> {
 	const sql = neon(`${process.env.DATABASE_URL}`)
@@ -28,6 +28,6 @@ export async function getServicedImagesUrls(
 		return result
 	} catch (error) {
 		console.error('Error in getting Serviced Images Urls:', error)
-		throw error
+		return []
 	}
 }

@@ -11,8 +11,7 @@ export default function Page({
 	error: Error & { digest?: string }
 	reset: () => void
 }) {
-	//TODO: make this look like the other error pages
-	return (
+		return (
 		<FormContainer>
 			<FormHeader text={'Edit Quotes'} />
 			<div className="flex flex-col items-center justify-center gap-4 rounded-sm bg-white/70 p-4 shadow-lg">

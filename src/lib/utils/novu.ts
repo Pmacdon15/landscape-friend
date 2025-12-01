@@ -92,7 +92,7 @@ export async function triggerNotificationSendToAdmin(
 	const adminSubscriberIds = Object.values(novuSubscriberIds).filter(
 		(id) => id !== null,
 	)
-	//TODO: Maybe this try catch can go and would be better to find the error higher instead of ending here
+	
 	try {
 		await novu.trigger({
 			workflowId: workflow,
