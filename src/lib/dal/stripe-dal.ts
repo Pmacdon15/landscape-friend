@@ -47,11 +47,13 @@ export async function fetchStripeAPIKey(): Promise<
 	}
 }
 
-export async function fetchProducts(): Promise<Stripe.Product[]> {
+export async function fetchProducts(): Promise<
+	Stripe.Product[] | { errorMessage: string }
+> {
 	await auth.protect()
 	const stripe = await getStripeInstance()
 	if (!stripe) {
-		throw new Error('Failed to initialize Stripe instance')
+		return { errorMessage: 'Failed to initialize Stripe instance' }
 	}
 
 	try {
@@ -83,7 +85,7 @@ export async function fetchProducts(): Promise<Stripe.Product[]> {
 		if (error instanceof Error) {
 			throw error
 		}
-		throw new Error('An unknown error occurred')
+		return { errorMessage: 'An unknown error occurred' }
 	}
 }
 
@@ -103,12 +105,12 @@ export async function fetchInvoices(
 	typesOfInvoices: string,
 	page: number,
 	searchTerm: string,
-): Promise<FetchInvoicesResponse> {
+): Promise<FetchInvoicesResponse | { errorMessage: string }> {
 	const { isAdmin } = await isOrgAdmin()
-	if (!isAdmin) throw new Error('Not Admin')
+	if (!isAdmin) return { errorMessage: 'Not Admin' }
 
 	const stripe = await getStripeInstance()
-	if (!stripe) throw new Error('Failed to get Stripe instance')
+	if (!stripe) return { errorMessage: 'Failed to get Stripe instance' }
 	const pageSize = Number(process.env.PAGE_SIZE) || 10
 
 	try {
@@ -257,7 +259,7 @@ export async function fetchInvoices(
 		return { invoices: strippedInvoices as StripeInvoice[], totalPages }
 	} catch (error) {
 		console.error(error)
-		throw new Error('Failed to fetch invoices')
+		return { errorMessage: 'Failed to fetch invoices' }
 	}
 }
 

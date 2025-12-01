@@ -57,7 +57,7 @@ export default function AssignedTo({
 					<SelectGroup>
 						<SelectItem value="not-assigned">
 							Not Assigned
-						</SelectItem>						
+						</SelectItem>
 						{Array.isArray(orgMembers) ? (
 							orgMembers.map((orgMember) => (
 								<SelectItem

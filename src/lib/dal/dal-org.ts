@@ -44,7 +44,7 @@ export async function fetchOrgMembers(): Promise<
 				},
 			]
 		})
-	
+
 		// console.log('Org Members: ', orgMembers)
 		return orgMembers
 	} catch (error) {

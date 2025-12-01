@@ -60,10 +60,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 		await createStripeWebhook(validatedFields.data.APIKey, orgId || userId)
 
 		if (novuId)
-			await triggerNovuEvent(
-				novuId.UserNovuId,
-				'stripe-api-key-updated',
-			)
+			await triggerNovuEvent(novuId.UserNovuId, 'stripe-api-key-updated')
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		throw new Error(errorMessage)
@@ -331,7 +328,9 @@ export async function updateStripeDocument(
 					customerId,
 				])
 				if (
-					!(clientNamesResult && 'errorMessage' in clientNamesResult) &&
+					!(
+						clientNamesResult && 'errorMessage' in clientNamesResult
+					) &&
 					clientNamesResult.length > 0
 				) {
 					clientName = clientNamesResult[0].full_name || ''

@@ -134,7 +134,7 @@ export default function ClientCards({
 		return (
 			<FormContainer>
 				{' '}
-				<FormHeader text={'Error Loading clients'}/>				
+				<FormHeader text={'Error Loading clients'} />
 			</FormContainer>
 		)
 
