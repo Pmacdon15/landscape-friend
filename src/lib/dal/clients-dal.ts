@@ -17,6 +17,7 @@ import type {
 	NamesAndEmails,
 	PaginatedClients,
 } from '@/types/clients-types'
+import { getServicedImagesUrlsDb } from '../DB/db-get-images'
 import { processClientsResult } from '../utils/sort'
 
 export async function fetchAllClients(
@@ -65,7 +66,7 @@ export async function fetchClientList(): Promise<ClientInfoList[] | []> {
 	if (!userId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
-	const organizationId = orgId || userId
+	const organizationId = orgId
 	if (!organizationId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
@@ -86,81 +87,97 @@ export async function fetchCuttingClients(
 	cuttingDate?: Date | undefined,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | null> {
+): Promise<ClientResult[] | { errorMessage: string }> {
+	'use cache: private'
+	cacheTag('grass-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
-	if (!userId) throw new Error(' User ID is missing.')
+	if (!userId) return { errorMessage: 'User ID is missing.' }
 
 	if (
 		!isAdmin &&
 		userId !== searchTermAssignedTo &&
 		searchTermAssignedTo !== ''
 	)
-		throw new Error('Not admin can not view other coworkers list')
+		return { errorMessage: 'Not admin can not view other coworkers list' }
 
-	let assignedTo: string
-	if (searchTermAssignedTo === '') assignedTo = userId
-	else assignedTo = String(searchTermAssignedTo)
+	try {
+		let assignedTo: string
+		if (searchTermAssignedTo === '') assignedTo = userId
+		else assignedTo = String(searchTermAssignedTo)
 
-	if (!assignedTo) throw new Error('Can not search with no one assigned.')
+		if (!assignedTo)
+			return { errorMessage: 'Can not search with no one assigned.' }
 
-	const result = await fetchClientsCuttingSchedules(
-		orgId || userId,
-		searchTerm,
-		cuttingDate || new Date(),
-		searchTermIsCut,
-		assignedTo,
-	)
+		const result = await fetchClientsCuttingSchedules(
+			orgId || userId,
+			searchTerm,
+			cuttingDate || new Date(),
+			searchTermIsCut,
+			assignedTo,
+		)
 
-	return result
+		return result
+	} catch (e: unknown) {
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'could not fetch cutting clients' }
+	}
 }
 export async function fetchSnowClearingClients(
 	searchTerm: string,
 	clearingDate?: Date,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | null> {
+): Promise<ClientResult[] | { errorMessage: string }> {
 	'use cache: private'
 	cacheTag('snow-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
-	if (!userId) throw new Error('User ID is missing.')
+	if (!userId) return { errorMessage: 'User ID is missing.' }
 	if (
 		!isAdmin &&
 		userId !== searchTermAssignedTo &&
 		searchTermAssignedTo !== ''
 	)
-		throw new Error('Not admin can not view other coworkers list')
+		return { errorMessage: 'Not admin can not view other coworkers list' }
+	try {
+		const result = await fetchClientsClearingGroupsDb(
+			orgId || userId,
+			searchTerm,
+			clearingDate || new Date(),
+			userId,
+			searchTermIsServiced,
+			searchTermAssignedTo,
+		)
 
-	const result = await fetchClientsClearingGroupsDb(
-		orgId || userId,
-		searchTerm,
-		clearingDate || new Date(),
-		userId,
-		searchTermIsServiced,
-		searchTermAssignedTo,
-	)
-
-	return result
+		return result
+	} catch (e: unknown) {
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'Failed to fetch clearing clients' }
+	}
 }
 
 export async function fetchClientsNamesAndEmails(): Promise<
-	NamesAndEmails[] | Error
+	NamesAndEmails[] | { errorMessage: string }
 > {
 	const { orgId, userId } = await auth.protect()
 	try {
 		const result = await fetchClientNamesAndEmailsDb(orgId || userId)
-		if (!result) return []
+		if (!result)
+			return { errorMessage: 'DB Error fetching client names and email' }
 		return result
 	} catch (e) {
-		if (e instanceof Error) return e
-		return new Error('An unknown error occurred') // Return a generic error
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'An unknown error occurred' }
 	}
 }
 
 export async function fetchClientNamesByStripeIds(
 	stripeCustomerIds: string[],
-): Promise<CustomerName[] | Error> {
+): Promise<CustomerName[] | { errorMessage: string }> {
 	const { orgId, userId } = await auth.protect()
 	try {
 		const result = await fetchStripeCustomerNamesDB(
@@ -170,7 +187,21 @@ export async function fetchClientNamesByStripeIds(
 		if (!result) return []
 		return result
 	} catch (e) {
-		if (e instanceof Error) return e
-		return new Error('An unknown error occurred')
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return { errorMessage: 'An unknown error occurred' }
+	}
+}
+
+//MARK: Get Serviced URLs
+export async function getServicedImagesUrls(
+	clientId: number,
+): Promise<{ date: Date; imageurl: string }[]> {
+	await auth.protect()
+	try {
+		return await getServicedImagesUrlsDb(clientId)
+	} catch (error) {
+		console.error('Error in getting Serviced Images Urls:', error)
+		return []
 	}
 }

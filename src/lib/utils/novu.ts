@@ -92,7 +92,7 @@ export async function triggerNotificationSendToAdmin(
 	const adminSubscriberIds = Object.values(novuSubscriberIds).filter(
 		(id) => id !== null,
 	)
-	//TODO: Maybe this try catch can go and would be better to find the error higher instead of ending here
+	
 	try {
 		await novu.trigger({
 			workflowId: workflow,
@@ -108,15 +108,19 @@ export async function triggerNotificationSendToAdmin(
 export async function triggerNovuEvent(
 	workFlow: string,
 	recipient: string,
-	payload: PayloadType,
+	payload?: PayloadType,
 ) {
-	await novu.trigger({
-		workflowId: workFlow,
-		to: {
-			subscriberId: recipient,
-		},
-		payload: payload,
-	})
+	try {
+		await novu.trigger({
+			workflowId: workFlow,
+			to: {
+				subscriberId: recipient,
+			},
+			payload: payload,
+		})
+	} catch (e: unknown) {
+		console.error(e)
+	}
 }
 
 export async function sendWelcomeNotification(novuId: string) {

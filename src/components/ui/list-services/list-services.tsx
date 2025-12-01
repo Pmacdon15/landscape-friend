@@ -1,10 +1,10 @@
 import Image from 'next/image'
-import { getServicedImagesUrls } from '@/lib/DB/db-get-images'
+import { getServicedImagesUrls } from '@/lib/dal/clients-dal'
 import type { Client } from '@/types/clients-types'
 
 export default async function ListServices({ client }: { client: Client }) {
 	const imagesUrls = await getServicedImagesUrls(client.id)
-	
+
 	if (imagesUrls.length === 0) {
 		return (
 			<div className="mx-auto mt-2 flex min-h-[300px] w-full flex-col items-center justify-center overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">

@@ -29,7 +29,7 @@ export default function ClientCards({
 	snow,
 	isAdminPromise,
 }: {
-	clientsPromise: Promise<ClientResult[] | null>
+	clientsPromise: Promise<ClientResult[] | { errorMessage: string }>
 	parseClientListParamsPromise: Promise<ParsedClientListParams>
 	snow: boolean
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
@@ -41,14 +41,18 @@ export default function ClientCards({
 
 	// console.log('clients:', clients)
 	// State for managing client order
-	const [orderedClients, setOrderedClients] = useState<ClientResult[]>(
-		clients || [],
-	)
+	// const [orderedClients, setOrderedClients] = useState<ClientResult[]>(
+	// 	clients || [],
+	// )
+	const [orderedClients, setOrderedClients] = useState<ClientResult[]>([])
 
 	// Update ordered clients when clients data changes
 	useEffect(() => {
-		if (clients) {
+		if (clients && Array.isArray(clients)) {
 			setOrderedClients(clients)
+		} else if (clients && 'errorMessage' in clients) {
+			// Handle error case
+			console.error(clients.errorMessage)
 		}
 	}, [clients])
 
@@ -125,11 +129,12 @@ export default function ClientCards({
 				/>{' '}
 			</FormContainer>
 		)
-	if (!clients)
+
+	if ('errorMessage' in clients)
 		return (
 			<FormContainer>
 				{' '}
-				<p className="text-red-500">Error Loading clients</p>{' '}
+				<FormHeader text={'Error Loading clients'} />
 			</FormContainer>
 		)
 

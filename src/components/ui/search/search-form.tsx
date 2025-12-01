@@ -16,7 +16,7 @@ export default async function SearchForm({
 }: {
 	variant?: SearchFormVariant
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
-	orgMembersPromise?: Promise<OrgMember[]>
+	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
 }) {
 	const isAdmin = await isAdminPromise
 	return (

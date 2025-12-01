@@ -14,7 +14,7 @@ import {
 export function AssignedToSelector({
 	orgMembersPromise,
 }: {
-	orgMembersPromise?: Promise<OrgMember[]>
+	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
 }) {
 	const orgMembers = orgMembersPromise ? use(orgMembersPromise) : []
 	const { currentValue, setParam } = useSearchParam('assigned', '')
@@ -45,18 +45,23 @@ export function AssignedToSelector({
 				<SelectContent>
 					<SelectGroup>
 						<SelectItem value="none">Assigned To</SelectItem>
-						{orgMembers.map((orgMember) => (
-							<SelectItem
-								key={orgMember.userId}
-								value={orgMember.userId || ''}
-							>
-								{orgMember.userName}
+						{Array.isArray(orgMembers) ? (
+							orgMembers.map((orgMember) => (
+								<SelectItem
+									key={orgMember.userId}
+									value={orgMember.userId || ''}
+								>
+									{orgMember.userName}
+								</SelectItem>
+							))
+						) : (
+							<SelectItem disabled value="error">
+								'Error loading members'
 							</SelectItem>
-						))}
+						)}
 					</SelectGroup>
 				</SelectContent>
 			</Select>
-			{orgMembers.length === 0 && <p>No members found</p>}
 		</div>
 	)
 }

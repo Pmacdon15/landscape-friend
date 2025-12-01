@@ -607,9 +607,19 @@ export async function fetchClientsCuttingSchedules(
       SELECT
         cwb.*,
         cs.cutting_week,
-        cs.cutting_day
+        cs.cutting_day,
+		COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments
       FROM clients_with_balance cwb
       JOIN cutting_schedule cs ON cwb.id = cs.client_id
+	  LEFT JOIN LATERAL (
+            SELECT jsonb_agg(
+                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
+                ORDER BY a.priority
+            ) as assignments
+            FROM assignments a
+            JOIN users u ON a.user_id = u.id
+            WHERE a.client_id = cwb.id AND a.service_type = 'grass'
+        ) grass_assignments ON TRUE
       WHERE cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay}
     ),
     clients_marked_cut AS(
@@ -618,13 +628,6 @@ export async function fetchClientsCuttingSchedules(
         ymc.cutting_date
       FROM yards_marked_cut ymc
       WHERE ymc.cutting_date = ${cuttingDate}
-    ),
-    grass_assignments AS(
-      SELECT
-        sca.client_id,
-        sca.user_id as assigned_to
-      FROM assignments sca
-      WHERE sca.service_type = 'grass'
     )
   `
 
@@ -636,11 +639,14 @@ export async function fetchClientsCuttingSchedules(
       cws.amount_owing,
       cws.cutting_week,
       cws.cutting_day,
-      ga.assigned_to,
-      COALESCE(img.urls, CAST('[]' AS JSONB)) AS images
+      cws.grass_assignments,
+      COALESCE(img.urls, CAST('[]' AS JSONB)) AS images,
+      (
+			SELECT MIN((ga->>'priority')::int)
+			FROM jsonb_array_elements(cws.grass_assignments) AS ga
+		) as priority
     FROM clients_with_schedules cws
     LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-    LEFT JOIN grass_assignments ga ON cws.id = ga.client_id
     LEFT JOIN LATERAL(
       SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
       FROM images i
@@ -660,8 +666,14 @@ export async function fetchClientsCuttingSchedules(
     `)
 	}
 
-	if (searchTermAssignedTo !== '') {
-		whereClauses.push(sql`ga.assigned_to = ${searchTermAssignedTo}`)
+	if (searchTermAssignedTo && searchTermAssignedTo !== '') {
+		whereClauses.push(sql`
+      EXISTS (
+        SELECT 1
+        FROM jsonb_array_elements(cws.grass_assignments) AS ga
+        WHERE ga->>'user_id' = ${searchTermAssignedTo}
+      )
+    `)
 	}
 
 	if (whereClauses.length > 0) {
@@ -679,10 +691,7 @@ export async function fetchClientsCuttingSchedules(
 	const finalQuery = sql`
     ${query}
     ${selectQuery}
-    ORDER BY (
-      SELECT MIN((ga->>'priority')::int)
-      FROM jsonb_array_elements(cws.grass_assignments) AS ga
-    ) NULLS LAST, cws.id
+    ORDER BY priority NULLS LAST, cws.id
   `
 
 	const clientsResult = await finalQuery

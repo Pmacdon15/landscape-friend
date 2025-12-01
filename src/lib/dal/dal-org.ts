@@ -1,7 +1,9 @@
 import { auth, clerkClient } from '@clerk/nextjs/server'
 import type { OrgMember } from '@/types/clerk-types'
 
-export async function fetchOrgMembers(): Promise<OrgMember[]> {
+export async function fetchOrgMembers(): Promise<
+	OrgMember[] | { errorMessage: string }
+> {
 	const { orgId, sessionClaims } = await auth.protect()
 
 	if (!orgId) {
@@ -42,10 +44,11 @@ export async function fetchOrgMembers(): Promise<OrgMember[]> {
 				},
 			]
 		})
+
 		// console.log('Org Members: ', orgMembers)
 		return orgMembers
 	} catch (error) {
 		console.error('Error fetching org members:', error)
-		throw error
+		return { errorMessage: 'Error fetching org members' }
 	}
 }

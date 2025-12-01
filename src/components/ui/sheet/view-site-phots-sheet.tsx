@@ -9,14 +9,13 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet'
-import { getServicedImagesUrls } from '@/lib/DB/db-get-images'
+import { getServicedImagesUrls } from '@/lib/dal/clients-dal'
 import { Button } from '../button'
 import ServicedImageCarousel from '../client-list/serviced-image-carousel'
 import FormHeader from '../header/form-header'
 import SheetLogoHeader from '../header/sheet-logo-header'
 
 export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
-	//TODO: this is a db function put it behind a dal
 	const imagesUrlsObjects = await getServicedImagesUrls(clientId)
 
 	return (

@@ -1,5 +1,6 @@
 import { fetchInvoices } from '@/lib/dal/stripe-dal'
 import { parseClientListParams } from '@/lib/utils/params'
+import type { StripeInvoice } from '@/types/stripe-types'
 import ManageInvoiceButton from '../../buttons/manage-invoice-button'
 import { DateDisplay } from '../../date-display'
 import EditInvoiceLink from '../../links/edit-invoice-link'
@@ -10,17 +11,29 @@ export async function CardView({
 }: {
 	props: PageProps<'/billing/manage/invoices'>
 }) {
+	let invoices: StripeInvoice[]
+	let totalPages: number
 	const searchParams = await props.searchParams
 
 	const { searchTermStatus, page, searchTerm } =
 		parseClientListParams(searchParams)
 
-	const { invoices, totalPages } = await fetchInvoices(
-		searchTermStatus,
-		page,
-		searchTerm,
-	)
-
+	const result = await fetchInvoices(searchTermStatus, page, searchTerm)
+	if ('errorMessage' in result) {
+		//TODO: test this error fallback
+		return (
+			<div className="grid grid-cols-1 gap-4">
+				<div className="rounded-lg bg-white p-4 shadow-md">
+					<div className="flex items-center justify-between">
+						<h3 className="font-semibold text-lg">Error loading invoices</h3>
+					</div>
+				</div>
+			</div>
+		)
+	} else {
+		invoices = result.invoices
+		totalPages = result.totalPages
+	}
 	return (
 		<>
 			<PaginationTabs

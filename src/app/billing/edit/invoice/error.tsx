@@ -11,10 +11,9 @@ export default function Page({
 	error: Error & { digest?: string }
 	reset: () => void
 }) {
-	//TODO: make this look like the other error pages
 	return (
 		<FormContainer>
-			<FormHeader text={'Edit Invoices'} />
+			<FormHeader text={'Landscape Friend'} />
 			<div className="flex flex-col items-center justify-center gap-4 rounded-sm bg-white/70 p-4 shadow-lg">
 				<h2 className="font-semibold text-lg text-red-500">
 					Something went wrong!

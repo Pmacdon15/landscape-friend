@@ -25,7 +25,6 @@ import {
 import type { MarkQuoteProps } from '@/types/stripe-types'
 import { markPaidDb } from '../DB/clients-db'
 import { fetchClientNamesByStripeIds } from '../dal/clients-dal'
-import { triggerNotification } from '../dal/novu-dal'
 import {
 	fetchProductPrice,
 	getInvoiceDAL,
@@ -33,7 +32,7 @@ import {
 	hasStripAPIKey,
 } from '../dal/stripe-dal'
 import { fetchNovuId } from '../dal/user-dal'
-import { triggerNotificationSendToAdmin } from '../utils/novu'
+import { triggerNotificationSendToAdmin, triggerNovuEvent } from '../utils/novu'
 import { createStripeWebhook } from '../utils/stripe-utils'
 
 //MARK: Update API key
@@ -61,10 +60,7 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 		await createStripeWebhook(validatedFields.data.APIKey, orgId || userId)
 
 		if (novuId)
-			await triggerNotification(
-				novuId.UserNovuId,
-				'stripe-api-key-updated',
-			)
+			await triggerNovuEvent(novuId.UserNovuId, 'stripe-api-key-updated')
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		throw new Error(errorMessage)
@@ -277,7 +273,9 @@ export async function updateStripeDocument(
 					customerId,
 				])
 				if (
-					!(clientNamesResult instanceof Error) &&
+					!(
+						clientNamesResult && 'errorMessage' in clientNamesResult
+					) &&
 					clientNamesResult.length > 0
 				) {
 					clientName = clientNamesResult[0].full_name || ''
@@ -330,7 +328,9 @@ export async function updateStripeDocument(
 					customerId,
 				])
 				if (
-					!(clientNamesResult instanceof Error) &&
+					!(
+						clientNamesResult && 'errorMessage' in clientNamesResult
+					) &&
 					clientNamesResult.length > 0
 				) {
 					clientName = clientNamesResult[0].full_name || ''
@@ -492,7 +492,7 @@ async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
 			customerId,
 		])
 		if (
-			!(clientNamesResult instanceof Error) &&
+			!(clientNamesResult && 'errorMessage' in clientNamesResult) &&
 			clientNamesResult.length > 0
 		) {
 			clientName = clientNamesResult[0].full_name || ''
