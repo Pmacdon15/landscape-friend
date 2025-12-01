@@ -124,8 +124,8 @@ export async function assignSnowClearingDb(
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
-	console.log('Assigning snow clearing for client:', data.clientId)
-	console.log('Organization ID:', organization_id)
+	// console.log('Assigning snow clearing for client:', data.clientId)
+	// console.log('Organization ID:', organization_id)
 
 	if (!data.clientId || !organization_id) {
 		throw new Error('Client ID and organization ID are required')
@@ -135,13 +135,13 @@ export async function assignSnowClearingDb(
 		SELECT client_id, priority FROM assignments
 		WHERE org_id = ${organization_id} AND service_type = 'snow'
 	`
-	console.log('All assignments for org:', allAssignmentsForOrg)
+	// console.log('All assignments for org:', allAssignmentsForOrg)
 
 	const priorities = allAssignmentsForOrg.map((a) => a.priority)
 	const maxPriority = Math.max(0, ...priorities)
 	const nextPriority = maxPriority + 1
 
-	console.log('Next priority:', nextPriority)
+	// console.log('Next priority:', nextPriority)
 
 	const result = await sql`
     INSERT INTO assignments(client_id, org_id, user_id, service_type, priority)
@@ -150,7 +150,7 @@ export async function assignSnowClearingDb(
     WHERE id = ${data.clientId} AND organization_id = ${organization_id}
     RETURNING *;
   `
-	console.log('Assignment result:', result)
+	// console.log('Assignment result:', result)
 
 	if (!result || result.length === 0) {
 		throw new Error('Assignment Failed')

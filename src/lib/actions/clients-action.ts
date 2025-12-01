@@ -25,18 +25,27 @@ import { AddClientFormSchema } from '../zod/client-schemas'
 export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	const organizationId = orgId || userId
-	if (!userId) throw new Error('Not logged in')
-
-	if (!isAdmin) throw new Error('Not Admin.')
+	if (!userId)
+		return {
+			errorMessage: 'Not logged in',
+		}
+	if (!isAdmin)
+		return {
+			errorMessage: 'Not Admin.',
+		}
 
 	const orgSettings = await getOrganizationSettings(orgId || userId)
-	if (!orgSettings) throw new Error('Organization not found.')
+	if (!orgSettings)
+		return {
+			errorMessage: 'Organization not found.',
+		}
 
 	const clientCount = await countClientsByOrgId(orgId || userId)
 	if (clientCount >= orgSettings.max_allowed_clients) {
-		throw new Error(
-			'Maximum number of clients reached for this organization.',
-		)
+		return {
+			errorMessage:
+				'Maximum number of clients reached consider plan upgrade.',
+		}
 	}
 
 	const validatedFields = AddClientFormSchema.safeParse({
@@ -48,7 +57,10 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	})
 
 	console.log('validatedFields: ', validatedFields)
-	if (!validatedFields.success) throw new Error('Invalid form data')
+	if (!validatedFields.success)
+		return {
+			errorMessage: 'Invalid form data',
+		}
 
 	try {
 		const customerId = await findOrCreateStripeCustomerAndLinkClient(
@@ -69,16 +81,27 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 		return { success: true, customerId: customerId || null }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
-		throw new Error(errorMessage)
+		console.error(errorMessage)
+		return {
+			errorMessage: 'Error adding client',
+		}
 	}
 }
+
 export async function updateClient(
 	data: z.infer<typeof AddClientFormSchema>,
 	clientId: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 
-	if (!isAdmin) throw new Error('Not Admin.')
+	if (!userId)
+		return {
+			errorMessage: 'Not logged in.',
+		}
+	if (!isAdmin)
+		return {
+			errorMessage: 'Not Admin.',
+		}
 
 	const validatedFields = AddClientFormSchema.safeParse({
 		full_name: data.full_name,
@@ -88,16 +111,27 @@ export async function updateClient(
 	})
 
 	console.log('validatedFields: ', validatedFields)
-	if (!validatedFields.success) throw new Error('Invalid form data')
-
-	await createOrUpdateStripeUser(
-		clientId,
-		validatedFields.data.full_name,
-		validatedFields.data.email_address,
-		validatedFields.data.phone_number,
-		validatedFields.data.address,
-		(orgId ?? '') || (userId ?? ''),
-	)
+	if (!validatedFields.success)
+		return {
+			errorMessage: 'Invalid form data.',
+		}
+	try {
+		await createOrUpdateStripeUser(
+			clientId,
+			validatedFields.data.full_name,
+			validatedFields.data.email_address,
+			validatedFields.data.phone_number,
+			validatedFields.data.address,
+			(orgId ?? '') || (userId ?? ''),
+		)
+		return { success: true }
+	} catch (e: unknown) {
+		const errorMessage = e instanceof Error ? e.message : String(e)
+		console.error(errorMessage)
+		return {
+			errorMessage: 'Error updating client.',
+		}
+	}
 }
 
 export async function deleteClient(clientId: number) {

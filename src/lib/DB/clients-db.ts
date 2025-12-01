@@ -244,7 +244,6 @@ export async function updatedClientCutDayDb(
 	return result
 }
 //MARK: Fetch client list
-// MARK: Fetch client list
 export async function fetchClientListDb(
 	orgId: string,
 ): Promise<ClientInfoList[]> {
@@ -718,16 +717,8 @@ export async function markYardServicedDb(
           RETURNING id;
           `
 
-		const result = await query
-		console.log(`
-    INSERT INTO yards_marked_cut(client_id, cutting_date, assigned_to)
-    SELECT ${data.clientId}, ${data.date}, ${assigned_to}
-    FROM clients
-    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-    ON CONFLICT(client_id, cutting_date) DO NOTHING`)
+		const result = await query	
 
-		console.log('result')
-		console.log(result)
 		if (!result || result.length === 0) {
 			throw new Error(
 				'Error inserting data on table yards_marked_cut or yards_marked_clear',

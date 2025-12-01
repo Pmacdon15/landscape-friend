@@ -9,6 +9,7 @@ import { Button } from '../button'
 import { FormInput } from '../forms/form'
 import FormHeader from '../header/form-header'
 import EllipsisSpinner from '../loaders/EllipsisSpinner'
+import { toast } from 'sonner'
 
 export function AddClientForm({
 	setSheetOpen,
@@ -25,10 +26,15 @@ export function AddClientForm({
 		},
 	})
 
-	const { mutate, isPending, isError } = useAddClient({
+	const { mutate, isPending, isError, error } = useAddClient({
 		onSuccess: () => {
 			form.reset()
 			setSheetOpen(false)
+			toast.success('Client added!', { duration: 1500 })
+		},
+		onError: (error) => {
+			console.error('Error adding client', error)
+			toast.error('Error adding client!', { duration: 1500 })
 		},
 	})
 
@@ -68,7 +74,7 @@ export function AddClientForm({
 					name={'address'}
 				/>
 			</div>
-			<div className="flex justify-end">
+			<div className="flex justify-end gap-2">
 				<Button disabled={isPending} type="submit" variant={'outline'}>
 					{!isPending ? (
 						'Submit'
@@ -79,7 +85,11 @@ export function AddClientForm({
 						</div>
 					)}
 				</Button>
-				{isError && <p className="text-red-500">Error Submitting</p>}
+				{isError && (
+					<p className="text-red-500">
+						{error.message ?? 'Error adding client'}
+					</p>
+				)}
 			</div>
 		</form>
 	)

@@ -42,7 +42,7 @@ export async function fetchOrgMembers(): Promise<OrgMember[]> {
 				},
 			]
 		})
-		console.log('Org Members: ', orgMembers)
+		// console.log('Org Members: ', orgMembers)
 		return orgMembers
 	} catch (error) {
 		console.error('Error fetching org members:', error)

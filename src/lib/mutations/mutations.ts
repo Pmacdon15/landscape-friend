@@ -38,18 +38,23 @@ import {
 	updateTagAction,
 } from '../actions/revalidatePath-action'
 import type { AddClientFormSchema } from '../zod/client-schemas'
-//TODO: Use update tag instead of revalidate
+
 //MARK: Add client
 export const useAddClient = (options?: {
 	onSuccess?: () => void
 	onError?: (error: Error) => void
 }) => {
 	return useMutation({
-		mutationFn: (data: z.infer<typeof AddClientFormSchema>) => {
-			return addClient(data)
+		mutationFn: async (data: z.infer<typeof AddClientFormSchema>) => {
+			const result = await addClient(data)
+			if (result.errorMessage) {
+				throw new Error(result.errorMessage)
+			}
+			return result
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			// revalidatePathAction('/lists/client')
+			updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -58,23 +63,27 @@ export const useAddClient = (options?: {
 		},
 	})
 }
-//TODO: USE UPDATE TAG
+
 export const useUpdateClient = (options?: {
 	onSuccess?: () => void
 	onError?: (error: Error) => void
 }) => {
 	return useMutation({
-		mutationFn: ({
+		mutationFn: async ({
 			data,
 			clientId,
 		}: {
 			data: z.infer<typeof AddClientFormSchema>
 			clientId: number
 		}) => {
-			return updateClient(data, clientId)
+			const result = await updateClient(data, clientId)
+			if (result.errorMessage) {
+				throw new Error(result.errorMessage)
+			}
+			return result
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -85,16 +94,21 @@ export const useUpdateClient = (options?: {
 }
 
 //MARK: Delete client
-export const useDeleteClient = () => {
+export const useDeleteClient = (options?: {
+	onSuccess?: () => void
+	onError?: (error: Error) => void
+}) => {
 	return useMutation({
 		mutationFn: (clientId: number) => {
 			return deleteClient(clientId)
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			updateTagAction('clients')
+			options?.onSuccess?.()
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)
+			options?.onError?.(error)
 		},
 	})
 }
@@ -119,6 +133,7 @@ export const useUploadImage = ({
 		},
 		onSuccess: () => {
 			// revalidatePathAction("/lists/client");
+			updateTagAction('clients')
 			onSuccess?.()
 		},
 		onError: (error) => {
@@ -140,7 +155,7 @@ export const useDeleteSiteMap = () => {
 			return deleteSiteMap(clientId, siteMapId)
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
+			updateTagAction('clients')
 			revalidatePathAction('/lists/clearing')
 			revalidatePathAction('/lists/cutting')
 		},
@@ -155,7 +170,7 @@ export const useUploadDrawing = () => {
 			return uploadDrawing(file, clientId)
 		},
 		onSuccess: () => {
-			// revalidatePathAction("/lists/client");
+			updateTagAction('clients')
 			// onSuccess?.();
 		},
 		onError: () => {
