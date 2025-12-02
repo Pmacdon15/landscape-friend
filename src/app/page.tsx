@@ -87,7 +87,7 @@ export default function Home() {
 									<p className="mb-4 indent-4">
 										Landscape Friend is your all-in-one
 										solution for lawn care management.
-										Whether you&apos;re a homeowner or a
+										Whether you&apos;re a property or a
 										professional landscaper, our platform
 										offers tools to help you schedule
 										services, track maintenance, and manage
