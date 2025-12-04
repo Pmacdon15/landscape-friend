@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import {
 	Carousel,
 	CarouselContent,
@@ -28,11 +28,18 @@ export default function ServicedImageCarousel({
 	imageUrlList: ServicedImage[]
 }) {
 	const [selectedDay, setSelectedDay] = useState<string>('')
+	const [clientTimeZone, setClientTimeZone] = useState<string>('')
+
+	useEffect(() => {
+		setClientTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+	}, [])
 
 	const groupedImages = useMemo(() => {
 		const groups: Record<string, ServicedImage[]> = {}
 		for (const image of imageUrlList) {
-			const day = new Date(image.date).toDateString()
+			const centralTimeDate = new Date(image.date)
+			const clientTimeDate = new Date(centralTimeDate.toLocaleString('en-US', { timeZone: clientTimeZone }))
+			const day = clientTimeDate.toDateString()
 			if (!groups[day]) {
 				groups[day] = []
 			}
@@ -48,7 +55,7 @@ export default function ServicedImageCarousel({
 			}
 		}
 		return groups
-	}, [imageUrlList, selectedDay])
+	}, [imageUrlList, selectedDay, clientTimeZone])
 
 	const availableDays = Object.keys(groupedImages).sort(
 		(a, b) => new Date(b).getTime() - new Date(a).getTime(),
