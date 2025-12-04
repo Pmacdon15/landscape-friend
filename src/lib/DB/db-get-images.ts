@@ -12,14 +12,14 @@ export async function getServicedImagesUrlsDb(
         img.created_at AS date,
         img.imageurl
         FROM yards_marked_cut ymc
-        JOIN images_serviced_dev_tester img ON img.fk_cut_id = ymc.id
+        JOIN images_serviced img ON img.fk_cut_id = ymc.id
         WHERE ymc.client_id = ${clientId}
       UNION
       SELECT 
       img.created_at AS date,
       img.imageurl
         FROM yards_marked_clear ymc
-        JOIN images_serviced_dev_tester img ON img.fk_clear_id = ymc.id
+        JOIN images_serviced img ON img.fk_clear_id = ymc.id
         WHERE ymc.client_id = ${clientId}
       )
       ORDER BY date DESC
