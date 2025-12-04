@@ -9,14 +9,14 @@ export async function getServicedImagesUrlsDb(
 		const result = (await sql` 
       (
       SELECT 
-        ymc.cutting_date AS date,
+        img.created_at AS date,
         img.imageurl
         FROM yards_marked_cut ymc
         JOIN images_serviced img ON img.fk_cut_id = ymc.id
         WHERE ymc.client_id = ${clientId}
       UNION
       SELECT 
-      ymc.clearing_date AS date,
+      img.created_at AS date,
       img.imageurl
         FROM yards_marked_clear ymc
         JOIN images_serviced img ON img.fk_clear_id = ymc.id
@@ -24,7 +24,8 @@ export async function getServicedImagesUrlsDb(
       )
       ORDER BY date DESC
     `) as { date: Date; imageurl: string }[]
-		// console.log(result)
+		console.log('client images', result)
+
 		return result
 	} catch (error) {
 		console.error('Error in getting Serviced Images Urls:', error)

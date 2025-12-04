@@ -154,7 +154,34 @@ CREATE TABLE images_serviced (
     )
 );
 
--- SELECT* FROM users;
+CREATE TABLE images_serviced (
+    id SERIAL PRIMARY KEY,
+    imageURL TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fk_cut_id INT,
+    fk_clear_id INT,
+    CONSTRAINT fk_cut FOREIGN KEY (fk_cut_id) REFERENCES yards_marked_cut (id) ON DELETE CASCADE,
+    CONSTRAINT fk_clear FOREIGN KEY (fk_clear_id) REFERENCES yards_marked_clear (id) ON DELETE CASCADE,
+    CONSTRAINT at_least_one_fk CHECK (
+        fk_cut_id IS NOT NULL OR fk_clear_id IS NOT NULL
+    )
+);
+
+
+-- SELECT 
+--         ymc.cutting_date AS date,
+--         img.imageurl
+--         FROM yards_marked_cut ymc
+--         JOIN images_serviced img ON img.fk_cut_id = ymc.id
+--         WHERE ymc.client_id = 110
+--       UNION
+--       SELECT 
+--       ymc.clearing_date AS date,
+--       img.imageurl
+--         FROM yards_marked_clear ymc
+--         JOIN images_serviced img ON img.fk_clear_id = ymc.id
+--         WHERE ymc.client_id = 110;
+SELECT * FROM images_serviced;
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
@@ -175,10 +202,10 @@ CREATE TABLE images_serviced (
 -- SELECT * FROM assignments;
 -- SELECT * FROM clients;
 -- SELECT * FROM users;
-SELECT * FROM organizations;
-UPDATE organizations
-SET max_allowed_clients = 150
-WHERE organization_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
+-- SELECT * FROM organizations;
+-- UPDATE organizations
+-- SET max_allowed_clients = 150
+-- WHERE organization_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
 -- SELECT id, novu_subscriber_id
 --             FROM users
 --             WHERE id IN ('user_31kuxkI2CwFoInhMSg0HDZ4niYz');

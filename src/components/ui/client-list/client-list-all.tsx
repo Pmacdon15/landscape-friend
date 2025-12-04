@@ -33,6 +33,7 @@ export default async function ClientListAll({
 				<p>Error Loading clients</p>{' '}
 			</ContentContainer>
 		)
+
 	const { clients, totalPages } = result
 
 	if (clients.length < 1)
@@ -43,6 +44,7 @@ export default async function ClientListAll({
 			</ContentContainer>
 		)
 	// console.log('clients:', clients)
+
 	return (
 		<>
 			<PaginationTabs
@@ -139,6 +141,7 @@ export default async function ClientListAll({
 						</li>
 					</FormContainer>
 				))}
+				)
 			</ul>
 			<PaginationTabs
 				page={searchParams.page}
