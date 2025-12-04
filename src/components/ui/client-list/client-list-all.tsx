@@ -44,6 +44,7 @@ export default async function ClientListAll({
 			</ContentContainer>
 		)
 	// console.log('clients:', clients)
+
 	return (
 		<>
 			<PaginationTabs
