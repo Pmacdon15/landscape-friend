@@ -16,7 +16,7 @@ import ServicedImageCarousel from '../client-list/serviced-image-carousel'
 import FormHeader from '../header/form-header'
 import SheetLogoHeader from '../header/sheet-logo-header'
 
-export async function ViewSitePhotoSheet({
+export function ViewSitePhotoSheet({
 	getServicedImagesUrlsPromise,
 }: {
 	getServicedImagesUrlsPromise: Promise<{ date: Date; imageurl: string }[]>
