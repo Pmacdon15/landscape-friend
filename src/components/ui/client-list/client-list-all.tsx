@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { getServicedImagesUrls } from '@/lib/dal/clients-dal'
 import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
@@ -33,6 +34,7 @@ export default async function ClientListAll({
 				<p>Error Loading clients</p>{' '}
 			</ContentContainer>
 		)
+
 	const { clients, totalPages } = result
 
 	if (clients.length < 1)
@@ -51,94 +53,115 @@ export default async function ClientListAll({
 				totalPages={totalPages}
 			/>
 			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
-				{clients.map((client) => (
-					<FormContainer key={client.id}>
-						<li className="relative rounded-sm border bg-white/70 p-4">
-							{isAdmin?.isAdmin && (
-								<DeleteClientButton clientId={client.id} />
-							)}
-							<FormHeader text={client.full_name} />
-							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
-								{client.phone_number && client.phone_number && (
-									<ClientListItemHeader
-										clientPhoneNumber={client.phone_number}
-									/>
+				{clients.map((client) => {
+					const getServicedImagesUrlsPromise = getServicedImagesUrls(
+						client.id,
+					)
+					return (
+						<FormContainer key={client.id}>
+							<li className="relative rounded-sm border bg-white/70 p-4">
+								{isAdmin?.isAdmin && (
+									<DeleteClientButton clientId={client.id} />
 								)}
-								{client.email_address && (
-									<ClientListItemEmail
-										clientEmailAddress={
-											client.email_address
-										}
-										clientFullName={client.full_name}
-									/>
-								)}
+								<FormHeader text={client.full_name} />
+								<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
+									{client.phone_number &&
+										client.phone_number && (
+											<ClientListItemHeader
+												clientPhoneNumber={
+													client.phone_number
+												}
+											/>
+										)}
+									{client.email_address && (
+										<ClientListItemEmail
+											clientEmailAddress={
+												client.email_address
+											}
+											clientFullName={client.full_name}
+										/>
+									)}
 
-								<ClientListItemAddress
-									clientAddress={client.address}
-									clientId={client.id}
-								/>
-							</div>
-							{isAdmin?.isAdmin && (
-								<div className="flex flex-col items-center gap-2">
-									<p>Amount owing: ${client.amount_owing} </p>
-									<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-										<Suspense
-											fallback={<AssignedToFallback />}
-										>
-											<AssignedTo
-												clientAssignedTo={
-													client.grass_assigned_to !==
-													'Unassigned'
-														? client.grass_assigned_to
-														: 'not-assigned'
-												}
-												clientId={client.id}
-												orgMembersPromise={
-													orgMembersPromise
-												}
-											/>
-										</Suspense>
-										<Suspense
-											fallback={<AssignedToFallback />}
-										>
-											<AssignedTo
-												clientAssignedTo={
-													client.snow_assigned_to !==
-													'Unassigned'
-														? client.snow_assigned_to
-														: 'not-assigned'
-												}
-												clientId={client.id}
-												orgMembersPromise={
-													orgMembersPromise
-												}
-												snow
-											/>
-										</Suspense>
-									</div>
+									<ClientListItemAddress
+										clientAddress={client.address}
+										clientId={client.id}
+									/>
 								</div>
-							)}
-							<CuttingWeekDropDownContainer
-								client={{
-									id: client.id,
-									cutting_schedules: client.cutting_schedules,
-								}}
-								isAdmin={isAdmin?.isAdmin}
-							/>
-							<div className="flex flex-col gap-2">
-								<EditClientFormContainer
-									client={client}
-									isAdmin={isAdmin?.isAdmin || false}
+								{isAdmin?.isAdmin && (
+									<div className="flex flex-col items-center gap-2">
+										<p>
+											Amount owing: ${
+												client.amount_owing
+											}{' '}
+										</p>
+										<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+											<Suspense
+												fallback={
+													<AssignedToFallback />
+												}
+											>
+												<AssignedTo
+													clientAssignedTo={
+														client.grass_assigned_to !==
+														'Unassigned'
+															? client.grass_assigned_to
+															: 'not-assigned'
+													}
+													clientId={client.id}
+													orgMembersPromise={
+														orgMembersPromise
+													}
+												/>
+											</Suspense>
+											<Suspense
+												fallback={
+													<AssignedToFallback />
+												}
+											>
+												<AssignedTo
+													clientAssignedTo={
+														client.snow_assigned_to !==
+														'Unassigned'
+															? client.snow_assigned_to
+															: 'not-assigned'
+													}
+													clientId={client.id}
+													orgMembersPromise={
+														orgMembersPromise
+													}
+													snow
+												/>
+											</Suspense>
+										</div>
+									</div>
+								)}
+								<CuttingWeekDropDownContainer
+									client={{
+										id: client.id,
+										cutting_schedules:
+											client.cutting_schedules,
+									}}
+									isAdmin={isAdmin?.isAdmin}
 								/>
-								<ViewSitePhotoSheet clientId={client.id} />
-							</div>
-							<ImageList
-								client={client}
-								isAdmin={isAdmin?.isAdmin}
-							/>
-						</li>
-					</FormContainer>
-				))}
+								<div className="flex flex-col gap-2">
+									<EditClientFormContainer
+										client={client}
+										isAdmin={isAdmin?.isAdmin || false}
+									/>
+									<ViewSitePhotoSheet
+										getServicedImagesUrlsPromise={
+											getServicedImagesUrlsPromise
+										}
+									/>
+								</div>
+								<ImageList
+									client={client}
+									isAdmin={isAdmin?.isAdmin}
+								/>
+							</li>
+						</FormContainer>
+					)
+				})}
 			</ul>
 			<PaginationTabs
 				page={searchParams.page}
