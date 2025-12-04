@@ -154,7 +154,20 @@ CREATE TABLE images_serviced (
     )
 );
 
--- SELECT* FROM users;
+CREATE TABLE images_serviced_dev_tester (
+    id SERIAL PRIMARY KEY,
+    imageURL TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fk_cut_id INT,
+    fk_clear_id INT,
+    CONSTRAINT fk_cut FOREIGN KEY (fk_cut_id) REFERENCES yards_marked_cut (id) ON DELETE CASCADE,
+    CONSTRAINT fk_clear FOREIGN KEY (fk_clear_id) REFERENCES yards_marked_clear (id) ON DELETE CASCADE,
+    CONSTRAINT at_least_one_fk CHECK (
+        fk_cut_id IS NOT NULL OR fk_clear_id IS NOT NULL
+    )
+);
+
+SELECT* FROM images_serviced;
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;

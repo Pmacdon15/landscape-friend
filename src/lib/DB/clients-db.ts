@@ -749,11 +749,11 @@ export async function saveUrlImagesServices(
 	console.log(fk_id)
 	try {
 		const query = snow
-			? sql`INSERT INTO images_serviced(imageurl, fk_clear_id)
+			? sql`INSERT INTO images_serviced_dev_tester(imageurl, fk_clear_id)
   VALUES (${image_url}, ${fk_id})
   returning *;
   `
-			: sql`INSERT INTO images_serviced(imageurl, fk_cut_id)
+			: sql`INSERT INTO images_serviced_dev_tester(imageurl, fk_cut_id)
   VALUES (${image_url}, ${fk_id})
   returning *;
   `
@@ -835,7 +835,7 @@ export async function getClientsBlobsDB(orgId: string): Promise<BlobUrl[]> {
         c.id AS reference_id,
         c.cutting_date AS reference_date
     FROM 
-        images_serviced i
+        images_serviced_dev_tester i
     JOIN 
         yards_marked_cut c ON i.fk_cut_id = c.id
     JOIN 
@@ -851,7 +851,7 @@ export async function getClientsBlobsDB(orgId: string): Promise<BlobUrl[]> {
         cl.id AS reference_id,
         cl.clearing_date AS reference_date
     FROM 
-        images_serviced i
+        images_serviced_dev_tester i
     JOIN 
         yards_marked_clear cl ON i.fk_clear_id = cl.id
     JOIN 
