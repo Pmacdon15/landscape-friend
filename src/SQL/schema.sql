@@ -167,7 +167,21 @@ CREATE TABLE images_serviced_dev_tester (
     )
 );
 
-SELECT* FROM images_serviced;
+
+-- SELECT 
+--         ymc.cutting_date AS date,
+--         img.imageurl
+--         FROM yards_marked_cut ymc
+--         JOIN images_serviced_dev_tester img ON img.fk_cut_id = ymc.id
+--         WHERE ymc.client_id = 110
+--       UNION
+--       SELECT 
+--       ymc.clearing_date AS date,
+--       img.imageurl
+--         FROM yards_marked_clear ymc
+--         JOIN images_serviced_dev_tester img ON img.fk_clear_id = ymc.id
+--         WHERE ymc.client_id = 110;
+SELECT * FROM images_serviced_dev_tester;
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
