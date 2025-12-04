@@ -1,6 +1,4 @@
-'use client'
 import { Camera } from 'lucide-react'
-import { use } from 'react'
 import {
 	Sheet,
 	SheetClose,
@@ -11,17 +9,14 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet'
+import { getServicedImagesUrls } from '@/lib/dal/clients-dal'
 import { Button } from '../button'
 import ServicedImageCarousel from '../client-list/serviced-image-carousel'
 import FormHeader from '../header/form-header'
 import SheetLogoHeader from '../header/sheet-logo-header'
 
-export function ViewSitePhotoSheet({
-	getServicedImagesUrlsPromise,
-}: {
-	getServicedImagesUrlsPromise: Promise<{ date: Date; imageurl: string }[]>
-}) {
-	const imagesUrlsObjects = use(getServicedImagesUrlsPromise)
+export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
+	const imagesUrlsObjects = await getServicedImagesUrls(clientId)
 
 	return (
 		<Sheet>
