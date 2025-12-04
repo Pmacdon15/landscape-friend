@@ -31,10 +31,12 @@ export default function ServicedImageCarousel({
 	const [clientTimeZone, setClientTimeZone] = useState<string>('')
 
 	useEffect(() => {
-		setClientTimeZone(Intl.DateTimeFormat().resolvedOptions().timeZone)
+		const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+		setClientTimeZone(tz)
 	}, [])
 
 	const groupedImages = useMemo(() => {
+		if (!clientTimeZone) return {}
 		const groups: Record<string, ServicedImage[]> = {}
 		for (const image of imageUrlList) {
 			const centralTimeDate = new Date(image.date)
@@ -60,6 +62,8 @@ export default function ServicedImageCarousel({
 	const availableDays = Object.keys(groupedImages).sort(
 		(a, b) => new Date(b).getTime() - new Date(a).getTime(),
 	)
+
+	if (!clientTimeZone) return <div>Loading...</div>
 
 	return (
 		<div className="p-8">
