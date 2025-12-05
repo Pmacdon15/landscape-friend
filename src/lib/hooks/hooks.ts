@@ -215,7 +215,7 @@ export function useServiceStatusSearch() {
 	return { currentServiceStatus, setServiceStatus }
 }
 
-export function useSearchInput(delay: number = 300) {
+export function useSearchInput(delay: number = 400) {
 	const router = useRouter()
 	const searchParams = useSearchParams()
 	const urlSearchTerm = searchParams.get('search') || ''
