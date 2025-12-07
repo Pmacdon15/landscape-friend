@@ -27,11 +27,9 @@ export default async function SearchForm({
 				variant !== 'quotes' &&
 				variant !== 'subscriptions' && (
 					<Suspense fallback={<AssignedToSelectorFallback />}>
-						{isAdmin && (
-							<AssignedToSelector
-								orgMembersPromise={orgMembersPromise}
-							/>
-						)}
+						<AssignedToSelector
+							orgMembersPromise={orgMembersPromise}
+						/>
 					</Suspense>
 				)}
 			{variant === 'default' && (
