@@ -135,12 +135,15 @@ export async function fetchSnowClearingClients(
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 
 	if (!userId) return { errorMessage: 'User ID is missing.' }
+
 	if (
 		!isAdmin &&
 		userId !== searchTermAssignedTo &&
 		searchTermAssignedTo !== ''
-	)
+	) {
 		return { errorMessage: 'Not admin can not view other coworkers list' }
+	}
+
 	try {
 		const result = await fetchClientsClearingGroupsDb(
 			orgId || userId,

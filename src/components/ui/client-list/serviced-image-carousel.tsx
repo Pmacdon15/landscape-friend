@@ -89,9 +89,9 @@ export default function ServicedImageCarousel({
 						>
 							<Image
 								alt={`Serviced Image: ${index}`}
+								blurDataURL={'/placeholder.png'}
 								height={500}
 								placeholder="blur"
-								blurDataURL={"/placeholder.png"}	
 								src={image.imageurl}
 								width={500}
 							/>

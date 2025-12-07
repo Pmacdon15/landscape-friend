@@ -1,4 +1,7 @@
+'use client'
+
 import type { Route } from 'next'
+import { useSearchParams } from 'next/navigation'
 import {
 	Pagination,
 	PaginationContent,
@@ -20,6 +23,9 @@ export function PaginationTabs({
 	page: number
 	totalPages: number
 }) {
+	const searchParams = useSearchParams()
+	const query = Object.fromEntries(searchParams.entries())
+
 	return totalPages > 1 ? (
 		<div
 			className={`rounded-sm bg-white/30 p-2 shadow-lg ${fullWidth ? 'w-full' : 'max-sm:w-full sm:w-4/6 md:w-5/6'}`}
@@ -31,7 +37,7 @@ export function PaginationTabs({
 							<PaginationPrevious
 								href={{
 									pathname: path,
-									query: { page: page - 1 },
+									query: { ...query, page: page - 1 },
 								}}
 							/>
 						</PaginationItem>
@@ -39,7 +45,10 @@ export function PaginationTabs({
 					{page > 2 && (
 						<PaginationItem>
 							<PaginationLink
-								href={{ pathname: path, query: { page: 1 } }}
+								href={{
+									pathname: path,
+									query: { ...query, page: 1 },
+								}}
 							>
 								1
 							</PaginationLink>
@@ -61,7 +70,10 @@ export function PaginationTabs({
 					).map((p) => (
 						<PaginationItem key={p}>
 							<PaginationLink
-								href={{ pathname: path, query: { page: p } }}
+								href={{
+									pathname: path,
+									query: { ...query, page: p },
+								}}
 								isActive={p === page}
 							>
 								{p}
@@ -78,7 +90,7 @@ export function PaginationTabs({
 							<PaginationLink
 								href={{
 									pathname: path,
-									query: { page: totalPages },
+									query: { ...query, page: totalPages },
 								}}
 							>
 								{totalPages}
@@ -90,7 +102,7 @@ export function PaginationTabs({
 							<PaginationNext
 								href={{
 									pathname: path,
-									query: { page: page + 1 },
+									query: { ...query, page: page + 1 },
 								}}
 							/>
 						</PaginationItem>

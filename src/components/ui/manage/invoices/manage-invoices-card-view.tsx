@@ -25,7 +25,9 @@ export async function CardView({
 			<div className="grid grid-cols-1 gap-4">
 				<div className="rounded-lg bg-white p-4 shadow-md">
 					<div className="flex items-center justify-between">
-						<h3 className="font-semibold text-lg">Error loading invoices</h3>
+						<h3 className="font-semibold text-lg">
+							Error loading invoices
+						</h3>
 					</div>
 				</div>
 			</div>
