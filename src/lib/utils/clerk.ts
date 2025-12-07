@@ -14,10 +14,9 @@ export async function isOrgAdmin(protect = true) {
 	}
 
 	const { userId, orgId, sessionClaims } = authResult
-	let isAdmin = true
-	if (orgId && sessionClaims.orgRole !== 'org:admin') isAdmin = false
-	else isAdmin = true
-
+	let isAdmin = false
+	if (orgId && sessionClaims.orgRole === 'org:admin') isAdmin = true
+	
 	return { userId, orgId, sessionClaims, isAdmin }
 }
 

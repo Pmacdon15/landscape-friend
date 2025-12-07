@@ -19,13 +19,15 @@ export default async function SearchForm({
 	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
 }) {
 	const isAdmin = await isAdminPromise
+	
 	return (
 		<div className="flex flex-col flex-wrap justify-center gap-2 rounded-sm bg-white/70 p-2 shadow-lg md:flex-row">
 			<SearchInput />
-			{isAdmin &&
-				variant !== 'invoices' &&
-				variant !== 'quotes' &&
-				variant !== 'subscriptions' && (
+			{isAdmin?.isAdmin &&
+				// variant !== 'invoices' &&
+				// variant !== 'quotes' &&
+				// variant !== 'subscriptions' && (
+				(
 					<Suspense fallback={<AssignedToSelectorFallback />}>
 						<AssignedToSelector
 							orgMembersPromise={orgMembersPromise}
