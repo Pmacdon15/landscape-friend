@@ -30,3 +30,15 @@ export async function handleOrganizationDeletedDb(orgId: string) {
         RETURNING*;       
     `
 }
+
+export async function updateMaxClients(orgId: string, maxClients: number) {
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	const result = await sql`
+      UPDATE organizations
+      SET max_allowed_clients = ${maxClients}
+      WHERE organization_id = ${orgId}
+      RETURNING *;
+	  `
+
+	return result[0]
+}

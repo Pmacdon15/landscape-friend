@@ -1,7 +1,7 @@
 import { clerkClient } from '@clerk/nextjs/server'
 import { neon } from '@neondatabase/serverless'
 import { v4 as uuidv4 } from 'uuid'
-import { handleOrganizationDeletedDb } from '../DB/org-db'
+import { handleOrganizationDeletedDb, updateMaxClients } from '../DB/org-db'
 import { deleteClientsBlobs } from '../utils/blobs'
 import { deleteEmptyOrganizations } from '../utils/clerk'
 import {
@@ -99,8 +99,9 @@ export async function handleSubscriptionUpdate(orgId: string, plan: string) {
 
 	if (plan === 'new_business_plan') {
 		await clerk.organizations.updateOrganization(orgId, {
-			maxAllowedMemberships: 4,
+			maxAllowedMemberships: 2,
 		})
+		await updateMaxClients(orgId, 50)
 		await triggerNotificationSendToAdmin(orgId, 'subscription-added')
 	}
 	// else if (plan === 'pro_25_people_org') {
@@ -111,5 +112,6 @@ export async function handleSubscriptionUpdate(orgId: string, plan: string) {
 		await clerk.organizations.updateOrganization(orgId, {
 			maxAllowedMemberships: 1,
 		})
+		await updateMaxClients(orgId, 25)
 	}
 }

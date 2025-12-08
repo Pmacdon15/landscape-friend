@@ -181,7 +181,7 @@ CREATE TABLE images_serviced (
 --         FROM yards_marked_clear ymc
 --         JOIN images_serviced img ON img.fk_clear_id = ymc.id
 --         WHERE ymc.client_id = 110;
-SELECT * FROM images_serviced;
+-- SELECT * FROM images_serviced;
 -- SELECT * FROM images;
 -- SELECT * FROM yards_marked_cut;
 -- SELECT * FROM yards_um that might not work masybe marked_clear;
@@ -239,3 +239,7 @@ SELECT * FROM images_serviced;
 
 -- INSERT INTO users (id, name, email)
 -- VALUES ('user_368RTyyYd3bUdazs9qaAqGI5D9S', 'New User', 'pmacdonald15@proton.me');
+
+-- ALTER TABLE organizations
+-- ALTER COLUMN max_allowed_clients
+-- SET DEFAULT 25;
