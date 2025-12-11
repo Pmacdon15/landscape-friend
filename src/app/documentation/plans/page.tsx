@@ -4,10 +4,12 @@ import PlansComponent from '@/components/ui/plans-component'
 
 export default async function Page() {
 	return (
-		<>
+		<div className="flex flex-col gap-4">
 			<PlansComponent />
 			<BackToDocsLink />
-			<BackToLink path={'/'} place={'Home'} />
-		</>
+			<div className='mx-auto'>
+				<BackToLink path={'/'} place={'Home'} />
+			</div>
+		</div>
 	)
 }

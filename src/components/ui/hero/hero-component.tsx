@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { Button } from '../button'
 
 export default function HeroComponent() {
@@ -15,7 +16,7 @@ export default function HeroComponent() {
 					alt="Landscape Friend Logo"
 					className="h-auto w-16 mr-2"
 					height={200}
-					src="/logo.png" 
+					src="/logo.png"
 					width={200}
 				/>
 				<div>
@@ -29,10 +30,12 @@ export default function HeroComponent() {
 			</div>
 			<div className="justify-top items-left logo-slide-in-reverse pl-8 md:pl-24 mt-24">
 				<h1 className="text-white  mb-4 text-3xl font-bold w-4/6 mt-4">
-					Need to manage your clients' maintenance schedules? We've
+					Need to manage your client's maintenance schedules? We've
 					got you covered.
 				</h1>
-				<Button variant="outline">Click to see prices</Button>
+				<Link href={'/documentation/plans'}>
+					<Button variant="outline">Click to see prices</Button>
+				</Link>
 			</div>
 		</div>
 	)
