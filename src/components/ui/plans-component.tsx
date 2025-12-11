@@ -2,7 +2,6 @@ import { PricingTable } from '@clerk/nextjs'
 import FillFormContainer from './containers/fill-form-container'
 import FormContainer from './containers/form-container'
 import FormHeader from './header/form-header'
-import BackToDocsLink from './links/back-to-docs-link'
 
 export default function PlansComponent() {
 	return (
@@ -13,7 +12,9 @@ export default function PlansComponent() {
 					<FormHeader text={'Organization Plans'} />
 					<PricingTable for="organization" />
 				</div>
-				<BackToDocsLink />
+				<h1 className="text-muted-foreground">
+					Sign in and create an organization to start free trail!
+				</h1>
 			</FillFormContainer>
 		</FormContainer>
 	)

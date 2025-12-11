@@ -37,7 +37,7 @@ export default function Footer() {
 									className="hover:text-green-300"
 									href="/documentation"
 								>
-									Documentation
+									Information
 								</Link>
 							</li>
 						</ul>

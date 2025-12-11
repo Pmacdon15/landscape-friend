@@ -3,9 +3,9 @@ import FillFormContainer from '../containers/fill-form-container'
 import FormContainer from '../containers/form-container'
 export default function WhyChooseUsMessage() {
 	return (
-		<div className="mx-auto max-w-md items-center justify-center overflow-hidden md:max-w-6xl">
-			<div className="md:flex">
-				<div className="logo-slide-in mt-4 w-full sm:mb-4 md:mt-0 md:mr-4">
+		<div className="mx-auto w-full items-center justify-center overflow-hidden lg:w-5/6">
+			<div className="flex flex-col md:flex-row">
+				<div className="logo-slide-in mt-4 lg:w-2/3 sm:mb-4 md:mt-0 md:mr-4">
 					<FormContainer popover={true}>
 						<FillFormContainer>
 							<h1 className="mb-6 font-bold text-3xl">
@@ -29,7 +29,7 @@ export default function WhyChooseUsMessage() {
 								</li>
 								<li>
 									Easy payments and invoicing integrated
-									through Stripe&apos; platform
+									through Stripe's platform
 								</li>
 								<li>
 									Send out updates and newsletters to all of

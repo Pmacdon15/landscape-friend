@@ -5,8 +5,8 @@ import FormContainer from '../containers/form-container'
 
 export default function WelcomeMessage() {
 	return (
-		<div className="mx-auto w-full items-center justify-center lg:w-4/6">
-			<div className="logo-slide-in-reverse mt-4 w-full md:mt-0 md:ml-4">
+		<div className="mx-auto w-full items-center justify-center lg:w-5/6">
+			<div className="logo-slide-in-reverse mt-4 w-full md:mt-0">
 				<FormContainer popover={true}>
 					<FillFormContainer>
 						<h1 className="mb-6 font-bold text-3xl">
@@ -18,10 +18,10 @@ export default function WelcomeMessage() {
 							people that have experience in your industry.
 						</p>
 						<p className="mb-4 indent-4 flex ">
-							Let us get you started with use today
+							Let us get you started with use today, have questions? 
 							<Link href={'/'}>
 								<Button variant={'outline'}>
-									Start free trail today
+									Send us a message today!
 								</Button>
 							</Link>
 						</p>

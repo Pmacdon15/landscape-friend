@@ -55,3 +55,19 @@
 .logo-slide-in-reverse {
 	animation: logoSlideInReverse 1s ease-in-out forwards;
 }
+
+
+@keyframes logoSlideInTop {
+	from {
+		transform: translateY(-10vh);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+.logo-slide-in-top {
+	animation: logoSlideInTop 1s ease-in-out forwards;
+}

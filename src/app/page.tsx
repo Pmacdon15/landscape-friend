@@ -1,4 +1,3 @@
-'use client'
 import '@/animations/landing-page.css'
 import HeroComponent from '@/components/ui/hero/hero-component'
 import PlansContent from '@/components/ui/home/plans-content'
