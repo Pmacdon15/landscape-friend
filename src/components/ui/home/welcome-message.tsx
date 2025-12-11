@@ -18,7 +18,7 @@ export default function WelcomeMessage() {
 							people that have experience in your industry.
 						</p>
 						<p className="mb-4 indent-4 flex ">
-							Let us get you started with use today, have questions? 
+							Let us get you started with us today, have questions? 
 							<Link href={'/'}>
 								<Button variant={'outline'}>
 									Send us a message today!

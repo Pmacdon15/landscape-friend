@@ -13,18 +13,18 @@ export default function WhyChooseUsMessage() {
 							</h1>
 							<p className="mb-4 indent-4">
 								Landscape Friend is your all-in-one solution for
-								lawn care management. Whether you&apos or a
-								professional landscaper, our platform offers
-								tools to help you schedule services, track
-								maintenance, and manage your lawn care tasks
-								efficiently.
+								lawn care management. Whether you property owner
+								or a professional landscaper, our platform
+								offers tools to help you schedule services,
+								track maintenance, and manage your lawn care
+								tasks efficiently.
 							</p>
 							<h2 className="mb-4 font-semibold text-2xl">
 								What we Provide:
 							</h2>
 							<ul className="mb-4 list-inside list-disc">
 								<li>
-									A secure end-to-end platform for managing
+									A streamed-lined platform for managing
 									clients for landscaping related work
 								</li>
 								<li>
@@ -32,8 +32,12 @@ export default function WhyChooseUsMessage() {
 									through Stripe's platform
 								</li>
 								<li>
-									Send out updates and newsletters to all of
-									your clients with ease
+									Order or reorder your route between clients
+									homes, easily see your clients on a map with
+									a link to google maps.
+								</li>
+								<li>
+									Send out email and your clients with ease
 								</li>
 							</ul>
 							<p className="mb-4">

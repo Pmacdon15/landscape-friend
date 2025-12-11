@@ -5,7 +5,7 @@ import { Button } from '../button'
 export default function HeroComponent() {
 	return (
 		<div
-			className="w-full h-[50vh] bg-no-repeat bg-center flex flex-col items-start"
+			className="w-full h-[50vh] bg-no-repeat bg-center flex flex-col items-start border-2 border-white rounded-sm"
 			style={{
 				backgroundImage: `url('/hero4.png')`,
 				backgroundSize: 'cover',
