@@ -1,23 +1,10 @@
-import { PricingTable } from '@clerk/nextjs'
-import FillFormContainer from '@/components/ui/containers/fill-form-container'
-import FormContainer from '@/components/ui/containers/form-container'
-import FormHeader from '@/components/ui/header/form-header'
-import BackToDocsLink from '@/components/ui/links/back-to-docs-link'
 import BackToLink from '@/components/ui/links/back-to-link'
+import PlansComponent from '@/components/ui/plans-component'
 
 export default async function Page() {
 	return (
 		<>
-			<FormContainer>
-				<FillFormContainer>
-					<FormHeader text={'Plans'} />
-					<div className="flex flex-col items-center gap-4 rounded-sm border p-4">
-						<FormHeader text={'Organization Plans'} />
-						<PricingTable for="organization" />
-					</div>
-					<BackToDocsLink />
-				</FillFormContainer>
-			</FormContainer>
+			<PlansComponent />
 			<BackToLink path={'/'} place={'Home'} />
 		</>
 	)
