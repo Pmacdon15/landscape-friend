@@ -110,7 +110,7 @@ export default function NavigationMenuComponent() {
 						<NavigationMenuTrigger>Billing</NavigationMenuTrigger>
 						<NavigationMenuContent>
 							{hasStripAPIKey ? (
-								<ul className="grid w-[300px] gap-4">
+								<ul className="grid w-max gap-4">
 									<li>
 										<NavigationMenuLink asChild>
 											<Link href="/billing/create-quote">
