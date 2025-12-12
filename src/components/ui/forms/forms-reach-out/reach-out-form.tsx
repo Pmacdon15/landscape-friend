@@ -55,8 +55,8 @@ export function ReachOutForm() {
 			<CardHeader>
 				<CardTitle>Reach out</CardTitle>
 				<CardDescription>
-					Send me a message and we can chat about a job or NEXTJS or
-					some other cool frame work.{' '}
+					Want to get started but don't know how? Need support for an
+					existing account? Your in the right place.{' '}
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -93,7 +93,11 @@ export function ReachOutForm() {
 					>
 						Reset
 					</Button> */}
-					<Button  className='ml-auto' form="form-reach-out" type="submit">
+					<Button
+						className="ml-auto"
+						form="form-reach-out"
+						type="submit"
+					>
 						Submit
 					</Button>
 				</Field>

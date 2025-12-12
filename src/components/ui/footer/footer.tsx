@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Button } from '../button'
 
 export default function Footer() {
 	return (
@@ -47,12 +48,17 @@ export default function Footer() {
 						<p className="text-gray-400">
 							Have questions or need help?
 						</p>
-						<a
+						<Link
 							className="text-blue-400 hover:text-blue-300"
 							href="mailto:support@landscapefriend.com"
 						>
 							support@landscapefriend.com
-						</a>
+						</Link>
+						<Link href={'/contact'}>
+							<Button size={'sm'}variant={'outline'}>
+								Send us a message today!
+							</Button>
+						</Link>
 					</div>
 				</div>
 			</div>
