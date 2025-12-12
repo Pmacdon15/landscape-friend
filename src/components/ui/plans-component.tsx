@@ -23,7 +23,7 @@ export default function PlansComponent() {
 						<SignedOut>
 							<h1 className="text-muted-foreground">
 								Sign in and create an organization to start free
-								trail!
+								a trail!
 							</h1>
 							<div className="ml-auto flex gap-4 rounded-sm bg-white/30 p-2 backdrop-blur-md backdrop-filter">
 								<SignInButton

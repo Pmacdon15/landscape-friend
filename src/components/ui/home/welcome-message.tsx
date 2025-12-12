@@ -20,7 +20,7 @@ export default function WelcomeMessage() {
 						<p className="mb-4 flex items-center indent-4">
 							Let us get you started with us today, have
 							questions?
-							<Link href={'/'}>
+							<Link href={'/contact'}>
 								<Button variant={'outline'}>
 									Send us a message today!
 								</Button>
