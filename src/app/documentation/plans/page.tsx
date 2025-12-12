@@ -7,7 +7,7 @@ export default async function Page() {
 		<div className="flex flex-col gap-4">
 			<PlansComponent />
 			<BackToDocsLink />
-			<div className='mx-auto'>
+			<div className="mx-auto">
 				<BackToLink path={'/'} place={'Home'} />
 			</div>
 		</div>

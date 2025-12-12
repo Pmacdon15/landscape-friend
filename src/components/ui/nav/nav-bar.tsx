@@ -1,6 +1,6 @@
 'use client'
 import { Menu } from 'lucide-react'
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import {
 	Sheet,
 	SheetContent,

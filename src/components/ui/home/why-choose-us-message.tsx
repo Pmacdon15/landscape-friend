@@ -51,10 +51,10 @@ export default function WhyChooseUsMessage() {
 						</FillFormContainer>
 					</FormContainer>
 				</div>
-				<div className="logo-slide-in-reverse mt-4 pb-4 md:mt-0 md:shrink-0 sm:1/3 ">
+				<div className="logo-slide-in-reverse sm:1/3 mt-4 pb-4 md:mt-0 md:shrink-0">
 					<Image
 						alt="Lawn Mower Mowing a Lawn"
-						className="h-64 w-full object-cover md:h-full md:w-96 "
+						className="h-64 w-full object-cover md:h-full md:w-96"
 						height={800}
 						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/lawnmowerstock.jpg"
 						width={800}

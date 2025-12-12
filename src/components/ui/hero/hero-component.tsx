@@ -5,31 +5,31 @@ import { Button } from '../button'
 export default function HeroComponent() {
 	return (
 		<div
-			className="w-full h-[50vh] bg-no-repeat bg-center flex flex-col items-start border-2 border-white rounded-sm"
+			className="flex h-[50vh] w-full flex-col items-start rounded-sm border-2 border-white bg-center bg-no-repeat"
 			style={{
 				backgroundImage: `url('/hero4.png')`,
 				backgroundSize: 'cover',
 			}}
 		>
-			<div className="flex justify-center items-center logo-slide-in-top mt-8 w-full">
+			<div className="logo-slide-in-top mt-8 flex w-full items-center justify-center">
 				<Image
 					alt="Landscape Friend Logo"
-					className="h-auto w-16 mr-2"
+					className="mr-2 h-auto w-16"
 					height={200}
 					src="/logo.png"
 					width={200}
 				/>
 				<div>
-					<h1 className="text-white text-xl font-bold">
+					<h1 className="font-bold text-white text-xl">
 						Landscape Friend
 					</h1>
-					<h2 className="text-white text-sm font-semibold">
+					<h2 className="font-semibold text-sm text-white">
 						Your Lawn Care Companion
 					</h2>
 				</div>
 			</div>
-			<div className="justify-top items-left logo-slide-in-reverse pl-8 md:pl-24 mt-24">
-				<h1 className="text-white  mb-4 text-3xl font-bold w-4/6 mt-4">
+			<div className="justify-top items-left logo-slide-in-reverse mt-24 pl-8 md:pl-24">
+				<h1 className="mt-4 mb-4 w-4/6 font-bold text-3xl text-white">
 					Need to manage your client's maintenance schedules? We've
 					got you covered.
 				</h1>

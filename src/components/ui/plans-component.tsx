@@ -17,7 +17,7 @@ export default function PlansComponent() {
 					<FormHeader text={'Organization Plans'} />
 					<PricingTable for="organization" />
 				</div>
-				<div className="flex flex-col sm:flex-row items-center">					
+				<div className="flex flex-col items-center sm:flex-row">
 					<SignedOut>
 						<h1 className="text-muted-foreground">
 							Sign in and create an organization to start free

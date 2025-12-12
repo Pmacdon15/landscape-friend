@@ -156,7 +156,8 @@ export default function NavigationMenuComponent() {
 													Manage Subscriptions
 												</div>
 												<div className="text-muted-foreground">
-													Manage your active subscriptions.
+													Manage your active
+													subscriptions.
 												</div>
 											</Link>
 										</NavigationMenuLink>
@@ -213,7 +214,7 @@ export default function NavigationMenuComponent() {
 					<NavigationMenuItem>
 						<NavigationMenuTrigger>Settings</NavigationMenuTrigger>
 						<NavigationMenuContent>
-							<ul className="grid w-[300px] gap-4 ">
+							<ul className="grid w-[300px] gap-4">
 								<li>
 									<NavigationMenuLink asChild>
 										<Link href="/settings">

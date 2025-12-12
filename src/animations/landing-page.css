@@ -56,7 +56,6 @@
 	animation: logoSlideInReverse 1s ease-in-out forwards;
 }
 
-
 @keyframes logoSlideInTop {
 	from {
 		transform: translateY(-10vh);
