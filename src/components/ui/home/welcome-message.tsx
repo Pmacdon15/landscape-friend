@@ -17,7 +17,7 @@ export default function WelcomeMessage() {
 							schedules with our streamed lined software made by
 							people that have experience in your industry.
 						</p>
-						<p className="mb-4 indent-4 flex ">
+						<p className="mb-4 indent-4 flex items-center ">
 							Let us get you started with us today, have questions? 
 							<Link href={'/'}>
 								<Button variant={'outline'}>

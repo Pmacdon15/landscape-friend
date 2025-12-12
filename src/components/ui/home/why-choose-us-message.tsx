@@ -5,7 +5,7 @@ export default function WhyChooseUsMessage() {
 	return (
 		<div className="mx-auto w-full items-center justify-center overflow-hidden lg:w-5/6">
 			<div className="flex flex-col md:flex-row">
-				<div className="logo-slide-in mt-4 lg:w-2/3 sm:mb-4 md:mt-0 md:mr-4">
+				<div className="logo-slide-in mt-4 sm:mb-4 md:mt-0 md:mr-4">
 					<FormContainer popover={true}>
 						<FillFormContainer>
 							<h1 className="mb-6 font-bold text-3xl">
@@ -32,6 +32,10 @@ export default function WhyChooseUsMessage() {
 									through Stripe's platform
 								</li>
 								<li>
+									Assign clients maintenance needs to
+									organization members
+								</li>
+								<li>
 									Order or reorder your route between clients
 									homes, easily see your clients on a map with
 									a link to google maps.
@@ -47,10 +51,10 @@ export default function WhyChooseUsMessage() {
 						</FillFormContainer>
 					</FormContainer>
 				</div>
-				<div className="logo-slide-in-reverse mt-4 pb-4 md:mt-0 md:shrink-0">
+				<div className="logo-slide-in-reverse mt-4 pb-4 md:mt-0 md:shrink-0 sm:1/3 ">
 					<Image
 						alt="Lawn Mower Mowing a Lawn"
-						className="h-64 w-full object-cover md:h-full md:w-96"
+						className="h-64 w-full object-cover md:h-full md:w-96 "
 						height={800}
 						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/lawnmowerstock.jpg"
 						width={800}
