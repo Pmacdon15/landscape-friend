@@ -80,7 +80,7 @@ export function ReachOutForm() {
 						control={form.control}
 						label="Message"
 						name="message"
-						placeholder="Let me know what you want to talk about"
+						placeholder="Let me know how we can help you"
 					/>
 				</form>
 			</CardContent>
