@@ -37,9 +37,11 @@ export default function SendIndividualEmail({
 					onChange={handleClientChange}
 				>
 					<option value={' '}> </option>
-					{data.map((client: NamesAndEmails) => (
+					{data.filter((client: NamesAndEmails, index: number, arr: NamesAndEmails[]) => 
+						arr.findIndex(c => c.email_address === client.email_address) === index
+					).map((client: NamesAndEmails) => (
 						<option
-							key={client.email_address}
+							key={`${client.email_address}-${client.full_name}`}
 							value={client.email_address}
 						>
 							{client.full_name} ({client.email_address})
