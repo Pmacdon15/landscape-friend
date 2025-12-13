@@ -29,8 +29,8 @@ export async function fetchAllClients(
 ): Promise<PaginatedClients | null> {
 	'use cache: private'
 	cacheTag(`clients`)
-	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
-	if (!isAdmin) throw new Error('Not admin!')
+	const { orgId, userId } = await isOrgAdmin(true)
+	// if (!isAdmin) throw new Error('Not admin!')
 	if (!userId) throw new Error('Not logged in!')
 	const pageSize = Number(process.env.PAGE_SIZE) || 10
 	const offset = (clientPageNumber - 1) * pageSize
