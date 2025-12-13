@@ -46,14 +46,14 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--background: #138b10;
+		--background: #25a623;
 		--foreground: #061a05;
 	}
 }
 
 :root {
 	--radius: 0.625rem;
-	--background: #138b10;
+	--background: #25a623;
 	--foreground: #061a05;
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0 0);
@@ -88,7 +88,7 @@
 
 .dark {
 	--radius: 0.625rem;
-	--background: #138b10;
+	--background: #25a623;
 	--foreground: #061a05;
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0 0);

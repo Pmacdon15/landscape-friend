@@ -50,7 +50,7 @@ export default async function RootLayout({
 							<div
 								style={{
 									flex: 1,
-									backgroundImage: 'url(/lawn3.jpg)',
+									backgroundImage: 'url(/lawn4.png)',
 									backgroundSize: 'cover',
 									backgroundAttachment: 'fixed',
 									backgroundRepeat: 'no-repeat',

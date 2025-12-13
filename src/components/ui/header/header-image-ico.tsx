@@ -5,7 +5,7 @@ export default function HeaderImageIco() {
 			<div
 				className="w-[50px] rounded-sm border bg-background p-2 md:w-[75px]"
 				style={{
-					backgroundImage: 'url(/lawn3.jpg)',
+					backgroundImage: 'url(/lawn4.png)',
 					backgroundPosition: '0% 20%', // Show the bottom half of the image
 				}}
 			>

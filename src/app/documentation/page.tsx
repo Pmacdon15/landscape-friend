@@ -26,7 +26,7 @@ export default function Page() {
 	return (
 		<>
 			<FormContainer>
-				<FormHeader text="Documentation" />
+				<FormHeader text="Information" />
 				<FillFormContainer>
 					<ul className="space-y-4">
 						{documentationLinks.map((link, _index) => (

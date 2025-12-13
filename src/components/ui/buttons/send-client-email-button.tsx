@@ -16,7 +16,7 @@ export default function SendClientEmailButton({
 		},
 	})
 
-	if (!clientEmail.length) {
+	if (clientEmail.length > 0) {
 		return <div>No clients to send email to</div>
 	}
 
