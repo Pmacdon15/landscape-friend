@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import FillFormContainer from '../containers/fill-form-container'
 import FormContainer from '../containers/form-container'
 export default function WhyChooseUsMessage() {
@@ -47,6 +48,11 @@ export default function WhyChooseUsMessage() {
 							<p className="mb-4">
 								Join Landscape Friend today and take the first
 								step towards your landscaping career!
+							</p>
+							<p>
+								Learn about how to set up a stripe account to
+								enable billing here on our{' '}
+								<Link className="text-blue-500 underline"href={"/documentation"}>Information Page</Link>.
 							</p>
 						</FillFormContainer>
 					</FormContainer>

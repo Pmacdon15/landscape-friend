@@ -51,7 +51,9 @@ export default function Page() {
 					</ul>
 				</FillFormContainer>
 			</FormContainer>
-			<BackToLink path={'/'} place={'Home'} />
+			<div className="mt-4">
+				<BackToLink path={'/'} place={'Home'} />
+			</div>
 		</>
 	)
 }
