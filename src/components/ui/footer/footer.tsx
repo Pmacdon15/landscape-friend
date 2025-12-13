@@ -55,7 +55,7 @@ export default function Footer() {
 							support@landscapefriend.com
 						</Link>
 						<Link href={'/contact'}>
-							<Button size={'sm'}variant={'outline'}>
+							<Button size={'sm'} variant={'outline'}>
 								Send us a message today!
 							</Button>
 						</Link>

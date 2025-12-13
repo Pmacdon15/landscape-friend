@@ -10,9 +10,11 @@ import NonAdminPlaceHolder from './list-view/non-admin-placeholder'
 export default function ImageList({
 	isAdmin = false,
 	client,
+	page,
 }: {
 	isAdmin?: boolean
 	client: ClientResult | Client
+	page: number
 }) {
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
@@ -37,18 +39,27 @@ export default function ImageList({
 					</div>
 				)}
 				{view === 'list' && client.images.length === 0 && isAdmin && (
-					<AddSiteMap clientId={client.id} setView={setView} />
+					<AddSiteMap
+						clientId={client.id}
+						page={page}
+						setView={setView}
+					/>
 				)}
 				{view === 'list' && client.images.length === 0 && !isAdmin && (
 					<NonAdminPlaceHolder />
 				)}
 				{view === 'add' && (
-					<AddSiteMap clientId={client.id} setView={setView} />
+					<AddSiteMap
+						clientId={client.id}
+						page={page}
+						setView={setView}
+					/>
 				)}
 				{view === 'list' && client.images.length > 0 && (
 					<ImageGallery
 						client={client}
 						isAdmin={isAdmin}
+						page={page}
 						setView={setView}
 					/>
 				)}

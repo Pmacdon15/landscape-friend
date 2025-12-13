@@ -9,9 +9,11 @@ import { EditClientForm } from './edit-client-form'
 export default function EditClientFormContainer({
 	client,
 	isAdmin,
+	page
 }: {
 	client: Client
 	isAdmin: boolean
+	page:number
 }) {
 	const [open, setOpen] = useState(false)
 
@@ -29,7 +31,11 @@ export default function EditClientFormContainer({
 				}
 				variant="link"
 			>
-				<EditClientForm client={client} setSheetOpen={setOpen} />
+				<EditClientForm
+					client={client}
+					page={page}
+					setSheetOpen={setOpen}
+				/>
 			</EditSettingSheet>
 		</div>
 	)

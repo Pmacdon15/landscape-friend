@@ -9,11 +9,13 @@ interface ClientDetailsCardProps {
 	searchTermIsServiced: boolean
 	serviceDate?: Date
 	snow: boolean
+	page: number
 }
 
 export default function ClientDetailsCard({
 	client,
 	isAdmin,
+	page,
 }: ClientDetailsCardProps) {
 	return (
 		<>
@@ -23,7 +25,7 @@ export default function ClientDetailsCard({
 			</div>
 
 			<div className="mt-2 flex flex-col gap-1 sm:flex-row">
-				<ImageList client={client} isAdmin={isAdmin} />
+				<ImageList client={client} isAdmin={isAdmin} page={page} />
 			</div>
 		</>
 	)

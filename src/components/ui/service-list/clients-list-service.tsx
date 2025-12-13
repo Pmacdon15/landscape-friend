@@ -42,6 +42,9 @@ export default async function ClientListService({
 			<ClientCards
 				clientsPromise={promiseToPass}
 				isAdminPromise={isAdminPromise}
+				pagePromise={parseClientListParamsPromise.then(
+					(searchParams) => searchParams.page,
+				)}
 				parseClientListParamsPromise={parseClientListParamsPromise}
 				snow={snow}
 			/>

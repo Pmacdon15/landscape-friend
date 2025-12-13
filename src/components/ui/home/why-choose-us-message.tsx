@@ -52,7 +52,13 @@ export default function WhyChooseUsMessage() {
 							<p>
 								Learn about how to set up a stripe account to
 								enable billing here on our{' '}
-								<Link className="text-blue-500 underline"href={"/documentation"}>Information Page</Link>.
+								<Link
+									className="text-blue-500 underline"
+									href={'/documentation'}
+								>
+									Information Page
+								</Link>
+								.
 							</p>
 						</FillFormContainer>
 					</FormContainer>

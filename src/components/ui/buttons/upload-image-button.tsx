@@ -6,19 +6,24 @@ import Spinner from '../loaders/spinner'
 export default function UploadImageButton({
 	clientId,
 	setView,
+	page,
 }: {
 	clientId: number
 	setView: React.Dispatch<React.SetStateAction<string>>
+	page: number
 }) {
 	const { mutate, isPending } = useUploadImage({
 		onSuccess: () => {
-			toast.success('Image uploaded successfully!', { duration: 1500 })
+			toast.success('Image uploaded successfully!', {
+				duration: 1500,
+			})
 			setView('list')
 		},
 		onError: (error) => {
 			console.error('Upload failed:', error)
 			toast.error('Image upload failed!', { duration: 1500 })
 		},
+		page,
 	})
 	return (
 		<button

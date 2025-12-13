@@ -4,11 +4,13 @@ import { useDeleteSiteMap } from '@/lib/mutations/mutations'
 export default function DeleteSiteMapButton({
 	clientId,
 	siteMapId,
+	page,
 }: {
 	clientId: number
 	siteMapId: number
+	page: number
 }) {
-	const { mutate, isPending } = useDeleteSiteMap()
+	const { mutate, isPending } = useDeleteSiteMap(page)
 	return (
 		<div className="absolute right-5 bottom-5">
 			<Alert
