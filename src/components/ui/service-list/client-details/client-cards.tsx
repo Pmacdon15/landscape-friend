@@ -28,13 +28,16 @@ export default function ClientCards({
 	parseClientListParamsPromise,
 	snow,
 	isAdminPromise,
+	pagePromise,
 }: {
 	clientsPromise: Promise<ClientResult[] | { errorMessage: string }>
 	parseClientListParamsPromise: Promise<ParsedClientListParams>
 	snow: boolean
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
+	pagePromise: Promise<number>
 }) {
 	const clients = use(clientsPromise)
+	const page = use(pagePromise)
 	const parseClientListParams = use(parseClientListParamsPromise)
 	const isAdmin = use(isAdminPromise ?? Promise.resolve({ isAdmin: false }))
 	const { mutate } = useChangePriority()
@@ -180,6 +183,7 @@ export default function ClientCards({
 								client={client}
 								isAdmin={isAdmin?.isAdmin ?? false}
 								key={client.id}
+								page={page}
 								searchTermIsServiced={
 									parseClientListParams.searchTermIsServiced
 								}

@@ -2,8 +2,14 @@
 import { toast } from 'sonner'
 import { Alert } from '@/components/ui/alerts/alert'
 import { useDeleteClient } from '@/lib/mutations/mutations'
-export default function DeleteClientButton({ clientId }: { clientId: number }) {
-	const { mutate } = useDeleteClient({
+export default function DeleteClientButton({
+	clientId,
+	page,
+}: {
+	clientId: number
+	page: number
+}) {
+	const { mutate } = useDeleteClient(page, {
 		onSuccess: () => {
 			toast.success('Client deleted!', { duration: 1500 })
 		},

@@ -40,6 +40,7 @@ CREATE TABLE organizations (
     organization_name VARCHAR(253) NOT NULL,
     max_allowed_clients INT NOT NULL DEFAULT 50
 );
+SELECT * FROM clients WHERE full_name = 'Sally';
 
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,

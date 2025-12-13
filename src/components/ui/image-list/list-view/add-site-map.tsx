@@ -6,9 +6,11 @@ import ListViewWrapper from './list-view-warapper'
 export default function AddSiteMap({
 	clientId,
 	setView,
+	page,
 }: {
 	clientId: number
 	setView: React.Dispatch<React.SetStateAction<string>>
+	page: number
 }) {
 	return (
 		<ListViewWrapper>
@@ -18,7 +20,11 @@ export default function AddSiteMap({
 					<div className="text-6xl">🗺️</div>
 					<div>Capture from Maps</div>
 				</SetViewMapButton>
-				<ImageUploader clientId={clientId} setView={setView} />
+				<ImageUploader
+					clientId={clientId}
+					page={page}
+					setView={setView}
+				/>
 			</div>
 		</ListViewWrapper>
 	)

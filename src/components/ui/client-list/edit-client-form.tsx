@@ -15,9 +15,11 @@ import EllipsisSpinner from '../loaders/EllipsisSpinner'
 export function EditClientForm({
 	client,
 	setSheetOpen,
+	page,
 }: {
 	client: Client
 	setSheetOpen: (open: boolean) => void
+	page: number
 }) {
 	const form = useForm({
 		resolver: zodResolver(AddClientFormSchema),
@@ -29,7 +31,7 @@ export function EditClientForm({
 		},
 	})
 
-	const { mutate, isPending, isError, error } = useUpdateClient({
+	const { mutate, isPending, isError, error } = useUpdateClient(page, {
 		onSuccess: () => {
 			form.reset()
 			setSheetOpen(false)

@@ -19,4 +19,5 @@ export interface ImageGalleryProps {
 	isAdmin: boolean
 	client: Client | ClientResult
 	setView: (view: string) => void
+	page: number
 }

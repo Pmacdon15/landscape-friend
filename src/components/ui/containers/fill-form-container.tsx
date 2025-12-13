@@ -5,9 +5,7 @@ export default function FillFormContainer({
 }) {
 	return (
 		<div
-			className={
-				'flex w-full flex-col gap-4 rounded-sm bg-white/70 p-6'
-			}
+			className={'flex w-full flex-col gap-4 rounded-sm bg-white/70 p-6'}
 		>
 			{children}
 		</div>

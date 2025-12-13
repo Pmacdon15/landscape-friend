@@ -11,6 +11,7 @@ export default function ImageGallery({
 	isAdmin,
 	client,
 	setView,
+	page,
 }: ImageGalleryProps) {
 	const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 	return (
@@ -34,6 +35,7 @@ export default function ImageGallery({
 					<div className="relative" key={image.id}>
 						<DeleteSiteMapButton
 							clientId={client.id}
+							page={page}
 							siteMapId={image.id}
 						/>
 

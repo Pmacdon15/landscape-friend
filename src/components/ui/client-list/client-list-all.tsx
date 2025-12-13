@@ -57,7 +57,10 @@ export default async function ClientListAll({
 					<FormContainer key={client.id}>
 						<li className="relative rounded-sm border bg-white/70 p-4">
 							{isAdmin?.isAdmin && (
-								<DeleteClientButton clientId={client.id} />
+								<DeleteClientButton
+									clientId={client.id}
+									page={searchParams.page}
+								/>
 							)}
 							<FormHeader text={client.full_name} />
 							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
@@ -131,12 +134,14 @@ export default async function ClientListAll({
 								<EditClientFormContainer
 									client={client}
 									isAdmin={isAdmin?.isAdmin || false}
+									page={searchParams.page}
 								/>
 								<ViewSitePhotoSheet clientId={client.id} />
 							</div>
 							<ImageList
 								client={client}
 								isAdmin={isAdmin?.isAdmin}
+								page={searchParams.page}
 							/>
 						</li>
 					</FormContainer>

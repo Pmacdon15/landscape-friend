@@ -11,7 +11,6 @@ import {
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
-
 import {
 	sendEmailWithTemplate,
 	sendNewsLetter,
@@ -53,7 +52,7 @@ export const useAddClient = (options?: {
 			return result
 		},
 		onSuccess: () => {
-			// revalidatePathAction('/lists/client')
+			revalidatePathAction('/lists/client')
 			updateTagAction('clients')
 			options?.onSuccess?.()
 		},
@@ -64,10 +63,13 @@ export const useAddClient = (options?: {
 	})
 }
 
-export const useUpdateClient = (options?: {
-	onSuccess?: () => void
-	onError?: (error: Error) => void
-}) => {
+export const useUpdateClient = (
+	page: number,
+	options?: {
+		onSuccess?: () => void
+		onError?: (error: Error) => void
+	},
+) => {
 	return useMutation({
 		mutationFn: async ({
 			data,
@@ -83,7 +85,8 @@ export const useUpdateClient = (options?: {
 			return result
 		},
 		onSuccess: () => {
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 			options?.onSuccess?.()
@@ -96,16 +99,20 @@ export const useUpdateClient = (options?: {
 }
 
 //MARK: Delete client
-export const useDeleteClient = (options?: {
-	onSuccess?: () => void
-	onError?: (error: Error) => void
-}) => {
+export const useDeleteClient = (
+	page?: number,
+	options?: {
+		onSuccess?: () => void
+		onError?: (error: Error) => void
+	},
+) => {
 	return useMutation({
 		mutationFn: (clientId: number) => {
 			return deleteClient(clientId)
 		},
 		onSuccess: () => {
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 			options?.onSuccess?.()
@@ -121,9 +128,11 @@ export const useDeleteClient = (options?: {
 export const useUploadImage = ({
 	onSuccess,
 	onError,
+	page,
 }: {
 	onSuccess?: () => void
 	onError?: (error: Error) => void
+	page?: number
 }) => {
 	return useMutation({
 		mutationFn: ({
@@ -137,7 +146,8 @@ export const useUploadImage = ({
 		},
 		onSuccess: () => {
 			// revalidatePathAction("/lists/client");
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 			onSuccess?.()
@@ -149,7 +159,7 @@ export const useUploadImage = ({
 }
 //MARK:Delete site map
 
-export const useDeleteSiteMap = () => {
+export const useDeleteSiteMap = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
 			clientId,
@@ -161,7 +171,8 @@ export const useDeleteSiteMap = () => {
 			return deleteSiteMap(clientId, siteMapId)
 		},
 		onSuccess: () => {
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			revalidatePathAction('/lists/clearing')
 			revalidatePathAction('/lists/cutting')
 		},
@@ -170,13 +181,14 @@ export const useDeleteSiteMap = () => {
 }
 //MARK:Upload drawing site map
 // export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
-export const useUploadDrawing = () => {
+export const useUploadDrawing = (page?: number) => {
 	return useMutation({
 		mutationFn: ({ file, clientId }: { file: Blob; clientId: number }) => {
 			return uploadDrawing(file, clientId)
 		},
 		onSuccess: () => {
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 			// onSuccess?.();
@@ -208,7 +220,7 @@ export const useUpdateClientPricePer = () => {
 }
 
 //MARK:Update cutting day
-export const useUpdateCuttingDay = () => {
+export const useUpdateCuttingDay = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
 			clientId,
@@ -222,7 +234,8 @@ export const useUpdateCuttingDay = () => {
 			return updateCuttingDay(clientId, cuttingWeek, cuttingDay)
 		},
 		onSuccess: () => {
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 		},
@@ -233,7 +246,7 @@ export const useUpdateCuttingDay = () => {
 }
 
 //MARK: Assign snow clearing
-export const useAssignSnowClearing = () => {
+export const useAssignSnowClearing = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
 			clientId,
@@ -245,7 +258,8 @@ export const useAssignSnowClearing = () => {
 			return assignSnowClearing(clientId, assignedTo)
 		},
 		onSuccess: () => {
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 		},
@@ -253,7 +267,7 @@ export const useAssignSnowClearing = () => {
 }
 
 //MARK: Assign grass cutting
-export const useAssignGrassCutting = () => {
+export const useAssignGrassCutting = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
 			clientId,
@@ -265,7 +279,8 @@ export const useAssignGrassCutting = () => {
 			return assignGrassCutting(clientId, assignedTo)
 		},
 		onSuccess: () => {
-			updateTagAction('clients')
+			const currentPage = page ?? 1
+			updateTagAction(`clients-page-${currentPage}`)
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 		},
