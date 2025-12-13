@@ -51,7 +51,7 @@ export function ReachOutForm() {
 	}
 
 	return (
-		<Card className="w-full border-2 shadow-2xl sm:max-w-4xl">
+		<Card className="w-full shadow-2xl sm:max-w-4xl">
 			<CardHeader>
 				<CardTitle>Reach out</CardTitle>
 				<CardDescription>
