@@ -9,8 +9,8 @@ export function TosSection({
 	text2: string
 	email?: string
 }) {
-	const formattedText = text2.split('\n').map((line, _i) => (
-		<span key={line}>
+	const formattedText = text2.split('\n').map((line, i) => (
+		<span key={line + i}>
 			{' '}
 			{line}
 			<br />
