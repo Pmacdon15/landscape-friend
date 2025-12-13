@@ -55,7 +55,14 @@ export default function WhyChooseUsMessage() {
 									<ListsLinks />
 								</Suspense>
 								<li>
-									Send out email and your clients with ease.
+									Send out{' '}
+									<Link
+										className="text-blue-500 underline"
+										href={'/email/individual'}
+									>
+										Emails
+									</Link>
+									{''} to your clients with ease.
 								</li>
 							</ul>
 							<p className="mb-4">
