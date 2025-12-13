@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import FillFormContainer from '../containers/fill-form-container'
 import FormContainer from '../containers/form-container'
+import ListsLinks from './lists-links'
 export default function WhyChooseUsMessage() {
 	return (
 		<div className="mx-auto w-full items-center justify-center overflow-hidden lg:w-5/6">
@@ -25,24 +27,35 @@ export default function WhyChooseUsMessage() {
 							</h2>
 							<ul className="mb-4 list-inside list-disc">
 								<li>
-									A streamed-lined platform for managing
-									clients for landscaping related work
+									A streamed-lined platform for managing{' '}
+									<Link
+										className="text-blue-500 underline"
+										href={'/lists/client'}
+									>
+										Clients
+									</Link>{' '}
+									for landscaping related work.
 								</li>
 								<li>
 									Easy payments and invoicing integrated
-									through Stripe's platform
+									through Stripe's platform, including
+									subscriptions for lawn cutting/snow removal.
 								</li>
 								<li>
 									Assign clients maintenance needs to
-									organization members
+									organization members on the{' '}
+									<Link
+										className="text-blue-500 underline"
+										href={'/lists/client'}
+									>
+										Clients page
+									</Link>{' '}
 								</li>
+								<Suspense>
+									<ListsLinks />
+								</Suspense>
 								<li>
-									Order or reorder your route between clients
-									homes, easily see your clients on a map with
-									a link to google maps.
-								</li>
-								<li>
-									Send out email and your clients with ease
+									Send out email and your clients with ease.
 								</li>
 							</ul>
 							<p className="mb-4">

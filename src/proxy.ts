@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server'
 const isAdminRoute = createRouteMatcher([
 	'/billing(.*)',
 	'/settings(.*)',
-	'/lits/client(.*)',
+	'/lists/client(.*)',
 	'/email(.*)',
 ])
 const isProtectedRoute = createRouteMatcher([
