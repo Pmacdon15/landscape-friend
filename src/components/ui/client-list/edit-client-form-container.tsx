@@ -9,11 +9,11 @@ import { EditClientForm } from './edit-client-form'
 export default function EditClientFormContainer({
 	client,
 	isAdmin,
-	page
+	page,
 }: {
 	client: Client
 	isAdmin: boolean
-	page:number
+	page: number
 }) {
 	const [open, setOpen] = useState(false)
 

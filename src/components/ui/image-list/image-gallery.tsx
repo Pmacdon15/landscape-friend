@@ -11,7 +11,7 @@ export default function ImageGallery({
 	isAdmin,
 	client,
 	setView,
-	page
+	page,
 }: ImageGalleryProps) {
 	const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 	return (

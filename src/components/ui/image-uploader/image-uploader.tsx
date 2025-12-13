@@ -4,11 +4,11 @@ import ImageUploadInput from '../inputs/image-upload-input'
 export default function ImageUploader({
 	clientId,
 	setView,
-	page
+	page,
 }: {
 	clientId: number
 	setView: React.Dispatch<React.SetStateAction<string>>
-	page:number
+	page: number
 }) {
 	return (
 		<form className="w-[45%]">
@@ -17,7 +17,11 @@ export default function ImageUploader({
 				htmlFor="image-upload"
 			>
 				<ImageUploadInput />
-				<UploadImageButton clientId={clientId} page={page} setView={setView} />
+				<UploadImageButton
+					clientId={clientId}
+					page={page}
+					setView={setView}
+				/>
 			</label>
 		</form>
 	)

@@ -28,7 +28,7 @@ export async function fetchAllClients(
 	searchTermAssignedTo: string,
 ): Promise<PaginatedClients | null> {
 	'use cache: private'
-	cacheTag(`clients`)
+	cacheTag(`clients-page-${clientPageNumber}`)
 	const { orgId, userId } = await isOrgAdmin(true)
 	// if (!isAdmin) throw new Error('Not admin!')
 

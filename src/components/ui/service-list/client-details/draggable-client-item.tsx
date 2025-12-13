@@ -13,7 +13,7 @@ interface DraggableClientItemProps {
 	searchTermIsServiced: boolean
 	serviceDate?: Date
 	snow: boolean
-	page:number
+	page: number
 }
 
 export default function DraggableClientItem({
@@ -22,7 +22,7 @@ export default function DraggableClientItem({
 	searchTermIsServiced,
 	serviceDate,
 	snow,
-	page
+	page,
 }: DraggableClientItemProps) {
 	const {
 		attributes,

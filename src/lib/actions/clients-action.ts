@@ -1,6 +1,7 @@
 'use server'
 import type z from 'zod'
 import {
+	addClientDB,
 	countClientsByOrgId,
 	deleteClientDB,
 	deleteSiteMapDB,
@@ -18,7 +19,7 @@ import {
 import { triggerNotificationSendToAdmin } from '../utils/novu'
 import {
 	createOrUpdateStripeUser,
-	findOrCreateStripeCustomerAndLinkClient,
+	findOrCreateStripeCustomer,
 } from '../utils/stripe-utils'
 import { AddClientFormSchema } from '../zod/client-schemas'
 
@@ -63,13 +64,26 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 		}
 
 	try {
-		const customerId = await findOrCreateStripeCustomerAndLinkClient(
+		const customerId = await findOrCreateStripeCustomer(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
 			validatedFields.data.phone_number,
 			validatedFields.data.address,
 			orgId || userId,
 		)
+
+		const result = await addClientDB(
+			{
+				...validatedFields.data,
+				stripe_customer_id: customerId || null,
+				organization_id: orgId || userId,
+			},
+			orgId || userId,
+		)
+
+		if (!result || result.length === 0) {
+			throw new Error('Failed to add client to database')
+		}
 
 		triggerNotificationSendToAdmin(orgId || userId, 'client-added', {
 			client: {
