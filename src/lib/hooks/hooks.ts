@@ -204,8 +204,11 @@ export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
 
 export function useServiceDateSearch() {
 	const today = new Date().toISOString().slice(0, 10)
-	const { currentValue: currentServiceDate, setParam: setServiceDate } =
-		useSearchParam('date', today)
+	const { currentValue: rawValue, setParam: setServiceDate } = useSearchParam(
+		'date',
+		'',
+	)
+	const currentServiceDate = rawValue || today
 	return { currentServiceDate, setServiceDate }
 }
 
