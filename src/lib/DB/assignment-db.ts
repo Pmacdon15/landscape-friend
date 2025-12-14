@@ -61,6 +61,8 @@ export async function assignGrassCuttingDb(
 		WHERE org_id = ${organization_id} AND service_type = 'grass'
 	`
 
+	await unassignGrassCuttingDb(data.clientId, organization_id)
+
 	const priorityResult = allAssignmentsForOrg.filter(
 		(a) => Number(a.client_id) === data.clientId,
 	)
@@ -136,6 +138,8 @@ export async function assignSnowClearingDb(
 		WHERE org_id = ${organization_id} AND service_type = 'snow'
 	`
 	// console.log('All assignments for org:', allAssignmentsForOrg)
+
+	await unassignSnowClearingDb(data.clientId, organization_id)
 
 	const priorities = allAssignmentsForOrg.map((a) => a.priority)
 	const maxPriority = Math.max(0, ...priorities)
