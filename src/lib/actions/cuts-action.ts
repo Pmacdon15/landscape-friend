@@ -16,8 +16,7 @@ export async function markYardServiced(
 ) {
 	const { orgId, userId } = await isOrgAdmin(true)
 
-	if (!userId)
-		return { errorMessage: 'Organization ID or User ID is missing.' }
+	if (!userId) return { errorMessage: 'User ID is missing.' }
 
 	const validatedFields = schemaMarkYardCut.safeParse({
 		clientId: clientId,
@@ -46,8 +45,11 @@ export async function markYardServiced(
 			}
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
-		console.error('Error marking yard serviced: ', errorMessage)
-		return { errorMessage: 'Error marking yard serviced' }
+		console.error(
+			'Error marking yard serviced, Image upload failed: ',
+			errorMessage,
+		)
+		return { errorMessage: 'Error marking yard serviced.' }
 	}
 
 	// Try save information into Database
@@ -58,6 +60,13 @@ export async function markYardServiced(
 			snow,
 			userId,
 		)
+
+		if (!result_mark) {
+			console.error(
+				'Failed to mark yard serviced: No ID returned from DB',
+			)
+			return { errorMessage: 'Failed to update client as serviced' }
+		}
 
 		const result_url = []
 		for (let i = 0; i < images.length; i++) {
@@ -73,7 +82,10 @@ export async function markYardServiced(
 		return { success: true }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
-		console.error(errorMessage)
+		console.error(
+			'Error marking yard serviced, failed DB insertion: ',
+			errorMessage,
+		)
 		return { errorMessage: 'Failed to update client serviced' }
 	}
 }

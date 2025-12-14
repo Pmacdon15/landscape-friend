@@ -706,15 +706,17 @@ export async function markYardServicedDb(
 	snow: boolean,
 	assigned_to: string,
 ) {
-	const sql = neon(`${process.env.DATABASE_URL} `)
-	try {
+  const sql = neon(`${process.env.DATABASE_URL} `)
+  console.log("Marking client serviced payload:", JSON.stringify(data))
+  try {
 		const query = snow
 			? sql`
           INSERT INTO yards_marked_clear(client_id, clearing_date, assigned_to)
           SELECT ${data.clientId}, ${data.date}, ${assigned_to}
           FROM clients
           WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-          ON CONFLICT(client_id, clearing_date) DO NOTHING
+          ON CONFLICT(client_id, clearing_date) DO UPDATE
+          SET assigned_to = EXCLUDED.assigned_to
           RETURNING id;
           `
 			: sql`
@@ -722,7 +724,8 @@ export async function markYardServicedDb(
           SELECT ${data.clientId}, ${data.date}, ${assigned_to}
           FROM clients
           WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-          ON CONFLICT(client_id, cutting_date) DO NOTHING
+          ON CONFLICT(client_id, cutting_date) DO UPDATE
+          SET assigned_to = EXCLUDED.assigned_to
           RETURNING id;
           `
 

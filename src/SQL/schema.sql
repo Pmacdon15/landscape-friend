@@ -40,7 +40,7 @@ CREATE TABLE organizations (
     organization_name VARCHAR(253) NOT NULL,
     max_allowed_clients INT NOT NULL DEFAULT 50
 );
-SELECT * FROM clients WHERE full_name = 'Sally';
+
 
 CREATE TABLE clients (
     id SERIAL PRIMARY KEY,
@@ -167,9 +167,11 @@ CREATE TABLE images_serviced (
         fk_cut_id IS NOT NULL OR fk_clear_id IS NOT NULL
     )
 );
-
-
--- SELECT 
+SELECT * FROM users;
+SELECT * FROM organizations;
+SELECT * FROM clients where organization_id ='org_35ugSke0IBs1XDGa7YI6boXVqsG' ORDER BY id ASC;
+SELECT * FROM  yards_marked_clear WHERE clearing_date = '2025-12-13' and client_id = 25;
+SELECT * FROM  assignments Where  org_id ='org_35ugSke0IBs1XDGa7YI6boXVqsG' AND user_id = 'user_3675TIQwdEYVqVmUbcuGqDy72rA' ORDER BY priority                                                                                                            ;
 --         ymc.cutting_date AS date,
 --         img.imageurl
 --         FROM yards_marked_cut ymc
@@ -225,14 +227,14 @@ CREATE TABLE images_serviced (
 -- SET max_allowed_clients = 200
 -- WHERE organization_id = 'org_35lkfCNDV6WjfG9iEKaXZRGnf4A';
 
--- UPDATE assignments 
--- SET priority = subquery.new_priority
--- FROM (
---     SELECT id, ROW_NUMBER() OVER (ORDER BY id) as new_priority
---     FROM assignments 
---     WHERE user_id = 'user_35ztBRmjTd5SX4Ik0KffVpHRQI6'
--- ) subquery
--- WHERE assignments.id = subquery.id;
+UPDATE assignments 
+SET priority = subquery.new_priority
+FROM (
+    SELECT id, ROW_NUMBER() OVER (ORDER BY id) as new_priority
+    FROM assignments 
+    WHERE user_id = 'user_3675TIQwdEYVqVmUbcuGqDy72rA'
+) subquery
+WHERE assignments.id = subquery.id;
 
 
 -- INSERT INTO organizations (organization_id, organization_name, max_allowed_clients)
