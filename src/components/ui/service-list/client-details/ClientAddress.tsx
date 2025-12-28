@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import type React from 'react'
-import { Activity, useState } from 'react'
+import { useState } from 'react'
 import MapComponent from '../../map-component/map-component'
 
 interface ClientAddressProps {
@@ -25,9 +25,9 @@ const ClientAddress: React.FC<ClientAddressProps> = ({ address }) => {
 				/>
 				<p>Address: {address}</p>
 			</button>
-			<Activity mode={isShowing ? 'visible' : 'hidden'}>
-				<MapComponent address={address} />
-			</Activity>
+			{/* <Activity mode={isShowing ? 'visible' : 'hidden'}> */}
+			{isShowing && <MapComponent address={address} />}
+			{/* </Activity> */}
 		</>
 	)
 }
