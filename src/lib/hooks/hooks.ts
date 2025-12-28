@@ -54,8 +54,8 @@ export function useDebouncedValue<T>(value: T, delay: number): T {
 	return debouncedValue
 }
 
-export function useGetLocation(): { userLocation: Location | null } {
-	const [userLocation, setUserLocation] = useState<Location | null>(null)
+export function useGetLocation(): { userLocation: Location | '' } {
+	const [userLocation, setUserLocation] = useState<Location | ''>('')
 
 	useEffect(() => {
 		const getUserLocation = async () => {
