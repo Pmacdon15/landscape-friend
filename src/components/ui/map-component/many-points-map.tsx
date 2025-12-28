@@ -32,7 +32,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 		? `&markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`
 		: ''
 
-	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=500x200&maptype=roadmap${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=500x200&maptype=roadmap&origin=${userMarker}&${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 
 	const origin = userLocation
 		? `${userLocation.lat},${userLocation.lng}`
