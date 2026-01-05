@@ -71,7 +71,6 @@ export function CreateQuoteForm({
 		name: 'materials',
 	})
 
-	
 	useEffect(() => {
 		const selectedClient = clients.find(
 			(c) => c.full_name === watchedValues.clientName,
@@ -90,8 +89,6 @@ export function CreateQuoteForm({
 		form.setValue('address', selectedClient.address)
 		setSelectedClientId(selectedClient.id)
 	}, [watchedValues.clientName, clients, form])
-
-	
 
 	const updateMaterialCost = useEffectEvent(
 		(index: number, value: number) => {
@@ -131,7 +128,6 @@ export function CreateQuoteForm({
 		setAutoPricedRows({})
 		console.log('fields: ', fields.length)
 	}, [fields.length])
-	
 
 	const total =
 		watchedValues.labourCostPerUnit * watchedValues.labourUnits +
@@ -142,15 +138,12 @@ export function CreateQuoteForm({
 			)
 		}, 0) ?? 0)
 
-	
-
 	const { mutate, isPending, isSuccess, isError, data, error } =
 		useCreateStripeQuote()
 
 	const onSubmit = (formData: z.infer<typeof schemaCreateQuote>) => {
 		mutate({ quoteData: formData, clientId: selectedClientId })
 	}
-	
 
 	return (
 		<>
@@ -192,7 +185,23 @@ export function CreateQuoteForm({
 						name="address"
 					/>
 				</section>
-
+				<section>
+					<h3 className="mb-2 font-semibold text-md">Cost Details</h3>
+					<FormInput
+						control={form.control}
+						label="Labour Cost (per unit)"
+						name="labourCostPerUnit"
+						step="0.01"
+						type="number"
+					/>
+					<FormInput
+						control={form.control}
+						label="Labour Units"
+						name="labourUnits"
+						step="1"
+						type="number"
+					/>
+				</section>
 				<section>
 					<h3 className="font-semibold mb-2">Materials</h3>
 
