@@ -363,8 +363,14 @@ export const useCreateStripeQuote = ({
 	onError?: () => void
 } = {}) => {
 	return useMutation({
-		mutationFn: async (quoteData: z.infer<typeof schemaCreateQuote>) => {
-			const result = await createStripeQuote(quoteData)
+		mutationFn: async ({
+			quoteData,
+			clientId,
+		}: {
+			quoteData: z.infer<typeof schemaCreateQuote>
+			clientId: number
+		}) => {
+			const result = await createStripeQuote(quoteData, clientId)
 			if (!result.success) {
 				throw new Error('Failed to create Stripe quote')
 			}

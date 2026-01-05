@@ -22,7 +22,7 @@ interface ProductPrice {
 
 export const useProductPrices = (productIds: (string | undefined)[]) => {
 	const filteredProductIds = productIds.filter(
-		(id): id is string => id !== null,
+		(id): id is string => id !== null && id !== '',
 	)
 
 	return useQuery({

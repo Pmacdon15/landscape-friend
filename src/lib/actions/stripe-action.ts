@@ -23,7 +23,7 @@ import {
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
-import { addClientDB, markPaidDb } from '../DB/clients-db'
+import { markPaidDb } from '../DB/clients-db'
 import { fetchClientNamesByStripeIds } from '../dal/clients-dal'
 import {
 	fetchProductPrice,
@@ -72,11 +72,11 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 //MARK: Create quote
 export async function createStripeQuote(
 	quoteData: z.infer<typeof schemaCreateQuote>,
+	clientId: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!userId) throw new Error('User ID is missing.')
-	// const companyName = formatCompanyName({ orgName: sessionClaims?.orgName as string, userFullName: sessionClaims?.userFullName as string })
 
 	const validatedFields = schemaCreateQuote.safeParse(quoteData)
 
@@ -86,49 +86,19 @@ export async function createStripeQuote(
 	}
 
 	try {
-		if (!isAdmin) throw new Error('Not Admin')
 		const stripe = await getStripeInstance()
 		if (!stripe) throw new Error('Failed to get Stripe instance')
 		// 1. Find or Create Customer
 		const customerId = await findOrCreateStripeCustomer(
 			validatedFields.data.clientName,
 			validatedFields.data.clientEmail,
-			validatedFields.data.phone_number,
-			validatedFields.data.address,
 			validatedFields.data.organization_id,
+			clientId,
 		)
 
-		if (!customerId && validatedFields.data.clientEmail) {
-			// If email provided but no customer ID returned (and we expected one), something might be wrong.
-			// But findOrCreateStripeCustomer returns null only if no stripe or no email.
-			// If stripe exists and email exists, it should return ID.
-			// Proceeding...
+		if (!customerId) {
+			throw new Error('Stripe customer ID needed')
 		}
-
-		// Ensure client is linked/added to DB
-		await addClientDB(
-			{
-				full_name: validatedFields.data.clientName,
-				phone_number: validatedFields.data.phone_number,
-				email_address: validatedFields.data.clientEmail,
-				address: validatedFields.data.address,
-				stripe_customer_id: customerId || null,
-				organization_id: validatedFields.data.organization_id,
-			},
-			orgId || userId,
-		)
-
-		if (!customerId && !validatedFields.data.clientEmail) {
-			if (customerId === null) {
-				const stripeInstance = await getStripeInstance()
-				if (!stripeInstance) throw new Error('Stripe not configured')
-
-				throw new Error(
-					'Customer ID needed (Email required for Stripe)',
-				)
-			}
-		}
-
 
 		// 2. Handle Labour Product and Price
 		let labourPriceId: string
@@ -220,10 +190,6 @@ export async function createStripeQuote(
 			},
 			...materialLineItems,
 		]
-
-		if (!customerId) {
-			throw new Error('Customer ID is required for Stripe Quote')
-		}
 
 		const quote = await stripe.quotes.create({
 			customer: customerId,

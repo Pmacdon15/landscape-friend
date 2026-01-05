@@ -2,7 +2,7 @@ import z from 'zod'
 
 export const schemaAddClient = z.object({
 	full_name: z.string(),
-	phone_number: z.number().optional().nullable(),
+	phone_number: z.string().optional().nullable(),
 	email_address: z.email().optional().nullable(),
 	address: z.string(),
 	stripe_customer_id: z.string().optional().nullable(),
@@ -75,20 +75,10 @@ export const schemaCreateQuote = z.object({
 			{
 				message: 'Invalid email address',
 			},
-		)
-		.nullable()
-		.optional(),
-	phone_number: z
-		.string()
-		.trim()
-		.transform((val) => {
-			if (val === '') return null
-			const parsed = parseFloat(val)
-			return Number.isNaN(parsed) ? null : parsed
-		})
-		.nullable()
-		.optional()
-		.pipe(z.number().nullable().optional()),
+		),
+	// .nullable()
+	// .optional(),
+	phone_number: z.string().min(7, 'Phone number is required'),
 	address: z.string().min(3),
 	labourCostPerUnit: z.number(),
 	labourUnits: z.number(),
@@ -150,7 +140,7 @@ export const schemaUpdateStatement = z.object({
 export const schemaCreateSubscription = z.object({
 	clientName: z.string().min(1, 'Client name is required'),
 	clientEmail: z.email('Invalid email address'),
-	phone_number: z.string().min(1, 'Phone number is required'),
+	phone_number: z.string().min(7, 'Phone number is required'),
 	address: z.string().min(1, 'Address is required'),
 	serviceType: z.enum(['snow-as-needed', 'weekly', 'bi-weekly', 'monthly'], {
 		message: 'Please select a valid service type',

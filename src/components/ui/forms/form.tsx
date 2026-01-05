@@ -133,7 +133,8 @@ export const FormInput: FormControlFunc<{
 	list?: string
 	min?: string | number
 	step?: string | number
-}> = ({ type, hidden, disabled, list, min, step, ...props }) => {
+	onValueChange?: (value: string | number) => void
+}> = ({ type, hidden, disabled, list, min, step, onValueChange, ...props }) => {
 	if (hidden) {
 		// If hidden, we don't need the label, description, etc. from FormBase.
 		return (
@@ -155,13 +156,21 @@ export const FormInput: FormControlFunc<{
 					disabled={disabled}
 					list={list}
 					min={min}
-					onChange={(e) =>
-						field.onChange(
-							type === 'number'
-								? e.target.valueAsNumber
-								: e.target.value,
-						)
-					}
+					onChange={(e) => {
+						let value: string | number
+
+						if (type === 'number') {
+							value =
+								e.target.value === ''
+									? ''
+									: e.target.valueAsNumber
+						} else {
+							value = e.target.value
+						}
+
+						field.onChange(value)
+						onValueChange?.(value)
+					}}
 					step={step}
 					type={type}
 					value={field.value ?? ''}
@@ -178,7 +187,8 @@ export const FormTextarea: FormControlFunc = (props) => {
 export const FormSelect: FormControlFunc<{
 	children?: ReactNode
 	options?: { value: string; label: string }[]
-}> = ({ children, options, ...props }) => {
+	onValueChange?: (value: string) => void
+}> = ({ children, options, onValueChange, ...props }) => {
 	if (options) {
 		children = options.map((option) => (
 			<SelectItem key={option.value} value={option.value}>
@@ -190,7 +200,13 @@ export const FormSelect: FormControlFunc<{
 	return (
 		<FormBase {...props}>
 			{({ onChange, onBlur, ...field }) => (
-				<Select {...field} onValueChange={onChange}>
+				<Select
+					{...field}
+					onValueChange={(value) => {
+						onChange(value)
+						onValueChange?.(value)
+					}}
+				>
 					<SelectTrigger
 						aria-invalid={field['aria-invalid']}
 						id={field.id}

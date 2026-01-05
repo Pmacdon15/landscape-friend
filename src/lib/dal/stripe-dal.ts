@@ -11,6 +11,7 @@ import type {
 	StripeQuote,
 } from '@/types/stripe-types'
 import type { Subscription } from '@/types/subscription-types'
+import { getProductPrice } from '../actions/stripe-action'
 import { fetchClientNamesByStripeIds } from './clients-dal'
 
 let stripe: Stripe | null = null
@@ -48,9 +49,16 @@ export async function fetchStripeAPIKey(): Promise<
 }
 
 export async function fetchProducts(): Promise<
-	Stripe.Product[] | { errorMessage: string }
+	| {
+			products: Stripe.Product[]
+			productsPrices: Stripe.Price[]
+	  }
+	| { errorMessage: string }
 > {
-	await auth.protect()
+	const { isAdmin } = await isOrgAdmin(true)
+	if (!isAdmin) {
+		return { errorMessage: 'Not org admin' }
+	}
 	const stripe = await getStripeInstance()
 	if (!stripe) {
 		return { errorMessage: 'Failed to initialize Stripe instance' }
@@ -80,7 +88,17 @@ export async function fetchProducts(): Promise<
 			(product) => !product.metadata.serviceType,
 		)
 
-		return filteredProducts
+		const filteredProductsPrices = (
+			await Promise.all(
+				filteredProducts.map((product) => getProductPrice(product.id)),
+			)
+		).filter((price): price is Stripe.Price => price !== null)
+		
+		
+		return {
+			products: filteredProducts,
+			productsPrices: filteredProductsPrices,
+		}
 	} catch (error) {
 		if (error instanceof Error) {
 			throw error

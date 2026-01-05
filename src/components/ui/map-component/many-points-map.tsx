@@ -38,7 +38,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	// 	? `${userLocation.lat},${userLocation.lng}`
 	// 	: encodeURIComponent(addresses[0])
 
-	const origin = ''; // use users googles maps starting location instead of failing when user has no location from browser
+	const origin = '' // use users googles maps starting location instead of failing when user has no location from browser
 
 	const MAX_WAYPOINTS = 10
 	const routeChunks: { url: string; label: string }[] = []

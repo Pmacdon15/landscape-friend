@@ -67,8 +67,6 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 		const customerId = await findOrCreateStripeCustomer(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
-			validatedFields.data.phone_number,
-			validatedFields.data.address,
 			orgId || userId,
 		)
 

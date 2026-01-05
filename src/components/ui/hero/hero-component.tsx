@@ -28,7 +28,7 @@ export default function HeroComponent() {
 					</h2>
 				</div>
 			</div>
-			<div className="justify-top items-left logo-slide-in-reverse mt-8 md:mt-24 pl-8 md:pl-24">
+			<div className="justify-top items-left logo-slide-in-reverse mt-8 pl-8 md:mt-24 md:pl-24">
 				<h1 className="mb-2 w-4/6 font-bold text-3xl text-white">
 					Need to manage your client's maintenance schedules? We've
 					got you covered.

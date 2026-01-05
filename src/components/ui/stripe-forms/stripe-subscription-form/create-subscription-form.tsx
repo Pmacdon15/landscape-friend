@@ -77,9 +77,9 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 		mutate(form)
 	}
 
-	const _isClientSelected = clients.some(
-		(client) => client.full_name === clientName,
-	)
+	// const _isClientSelected = clients.some(
+	// 	(client) => client.full_name === clientName,
+	// )
 
 	return (
 		<>
