@@ -335,11 +335,15 @@ export async function updateStripeDocument(
 					clientName = clientNamesResult[0].full_name || ''
 				}
 			}
-
+			const encodedClientName = encodeURIComponent(clientName)
 			triggerNotificationSendToAdmin(
 				orgId || userId,
 				'quote-edited',
-				await createNotificationPayloadQuote(updatedQuote, clientName),
+				await createNotificationPayloadQuote(
+					updatedQuote,
+					clientName,
+					encodedClientName,
+				),
 			)
 		} else {
 			throw new Error('Invalid document ID prefix.')

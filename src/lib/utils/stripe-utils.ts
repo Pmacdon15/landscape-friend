@@ -224,7 +224,7 @@ export const createNotificationPayloadQuote = async (
 	quote: Stripe.Response<Stripe.Quote>,
 	clientName: string,
 	encodedClientName: string,
-	id: string,
+	id?: string,
 ) => ({
 	quote: {
 		amount: ((quote.amount_total ?? 0) / 100).toString(),
@@ -233,8 +233,8 @@ export const createNotificationPayloadQuote = async (
 	client: {
 		name: clientName,
 		encodedClientName: encodedClientName,
-	},	
-	id: id,
+	},
+	id: id || '',
 })
 
 export const createNotificationPayloadInvoice = async (
