@@ -208,7 +208,7 @@ export async function createStripeQuote(
 				},
 				client: {
 					name: validatedFields.data.clientName,
-				},				
+				},
 			},
 		)
 
@@ -522,8 +522,9 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 			cancel: 'quote-cancelled',
 		}
 
+		let id: string | null | undefined
 		if (action === 'accept') {
-			await acceptAndScheduleQuote(stripe, updatedQuote)
+			id = await acceptAndScheduleQuote(stripe, updatedQuote)
 		} else if (action === 'send') {
 			await stripe.quotes.finalizeQuote(quoteId)
 			await sendQuote(quoteId, stripe, sessionClaims)
@@ -532,12 +533,17 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 		} else {
 			throw new Error('Invalid action for quote operation.')
 		}
-
+		const encodedClientName = encodeURIComponent(clientName)
 		if (notificationType[action]) {
 			triggerNotificationSendToAdmin(
 				orgId || userId,
 				notificationType[action],
-				await createNotificationPayloadQuote(updatedQuote, clientName),
+				await createNotificationPayloadQuote(
+					updatedQuote,
+					clientName,
+					encodedClientName,
+					id || '',
+				),
 			)
 		}
 	} catch (e) {

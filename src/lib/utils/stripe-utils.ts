@@ -223,6 +223,8 @@ export async function deleteStripeWebhookRoute(orgId: string) {
 export const createNotificationPayloadQuote = async (
 	quote: Stripe.Response<Stripe.Quote>,
 	clientName: string,
+	encodedClientName: string,
+	id: string,
 ) => ({
 	quote: {
 		amount: ((quote.amount_total ?? 0) / 100).toString(),
@@ -230,7 +232,9 @@ export const createNotificationPayloadQuote = async (
 	},
 	client: {
 		name: clientName,
-	},
+		encodedClientName: encodedClientName,
+	},	
+	id: id,
 })
 
 export const createNotificationPayloadInvoice = async (
@@ -447,9 +451,11 @@ export async function acceptAndScheduleQuote(
 				effective_date: startDateUnix,
 			},
 		})
-	} else {
-		await stripe.quotes.update(updatedQuote.id)
 	}
+	//  else {
+	// 	await stripe.quotes.update(updatedQuote.id)
+	// }
+	//TODO: above might not be needed the else
 
 	// Accept the quote — this creates a subscription schedule
 	const acceptedQuote = await stripe.quotes.accept(updatedQuote.id)
@@ -459,22 +465,32 @@ export async function acceptAndScheduleQuote(
 		const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId)
 
 		// Update the schedule to enforce an end date
-		const updatedSchedule = await stripe.subscriptionSchedules.update(
-			scheduleId,
-			{
-				end_behavior: 'cancel',
-				phases: [
-					{
-						start_date: startDateUnix,
-						end_date: endDateUnix,
-						items: schedule.phases[0].items.map((item) => ({
-							price: item.price as string,
-							quantity: item.quantity ?? 1,
-						})),
-					},
-				],
-			},
-		)
-		return updatedSchedule
+		await stripe.subscriptionSchedules.update(scheduleId, {
+			end_behavior: 'cancel',
+			phases: [
+				{
+					start_date: startDateUnix,
+					end_date: endDateUnix,
+					items: schedule.phases[0].items.map((item) => ({
+						price: item.price as string,
+						quantity: item.quantity ?? 1,
+					})),
+				},
+			],
+		})
+		// return updatedSchedule
+	}
+
+	const invoiceId = acceptedQuote.invoice as string | null
+
+	if (invoiceId) {
+		// Fetch the full Stripe invoice object
+		const invoice = await stripe.invoices.retrieve(invoiceId)
+		console.log('Invoice retrieved from Stripe:', invoice)
+
+		return invoice.id
+	} else {
+		console.log('No invoice created for this quote.')
+		return null
 	}
 }
