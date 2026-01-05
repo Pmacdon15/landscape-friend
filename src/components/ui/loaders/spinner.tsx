@@ -6,7 +6,7 @@ const Spinner = ({
 	if (variant === 'default') {
 		return (
 			<div className="flex items-center justify-center">
-				<div className="h-8 w-8 animate-spin rounded-full border-white border-b-2"></div>
+				<div className="h-8 w-8 animate-spin rounded-full border-grey-500 border-b-2"></div>
 			</div>
 		)
 	} else {

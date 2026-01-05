@@ -4,6 +4,7 @@ import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fal
 import FormHeader from '@/components/ui/header/form-header'
 import { CardView } from '@/components/ui/manage/subscription/manage-subscription-card-view'
 import SearchForm from '@/components/ui/search/search-form'
+import ManageFallback from '@/components/ui/fallbacks/manage-fallback'
 
 export default function Page(
 	props: PageProps<'/billing/manage/subscriptions'>,
@@ -14,8 +15,8 @@ export default function Page(
 			<Suspense fallback={<SearchFormFallBack variant="subscriptions" />}>
 				<SearchForm variant="subscriptions" />
 			</Suspense>
-			{/* //MARK: TODO: add fallback */}
-			<Suspense>
+
+			<Suspense fallback={<ManageFallback />}>
 				<CardView props={props} />
 			</Suspense>
 		</FormContainer>
