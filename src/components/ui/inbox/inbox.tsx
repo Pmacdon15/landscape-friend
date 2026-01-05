@@ -36,7 +36,7 @@ export default function NotificationInbox({
 			colorPrimary: '#138b10',
 		},
 		elements: {
-			notificationList: "bg-[url('/lawn2.jpg')] bg-cover bg-center ",
+			notificationList: "bg-[url('/lawn4.png')] bg-cover bg-center ",
 			notification:
 				'backdrop-blur-md bg-white/70  nt-border nt-border-white/30 rounded-xl shadow-sm my-1 hover:nt-bg-white', //hover:nt-bg-white doe'snt work lol but what it does do is stop the notifications from going clear on hover
 			notificationBody: 'nt-text-black text-bold ',
