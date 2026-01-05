@@ -441,11 +441,15 @@ export async function acceptAndScheduleQuote(
 	)
 
 	// Update quote to set a future effective date
-	await stripe.quotes.update(updatedQuote.id, {
-		subscription_data: {
-			effective_date: startDateUnix,
-		},
-	})
+	if (updatedQuote.metadata.startDate && updatedQuote.metadata.endDate) {
+		await stripe.quotes.update(updatedQuote.id, {
+			subscription_data: {
+				effective_date: startDateUnix,
+			},
+		})
+	} else {
+		await stripe.quotes.update(updatedQuote.id)
+	}
 
 	// Accept the quote — this creates a subscription schedule
 	const acceptedQuote = await stripe.quotes.accept(updatedQuote.id)
