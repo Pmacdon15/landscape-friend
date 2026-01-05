@@ -197,6 +197,7 @@ export async function createStripeQuote(
 			collection_method: 'send_invoice',
 			invoice_settings: { days_until_due: 10 },
 		})
+
 		await triggerNotificationSendToAdmin(
 			orgId || String(userId),
 			'quote-created',
@@ -207,7 +208,7 @@ export async function createStripeQuote(
 				},
 				client: {
 					name: validatedFields.data.clientName,
-				},
+				},				
 			},
 		)
 

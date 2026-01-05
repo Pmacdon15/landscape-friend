@@ -287,7 +287,7 @@ export function CreateQuoteForm({
 				<AlertMessage
 					message="Quote created successfully!"
 					path="Quotes"
-					pathname="/billing/manage/quotes"
+					pathname={`/billing/manage/quotes?search=${data.quoteId}`}
 					type="success"
 				/>
 			)}
