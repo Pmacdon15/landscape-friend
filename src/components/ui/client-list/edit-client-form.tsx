@@ -25,7 +25,7 @@ export function EditClientForm({
 		resolver: zodResolver(AddClientFormSchema),
 		defaultValues: {
 			full_name: client.full_name,
-			phone_number: client.phone_number,
+			phone_number: String(client.phone_number),
 			email_address: client.email_address || '',
 			address: client.address,
 		},
