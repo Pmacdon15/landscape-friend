@@ -5,7 +5,7 @@ export default function ManageFallback() {
 		<div className="grid grid-cols-1 gap-4">
 			<div className="rounded-lg bg-white p-4 shadow-md">
 				<div className="flex items-center justify-between">
-					<h3 className="text-center font-semibold text-lg w-full">
+					<h3 className="w-full text-center font-semibold text-lg">
 						Loading <Spinner />
 					</h3>
 				</div>

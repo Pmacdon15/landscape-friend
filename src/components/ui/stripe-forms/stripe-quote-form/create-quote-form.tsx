@@ -156,7 +156,7 @@ export function CreateQuoteForm({
 				/>
 
 				<section>
-					<h3 className="font-semibold mb-2">Client Information</h3>
+					<h3 className="mb-2 font-semibold">Client Information</h3>
 					<FormSelect
 						control={form.control}
 						label="Name"
@@ -203,10 +203,10 @@ export function CreateQuoteForm({
 					/>
 				</section>
 				<section>
-					<h3 className="font-semibold mb-2">Materials</h3>
+					<h3 className="mb-2 font-semibold">Materials</h3>
 
 					{fields.map((field, index) => (
-						<div className="border p-4 rounded mb-4" key={field.id}>
+						<div className="mb-4 rounded border p-4" key={field.id}>
 							<FormSelect
 								control={form.control}
 								label="Material"

@@ -93,8 +93,7 @@ export async function fetchProducts(): Promise<
 				filteredProducts.map((product) => getProductPrice(product.id)),
 			)
 		).filter((price): price is Stripe.Price => price !== null)
-		
-		
+
 		return {
 			products: filteredProducts,
 			productsPrices: filteredProductsPrices,

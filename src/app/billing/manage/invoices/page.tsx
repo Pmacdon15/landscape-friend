@@ -13,7 +13,7 @@ export default function Page(props: PageProps<'/billing/manage/invoices'>) {
 			<Suspense fallback={<SearchFormFallBack variant="invoices" />}>
 				<SearchForm variant="invoices" />
 			</Suspense>
-			
+
 			<Suspense fallback={<ManageFallback />}>
 				<CardView props={props} />
 			</Suspense>
