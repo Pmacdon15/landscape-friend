@@ -1,11 +1,12 @@
 'use client'
+
 import { zodResolver } from '@hookform/resolvers/zod'
-import { use, useEffect, useMemo } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { use, useEffect, useEffectEvent, useMemo, useState } from 'react'
+import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import type { z } from 'zod'
+
 import { Button } from '@/components/ui/button'
 import { FormInput, FormSelect } from '@/components/ui/forms/form'
-import { useProductPrices } from '@/lib/hooks/useStripe'
 import { useCreateStripeQuote } from '@/lib/mutations/mutations'
 import { schemaCreateQuote } from '@/lib/zod/schemas'
 import type { CreateSubscriptionFormProps } from '@/types/forms-types'
@@ -17,16 +18,30 @@ export function CreateQuoteForm({
 	clientsPromise,
 	productsPromise,
 }: CreateSubscriptionFormProps) {
-	const { mutate, isPending, isSuccess, isError, data, error } =
-		useCreateStripeQuote({
-			onSuccess: () => {
-				console.log('Update successful')
-			},
-		})
 	const organizationId = use(organizationIdPromise)
 	const clients = use(clientsPromise)
-	// let products: Stripe.Product[]
-	const products = use(productsPromise || Promise.resolve([]))
+
+	const productInfo = use(
+		productsPromise ??
+			Promise.resolve({ products: [], productsPrices: [] }),
+	)
+
+	const products = useMemo(() => {
+		if (!('errorMessage' in productInfo)) return productInfo.products
+		return []
+	}, [productInfo])
+
+	const prices = useMemo(() => {
+		if (!('errorMessage' in productInfo)) return productInfo.productsPrices
+		return []
+	}, [productInfo])
+
+	const [selectedClientId, setSelectedClientId] = useState(0)
+
+	// 🔑 tracks whether a row is still auto-priced
+	const [autoPricedRows, setAutoPricedRows] = useState<
+		Record<number, boolean>
+	>({})
 
 	const form = useForm({
 		resolver: zodResolver(schemaCreateQuote),
@@ -41,7 +56,7 @@ export function CreateQuoteForm({
 			materials: [
 				{ materialType: '', materialCostPerUnit: 0, materialUnits: 0 },
 			],
-			organization_id: organizationId || '',
+			organization_id: organizationId ?? '',
 		},
 	})
 
@@ -51,53 +66,91 @@ export function CreateQuoteForm({
 	})
 
 	const watchedValues = form.watch()
-	const clientName = watchedValues.clientName
+	const watchedMaterials = useWatch({
+		control: form.control,
+		name: 'materials',
+	})
 
+	
 	useEffect(() => {
 		const selectedClient = clients.find(
-			(client) => client.full_name === clientName,
+			(c) => c.full_name === watchedValues.clientName,
 		)
-		if (selectedClient) {
-			form.setValue('clientEmail', selectedClient.email_address)
-			form.setValue('phone_number', selectedClient.phone_number)
-			form.setValue('address', selectedClient.address)
-		} else {
+
+		if (!selectedClient) {
 			form.setValue('clientEmail', '')
 			form.setValue('phone_number', '')
 			form.setValue('address', '')
+			setSelectedClientId(0)
+			return
 		}
-	}, [clientName, clients, form.setValue, form])
 
-	const onSubmit = (formData: z.infer<typeof schemaCreateQuote>) => {
-		mutate(formData)
-	}
+		form.setValue('clientEmail', selectedClient.email_address)
+		form.setValue('phone_number', selectedClient.phone_number)
+		form.setValue('address', selectedClient.address)
+		setSelectedClientId(selectedClient.id)
+	}, [watchedValues.clientName, clients, form])
+
+	
+
+	const updateMaterialCost = useEffectEvent(
+		(index: number, value: number) => {
+			form.setValue(`materials.${index}.materialCostPerUnit`, value)
+		},
+	)
+
+	useEffect(() => {
+		if (!watchedMaterials || prices.length === 0) return
+
+		watchedMaterials.forEach((material, index) => {
+			if (!material.materialType) return
+			if (autoPricedRows[index] === false) return // 🔒 user edited
+
+			const productPrice = prices.find(
+				(p) => p.product === material.materialType,
+			)?.unit_amount_decimal
+
+			if (!productPrice) return
+
+			const nextCost = Number(productPrice) / 100
+			const currentCost = material.materialCostPerUnit ?? 0
+
+			if (currentCost !== nextCost) {
+				updateMaterialCost(index, nextCost)
+
+				setAutoPricedRows((prev) => ({
+					...prev,
+					[index]: true,
+				}))
+			}
+		})
+	}, [watchedMaterials, prices, autoPricedRows])
+
+	// reset locks when rows change
+	useEffect(() => {
+		setAutoPricedRows({})
+		console.log('fields: ', fields.length)
+	}, [fields.length])
+	
 
 	const total =
 		watchedValues.labourCostPerUnit * watchedValues.labourUnits +
-		(watchedValues.materials?.reduce((acc, item) => {
-			const cost = item.materialCostPerUnit ?? 0
-			const units = item.materialUnits ?? 0
-			return acc + cost * units
+		(watchedMaterials?.reduce((acc, item) => {
+			return (
+				acc +
+				(item.materialCostPerUnit ?? 0) * (item.materialUnits ?? 0)
+			)
 		}, 0) ?? 0)
 
-	const materialIds = useMemo(() => {
-		return watchedValues.materials.map((material) => material.materialType)
-	}, [watchedValues.materials])
+	
 
-	const { data: prices } = useProductPrices(materialIds)
+	const { mutate, isPending, isSuccess, isError, data, error } =
+		useCreateStripeQuote()
 
-	useEffect(() => {
-		if (prices) {
-			Object.keys(prices).forEach((productId, index) => {
-				if (prices[productId]?.unit_amount) {
-					form.setValue(
-						`materials.${index}.materialCostPerUnit`,
-						prices[productId].unit_amount / 100,
-					)
-				}
-			})
-		}
-	}, [prices, form.setValue])
+	const onSubmit = (formData: z.infer<typeof schemaCreateQuote>) => {
+		mutate({ quoteData: formData, clientId: selectedClientId })
+	}
+	
 
 	return (
 		<>
@@ -109,18 +162,15 @@ export function CreateQuoteForm({
 					name="organization_id"
 				/>
 
-				{/* Client Info */}
 				<section>
-					<h3 className="mb-2 font-semibold text-md">
-						Client Information
-					</h3>
+					<h3 className="font-semibold mb-2">Client Information</h3>
 					<FormSelect
 						control={form.control}
 						label="Name"
 						name="clientName"
-						options={clients.map((client) => ({
-							value: client.full_name,
-							label: client.full_name,
+						options={clients.map((c) => ({
+							value: c.full_name,
+							label: c.full_name,
 						}))}
 					/>
 					<FormInput
@@ -132,7 +182,7 @@ export function CreateQuoteForm({
 					<FormInput
 						control={form.control}
 						disabled
-						label="Phone Number"
+						label="Phone"
 						name="phone_number"
 					/>
 					<FormInput
@@ -143,56 +193,37 @@ export function CreateQuoteForm({
 					/>
 				</section>
 
-				{/* Labour Details */}
 				<section>
-					<h3 className="mb-2 font-semibold text-md">Cost Details</h3>
-					<FormInput
-						control={form.control}
-						label="Labour Cost (per unit)"
-						name="labourCostPerUnit"
-						step="0.01"
-						type="number"
-					/>
-					<FormInput
-						control={form.control}
-						label="Labour Units"
-						name="labourUnits"
-						step="1"
-						type="number"
-					/>
-				</section>
+					<h3 className="font-semibold mb-2">Materials</h3>
 
-				{/* Dynamic Materials Section */}
-				<section>
-					<h3 className="mb-2 font-semibold text-md">Materials</h3>
-					{fields.map((item, index) => (
-						<div
-							className="mb-4 rounded-md border p-4"
-							key={item.id}
-						>
-							<div>
-								<FormSelect
-									control={form.control}
-									label="Material"
-									name={`materials.${index}.materialType`}
-									options={
-										Array.isArray(products)
-											? products.map((product) => ({
-													value:
-														product.name +
-														product.id,
-													label: product.name,
-												}))
-											: []
-									}
-								/>
-							</div>
+					{fields.map((field, index) => (
+						<div className="border p-4 rounded mb-4" key={field.id}>
+							<FormSelect
+								control={form.control}
+								label="Material"
+								name={`materials.${index}.materialType`}
+								onValueChange={() =>
+									setAutoPricedRows((prev) => ({
+										...prev,
+										[index]: true,
+									}))
+								}
+								options={products.map((p) => ({
+									value: p.id,
+									label: p.name,
+								}))}
+							/>
 
 							<FormInput
 								control={form.control}
-								// disabled={prices?.[index]?.isLoading}
 								label="Material Cost (per unit)"
 								name={`materials.${index}.materialCostPerUnit`}
+								onValueChange={() =>
+									setAutoPricedRows((prev) => ({
+										...prev,
+										[index]: false,
+									}))
+								}
 								step="0.01"
 								type="number"
 							/>
@@ -203,19 +234,20 @@ export function CreateQuoteForm({
 								name={`materials.${index}.materialUnits`}
 								type="number"
 							/>
+
 							{fields.length > 1 && (
 								<Button
 									className="mt-2"
 									onClick={() => remove(index)}
 									type="button"
 								>
-									Remove Material
+									Remove
 								</Button>
 							)}
 						</div>
 					))}
+
 					<Button
-						className="mt-2"
 						onClick={() =>
 							append({
 								materialType: '',
@@ -229,28 +261,19 @@ export function CreateQuoteForm({
 					</Button>
 				</section>
 
-				<p className="mt-2 font-bold">Total: ${total.toFixed(2)}</p>
-				<div>
-					<Button
-						disabled={isPending}
-						type="submit"
-						variant="outline"
-					>
-						{isPending ? (
-							<>
-								Creating Quote...
-								<Spinner />
-							</>
-						) : (
-							'Create Quote'
-						)}
-					</Button>
-				</div>
+				<p className="font-bold">Total: ${total.toFixed(2)}</p>
 
-				{/* <BackToLink path={'/billing/manage/quotes'} place={'Quotes'} /> */}
+				<Button disabled={isPending} type="submit">
+					{isPending ? (
+						<>
+							Creating Quote <Spinner />
+						</>
+					) : (
+						'Create Quote'
+					)}
+				</Button>
 			</form>
 
-			{/* Alerts */}
 			{isSuccess && data && (
 				<AlertMessage
 					message="Quote created successfully!"
@@ -259,6 +282,7 @@ export function CreateQuoteForm({
 					type="success"
 				/>
 			)}
+
 			{isError && error && (
 				<AlertMessage
 					message={`Error creating quote: ${error.message}`}

@@ -706,9 +706,9 @@ export async function markYardServicedDb(
 	snow: boolean,
 	assigned_to: string,
 ) {
-  const sql = neon(`${process.env.DATABASE_URL} `)
-  console.log("Marking client serviced payload:", JSON.stringify(data))
-  try {
+	const sql = neon(`${process.env.DATABASE_URL} `)
+	console.log('Marking client serviced payload:', JSON.stringify(data))
+	try {
 		const query = snow
 			? sql`
           INSERT INTO yards_marked_clear(client_id, clearing_date, assigned_to)
@@ -921,7 +921,7 @@ export async function updateClientInfoDb(
 	clientId: number,
 	clientName: string,
 	clientEmail: string | null | undefined,
-	phoneNumber: number | null | undefined, // Assuming this is number and needs conversion
+	phoneNumber: string | null | undefined,
 	address: string,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
@@ -942,4 +942,21 @@ export async function updateClientInfoDb(
 		console.error('Error in updateClientInfoDb SQL query:', error)
 		throw error
 	}
+}
+
+export async function updateStripeCustomerIdDb(
+	clientId: number,
+	stripeCustomerId: string,
+) {
+	const sql = neon(`${process.env.DATABASE_URL}`)
+
+	const result = await sql`
+            UPDATE clients
+            SET
+                stripe_customer_id = ${stripeCustomerId}
+            WHERE id = ${clientId}
+            RETURNING *;
+        `
+	if (result.length > 0) return true
+	else return false
 }

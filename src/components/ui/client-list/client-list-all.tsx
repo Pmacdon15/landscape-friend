@@ -146,7 +146,6 @@ export default async function ClientListAll({
 						</li>
 					</FormContainer>
 				))}
-				
 			</ul>
 			<PaginationTabs
 				page={searchParams.page}

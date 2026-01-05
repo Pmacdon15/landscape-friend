@@ -11,11 +11,17 @@ export default function ListsLinks() {
 		<li>
 			Order or reorder your route between clients homes, easily see your
 			clients on a map with a link to google maps on your{' '}
-			<Link className="text-blue-500 underline" href={`/lists/cutting?date=${today}`}>
+			<Link
+				className="text-blue-500 underline"
+				href={`/lists/cutting?date=${today}`}
+			>
 				Cutting List
 			</Link>{' '}
 			or{' '}
-			<Link className="text-blue-500 underline"  href={`/lists/clearing?date=${today}`}>
+			<Link
+				className="text-blue-500 underline"
+				href={`/lists/clearing?date=${today}`}
+			>
 				Clearing List
 			</Link>
 			.
