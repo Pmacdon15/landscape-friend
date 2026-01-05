@@ -482,6 +482,7 @@ export const useMarkQuote = () => {
 		},
 		onSuccess: () => {
 			revalidatePathAction('/billing/manage/invoices')
+			revalidatePathAction('/billing/manage/quotes')
 		},
 	})
 }

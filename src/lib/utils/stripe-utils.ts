@@ -455,29 +455,26 @@ export async function acceptAndScheduleQuote(
 	const acceptedQuote = await stripe.quotes.accept(updatedQuote.id)
 
 	const scheduleId = acceptedQuote.subscription_schedule as string
-	if (!scheduleId) {
-		throw new Error('Quote did not create a subscription schedule')
+	if (scheduleId) {
+		const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId)
+
+		// Update the schedule to enforce an end date
+		const updatedSchedule = await stripe.subscriptionSchedules.update(
+			scheduleId,
+			{
+				end_behavior: 'cancel',
+				phases: [
+					{
+						start_date: startDateUnix,
+						end_date: endDateUnix,
+						items: schedule.phases[0].items.map((item) => ({
+							price: item.price as string,
+							quantity: item.quantity ?? 1,
+						})),
+					},
+				],
+			},
+		)
+		return updatedSchedule
 	}
-
-	const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId)
-
-	// Update the schedule to enforce an end date
-	const updatedSchedule = await stripe.subscriptionSchedules.update(
-		scheduleId,
-		{
-			end_behavior: 'cancel',
-			phases: [
-				{
-					start_date: startDateUnix,
-					end_date: endDateUnix,
-					items: schedule.phases[0].items.map((item) => ({
-						price: item.price as string,
-						quantity: item.quantity ?? 1,
-					})),
-				},
-			],
-		},
-	)
-
-	return updatedSchedule
 }
