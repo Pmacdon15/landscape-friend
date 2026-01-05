@@ -1,5 +1,4 @@
 'use client'
-//MARK: TODO: use lucid react x icon instead of below
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import { ImagePlusIcon } from 'lucide-react'
 import Image from 'next/image'
