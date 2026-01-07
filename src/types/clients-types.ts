@@ -141,3 +141,10 @@ export interface NamesAndEmails {
 	full_name: string
 	email_address: string
 }
+
+export interface ClientAddress {
+    id: number;
+    client_id: number;
+    address: string;
+}
+

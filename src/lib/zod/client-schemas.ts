@@ -15,7 +15,11 @@ export const AddClientFormSchema = z.object({
 		)
 		.nullable()
 		.optional(),
-	address: z.string().min(1, { message: 'Address is required' }),
+	addresses: z.array(
+		z.object({
+			address: z.string().min(1, { message: 'Address is required' }),
+		}),
+	),
 })
 
 // export type AddClientFormValues = z.infer<typeof AddClientFormSchema>

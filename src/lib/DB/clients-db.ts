@@ -10,7 +10,6 @@ import type {
 } from '@/lib/zod/schemas'
 import type { BlobUrl } from '@/types/blob-types'
 import type {
-	Account,
 	Client,
 	ClientInfoList,
 	ClientResult,
@@ -19,37 +18,57 @@ import type {
 import type { NovuSubscriberIds } from '@/types/novu-types'
 
 //MARK: Add clients
-
 export async function addClientDB(
 	data: z.infer<typeof schemaAddClient>,
 	organization_id: string,
-): Promise<{ client: Client; account: Account }[]> {
-	// console.log("addClientDB called with data:", data, "and organization_id:", organization_id);
-	const sql = neon(`${process.env.DATABASE_URL}`)
-	try {
-		const result = (await sql`
-        WITH new_client AS (
-            INSERT INTO clients (full_name, phone_number, email_address, organization_id, address, stripe_customer_id)
-            VALUES (${data.full_name}, ${data.phone_number}, ${data.email_address}, ${organization_id}, ${data.address}, ${data.stripe_customer_id || null})
-            RETURNING *
-        ),
-        new_account AS (
-            INSERT INTO accounts (client_id)
-            SELECT id
-            FROM new_client
-            RETURNING *
-        )
-        SELECT 
-            (SELECT row_to_json(new_client.*)::jsonb AS client FROM new_client),
-            (SELECT row_to_json(new_account.*)::jsonb AS account FROM new_account);
-    `) as { client: Client; account: Account }[]
-		// console.log("addClientDB result:", result);
-		return result
-	} catch (error) {
-		console.error('Error in addClientDB SQL query:', error)
-		throw error
+): Promise<Client> {
+	const databaseUrl = process.env.DATABASE_URL
+	if (!databaseUrl) {
+		throw new Error('DATABASE_URL environment variable is not set')
 	}
+
+	const sql = neon(databaseUrl)
+
+	/* ------------------------
+	   1. Insert client
+	------------------------ */
+	const [client] = (await sql`
+		INSERT INTO clients (
+			full_name,
+			phone_number,
+			email_address,
+			organization_id,
+			stripe_customer_id
+		)
+		VALUES (
+			${data.full_name},
+			${data.phone_number},
+			${data.email_address},
+			${organization_id},
+			${data.stripe_customer_id ?? null}
+		)
+		RETURNING *
+	`) as Client[]
+
+	await sql`
+		INSERT INTO accounts (client_id)
+		VALUES (${client.id})
+	`
+
+	await Promise.allSettled(
+		data.addresses?.map(
+			(addr) =>
+				sql`
+				INSERT INTO client_addresses (client_id, address)
+				VALUES (${client.id}, ${addr.address})
+				RETURNING *
+			`,
+		) ?? [], 
+	)
+
+	return client
 }
+
 //MARK:Fetch novu id
 export async function getNovuIds(
 	userIds: string[],

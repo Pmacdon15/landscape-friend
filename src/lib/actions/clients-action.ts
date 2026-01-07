@@ -26,7 +26,7 @@ import { AddClientFormSchema } from '../zod/client-schemas'
 export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	const organizationId = orgId || userId
-	if (!userId)
+	if (!organizationId)
 		return {
 			errorMessage: 'Not logged in',
 		}
@@ -35,13 +35,13 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 			errorMessage: 'Not Admin.',
 		}
 
-	const orgSettings = await getOrganizationSettings(orgId || userId)
+	const orgSettings = await getOrganizationSettings(organizationId)
 	if (!orgSettings)
 		return {
 			errorMessage: 'Organization not found.',
 		}
 
-	const clientCount = await countClientsByOrgId(orgId || userId)
+	const clientCount = await countClientsByOrgId(organizationId)
 	if (clientCount >= orgSettings.max_allowed_clients) {
 		return {
 			errorMessage:
@@ -49,41 +49,35 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 		}
 	}
 
-	const validatedFields = AddClientFormSchema.safeParse({
-		full_name: data.full_name,
-		phone_number: data.phone_number,
-		email_address: data.email_address,
-		address: data.address,
-		organization_id: organizationId,
-	})
+	const validatedFields = AddClientFormSchema.safeParse(data)
 
-	console.log('validatedFields: ', validatedFields)
-	if (!validatedFields.success)
+	if (!validatedFields.success) {
 		return {
 			errorMessage: 'Invalid form data',
 		}
+	}
 
 	try {
 		const customerId = await findOrCreateStripeCustomer(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
-			orgId || userId,
+			organizationId,
 		)
 
 		const result = await addClientDB(
 			{
 				...validatedFields.data,
 				stripe_customer_id: customerId || null,
-				organization_id: orgId || userId,
+				organization_id: organizationId,
 			},
-			orgId || userId,
+			organizationId,
 		)
 
 		if (!result || result.length === 0) {
 			throw new Error('Failed to add client to database')
 		}
 
-		triggerNotificationSendToAdmin(orgId || userId, 'client-added', {
+		triggerNotificationSendToAdmin(organizationId, 'client-added', {
 			client: {
 				name: validatedFields.data.full_name,
 				encodedName: encodeURIComponent(validatedFields.data.full_name),
@@ -105,8 +99,8 @@ export async function updateClient(
 	clientId: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
-
-	if (!userId)
+	const organizationId = orgId || userId
+	if (!organizationId)
 		return {
 			errorMessage: 'Not logged in.',
 		}
@@ -114,12 +108,12 @@ export async function updateClient(
 		return {
 			errorMessage: 'Not Admin.',
 		}
-
+	//TODO: address update is not implemented
 	const validatedFields = AddClientFormSchema.safeParse({
 		full_name: data.full_name,
 		phone_number: data.phone_number,
 		email_address: data.email_address,
-		address: data.address,
+		addresses: data.addresses,
 	})
 
 	console.log('validatedFields: ', validatedFields)
@@ -133,8 +127,7 @@ export async function updateClient(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
 			validatedFields.data.phone_number,
-			validatedFields.data.address,
-			(orgId ?? '') || (userId ?? ''),
+			organizationId,
 		)
 		return { success: true }
 	} catch (e: unknown) {

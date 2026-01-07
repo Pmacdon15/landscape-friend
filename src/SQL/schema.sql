@@ -1,4 +1,4 @@
--- -- Active: 1759456932153@@ep-snowy-poetry-adb5ubzx-pooler.c-2.us-east-1.aws.neon.tech@5432@neondb@public
+-- Active: 1759545766576@@ep-gentle-cloud-ad2wbsx6-pooler.c-2.us-east-1.aws.neon.tech@5432@neondb
 -- DROP TABLE IF EXISTS stripe_api_keys CASCADE;
 
 -- DROP TABLE IF EXISTS yards_marked_cut CASCADE;
@@ -14,6 +14,8 @@
 -- DROP TABLE IF EXISTS accounts CASCADE;
 
 -- DROP TABLE IF EXISTS clients CASCADE;
+
+-- DROP TABLE IF EXISTS client_addresses CASCADE;
 
 -- DROP TABLE IF EXISTS organizations CASCADE;
 
@@ -49,11 +51,20 @@ CREATE TABLE clients (
     email_address VARCHAR(75),
     organization_id VARCHAR(253) NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES organizations (organization_id) ON DELETE CASCADE,    
-    address VARCHAR(200) NOT NULL,   
-    stripe_customer_id VARCHAR(255) NULL,
-    UNIQUE (organization_id, address)
+    -- address VARCHAR(200) NOT NULL,   
+    stripe_customer_id VARCHAR(255) NULL
+    
 );
-SELECT * FROM clients WHERE full_name = 'Erick Booberson MacDonald';
+
+CREATE TABLE client_addresses (
+    id SERIAL PRIMARY KEY,
+    client_id INTEGER NOT NULL,
+    address VARCHAR(200) NOT NULL,
+    FOREIGN KEY (client_id)
+        REFERENCES clients (id)
+        ON DELETE CASCADE
+);
+-- SELECT * FROM clients WHERE full_name = 'Erick Booberson MacDonald';
 CREATE TABLE stripe_api_keys (
     id SERIAL PRIMARY KEY,
     api_key VARCHAR(253) NOT NULL,
@@ -155,18 +166,18 @@ CREATE TABLE images_serviced (
     )
 );
 
-CREATE TABLE images_serviced (
-    id SERIAL PRIMARY KEY,
-    imageURL TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fk_cut_id INT,
-    fk_clear_id INT,
-    CONSTRAINT fk_cut FOREIGN KEY (fk_cut_id) REFERENCES yards_marked_cut (id) ON DELETE CASCADE,
-    CONSTRAINT fk_clear FOREIGN KEY (fk_clear_id) REFERENCES yards_marked_clear (id) ON DELETE CASCADE,
-    CONSTRAINT at_least_one_fk CHECK (
-        fk_cut_id IS NOT NULL OR fk_clear_id IS NOT NULL
-    )
-);
+-- CREATE TABLE images_serviced (
+--     id SERIAL PRIMARY KEY,
+--     imageURL TEXT NOT NULL,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     fk_cut_id INT,
+--     fk_clear_id INT,
+--     CONSTRAINT fk_cut FOREIGN KEY (fk_cut_id) REFERENCES yards_marked_cut (id) ON DELETE CASCADE,
+--     CONSTRAINT fk_clear FOREIGN KEY (fk_clear_id) REFERENCES yards_marked_clear (id) ON DELETE CASCADE,
+--     CONSTRAINT at_least_one_fk CHECK (
+--         fk_cut_id IS NOT NULL OR fk_clear_id IS NOT NULL
+--     )
+-- );
 -- SELECT * FROM users;
 -- SELECT * FROM organizations;
 -- SELECT * FROM clients where organization_id ='org_35ugSke0IBs1XDGa7YI6boXVqsG' ORDER BY id ASC;
@@ -237,8 +248,8 @@ CREATE TABLE images_serviced (
 -- WHERE assignments.id = subquery.id;
 
 
--- INSERT INTO organizations (organization_id, organization_name, max_allowed_clients)
--- VALUES ('org_368RDFv9J3wphFLXKbYL2XCnqeJ', 'New Organization', 100);
+INSERT INTO organizations (organization_id, organization_name, max_allowed_clients)
+VALUES ('user_35uYpItCYEItSG6WmiTExQEmT1U', 'Pat', 100);
 
 -- INSERT INTO users (id, name, email)
 -- VALUES ('user_368RTyyYd3bUdazs9qaAqGI5D9S', 'New User', 'pmacdonald15@proton.me');

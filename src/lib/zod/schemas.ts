@@ -3,8 +3,8 @@ import z from 'zod'
 export const schemaAddClient = z.object({
 	full_name: z.string(),
 	phone_number: z.string().optional().nullable(),
-	email_address: z.email().optional().nullable(),
-	address: z.string(),
+	email_address: z.string().optional().nullable(),
+	addresses: z.array(z.object({ address: z.string() })),
 	stripe_customer_id: z.string().optional().nullable(),
 	organization_id: z.string(),
 })
