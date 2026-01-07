@@ -17,21 +17,21 @@ export interface CustomerName {
 	stripe_customer_id: string
 	full_name?: string
 }
-export interface Client {
-	id: number
-	full_name: string
-	phone_number: number | undefined
-	email_address?: string
-	address: string
-	amount_owing: number
-	cutting_week: number
-	cutting_day: string
-	cutting_schedules: CuttingSchedule[]
-	snow_assigned_to: string
-	grass_assigned_to: string
-	images: Image[]
-	stripe_customer_id?: string
-}
+// export interface Client {
+// 	id: number
+// 	full_name: string
+// 	phone_number: number | undefined
+// 	email_address?: string
+// 	address: string
+// 	amount_owing: number
+// 	cutting_week: number
+// 	cutting_day: string
+// 	cutting_schedules: CuttingSchedule[]
+// 	snow_assigned_to: string
+// 	grass_assigned_to: string
+// 	images: Image[]
+// 	stripe_customer_id?: string
+// }
 
 export interface EditClientInfo {
 	id: number
@@ -94,10 +94,21 @@ export interface ClientResultListClientPage {
 }
 
 export interface ClientListServiceProps {
+	// Optional promise to check admin status
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
-	// props: PageProps<'/lists/client'>
-	clientsPromise: Promise<PaginatedClients | null>
+
+	// Promise that resolves to clients, addresses, and accounts, with pagination info
+	clientsPromise: Promise<{
+		clients: Client[]
+		addresses: ClientAddress[]
+		accounts: ClientAccount[]
+		totalPages: number
+	} | null>
+
+	// Optional promise for organization members
 	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
+
+	// Promise for search/filter parameters
 	searchParamsPromise: Promise<ParsedClientListParams>
 }
 export interface CuttingSchedule {
@@ -127,11 +138,11 @@ export interface Email {
 	email_address: string
 }
 
-export interface Account {
-	id: number
-	client_id: number
-	current_balance: number
-}
+// export interface Account {
+// 	id: number
+// 	client_id: number
+// 	current_balance: number
+// }
 
 export interface Price {
 	price: number
@@ -142,9 +153,32 @@ export interface NamesAndEmails {
 	email_address: string
 }
 
-export interface ClientAddress {
-    id: number;
-    client_id: number;
-    address: string;
+// export interface ClientAddress {
+//     id: number;
+//     client_id: number;
+//     address: string;
+// }
+
+// Interface for Client (from your clients table)
+export interface Client {
+	id: number
+	full_name: string
+	phone_number: string | null
+	email_address: string | null
+	organization_id: string
+	stripe_customer_id: string | null
 }
 
+// Interface for Account (from your accounts table)
+export interface ClientAccount {
+	id: number
+	client_id: number
+	current_balance: number
+}
+
+// Interface for ClientAddress (from your client_addresses table)
+export interface ClientAddress {
+	id: number
+	client_id: number
+	address: string
+}

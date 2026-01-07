@@ -1,13 +1,9 @@
-import { Suspense } from 'react'
 import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
-import { CuttingWeekDropDownContainer } from '../cutting-week/cutting-week'
-import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
 import ImageList from '../image-list/image-list'
-import AssignedTo from '../inputs/AssignedToSelect'
 import { PaginationTabs } from '../pagination/pagination-tabs'
 import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
@@ -34,9 +30,9 @@ export default async function ClientListAll({
 			</ContentContainer>
 		)
 
-	const { clients, totalPages } = result
+	const { clients, accounts, addresses, totalPages } = result
 
-	if (clients.length < 1)
+	if (!clients)
 		return (
 			<ContentContainer>
 				{' '}
@@ -53,7 +49,7 @@ export default async function ClientListAll({
 				totalPages={totalPages}
 			/>
 			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
-				{clients.map((client) => (
+				{clients.map((client, index) => (
 					<FormContainer key={client.id}>
 						<li className="relative rounded-sm border bg-white/70 p-4">
 							{isAdmin?.isAdmin && (
@@ -66,7 +62,9 @@ export default async function ClientListAll({
 							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
 								{client.phone_number && client.phone_number && (
 									<ClientListItemHeader
-										clientPhoneNumber={client.phone_number}
+										clientPhoneNumber={Number(
+											client.phone_number,
+										)}
 									/>
 								)}
 								{client.email_address && (
@@ -78,15 +76,25 @@ export default async function ClientListAll({
 									/>
 								)}
 
-								<ClientListItemAddress
-									clientAddress={client.address}
-									clientId={client.id}
-								/>
+								{addresses
+									.filter(
+										(addr) => addr.client_id === client.id,
+									)
+									.map((addr) => (
+										<ClientListItemAddress
+											clientAddress={addr.address} // <- add this
+											clientId={client.id}
+											key={addr.id}
+										/>
+									))}
 							</div>
 							{isAdmin?.isAdmin && (
 								<div className="flex flex-col items-center gap-2">
-									<p>Amount owing: ${client.amount_owing} </p>
-									<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+									<p>
+										Amount owing: $
+										{accounts[index].current_balance}{' '}
+									</p>
+									{/* <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
 										<Suspense
 											fallback={<AssignedToFallback />}
 										>
@@ -120,16 +128,16 @@ export default async function ClientListAll({
 												snow
 											/>
 										</Suspense>
-									</div>
+									</div> */}
 								</div>
 							)}
-							<CuttingWeekDropDownContainer
+							{/* <CuttingWeekDropDownContainer
 								client={{
 									id: client.id,
 									cutting_schedules: client.cutting_schedules,
 								}}
 								isAdmin={isAdmin?.isAdmin}
-							/>
+							/> */}
 							<div className="flex flex-col gap-2">
 								<EditClientFormContainer
 									client={client}

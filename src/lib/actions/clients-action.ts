@@ -73,7 +73,7 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 			organizationId,
 		)
 
-		if (!result || result.length === 0) {
+		if (!result) {
 			throw new Error('Failed to add client to database')
 		}
 

@@ -2,23 +2,25 @@ import { auth } from '@clerk/nextjs/server'
 import { cacheTag } from 'next/cache'
 import {
 	fetchClientListDb,
+	fetchClients,
+	fetchClientsAccounts,
+	fetchClientsAddresses,
 	fetchClientsClearingGroupsDb,
 	fetchClientsCuttingSchedules,
-	fetchClientsWithSchedules,
 	fetchStripeCustomerNamesDB,
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import type {
+	Client,
+	ClientAccount,
+	ClientAddress,
 	ClientInfoList,
 	ClientResult,
-	ClientResultListClientPage,
 	CustomerName,
 	NamesAndEmails,
-	PaginatedClients,
 } from '@/types/clients-types'
 import { getServicedImagesUrlsDb } from '../DB/db-get-images'
-import { processClientsResult } from '../utils/sort'
 
 export async function fetchAllClients(
 	clientPageNumber: number,
@@ -26,7 +28,12 @@ export async function fetchAllClients(
 	searchTermCuttingWeek: number,
 	searchTermCuttingDay: string,
 	searchTermAssignedTo: string,
-): Promise<PaginatedClients | null> {
+): Promise<{
+	clients: Client[]
+	addresses: ClientAddress[]
+	accounts: ClientAccount[]
+	totalPages: number
+} | null> {
 	'use cache: private'
 	cacheTag(`clients-page-${clientPageNumber}`)
 	const { orgId, userId } = await isOrgAdmin(true)
@@ -37,7 +44,7 @@ export async function fetchAllClients(
 	const offset = (clientPageNumber - 1) * pageSize
 
 	try {
-		const result = await fetchClientsWithSchedules(
+		const clients = await fetchClients(
 			orgId || userId,
 			pageSize,
 			offset,
@@ -47,14 +54,12 @@ export async function fetchAllClients(
 			searchTermAssignedTo,
 		)
 
-		if (!result.clientsResult) return null
+		const [accounts, addresses] = await Promise.all([
+			fetchClientsAccounts(clients),
+			fetchClientsAddresses(clients),
+		])
 
-		const { clients, totalPages } = processClientsResult(
-			result.clientsResult as ClientResultListClientPage[],
-			result.totalCount,
-			pageSize,
-		)
-		return { clients, totalPages }
+		return { clients, accounts, addresses, totalPages: 1 }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)

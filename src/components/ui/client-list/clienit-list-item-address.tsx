@@ -5,9 +5,11 @@ import { useState } from 'react'
 export default function ClientListItemAddress({
 	clientAddress,
 	children,
+	key
 }: {
 	clientAddress: string
 	children: React.ReactNode
+	key:number
 }) {
 	const [showMap, setShowMap] = useState(false)
 	return (

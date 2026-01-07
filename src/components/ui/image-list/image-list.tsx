@@ -38,16 +38,16 @@ export default function ImageList({
 						/>
 					</div>
 				)}
-				{view === 'list' && client.images.length === 0 && isAdmin && (
+				{/* {view === 'list' && client.images.length === 0 && isAdmin && (
 					<AddSiteMap
 						clientId={client.id}
 						page={page}
 						setView={setView}
 					/>
-				)}
-				{view === 'list' && client.images.length === 0 && !isAdmin && (
+				)} */}
+				{/* {view === 'list' && client.images.length === 0 && !isAdmin && (
 					<NonAdminPlaceHolder />
-				)}
+				)} */}
 				{view === 'add' && (
 					<AddSiteMap
 						clientId={client.id}
@@ -55,14 +55,15 @@ export default function ImageList({
 						setView={setView}
 					/>
 				)}
-				{view === 'list' && client.images.length > 0 && (
+				{/* {view === 'list' && client.images.length > 0 && (
 					<ImageGallery
 						client={client}
 						isAdmin={isAdmin}
 						page={page}
 						setView={setView}
 					/>
-				)}
+				)} */}
+				{/* //TODO return site mape images  */}
 			</Activity>
 		</div>
 	)
