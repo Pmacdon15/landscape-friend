@@ -1,12 +1,12 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type z from 'zod'
 import { useUpdateClient } from '@/lib/mutations/mutations'
 import { AddClientFormSchema } from '@/lib/zod/client-schemas'
-import type { Client } from '@/types/clients-types'
+import type { Client, ClientAddress } from '@/types/clients-types'
 import { Button } from '../button'
 import { FormInput } from '../forms/form'
 import FormHeader from '../header/form-header'
@@ -14,10 +14,12 @@ import EllipsisSpinner from '../loaders/EllipsisSpinner'
 
 export function EditClientForm({
 	client,
+	addresses,
 	setSheetOpen,
 	page,
 }: {
 	client: Client
+	addresses: ClientAddress[]
 	setSheetOpen: (open: boolean) => void
 	page: number
 }) {
@@ -25,10 +27,17 @@ export function EditClientForm({
 		resolver: zodResolver(AddClientFormSchema),
 		defaultValues: {
 			full_name: client.full_name,
-			phone_number: String(client.phone_number),
-			email_address: client.email_address || '',
-			address: client.address,
+			phone_number: client.phone_number || undefined,
+			email_address: client.email_address,
+			addresses: addresses.map((a) => ({
+				address: a.address,
+			})),
 		},
+	})
+
+	const { fields, append, remove } = useFieldArray({
+		control: form.control,
+		name: 'addresses',
 	})
 
 	const { mutate, isPending, isError, error } = useUpdateClient(page, {
@@ -72,12 +81,25 @@ export function EditClientForm({
 					label={'Email Address'}
 					name={'email_address'}
 				/>
-
-				<FormInput
-					control={form.control}
-					label={'Address'}
-					name={'address'}
-				/>
+				<div>
+					{fields.map((field, index) => (
+						<div className="flex items-center gap-2" key={field.id}>
+							<FormInput
+								control={form.control}
+								label={`Address ${index + 1}`}
+								name={`addresses.${index}.address`}
+							/>
+							<Button
+								onClick={() => remove(index)}
+								size="sm"
+								type="button"
+								variant="destructive"
+							>
+								Remove
+							</Button>
+						</div>
+					))}
+				</div>
 			</div>
 			<div className="flex justify-end gap-2">
 				<Button disabled={isPending} type="submit" variant={'outline'}>

@@ -392,23 +392,14 @@ export async function fetchClientsClearingGroupsDb(
 }
 
 export async function fetchClients(
-
 	orgId: string,
-
 	pageSize: number,
-
 	offset: number,
-
 	searchTerm: string,
-
 	searchTermCuttingWeek: number,
-
 	searchTermCuttingDay: string,
-
 	searchTermAssignedTo: string,
-
 ) {
-
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
 	return (await sql`
@@ -416,7 +407,6 @@ export async function fetchClients(
         SELECT * FROM clients WHERE organization_id = ${orgId}
 
   `) as Client[]
-
 }
 // Fetch client accounts for an array of clients
 export async function fetchClientsAccounts(

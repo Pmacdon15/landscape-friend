@@ -140,6 +140,15 @@ export default async function ClientListAll({
 							/> */}
 							<div className="flex flex-col gap-2">
 								<EditClientFormContainer
+									addresses={addresses
+										.filter(
+											(a) => a.client_id === client.id,
+										)
+										.map((a) => ({
+											id: a.id,
+											client_id: client.id,
+											address: a.address,
+										}))}
 									client={client}
 									isAdmin={isAdmin?.isAdmin || false}
 									page={searchParams.page}

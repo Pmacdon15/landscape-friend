@@ -2,16 +2,18 @@
 
 import { Edit } from 'lucide-react'
 import { useState } from 'react'
-import type { Client } from '@/types/clients-types'
+import type { Client, ClientAddress } from '@/types/clients-types'
 import { EditSettingSheet } from '../sheets/edit-settings-sheet'
 import { EditClientForm } from './edit-client-form'
 
 export default function EditClientFormContainer({
 	client,
+	addresses,
 	isAdmin,
 	page,
 }: {
 	client: Client
+	addresses: ClientAddress[]
 	isAdmin: boolean
 	page: number
 }) {
@@ -32,6 +34,7 @@ export default function EditClientFormContainer({
 				variant="link"
 			>
 				<EditClientForm
+					addresses={addresses}
 					client={client}
 					page={page}
 					setSheetOpen={setOpen}
