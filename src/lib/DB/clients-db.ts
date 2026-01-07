@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless'
+import { type NeonQueryFunction, neon } from '@neondatabase/serverless'
 import type z from 'zod'
 import type {
 	schemaAddClient,
@@ -393,12 +393,12 @@ export async function fetchClientsClearingGroupsDb(
 
 export async function fetchClients(
 	orgId: string,
-	pageSize: number,
-	offset: number,
-	searchTerm: string,
-	searchTermCuttingWeek: number,
-	searchTermCuttingDay: string,
-	searchTermAssignedTo: string,
+	_pageSize: number,
+	_offset: number,
+	_searchTerm: string,
+	_searchTermCuttingWeek: number,
+	_searchTermCuttingDay: string,
+	_searchTermAssignedTo: string,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
@@ -981,7 +981,6 @@ export async function updateClientStripeIdByIdDb(
 		return result
 	} catch (error) {
 		console.error('Error in updateClientStripeIdByIdDb SQL query:', error)
-		throw error
 	}
 }
 
@@ -990,26 +989,84 @@ export async function updateClientInfoDb(
 	clientName: string,
 	clientEmail: string | null | undefined,
 	phoneNumber: string | null | undefined,
-	address: string,
+	addresses: { address: string }[],
+	stripeCustomerId?: string,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 	const stringPhoneNumber = phoneNumber ? String(phoneNumber) : null
 	try {
 		const result = await sql`
-            UPDATE clients
-            SET
-                full_name = ${clientName},
-                email_address = ${clientEmail},
-                phone_number = ${stringPhoneNumber},
-                address = ${address}
-            WHERE id = ${clientId}
-            RETURNING *;
-        `
+			UPDATE clients
+			SET
+				full_name = ${clientName},
+				email_address = ${clientEmail},
+				phone_number = ${stringPhoneNumber}
+			WHERE id = ${clientId}
+			RETURNING *;
+		`
+
+		if (stripeCustomerId) {
+			await sql`
+				UPDATE clients
+				SET stripe_customer_id = ${stripeCustomerId}
+				WHERE id = ${clientId};	`
+		}
+
+		await syncClientAddresses(sql, clientId, addresses ?? [])
 		return result
 	} catch (error) {
 		console.error('Error in updateClientInfoDb SQL query:', error)
 		throw error
 	}
+}
+const normalize = (a: string) => a.trim()
+
+async function syncClientAddresses(
+	sql: NeonQueryFunction<false, false>,
+	clientId: number,
+	newAddresses: { address: string }[],
+) {
+	// 1️⃣ Get existing addresses
+	const existing = (await sql`
+		SELECT id, address
+		FROM client_addresses
+		WHERE client_id = ${clientId}
+	`) as { id: number; address: string }[]
+
+	const existingSet = new Set(existing.map((a) => normalize(a.address)))
+	const incomingSet = new Set(newAddresses.map((a) => normalize(a.address)))
+
+	// 2️⃣ Determine inserts
+	const toInsert = newAddresses.filter(
+		(a) => !existingSet.has(normalize(a.address)),
+	)
+
+	// 3️⃣ Determine deletes
+	const toDelete = existing.filter(
+		(a) => !incomingSet.has(normalize(a.address)),
+	)
+
+	// 4️⃣ Insert new addresses
+	await Promise.all(
+		toInsert.map(
+			(addr) =>
+				sql`
+				INSERT INTO client_addresses (client_id, address)
+				VALUES (${clientId}, ${addr.address})
+			`,
+		),
+	)
+
+	// 5️⃣ Delete removed addresses
+	await Promise.all(
+		toDelete.map(
+			(addr) =>
+				sql`
+				DELETE FROM client_addresses
+				WHERE id = ${addr.id}
+			`,
+		),
+	)
 }
 
 export async function updateStripeCustomerIdDb(

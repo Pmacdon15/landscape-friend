@@ -109,12 +109,7 @@ export async function updateClient(
 			errorMessage: 'Not Admin.',
 		}
 	//TODO: address update is not implemented
-	const validatedFields = AddClientFormSchema.safeParse({
-		full_name: data.full_name,
-		phone_number: data.phone_number,
-		email_address: data.email_address,
-		addresses: data.addresses,
-	})
+	const validatedFields = AddClientFormSchema.safeParse(data)
 
 	console.log('validatedFields: ', validatedFields)
 	if (!validatedFields.success)
@@ -127,6 +122,7 @@ export async function updateClient(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
 			validatedFields.data.phone_number,
+			validatedFields.data.addresses,
 			organizationId,
 		)
 		return { success: true }

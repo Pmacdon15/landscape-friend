@@ -74,7 +74,7 @@ export function AddClientForm({
 				/>
 				<div>
 					{fields.map((field, index) => (
-						<div className="flex items-center gap-2" key={field.id}>
+						<div className="flex items-end gap-2" key={field.id}>
 							<FormInput
 								control={form.control}
 								label={`Address ${index + 1}`}
@@ -82,7 +82,6 @@ export function AddClientForm({
 							/>
 							<Button
 								onClick={() => remove(index)}
-								size="sm"
 								type="button"
 								variant="destructive"
 							>

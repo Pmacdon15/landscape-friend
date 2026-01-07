@@ -3,9 +3,7 @@ import { MapPlus } from 'lucide-react'
 import { Activity, useState } from 'react'
 import type { Client, ClientResult } from '@/types/clients-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
-import ImageGallery from './image-gallery'
 import AddSiteMap from './list-view/add-site-map'
-import NonAdminPlaceHolder from './list-view/non-admin-placeholder'
 
 export default function ImageList({
 	isAdmin = false,

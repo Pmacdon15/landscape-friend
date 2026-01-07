@@ -61,7 +61,7 @@ export function EditClientForm({
 			className="flex w-full flex-col gap-6 pb-2"
 			onSubmit={form.handleSubmit(onSubmit)}
 		>
-			<FormHeader text="Add New Client" />
+			<FormHeader text="Edit a Client" />
 			<div className="flex flex-col gap-2">
 				<FormInput
 					control={form.control}
@@ -81,9 +81,9 @@ export function EditClientForm({
 					label={'Email Address'}
 					name={'email_address'}
 				/>
-				<div>
+				<div className="flex flex-col items-center justify-center">
 					{fields.map((field, index) => (
-						<div className="flex items-center gap-2" key={field.id}>
+						<div className="flex items-end gap-2" key={field.id}>
 							<FormInput
 								control={form.control}
 								label={`Address ${index + 1}`}
@@ -91,7 +91,6 @@ export function EditClientForm({
 							/>
 							<Button
 								onClick={() => remove(index)}
-								size="sm"
 								type="button"
 								variant="destructive"
 							>
@@ -100,6 +99,14 @@ export function EditClientForm({
 						</div>
 					))}
 				</div>
+				<Button
+					className="mt-2"
+					onClick={() => append({ address: '' })}
+					type="button"
+					variant="outline"
+				>
+					Add Address
+				</Button>
 			</div>
 			<div className="flex justify-end gap-2">
 				<Button disabled={isPending} type="submit" variant={'outline'}>
