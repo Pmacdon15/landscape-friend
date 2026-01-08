@@ -110,7 +110,7 @@ export async function assignGrassCutting(
 	try {
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignGrassCuttingDb(
-				validatedFields.data.clientId,				
+				address_id,				
 			)
 			if (!result) throw new Error('Failed to unassign grass cutting')
 			return result

@@ -51,19 +51,19 @@ export async function changePriorityDb(
 }
 
 export async function assignGrassCuttingDb(
-	data: z.infer<typeof schemaAssign>,	
+	data: z.infer<typeof schemaAssign>,
 	addressId: number,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
-	const allAssignmentsForOrg = await sql`
-		SELECT client_id, priority FROM assignments
+	const allAssignmentsForUser = await sql`
+		SELECT address_id, priority FROM assignments
 		WHERE user_id = ${data.assignedTo} AND service_type = 'grass'
 	`
 
-	await unassignGrassCuttingDb(data.clientId)
+	await unassignGrassCuttingDb(addressId)
 
-	const priorityResult = allAssignmentsForOrg.filter(
+	const priorityResult = allAssignmentsForUser.filter(
 		(a) => Number(a.client_id) === data.clientId,
 	)
 
@@ -72,12 +72,20 @@ export async function assignGrassCuttingDb(
 	const nextPriority = maxPriority + 1
 
 	const result = await sql`
-		INSERT INTO assignments(client_id, user_id,address_id, service_type, priority)
-		SELECT ${data.clientId}, ${data.assignedTo}, ${addressId}, 'grass', ${nextPriority}
-		FROM clients
-		WHERE id = ${data.clientId} 
-		RETURNING *;
-	`
+	INSERT INTO assignments (
+		user_id,
+		address_id,
+		service_type,
+		priority
+	)
+	VALUES (
+		${data.assignedTo},
+		${addressId},
+		'grass',
+		${nextPriority}
+	)
+	RETURNING *;
+`
 
 	if (!result || result.length === 0) {
 		throw new Error('Assignment Failed')
@@ -87,13 +95,11 @@ export async function assignGrassCuttingDb(
 }
 
 //MARK: Unassign grass cutting
-export async function unassignGrassCuttingDb(
-	clientId: number,	
-) {
+export async function unassignGrassCuttingDb(addressId: number) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 	const result = await sql`
     DELETE FROM assignments
-    WHERE client_id = ${clientId}
+    WHERE address_id = ${addressId}
       AND service_type = 'grass'      
     RETURNING *;
   `
@@ -101,14 +107,12 @@ export async function unassignGrassCuttingDb(
 }
 
 //MARK: Unassign snow clearing
-export async function unassignSnowClearingDb(
-	clientId: number,	
-) {
+export async function unassignSnowClearingDb(addressId: number) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
 	const result = await sql`
     DELETE FROM assignments
-    WHERE client_id = ${clientId}
+    WHERE address_id = ${addressId}
       AND service_type = 'snow'      
     RETURNING *;
   `
@@ -117,39 +121,43 @@ export async function unassignSnowClearingDb(
 //MARK: Toggle snow client
 
 export async function assignSnowClearingDb(
-	data: z.infer<typeof schemaAssignSnow>,	
+	data: z.infer<typeof schemaAssignSnow>,
 	addressId: number,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
-
-	// console.log('Assigning snow clearing for client:', data.clientId)
-	// console.log('Organization ID:', organization_id)
 
 	if (!data.clientId) {
 		throw new Error('Client ID and organization ID are required')
 	}
 
-	const allAssignmentsForOrg = await sql`
-		SELECT client_id, priority FROM assignments
+	const allAssignmentsForUser = await sql`
+		SELECT address_id, priority FROM assignments
 		WHERE user_id = ${data.assignedTo} AND service_type = 'snow'
 	`
-	// console.log('All assignments for org:', allAssignmentsForOrg)
+	
+	await unassignSnowClearingDb(addressId)
 
-	await unassignSnowClearingDb(data.clientId)
-
-	const priorities = allAssignmentsForOrg.map((a) => a.priority)
+	const priorities = allAssignmentsForUser.map((a) => a.priority)
 	const maxPriority = Math.max(0, ...priorities)
 	const nextPriority = maxPriority + 1
 
 	// console.log('Next priority:', nextPriority)
 
 	const result = await sql`
-			INSERT INTO assignments(client_id, user_id, address_id, service_type, priority)
-			SELECT ${data.clientId}, ${data.assignedTo}, ${addressId}, 'snow', ${nextPriority}
-			FROM clients
-			WHERE id = ${data.clientId}
-			RETURNING *;
-		`
+	INSERT INTO assignments (
+		user_id,
+		address_id,
+		service_type,
+		priority
+	)
+	VALUES (
+		${data.assignedTo},
+		${addressId},
+		'snow',
+		${nextPriority}
+	)
+	RETURNING *;
+`
 	// console.log('Assignment result:', result)
 
 	if (!result || result.length === 0) {
