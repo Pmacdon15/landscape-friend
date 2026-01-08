@@ -114,7 +114,7 @@ export async function fetchCuttingClients(
 	cuttingDate?: Date | undefined,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | { errorMessage: string }> {
+): Promise<ScheduledClient[] | { errorMessage: string }> {
 	'use cache: private'
 	cacheTag('grass-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)

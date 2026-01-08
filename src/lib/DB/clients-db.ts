@@ -15,7 +15,6 @@ import type {
 	ClientAccount,
 	ClientAddress,
 	ClientInfoList,
-	ClientResult,
 	CustomerName,
 } from '@/types/clients-types'
 import type { NovuSubscriberIds } from '@/types/novu-types'
@@ -601,13 +600,14 @@ export async function fetchClientsAddresses(
 
 // 	return { clientsResult, totalCount }
 // }
+
 export async function fetchClientsCuttingSchedules(
 	orgId: string,
 	searchTerm: string,
 	cuttingDate: Date,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-) {
+): Promise<ScheduledClient[]> {
 	const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1)
 	const daysSinceStart = Math.floor(
 		(cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24),
@@ -623,118 +623,63 @@ export async function fetchClientsCuttingSchedules(
 		'Saturday',
 	]
 	const cuttingDay = daysOfWeek[cuttingDate.getDay()]
+	const date = cuttingDate.toISOString().split('T')[0]
 
-	const sql = neon(`${process.env.DATABASE_URL} `)
+	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	const query = sql`
-    WITH clients_with_balance AS(
-      SELECT
-        c.*,
-        a.current_balance AS amount_owing
-      FROM clients c
-      LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId}
-    ),
-    clients_with_schedules AS(
-      SELECT
-        cwb.id,
-        cwb.full_name,
-        cwb.phone_number,
-        cwb.email_address,
-        cwb.amount_owing,
-        cs.cutting_week,
-        cs.cutting_day,
-        ca.id as address_id,
-        ca.address,
-		COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments
-      FROM clients_with_balance cwb
-      JOIN cutting_schedule cs ON cwb.id = cs.client_id
-	  JOIN client_addresses ca ON ca.client_id = cwb.id
-	  LEFT JOIN LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.address_id = ca.id AND a.service_type = 'grass'
-        ) grass_assignments ON TRUE
-      WHERE cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay}
-    ),
-    yards_marked_cut_for_address AS(
-      SELECT
-        ymc.address_id
-      FROM yards_marked_cut ymc
-      WHERE ymc.cutting_date = ${cuttingDate}
-    )
-  `
-
-	let selectQuery = sql`
-    SELECT DISTINCT
-      cws.id,
-      cws.full_name,     
-      cws.address,
-      cws.amount_owing,
-      cws.cutting_week,
-      cws.cutting_day,
-      cws.grass_assignments,
-      COALESCE(img.urls, CAST('[]' AS JSONB)) AS images,
-      (
-			SELECT MIN((ga->>'priority')::int)
-			FROM jsonb_array_elements(cws.grass_assignments) AS ga
-		) as priority
-    FROM clients_with_schedules cws
-    LEFT JOIN yards_marked_cut_for_address ymca ON cws.address_id = ymca.address_id
-    LEFT JOIN LATERAL(
-      SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
-      FROM images i
-      WHERE i.customerid = cws.id
-    ) img ON TRUE
-    WHERE ${searchTermIsCut ? sql`ymca.address_id IS NOT NULL` : sql`ymca.address_id IS NULL`}
-  `
-
-	const whereClauses = []
-
-	if (searchTerm !== '') {
-		whereClauses.push(sql`
-      (cws.full_name ILIKE ${`%${searchTerm}%`}
-        OR cws.phone_number ILIKE ${`%${searchTerm}%`}
-        OR cws.email_address ILIKE ${`%${searchTerm}%`}
-        OR cws.address ILIKE ${`%${searchTerm}%`})
-    `)
+	// Base query: clients in org with assignments and cutting schedule for that day
+	let baseQuery = sql`
+		SELECT 
+			c.id,
+			c.full_name,
+			c.phone_number,
+			c.email_address,
+			ca.address,
+			ca.id AS address_id,
+			a.id AS assignment_id,
+			a.user_id,
+			a.priority
+		FROM clients c
+		JOIN client_addresses ca ON ca.client_id = c.id
+		JOIN cutting_schedule cs ON ca.id = cs.address_id
+		LEFT JOIN assignments a ON a.address_id = ca.id AND a.service_type = 'grass'
+		WHERE c.organization_id = ${orgId}
+		  AND cs.cutting_week = ${cuttingWeek}
+		  AND cs.cutting_day = ${cuttingDay}
+	`
+	if (searchTermIsCut !== undefined) {
+		const subquery = searchTermIsCut
+			? sql`EXISTS (
+					SELECT 1
+					FROM yards_marked_cut ymc
+					WHERE ymc.address_id = ca.id AND ymc.cutting_date = ${date}
+				)`
+			: sql`NOT EXISTS (
+					SELECT 1
+					FROM yards_marked_cut ymc
+					WHERE ymc.address_id = ca.id AND ymc.cutting_date = ${date}
+				)`
+		baseQuery = sql`${baseQuery} AND ${subquery}`
+	}
+	// Filter by assigned user if provided
+	if (searchTermAssignedTo && searchTermAssignedTo.trim() !== '') {
+		baseQuery = sql`${baseQuery} AND a.user_id = ${searchTermAssignedTo}`
 	}
 
-	if (searchTermAssignedTo && searchTermAssignedTo !== '') {
-		whereClauses.push(sql`
-      EXISTS (
-        SELECT 1
-        FROM jsonb_array_elements(cws.grass_assignments) AS ga
-        WHERE ga->>'user_id' = ${searchTermAssignedTo}
-      )
-    `)
+	// Filter by search term if provided
+	if (searchTerm && searchTerm.trim() !== '') {
+		const term = `%${searchTerm}%`
+		baseQuery = sql`${baseQuery} AND (
+			c.full_name ILIKE ${term} OR
+			c.phone_number ILIKE ${term} OR
+			c.email_address ILIKE ${term} OR
+			ca.address ILIKE ${term}
+		)`
 	}
 
-	if (whereClauses.length > 0) {
-		let whereClause = sql`AND ${whereClauses[0]}`
-		for (let i = 1; i < whereClauses.length; i++) {
-			whereClause = sql`${whereClause} AND ${whereClauses[i]}`
-		}
+	const clientsResult = await baseQuery
 
-		selectQuery = sql`
-      ${selectQuery}
-      ${whereClause}
-    `
-	}
-
-	const finalQuery = sql`
-    ${query}
-    ${selectQuery}
-    ORDER BY priority NULLS LAST, cws.id
-  `
-
-	const clientsResult = await finalQuery
-
-	return clientsResult as ClientResult[]
+	return clientsResult as ScheduledClient[]
 }
 
 //MARK: Mark yard cut
@@ -799,7 +744,7 @@ export async function saveUrlImagesServices(
 				VALUES (${image_url}, ${fk_id})
 				returning *;
 				`
-							: sql`INSERT INTO images_serviced(imageurl, fk_cut_id)
+			: sql`INSERT INTO images_serviced(imageurl, fk_cut_id)
 				VALUES (${image_url}, ${fk_id})
 				returning *;
 			`
