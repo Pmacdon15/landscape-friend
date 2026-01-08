@@ -107,7 +107,7 @@ export interface ClientListServiceProps {
 	} | null>
 
 	// Optional promise for organization members
-	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
+	orgMembersPromise: Promise<OrgMember[] | { errorMessage: string }>
 
 	// Promise for search/filter parameters
 	searchParamsPromise: Promise<ParsedClientListParams>

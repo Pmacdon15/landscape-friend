@@ -1,14 +1,12 @@
-import { Suspense } from 'react'
 import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
-import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
 import ImageList from '../image-list/image-list'
-import AssignedTo from '../inputs/AssignedToSelect'
 import { PaginationTabs } from '../pagination/pagination-tabs'
 import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
+import AssignedToSection from './assigned-to-section'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
 import EditClientFormContainer from './edit-client-form-container'
@@ -99,70 +97,12 @@ export default async function ClientListAll({
 										{accounts[index].current_balance}{' '}
 									</p>
 
-									{addresses
-										.filter(
-											(addr) =>
-												addr.client_id === client.id,
-										)
-										.map((addr) => (
-											<div
-												className="flex flex-col flex-wrap items-center justify-center gap-2 border p-8 rounded-sm w-full md:w-4/6"
-												key={`${addr.id} + addresses`}
-											>
-												<h1>{addr.address}</h1>
-												<div className="flex flex-warp gap-4">
-													<Suspense
-														fallback={
-															<AssignedToFallback />
-														}
-													>
-														<AssignedTo
-															addressId={addr.id}
-															clientAssignedTo={
-																assignments.find(
-																	(a) =>
-																		a.address_id ===
-																			addr.id &&
-																		a.service_type ===
-																			'grass',
-																)?.user_id ??
-																'not-assigned'
-															}
-															orgMembersPromise={
-																orgMembersPromise
-															}
-														/>
-													</Suspense>
-													<Suspense
-														fallback={
-															<AssignedToFallback />
-														}
-													>
-														<AssignedTo
-															addressId={addr.id}
-															clientAssignedTo={
-																assignments.find(
-																	(a) =>
-																		a.address_id ===
-																			addr.id &&
-																		a.service_type ===
-																			'snow',
-																)?.user_id ??
-																'not-assigned'
-															}
-															orgMembersPromise={
-																orgMembersPromise
-															}
-															snow
-														/>
-													</Suspense>
-												</div>
-												{/* <CuttingWeekDropDownContainer
-													clientId={client.id}
-													isAdmin={isAdmin?.isAdmin}
-												/> */}
-											</div>
-										))}
+									<AssignedToSection
+										addresses={addresses}
+										assignments={assignments}
+										clientId={client.id}
+										orgMembersPromise={orgMembersPromise}
+									/>
 								</div>
 							)}
 
