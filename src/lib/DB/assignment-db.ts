@@ -123,6 +123,7 @@ export async function unassignSnowClearingDb(
 export async function assignSnowClearingDb(
 	data: z.infer<typeof schemaAssignSnow>,
 	organization_id: string,
+	addressId: number,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
@@ -148,12 +149,12 @@ export async function assignSnowClearingDb(
 	// console.log('Next priority:', nextPriority)
 
 	const result = await sql`
-    INSERT INTO assignments(client_id, org_id, user_id, service_type, priority)
-    SELECT ${data.clientId}, ${organization_id}, ${data.assignedTo}, 'snow', ${nextPriority}
-    FROM clients
-    WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-    RETURNING *;
-  `
+			INSERT INTO assignments(client_id, org_id, user_id, address_id, service_type, priority)
+			SELECT ${data.clientId}, ${organization_id}, ${data.assignedTo}, ${addressId}, 'snow', ${nextPriority}
+			FROM clients
+			WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+			RETURNING *;
+		`
 	// console.log('Assignment result:', result)
 
 	if (!result || result.length === 0) {

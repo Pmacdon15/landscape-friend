@@ -251,11 +251,13 @@ export const useAssignSnowClearing = (page?: number) => {
 		mutationFn: ({
 			clientId,
 			assignedTo,
+			addressId,
 		}: {
 			clientId: number
 			assignedTo: string
+			addressId: number
 		}) => {
-			return assignSnowClearing(clientId, assignedTo)
+			return assignSnowClearing(clientId, assignedTo, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1

@@ -1,9 +1,12 @@
+import { Suspense } from 'react'
 import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
+import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
 import ImageList from '../image-list/image-list'
+import AssignedTo from '../inputs/AssignedToSelect'
 import { PaginationTabs } from '../pagination/pagination-tabs'
 import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
@@ -16,6 +19,7 @@ export default async function ClientListAll({
 	orgMembersPromise,
 	searchParamsPromise,
 }: ClientListServiceProps) {
+	//TODO: See if we can result theses lower
 	const [isAdmin, result, searchParams] = await Promise.all([
 		isAdminPromise,
 		clientsPromise,
@@ -82,7 +86,7 @@ export default async function ClientListAll({
 									)
 									.map((addr) => (
 										<ClientListItemAddress
-											clientAddress={addr.address} // <- add this
+											clientAddress={addr.address}
 											clientId={client.id}
 											key={addr.id}
 										/>
@@ -94,32 +98,28 @@ export default async function ClientListAll({
 										Amount owing: $
 										{accounts[index].current_balance}{' '}
 									</p>
-									{/* <div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-										<Suspense
+									<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
+										{/* <Suspense
 											fallback={<AssignedToFallback />}
 										>
 											<AssignedTo
+												addressId={addresses[index].id}
 												clientAssignedTo={
-													client.grass_assigned_to !==
-													'Unassigned'
-														? client.grass_assigned_to
-														: 'not-assigned'
+													'not-assigned'
 												}
 												clientId={client.id}
 												orgMembersPromise={
 													orgMembersPromise
 												}
 											/>
-										</Suspense>
+										</Suspense> */}
 										<Suspense
 											fallback={<AssignedToFallback />}
 										>
 											<AssignedTo
+												addressId={addresses[index].id}
 												clientAssignedTo={
-													client.snow_assigned_to !==
-													'Unassigned'
-														? client.snow_assigned_to
-														: 'not-assigned'
+													'not-assigned'
 												}
 												clientId={client.id}
 												orgMembersPromise={
@@ -128,7 +128,7 @@ export default async function ClientListAll({
 												snow
 											/>
 										</Suspense>
-									</div> */}
+									</div>
 								</div>
 							)}
 							{/* <CuttingWeekDropDownContainer

@@ -52,6 +52,7 @@ export const schemaAssign = z.object({
 export const schemaAssignSnow = z.object({
 	clientId: z.number(),
 	assignedTo: z.string(),
+	addressId: z.number(),
 })
 
 export const schemaUpdateAPI = z.object({

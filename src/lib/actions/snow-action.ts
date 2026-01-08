@@ -6,7 +6,11 @@ import {
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import { schemaAssignSnow } from '../zod/schemas'
 
-export async function assignSnowClearing(clientId: number, assignedTo: string) {
+export async function assignSnowClearing(
+	clientId: number,
+	assignedTo: string,
+	addressId: number,
+) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!orgId && !userId)
@@ -15,6 +19,7 @@ export async function assignSnowClearing(clientId: number, assignedTo: string) {
 	const validatedFields = schemaAssignSnow.safeParse({
 		clientId: clientId,
 		assignedTo: assignedTo,
+		addressId: addressId,
 	})
 
 	if (!validatedFields.success) throw new Error('Invalid input data')
@@ -33,6 +38,7 @@ export async function assignSnowClearing(clientId: number, assignedTo: string) {
 			const result = await assignSnowClearingDb(
 				validatedFields.data,
 				orgId || String(userId),
+				addressId
 			)
 			if (!result) throw new Error('Failed to update Client cut day')
 			return result
