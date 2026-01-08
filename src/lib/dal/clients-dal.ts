@@ -11,6 +11,7 @@ import {
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
+import type { ClientAssignment } from '@/types/assignment-types'
 import type {
 	Client,
 	ClientAccount,
@@ -20,6 +21,7 @@ import type {
 	CustomerName,
 	NamesAndEmails,
 } from '@/types/clients-types'
+import { fetchClientAssignments } from '../DB/assignment-db'
 import { getServicedImagesUrlsDb } from '../DB/db-get-images'
 
 export async function fetchAllClientsInfo(
@@ -32,6 +34,7 @@ export async function fetchAllClientsInfo(
 	clients: Client[]
 	addresses: ClientAddress[]
 	accounts: ClientAccount[]
+	assignments: ClientAssignment[]
 	totalPages: number
 } | null> {
 	'use cache: private'
@@ -54,12 +57,14 @@ export async function fetchAllClientsInfo(
 			searchTermAssignedTo,
 		)
 
-		const [accounts, addresses] = await Promise.all([
-			fetchClientsAccounts(clients),
-			fetchClientsAddresses(clients),
+		const clientIds = clients.map((client) => client.id)
+		const [accounts, addresses, assignments] = await Promise.all([
+			fetchClientsAccounts(clientIds),
+			fetchClientsAddresses(clientIds),
+			fetchClientAssignments(clientIds),
 		])
 
-		return { clients, accounts, addresses, totalPages: 1 }
+		return { clients, accounts, addresses, assignments, totalPages: 1 }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)

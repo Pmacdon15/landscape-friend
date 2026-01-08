@@ -6,8 +6,7 @@ import {
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import { schemaAssignSnow } from '../zod/schemas'
 
-export async function assignSnowClearing(
-	clientId: number,
+export async function assignSnowClearing(	
 	assignedTo: string,
 	addressId: number,
 ) {
@@ -16,8 +15,7 @@ export async function assignSnowClearing(
 	if (!orgId && !userId)
 		throw new Error('Organization ID or User ID is missing.')
 
-	const validatedFields = schemaAssignSnow.safeParse({
-		clientId: clientId,
+	const validatedFields = schemaAssignSnow.safeParse({		
 		assignedTo: assignedTo,
 		addressId: addressId,
 	})
@@ -27,7 +25,7 @@ export async function assignSnowClearing(
 	try {
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignSnowClearingDb(
-				validatedFields.data.clientId,				
+				addressId,				
 			)
 			return {
 				...result,

@@ -45,12 +45,12 @@ export const schemaMarkYardCut = z.object({
 })
 
 export const schemaAssign = z.object({
-	clientId: z.number(),
+	addressId: z.number(),
 	assignedTo: z.string(),
 })
 
 export const schemaAssignSnow = z.object({
-	clientId: z.number(),
+	// clientId: z.number(),
 	assignedTo: z.string(),
 	addressId: z.number(),
 })

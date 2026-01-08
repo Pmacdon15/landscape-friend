@@ -248,16 +248,14 @@ export const useUpdateCuttingDay = (page?: number) => {
 //MARK: Assign snow clearing
 export const useAssignSnowClearing = (page?: number) => {
 	return useMutation({
-		mutationFn: ({
-			clientId,
+		mutationFn: ({			
 			assignedTo,
 			addressId,
-		}: {
-			clientId: number
+		}: {			
 			assignedTo: string
 			addressId: number
 		}) => {
-			return assignSnowClearing(clientId, assignedTo, addressId)
+			return assignSnowClearing(assignedTo, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -271,16 +269,14 @@ export const useAssignSnowClearing = (page?: number) => {
 //MARK: Assign grass cutting
 export const useAssignGrassCutting = (page?: number) => {
 	return useMutation({
-		mutationFn: ({
-			clientId,
+		mutationFn: ({			
 			assignedTo,
 			addressId,
 		}: {
-			clientId: number
-			assignedTo: string
+						assignedTo: string
 			addressId: number
 		}) => {
-			return assignGrassCutting(clientId, assignedTo, addressId)
+			return assignGrassCutting(assignedTo, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1

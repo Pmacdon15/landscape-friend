@@ -91,9 +91,8 @@ export async function markYardServiced(
 }
 
 export async function assignGrassCutting(
-	clientId: number,
-	assignedTo: string,
-	address_id: number,
+		assignedTo: string,
+	addressId: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
@@ -101,7 +100,7 @@ export async function assignGrassCutting(
 		throw new Error('Organization ID or User ID is missing.')
 
 	const validatedFields = schemaAssign.safeParse({
-		clientId: clientId,
+		addressId: addressId,
 		assignedTo: assignedTo,
 	})
 
@@ -110,14 +109,14 @@ export async function assignGrassCutting(
 	try {
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignGrassCuttingDb(
-				address_id,				
+				addressId,				
 			)
 			if (!result) throw new Error('Failed to unassign grass cutting')
 			return result
 		} else {
 			const result = await assignGrassCuttingDb(
 				validatedFields.data,				
-				address_id
+				addressId
 			)
 			if (!result) throw new Error('Failed to update Client cut day')
 			return result

@@ -1,6 +1,6 @@
 import type { OrgMember } from './clerk-types'
 import type { ParsedClientListParams } from './params-types'
-
+import type { ClientAssignment } from '@/types/assignment-types'
 export interface Image {
 	id: number
 	url: string
@@ -102,6 +102,7 @@ export interface ClientListServiceProps {
 		clients: Client[]
 		addresses: ClientAddress[]
 		accounts: ClientAccount[]
+		assignments: ClientAssignment[]
 		totalPages: number
 	} | null>
 

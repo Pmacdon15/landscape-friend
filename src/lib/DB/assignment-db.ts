@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import type z from 'zod'
+import type { ClientAssignment } from '@/types/assignment-types'
 import type { schemaAssign, schemaAssignSnow } from '../zod/schemas'
-
 export async function changePriorityDb(
 	orgId: string,
 	assignmentId: number,
@@ -63,11 +63,7 @@ export async function assignGrassCuttingDb(
 
 	await unassignGrassCuttingDb(addressId)
 
-	const priorityResult = allAssignmentsForUser.filter(
-		(a) => Number(a.client_id) === data.clientId,
-	)
-
-	const priorities = priorityResult.map((r) => r.priority)
+	const priorities = allAssignmentsForUser.map((r) => r.priority)
 	const maxPriority = priorities.length > 0 ? Math.max(...priorities) : 0
 	const nextPriority = maxPriority + 1
 
@@ -125,16 +121,11 @@ export async function assignSnowClearingDb(
 	addressId: number,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
-
-	if (!data.clientId) {
-		throw new Error('Client ID and organization ID are required')
-	}
-
 	const allAssignmentsForUser = await sql`
 		SELECT address_id, priority FROM assignments
 		WHERE user_id = ${data.assignedTo} AND service_type = 'snow'
 	`
-	
+
 	await unassignSnowClearingDb(addressId)
 
 	const priorities = allAssignmentsForUser.map((a) => a.priority)
@@ -165,4 +156,23 @@ export async function assignSnowClearingDb(
 	}
 
 	return result
+}
+
+export async function fetchClientAssignments(
+	clientIds: number[],
+): Promise<ClientAssignment[]> {
+	if (clientIds.length === 0) return []
+
+	const sql = neon(`${process.env.DATABASE_URL}`)
+
+	const result = await sql`
+		SELECT a.*
+		FROM assignments a
+		JOIN client_addresses ca
+			ON ca.id = a.address_id
+		WHERE ca.client_id = ANY(${clientIds})
+		ORDER BY a.user_id, a.service_type, a.priority
+	`
+
+	return result as ClientAssignment[]
 }

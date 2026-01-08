@@ -3,7 +3,6 @@ import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
-import { CuttingWeekDropDownContainer } from '../cutting-week/cutting-week'
 import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
 import ImageList from '../image-list/image-list'
@@ -35,7 +34,7 @@ export default async function ClientListAll({
 			</ContentContainer>
 		)
 
-	const { clients, accounts, addresses, totalPages } = result
+	const { clients, accounts, addresses, assignments, totalPages } = result
 
 	if (!clients)
 		return (
@@ -44,7 +43,7 @@ export default async function ClientListAll({
 				<p>Please add clients</p>{' '}
 			</ContentContainer>
 		)
-	// console.log('clients:', clients)
+	console.log('assignments:', assignments)
 
 	return (
 		<>
@@ -120,9 +119,15 @@ export default async function ClientListAll({
 														<AssignedTo
 															addressId={addr.id}
 															clientAssignedTo={
+																assignments.find(
+																	(a) =>
+																		a.address_id ===
+																			addr.id &&
+																		a.service_type ===
+																			'grass',
+																)?.user_id ??
 																'not-assigned'
 															}
-															clientId={client.id}
 															orgMembersPromise={
 																orgMembersPromise
 															}
@@ -136,9 +141,15 @@ export default async function ClientListAll({
 														<AssignedTo
 															addressId={addr.id}
 															clientAssignedTo={
+																assignments.find(
+																	(a) =>
+																		a.address_id ===
+																			addr.id &&
+																		a.service_type ===
+																			'snow',
+																)?.user_id ??
 																'not-assigned'
 															}
-															clientId={client.id}
 															orgMembersPromise={
 																orgMembersPromise
 															}
