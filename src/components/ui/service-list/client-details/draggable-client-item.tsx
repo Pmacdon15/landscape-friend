@@ -2,13 +2,13 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Grip } from 'lucide-react'
-import type { ClientResult } from '@/types/clients-types'
+import type { ScheduledClient } from '@/types/assignment-types'
 import MarkYardServiced from '../../buttons/mark-yard-serviced'
 import FormContainer from '../../containers/form-container'
 import ClientDetailsCard from './ClientDetailsCard'
 
 interface DraggableClientItemProps {
-	client: ClientResult
+	client: ScheduledClient
 	isAdmin: boolean
 	searchTermIsServiced: boolean
 	serviceDate?: Date

@@ -1,10 +1,9 @@
-import type { ClientResult } from '@/types/clients-types'
-import ImageList from '../../image-list/image-list'
+import type { ScheduledClient } from '@/types/assignment-types'
 import ClientAddress from './ClientAddress'
 import ClientName from './ClientName'
 
 interface ClientDetailsCardProps {
-	client: ClientResult
+	client: ScheduledClient
 	isAdmin?: boolean
 	searchTermIsServiced: boolean
 	serviceDate?: Date
@@ -24,9 +23,10 @@ export default function ClientDetailsCard({
 				<ClientAddress address={client.address} />
 			</div>
 
-			<div className="mt-2 flex flex-col gap-1 sm:flex-row">
+			{/* //TODO: fix this with new schema */}
+			{/* <div className="mt-2 flex flex-col gap-1 sm:flex-row">
 				<ImageList client={client} isAdmin={isAdmin} page={page} />
-			</div>
+			</div> */}
 		</>
 	)
 }

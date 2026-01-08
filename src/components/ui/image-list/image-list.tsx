@@ -1,7 +1,8 @@
 'use client'
 import { MapPlus } from 'lucide-react'
 import { Activity, useState } from 'react'
-import type { Client, ClientResult } from '@/types/clients-types'
+import type { ScheduledClient } from '@/types/assignment-types'
+import type { Client } from '@/types/clients-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
 import AddSiteMap from './list-view/add-site-map'
 
@@ -11,7 +12,7 @@ export default function ImageList({
 	page,
 }: {
 	isAdmin?: boolean
-	client: ClientResult | Client
+	client: ScheduledClient | Client
 	page: number
 }) {
 	const [view, setView] = useState<string>('list')

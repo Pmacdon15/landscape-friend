@@ -18,6 +18,7 @@ import type {
 	CustomerName,
 } from '@/types/clients-types'
 import type { NovuSubscriberIds } from '@/types/novu-types'
+import { ScheduledClient } from '@/types/assignment-types'
 
 //MARK: Add clients
 export async function addClientDB(
@@ -350,7 +351,7 @@ export async function fetchClientsClearingGroupsDb(
 	baseQuery = sql`${baseQuery} ORDER BY a.priority, c.id`
 
 	const clientsResult = await baseQuery
-	return clientsResult
+	return clientsResult as ScheduledClient[]
 }
 
 export async function fetchClients(

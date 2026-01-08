@@ -11,7 +11,10 @@ import {
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import type { ClientAssignment } from '@/types/assignment-types'
+import type {
+	ClientAssignment,
+	ScheduledClient,
+} from '@/types/assignment-types'
 import type {
 	Client,
 	ClientAccount,
@@ -153,7 +156,7 @@ export async function fetchSnowClearingClients(
 	clearingDate?: Date,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | { errorMessage: string }> {
+): Promise<ScheduledClient[] | { errorMessage: string }> {
 	'use cache: private'
 	cacheTag('snow-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)

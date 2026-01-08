@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable'
 import { use, useEffect, useState } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
+import type { ScheduledClient } from '@/types/assignment-types'
 import type { ClientResult } from '@/types/clients-types'
 import type { ParsedClientListParams } from '@/types/params-types'
 import FormContainer from '../../containers/form-container'
@@ -30,13 +31,13 @@ export default function ClientCards({
 	isAdminPromise,
 	pagePromise,
 }: {
-	clientsPromise: Promise<ClientResult[] | { errorMessage: string }>
+	clientsPromise: Promise<ScheduledClient[] | { errorMessage: string }>
 	parseClientListParamsPromise: Promise<ParsedClientListParams>
 	snow: boolean
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
 	pagePromise: Promise<number>
 }) {
-	const clients = use(clientsPromise)
+	const clientSchedules = use(clientsPromise)
 	const page = use(pagePromise)
 	const parseClientListParams = use(parseClientListParamsPromise)
 	const isAdmin = use(isAdminPromise ?? Promise.resolve({ isAdmin: false }))
@@ -47,17 +48,19 @@ export default function ClientCards({
 	// const [orderedClients, setOrderedClients] = useState<ClientResult[]>(
 	// 	clients || [],
 	// )
-	const [orderedClients, setOrderedClients] = useState<ClientResult[]>([])
+
+	//TODO: see about removing this state
+	const [orderedClients, setOrderedClients] = useState<ScheduledClient[]>([])
 
 	// Update ordered clients when clients data changes
 	useEffect(() => {
-		if (clients && Array.isArray(clients)) {
-			setOrderedClients(clients)
-		} else if (clients && 'errorMessage' in clients) {
+		if (clientSchedules && Array.isArray(clientSchedules)) {
+			setOrderedClients(clientSchedules)
+		} else if (clientSchedules && 'errorMessage' in clientSchedules) {
 			// Handle error case
-			console.error(clients.errorMessage)
+			console.error(clientSchedules.errorMessage)
 		}
-	}, [clients])
+	}, [clientSchedules])
 
 	// Configure drag sensors
 	const sensors = useSensors(
@@ -95,22 +98,22 @@ export default function ClientCards({
 				}
 
 				// Get the assignment of the dragged client
-				const draggedAssignment = snow
-					? draggedClient.snow_assignments?.[0]
-					: draggedClient.grass_assignments?.[0]
+				const draggedAssignment = draggedClient.assignment_id
+				// ? draggedClient.snow_assignments?.[0]
+				// : draggedClient.grass_assignments?.[0]
 
 				// Get the priority of the target client
-				const targetAssignment = snow
-					? targetClient.snow_assignments?.[0]
-					: targetClient.grass_assignments?.[0]
+				const targetAssignment = targetClient.priority
+				// ? targetClient.snow_assignments?.[0]
+				// : targetClient.grass_assignments?.[0]
 
 				if (!draggedAssignment || !targetAssignment) {
 					console.error('Client has no assignments')
 					return newOrder
 				}
 
-				const assignmentId = draggedAssignment.id
-				const newPriority = targetAssignment.priority
+				const assignmentId = draggedAssignment
+				const newPriority = targetAssignment
 
 				// Call the mutate function
 				mutate({ assignmentId, priority: newPriority })
@@ -137,7 +140,7 @@ export default function ClientCards({
 			</FormContainer>
 		)
 
-	if ('errorMessage' in clients)
+	if ('errorMessage' in clientSchedules)
 		return (
 			<FormContainer>
 				{' '}
@@ -145,7 +148,7 @@ export default function ClientCards({
 			</FormContainer>
 		)
 
-	if (clients.length < 1)
+	if (clientSchedules.length < 1)
 		return (
 			<FormContainer>
 				{' '}
@@ -153,7 +156,7 @@ export default function ClientCards({
 			</FormContainer>
 		)
 
-	const addresses = clients.map((c: ClientResult) => ({
+	const addresses = clientSchedules.map((c: ScheduledClient) => ({
 		id: c.id,
 		address: c.address,
 	}))
@@ -182,7 +185,7 @@ export default function ClientCards({
 					strategy={verticalListSortingStrategy}
 				>
 					<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
-						{orderedClients.map((client: ClientResult) => (
+						{orderedClients.map((client: ScheduledClient) => (
 							<DraggableClientItem
 								client={client}
 								isAdmin={isAdmin?.isAdmin ?? false}

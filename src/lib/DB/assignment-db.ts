@@ -3,7 +3,6 @@ import type z from 'zod'
 import type { ClientAssignment } from '@/types/assignment-types'
 import type { schemaAssign, schemaAssignSnow } from '../zod/schemas'
 export async function changePriorityDb(
-	orgId: string,
 	assignmentId: number,
 	newPriority: number,
 ) {
@@ -26,7 +25,7 @@ export async function changePriorityDb(
 		await sql`
       UPDATE assignments
       SET priority = priority + 1
-      WHERE org_id = ${orgId} AND service_type = ${serviceType} 
+      WHERE service_type = ${serviceType} 
         AND priority >= ${newPriority} AND priority < ${currentPriority}
 		AND user_id = ${userId};
     `
@@ -34,7 +33,7 @@ export async function changePriorityDb(
 		await sql`
       UPDATE assignments
       SET priority = priority - 1
-      WHERE org_id = ${orgId} AND service_type = ${serviceType} 
+      WHERE service_type = ${serviceType} 
         AND priority > ${currentPriority} AND priority <= ${newPriority}
 		AND user_id = ${userId};
     `
