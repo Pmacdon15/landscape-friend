@@ -143,11 +143,11 @@ export default function MarkYardServiced({
 			</label>
 			{images.length > 0 && (
 				<>
-					{images.map((img, _index) => (
+					{images.map((img, index) => (
 						<Image
 							alt={'Site Serviced Photo'}
 							height={400}
-							key={img.name}
+							key={`${img.name}-${index}`}
 							src={URL.createObjectURL(new Blob([img]))}
 							width={400}
 						/>

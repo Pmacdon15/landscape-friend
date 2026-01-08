@@ -31,7 +31,7 @@ export default function DraggableClientItem({
 		transform,
 		transition,
 		isDragging,
-	} = useSortable({ id: client.id })
+	} = useSortable({ id: `${client.id}-${client.address}` })
 
 	const style = {
 		transform: CSS.Transform.toString(transform),

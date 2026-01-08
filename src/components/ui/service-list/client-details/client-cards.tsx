@@ -74,16 +74,20 @@ export default function ClientCards({
 		if (over && active.id !== over.id) {
 			setOrderedClients((items) => {
 				const oldIndex = items.findIndex(
-					(item) => item.id === active.id,
+					(item) => `${item.id}-${item.address}` === active.id,
 				)
-				const newIndex = items.findIndex((item) => item.id === over.id)
+				const newIndex = items.findIndex(
+					(item) => `${item.id}-${item.address}` === over.id,
+				)
 
 				const newOrder = arrayMove(items, oldIndex, newIndex)
 
 				const draggedClient = items.find(
-					(item) => item.id === active.id,
+					(item) => `${item.id}-${item.address}` === active.id,
 				)
-				const targetClient = items.find((item) => item.id === over.id)
+				const targetClient = items.find(
+					(item) => `${item.id}-${item.address}` === over.id,
+				)
 
 				if (!draggedClient || !targetClient) {
 					console.error('Client not found')
@@ -174,7 +178,7 @@ export default function ClientCards({
 				sensors={sensors}
 			>
 				<SortableContext
-					items={orderedClients.map((c) => c.id)}
+					items={orderedClients.map((c) => `${c.id}-${c.address}`)}
 					strategy={verticalListSortingStrategy}
 				>
 					<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
@@ -182,7 +186,7 @@ export default function ClientCards({
 							<DraggableClientItem
 								client={client}
 								isAdmin={isAdmin?.isAdmin ?? false}
-								key={client.id}
+								key={`${client.id}-${client.address}`}
 								page={page}
 								searchTermIsServiced={
 									parseClientListParams.searchTermIsServiced
