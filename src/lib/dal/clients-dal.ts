@@ -225,11 +225,11 @@ export async function fetchClientNamesByStripeIds(
 
 //MARK: Get Serviced URLs
 export async function getServicedImagesUrls(
-	clientId: number,
+	addressId: number,
 ): Promise<{ date: Date; imageurl: string }[]> {
 	await auth.protect()
 	try {
-		return await getServicedImagesUrlsDb(clientId)
+		return await getServicedImagesUrlsDb(addressId)
 	} catch (error) {
 		console.error('Error in getting Serviced Images Urls:', error)
 		return []

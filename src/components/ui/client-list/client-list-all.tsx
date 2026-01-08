@@ -129,9 +129,7 @@ export default async function ClientListAll({
 												(params) => params.page,
 											)}
 										/>
-									</Suspense>
-
-									<ViewSitePhotoSheet clientId={client.id} />
+									</Suspense>									
 								</div>
 							</li>
 						</FormContainer>

@@ -14,7 +14,7 @@ export async function markYardServiced(
 	snow = false,
 	images: File[],
 ) {
-	const { orgId, userId } = await isOrgAdmin(true)
+	const {  userId } = await isOrgAdmin(true)
 
 	if (!userId) return { errorMessage: 'User ID is missing.' }
 
@@ -49,25 +49,27 @@ export async function markYardServiced(
 
 	// Try save information into Database
 	try {
-		const result_mark = await markYardServicedDb(
+		const inserted_record = await markYardServicedDb(
 			validatedFields.data,
 			snow,
 			userId,
 		)
 
-		if (!result_mark) {
+		if (!inserted_record || inserted_record.length === 0) {
 			console.error(
-				'Failed to mark yard serviced: No ID returned from DB',
+				'Failed to mark yard serviced: No record returned from DB',
 			)
 			return { errorMessage: 'Failed to update client as serviced' }
 		}
+
+		const result_mark_id = inserted_record[0].id
 
 		const result_url = []
 		for (let i = 0; i < images.length; i++) {
 			result_url[i] = await saveUrlImagesServices(
 				snow,
 				images_url[i],
-				result_mark,
+				result_mark_id,
 			)
 		}
 

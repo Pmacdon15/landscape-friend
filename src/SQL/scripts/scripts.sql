@@ -47,6 +47,7 @@
 -- WHERE 
 --   a.org_id = 'org_35ugSke0IBs1XDGa7YI6boXVqsG';
 SELECT * FROM assignments;
+SELECT * FROM yards_marked_clear;
 -- SELECT * FROM clients;
 -- SELECT * FROM users;
 -- SELECT * FROM organizations;

@@ -739,28 +739,45 @@ export async function markYardServicedDb(
 	snow: boolean,
 	assigned_to: string,
 ) {
-	const sql = neon(`${process.env.DATABASE_URL} `)
+	const sql = neon(`${process.env.DATABASE_URL}`)
 	console.log('Marking client serviced payload:', JSON.stringify(data))
+
+	// Validate inputs
+	if (!data.addressId || typeof data.addressId !== 'number') {
+		throw new Error('Invalid addressId')
+	}
+	if (!assigned_to || typeof assigned_to !== 'string') {
+		throw new Error('Invalid assigned_to')
+	}
+
+	// Convert date to YYYY-MM-DD
+	const dateValue =
+		data.date instanceof Date
+			? data.date.toISOString().split('T')[0]
+			: data.date
+
 	try {
 		const query = snow
 			? sql`
-      INSERT INTO yards_marked_clear (address_id, clearing_date, assigned_to)
-      VALUES (${data.addressId}, ${data.date}, ${assigned_to})
-    `
+          INSERT INTO yards_marked_clear (address_id, clearing_date, assigned_to)
+          VALUES (${data.addressId}, ${dateValue}, ${assigned_to})
+          RETURNING *
+        `
 			: sql`
-      INSERT INTO yards_marked_cut (address_id, cutting_date, assigned_to)
-      VALUES (${data.addressId}, ${data.date}, ${assigned_to})
-    `
-		const result = await query
+          INSERT INTO yards_marked_cut (address_id, cutting_date, assigned_to)
+          VALUES (${data.addressId}, ${dateValue}, ${assigned_to})
+          RETURNING *
+        `
 
-		if (!result || result.length === 0) {
-			console.error(
-				'Error inserting data on table yards_marked_cut or yards_marked_clear',
-			)
-		}
+		const result = await query
+		console.log('Inserted record:', result)
 		return result
 	} catch (e) {
-		console.log(e)
+		console.error(
+			'Error inserting data on table yards_marked_cut or yards_marked_clear',
+			e,
+		)
+		throw e
 	}
 }
 
@@ -775,13 +792,13 @@ export async function saveUrlImagesServices(
 	try {
 		const query = snow
 			? sql`INSERT INTO images_serviced(imageurl, fk_clear_id)
-  VALUES (${image_url}, ${fk_id})
-  returning *;
-  `
-			: sql`INSERT INTO images_serviced(imageurl, fk_cut_id)
-  VALUES (${image_url}, ${fk_id})
-  returning *;
-  `
+				VALUES (${image_url}, ${fk_id})
+				returning *;
+				`
+							: sql`INSERT INTO images_serviced(imageurl, fk_cut_id)
+				VALUES (${image_url}, ${fk_id})
+				returning *;
+			`
 
 		const result = await query
 		if (!result || result.length === 0) {

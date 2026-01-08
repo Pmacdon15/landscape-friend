@@ -6,6 +6,7 @@ import type { ClientCuttingSchedule } from '@/types/schedules-types'
 import { CuttingWeekDropDownContainer } from '../cutting-week/cutting-week'
 import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import AssignedTo from '../inputs/AssignedToSelect'
+import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 
 export default function AssignedToSection({
 	addresses,
@@ -22,7 +23,7 @@ export default function AssignedToSection({
 		<>
 			{addresses.map((addr) => (
 				<div
-					className="flex flex-col flex-wrap items-center justify-center gap-2 border p-8 rounded-sm w-full md:w-4/6"
+					className="flex flex-col flex-wrap items-center justify-center gap-4 border p-8 rounded-sm w-full md:w-4/6"
 					key={`${addr.id} + addresses`}
 				>
 					<h1>{addr.address}</h1>
@@ -59,6 +60,7 @@ export default function AssignedToSection({
 						addressId={addr.id}
 						schedules={schedules}
 					/>
+					<ViewSitePhotoSheet addressId={addr.id} />
 				</div>
 			))}
 		</>
