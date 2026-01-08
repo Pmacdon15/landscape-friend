@@ -337,16 +337,14 @@ export async function fetchClientsClearingGroupsDb(
 			baseQuery = sql`${baseQuery} AND EXISTS (
       SELECT 1
       FROM yards_marked_clear ymc
-      JOIN client_addresses ca ON ca.id = ymc.address_id
-      WHERE ca.client_id = c.id
+      WHERE ymc.address_id = ca.id
         AND ymc.clearing_date = ${clearingDate}
     )`
 		} else {
 			baseQuery = sql`${baseQuery} AND NOT EXISTS (
       SELECT 1
       FROM yards_marked_clear ymc
-      JOIN client_addresses ca ON ca.id = ymc.address_id
-      WHERE ca.client_id = c.id
+      WHERE ymc.address_id = ca.id
         AND ymc.clearing_date = ${clearingDate}
     )`
 		}
@@ -639,12 +637,19 @@ export async function fetchClientsCuttingSchedules(
     ),
     clients_with_schedules AS(
       SELECT
-        cwb.*,
+        cwb.id,
+        cwb.full_name,
+        cwb.phone_number,
+        cwb.email_address,
+        cwb.amount_owing,
         cs.cutting_week,
         cs.cutting_day,
+        ca.id as address_id,
+        ca.address,
 		COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments
       FROM clients_with_balance cwb
       JOIN cutting_schedule cs ON cwb.id = cs.client_id
+	  JOIN client_addresses ca ON ca.client_id = cwb.id
 	  LEFT JOIN LATERAL (
             SELECT jsonb_agg(
                 jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
@@ -652,14 +657,13 @@ export async function fetchClientsCuttingSchedules(
             ) as assignments
             FROM assignments a
             JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'grass'
+            WHERE a.address_id = ca.id AND a.service_type = 'grass'
         ) grass_assignments ON TRUE
       WHERE cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay}
     ),
-    clients_marked_cut AS(
+    yards_marked_cut_for_address AS(
       SELECT
-        ymc.client_id,
-        ymc.cutting_date
+        ymc.address_id
       FROM yards_marked_cut ymc
       WHERE ymc.cutting_date = ${cuttingDate}
     )
@@ -680,13 +684,13 @@ export async function fetchClientsCuttingSchedules(
 			FROM jsonb_array_elements(cws.grass_assignments) AS ga
 		) as priority
     FROM clients_with_schedules cws
-    LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
+    LEFT JOIN yards_marked_cut_for_address ymca ON cws.address_id = ymca.address_id
     LEFT JOIN LATERAL(
       SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
       FROM images i
       WHERE i.customerid = cws.id
     ) img ON TRUE
-    WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
+    WHERE ${searchTermIsCut ? sql`ymca.address_id IS NOT NULL` : sql`ymca.address_id IS NULL`}
   `
 
 	const whereClauses = []
