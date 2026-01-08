@@ -40,7 +40,7 @@ export default function DraggableClientItem({
 	}
 
 	return (
-		<FormContainer key={client.id}>
+		<FormContainer key={`${client.id} + ${client.address}`}>
 			<li
 				className="flex w-full flex-col gap-4 rounded-sm border bg-white/50 p-4"
 				ref={setNodeRef}

@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import type { ClientListServiceProps } from '@/types/clients-types'
+import type { Client, ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
@@ -36,14 +36,14 @@ export default async function ClientListAll({
 			</ContentContainer>
 		)
 
-	console.log('schedules:', schedules)
+	// console.log('schedules:', schedules)
 
 	return (
 		<>
 			<PaginationTabs path="/lists/client" totalPages={totalPages} />
 
 			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
-				{clients.map((client, index) => {
+				{clients.map((client: Client, index) => {
 					// PRECOMPUTE data for this client
 					const clientAddresses = addresses.filter(
 						(a) => a.client_id === client.id,
@@ -54,10 +54,10 @@ export default async function ClientListAll({
 					const clientAssignments = assignments.filter((a) =>
 						clientAddressIds.includes(a.address_id),
 					)
-					
+
 					const clientSchedules = schedules.filter((s) =>
-    clientAddresses.map((a) => a.id).includes(s.address_id)
-)
+						clientAddresses.map((a) => a.id).includes(s.address_id),
+					)
 
 					const editAddresses = clientAddresses.map((a) => ({
 						id: a.id,

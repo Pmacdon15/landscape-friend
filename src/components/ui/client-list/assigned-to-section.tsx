@@ -1,4 +1,3 @@
-'use client'
 import { Suspense } from 'react'
 import type { ClientAssignment } from '@/types/assignment-types'
 import type { OrgMember } from '@/types/clerk-types'

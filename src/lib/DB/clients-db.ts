@@ -281,8 +281,7 @@ export async function fetchClientListDb(
   `
 	return result as ClientInfoList[]
 }
-
-//MARK: Fetch clients snow clearing
+//MARK: Fetch clients assigned for snow clearing
 export async function fetchClientsClearingGroupsDb(
 	orgId: string,
 	searchTerm: string,
@@ -291,104 +290,67 @@ export async function fetchClientsClearingGroupsDb(
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
 ) {
-	const sql = neon(`${process.env.DATABASE_URL} `)
+	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	const baseQuery = sql`
-    WITH clients_with_balance AS(
-      SELECT 
-        c.*,
-      a.current_balance AS amount_owing
-      FROM clients c
-      LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId}
-    ),
-    cleared_yards AS(
-      SELECT client_id
-      FROM yards_marked_clear
-      WHERE clearing_date = ${clearingDate}
-    ),
-    clients_with_assignments AS(
-        SELECT
-            cwb.*,
-            snow_assignments.assignments AS snow_assignments
-        FROM clients_with_balance cwb
-        , LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'snow'
-        ) snow_assignments
-    )
-  `
-
-	let selectQuery = sql`
-    SELECT DISTINCT
-      cwa.id
-    FROM clients_with_assignments cwa
-    LEFT JOIN cleared_yards cy ON cwa.id = cy.client_id
-    WHERE ${searchTermIsServiced ? sql`cy.client_id IS NOT NULL` : sql`cy.client_id IS NULL`}
-  `
-
-	const whereClauses = []
-
-	if (searchTerm !== '') {
-		whereClauses.push(sql`
-      (cwa.full_name ILIKE ${`%${searchTerm}%`} 
-        OR cwa.phone_number ILIKE ${`%${searchTerm}%`} 
-        OR cwa.email_address ILIKE ${`%${searchTerm}%`} 
-        OR cwa.address ILIKE ${`%${searchTerm}%`})
-    `)
-	}
-
+	// Determine which user to filter assignments by
 	const assignedToFilter = searchTermAssignedTo || userId
+
+	// Base query: all clients in the org with their snow assignments
+	let baseQuery = sql`
+		SELECT 
+			c.id, 
+			c.full_name, 
+			c.phone_number, 
+			c.email_address, 
+			ca.address, 
+			a.id AS assignment_id, 
+			a.user_id, 
+			a.priority
+		FROM clients c
+		JOIN client_addresses ca ON ca.client_id = c.id
+		JOIN assignments a ON a.address_id = ca.id
+		WHERE c.organization_id = ${orgId}
+		  AND a.service_type = 'snow'
+	`
+
+	// Filter by assigned user
 	if (assignedToFilter) {
-		whereClauses.push(
-			sql`
-            EXISTS (
-                SELECT 1
-                FROM jsonb_array_elements(cwa.snow_assignments) AS sa
-                WHERE sa->>'user_id' = ${assignedToFilter}
-            )
-        `,
-		)
+		baseQuery = sql`${baseQuery} AND a.user_id = ${assignedToFilter}`
 	}
 
-	if (whereClauses.length > 0) {
-		let whereClause = sql`AND ${whereClauses[0]} `
-		for (let i = 1; i < whereClauses.length; i++) {
-			whereClause = sql`${whereClause} AND ${whereClauses[i]} `
+	// Filter by search term
+	if (searchTerm && searchTerm.trim() !== '') {
+		const term = `%${searchTerm}%`
+		baseQuery = sql`${baseQuery} AND (
+			c.full_name ILIKE ${term} OR
+			c.phone_number ILIKE ${term} OR
+			c.email_address ILIKE ${term} OR
+			ca.address ILIKE ${term}
+		)`
+	}
+
+	// Filter by whether already cleared
+	if (searchTermIsServiced !== undefined) {
+		if (searchTermIsServiced) {
+			baseQuery = sql`${baseQuery} AND EXISTS (
+				SELECT 1 FROM yards_marked_clear ymc
+				WHERE ymc.client_id = c.id
+				  AND ymc.clearing_date = ${clearingDate}
+			)`
+		} else {
+			baseQuery = sql`${baseQuery} AND NOT EXISTS (
+				SELECT 1 FROM yards_marked_clear ymc
+				WHERE ymc.client_id = c.id
+				  AND ymc.clearing_date = ${clearingDate}
+			)`
 		}
-
-		selectQuery = sql`
-      ${selectQuery}
-      ${whereClause}
-    `
 	}
 
-	const clientsQuery = sql`
-  ${baseQuery}
-  SELECT
-    cwa.id,
-    cwa.full_name,   
-    cwa.address,
-    cwa.snow_assignments,
-    COALESCE(img.urls, '[]'::jsonb) AS images
-  FROM clients_with_assignments cwa
-  LEFT JOIN LATERAL(
-    SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.imageURL)) as urls
-    FROM images i
-    WHERE i.customerid = cwa.id
-  ) img ON TRUE
-  WHERE cwa.id IN (${selectQuery})
-  ORDER BY (SELECT MIN((sa->>'priority')::int) FROM jsonb_array_elements(cwa.snow_assignments) AS sa) NULLS LAST, cwa.id
-`
+	// Order by assignment priority then client id
+	baseQuery = sql`${baseQuery} ORDER BY a.priority, c.id`
 
-	const clientsResult = await clientsQuery
-
-	return clientsResult as ClientResult[]
+	const clientsResult = await baseQuery
+	return clientsResult
 }
 
 export async function fetchClients(
@@ -414,7 +376,7 @@ export async function fetchClientsAccounts(
 ): Promise<ClientAccount[]> {
 	if (clientIds.length === 0) return []
 
-	const sql = neon(`${process.env.DATABASE_URL}`)	
+	const sql = neon(`${process.env.DATABASE_URL}`)
 
 	return (await sql`
 		SELECT *
@@ -429,7 +391,7 @@ export async function fetchClientsAddresses(
 ): Promise<ClientAddress[]> {
 	if (clientIds.length === 0) return []
 
-	const sql = neon(`${process.env.DATABASE_URL}`)	
+	const sql = neon(`${process.env.DATABASE_URL}`)
 
 	return (await sql`
 		SELECT *
@@ -437,7 +399,6 @@ export async function fetchClientsAddresses(
 		WHERE client_id = ANY(${clientIds})
 	`) as ClientAddress[]
 }
-
 
 // export async function fetchClientsWithSchedules(
 // 	orgId: string,
