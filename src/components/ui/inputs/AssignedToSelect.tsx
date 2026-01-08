@@ -31,7 +31,7 @@ export default function AssignedTo({
 	const { mutate: mutateAssignGrassCutting } = useAssignGrassCutting()
 
 	const orgMembers = use(orgMembersPromise ?? Promise.resolve([]))
-	
+
 	const defaultValue = clientAssignedTo ?? 'not-assigned'
 
 	function handleChange(value: string) {
@@ -39,12 +39,13 @@ export default function AssignedTo({
 			mutateAssignSnowClearing({
 				clientId: clientId,
 				assignedTo: value,
-				addressId:addressId
+				addressId: addressId,
 			})
 		} else {
 			mutateAssignGrassCutting({
 				clientId: clientId,
 				assignedTo: value,
+				addressId: addressId,
 			})
 		}
 	}

@@ -274,11 +274,13 @@ export const useAssignGrassCutting = (page?: number) => {
 		mutationFn: ({
 			clientId,
 			assignedTo,
+			addressId,
 		}: {
 			clientId: number
 			assignedTo: string
+			addressId: number
 		}) => {
-			return assignGrassCutting(clientId, assignedTo)
+			return assignGrassCutting(clientId, assignedTo, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1

@@ -98,37 +98,53 @@ export default async function ClientListAll({
 										Amount owing: $
 										{accounts[index].current_balance}{' '}
 									</p>
-									<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-										{/* <Suspense
-											fallback={<AssignedToFallback />}
-										>
-											<AssignedTo
-												addressId={addresses[index].id}
-												clientAssignedTo={
-													'not-assigned'
-												}
-												clientId={client.id}
-												orgMembersPromise={
-													orgMembersPromise
-												}
-											/>
-										</Suspense> */}
-										<Suspense
-											fallback={<AssignedToFallback />}
-										>
-											<AssignedTo
-												addressId={addresses[index].id}
-												clientAssignedTo={
-													'not-assigned'
-												}
-												clientId={client.id}
-												orgMembersPromise={
-													orgMembersPromise
-												}
-												snow
-											/>
-										</Suspense>
-									</div>
+									
+									{addresses
+										.filter(
+											(addr) =>
+												addr.client_id === client.id,
+										)
+										.map((addr) => (
+											<div
+												className="flex flex-col flex-wrap items-center justify-center gap-2 border p-8 rounded-sm w-full md:w-4/6"
+												key={`${addr.id} + addresses`}
+											>
+												<h1>{addr.address}</h1>
+												<Suspense
+													fallback={
+														<AssignedToFallback />
+													}
+												>
+													<AssignedTo
+														addressId={addr.id}
+														clientAssignedTo={
+															'not-assigned'
+														}
+														clientId={client.id}
+														orgMembersPromise={
+															orgMembersPromise
+														}
+													/>
+												</Suspense>
+												<Suspense
+													fallback={
+														<AssignedToFallback />
+													}
+												>
+													<AssignedTo
+														addressId={addr.id}
+														clientAssignedTo={
+															'not-assigned'
+														}
+														clientId={client.id}
+														orgMembersPromise={
+															orgMembersPromise
+														}
+														snow
+													/>
+												</Suspense>
+											</div>
+										))}
 								</div>
 							)}
 							{/* <CuttingWeekDropDownContainer

@@ -90,7 +90,11 @@ export async function markYardServiced(
 	}
 }
 
-export async function assignGrassCutting(clientId: number, assignedTo: string) {
+export async function assignGrassCutting(
+	clientId: number,
+	assignedTo: string,
+	address_id: number,
+) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!orgId && !userId)
@@ -115,6 +119,7 @@ export async function assignGrassCutting(clientId: number, assignedTo: string) {
 			const result = await assignGrassCuttingDb(
 				validatedFields.data,
 				orgId || String(userId),
+				address_id
 			)
 			if (!result) throw new Error('Failed to update Client cut day')
 			return result
