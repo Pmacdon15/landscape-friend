@@ -1,14 +1,16 @@
 'use client'
+import { use } from 'react'
 import { toast } from 'sonner'
 import { Alert } from '@/components/ui/alerts/alert'
 import { useDeleteClient } from '@/lib/mutations/mutations'
 export default function DeleteClientButton({
 	clientId,
-	page,
+	pagePromise,
 }: {
 	clientId: number
-	page: number
+	pagePromise: Promise<number>
 }) {
+	const page = use(pagePromise)
 	const { mutate } = useDeleteClient(page, {
 		onSuccess: () => {
 			toast.success('Client deleted!', { duration: 1500 })

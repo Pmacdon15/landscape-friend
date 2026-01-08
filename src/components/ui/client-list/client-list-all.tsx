@@ -1,9 +1,9 @@
+import { Suspense } from 'react'
 import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
 import FormHeader from '../header/form-header'
-import ImageList from '../image-list/image-list'
 import { PaginationTabs } from '../pagination/pagination-tabs'
 import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
 import AssignedToSection from './assigned-to-section'
@@ -17,12 +17,8 @@ export default async function ClientListAll({
 	orgMembersPromise,
 	searchParamsPromise,
 }: ClientListServiceProps) {
-	//TODO: See if we can result theses lower
-	const [isAdmin, result, searchParams] = await Promise.all([
-		isAdminPromise,
-		clientsPromise,
-		searchParamsPromise,
-	])
+		
+	const result = await clientsPromise
 
 	if (!result)
 		return (
@@ -45,21 +41,20 @@ export default async function ClientListAll({
 
 	return (
 		<>
-			<PaginationTabs
-				page={searchParams.page}
-				path="/lists/client"
-				totalPages={totalPages}
-			/>
+			<PaginationTabs path="/lists/client" totalPages={totalPages} />
 			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
 				{clients.map((client, index) => (
 					<FormContainer key={client.id}>
 						<li className="relative rounded-sm border bg-white/70 p-4">
-							{isAdmin?.isAdmin && (
+							<Suspense>
 								<DeleteClientButton
 									clientId={client.id}
-									page={searchParams.page}
+									pagePromise={searchParamsPromise.then(
+										(params) => params.page,
+									)}
 								/>
-							)}
+							</Suspense>
+
 							<FormHeader text={client.full_name} />
 							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
 								{client.phone_number && client.phone_number && (
@@ -90,53 +85,52 @@ export default async function ClientListAll({
 										/>
 									))}
 							</div>
-							{isAdmin?.isAdmin && (
-								<div className="flex flex-col items-center gap-2">
-									<p>
-										Amount owing: $
-										{accounts[index].current_balance}{' '}
-									</p>
 
-									<AssignedToSection
-										addresses={addresses}
-										assignments={assignments}
-										clientId={client.id}
-										orgMembersPromise={orgMembersPromise}
-									/>
-								</div>
-							)}
+							<div className="flex flex-col items-center gap-2">
+								<p>
+									Amount owing: $
+									{accounts[index].current_balance}{' '}
+								</p>
+
+								<AssignedToSection
+									addresses={addresses}
+									assignments={assignments}
+									clientId={client.id}
+									orgMembersPromise={orgMembersPromise}
+								/>
+							</div>
 
 							<div className="flex flex-col gap-2">
-								<EditClientFormContainer
-									addresses={addresses
-										.filter(
-											(a) => a.client_id === client.id,
-										)
-										.map((a) => ({
-											id: a.id,
-											client_id: client.id,
-											address: a.address,
-										}))}
-									client={client}
-									isAdmin={isAdmin?.isAdmin || false}
-									page={searchParams.page}
-								/>
+								<Suspense>
+									<EditClientFormContainer
+										addresses={addresses
+											.filter(
+												(a) =>
+													a.client_id === client.id,
+											)
+											.map((a) => ({
+												id: a.id,
+												client_id: client.id,
+												address: a.address,
+											}))}
+										client={client}
+										pagePromise={searchParamsPromise.then(
+											(params) => params.page,
+										)}
+									/>
+								</Suspense>
 								<ViewSitePhotoSheet clientId={client.id} />
 							</div>
-							<ImageList
+							{/* <ImageList
 								client={client}
 								isAdmin={isAdmin?.isAdmin}
 								page={searchParams.page}
-							/>
+							/> */}
 						</li>
 					</FormContainer>
 				))}
 			</ul>
-			<PaginationTabs
-				page={searchParams.page}
-				path="/lists/client"
-				totalPages={totalPages}
-			/>
+			<PaginationTabs path="/lists/client" totalPages={totalPages} />
 		</>
 	)
 }
