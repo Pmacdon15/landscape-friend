@@ -112,17 +112,17 @@ export default function ClientCards({
 					return newOrder
 				}
 
-				const assignmentId = draggedAssignment
-				const newPriority = targetAssignment
+				// const assignmentId = draggedAssignment
+				// const newPriority = targetAssignment
 
 				// Call the mutate function
-				mutate({ assignmentId, priority: newPriority })
+				mutate({ assignmentId:draggedAssignment, priority: targetAssignment})
 
 				console.log('Client order changed:', {
 					clientId: active.id,
 					oldPosition: oldIndex,
 					newPosition: newIndex,
-					newPriority,
+					targetAssignment,
 				})
 
 				return newOrder

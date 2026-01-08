@@ -10,7 +10,7 @@ interface ClientDetailsCardProps {
 	snow: boolean
 	page: number
 }
-
+//TODO: clean up this type
 export default function ClientDetailsCard({
 	client,
 	isAdmin,
