@@ -194,7 +194,7 @@ export async function updateClientPricePerMonth(
 }
 
 export async function updateCuttingDay(
-	clientId: number,
+	addressId: number,
 	cuttingWeek: number,
 	updatedDay: string,
 ) {
@@ -203,7 +203,7 @@ export async function updateCuttingDay(
 	if (!userId) throw new Error('User ID is missing.')
 
 	const validatedFields = schemaUpdateCuttingDay.safeParse({
-		clientId: clientId,
+		addressId: addressId,
 		cuttingWeek: cuttingWeek,
 		updatedDay: updatedDay,
 	})
@@ -213,7 +213,7 @@ export async function updateCuttingDay(
 	try {
 		const result = await updatedClientCutDayDb(
 			validatedFields.data,
-			orgId || String(userId),
+			// orgId || String(userId),
 		)
 		if (!result) throw new Error('Failed to update Client cut day')
 		return result

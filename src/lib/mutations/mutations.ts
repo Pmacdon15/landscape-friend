@@ -223,15 +223,15 @@ export const useUpdateClientPricePer = () => {
 export const useUpdateCuttingDay = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
-			clientId,
+			addressId,
 			cuttingWeek,
 			cuttingDay,
 		}: {
-			clientId: number
+			addressId: number
 			cuttingWeek: number
 			cuttingDay: string
 		}) => {
-			return updateCuttingDay(clientId, cuttingWeek, cuttingDay)
+			return updateCuttingDay(addressId, cuttingWeek, cuttingDay)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1

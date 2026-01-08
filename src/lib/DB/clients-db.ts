@@ -245,7 +245,7 @@ export async function updateClientPricePerDb(
 //MARK: Updated Client Cut Day
 export async function updatedClientCutDayDb(
 	data: z.infer<typeof schemaUpdateCuttingDay>,
-	orgId: string,
+	// orgId: string,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 	// const clientCheck = await sql`
@@ -256,11 +256,11 @@ export async function updatedClientCutDayDb(
 	//   throw new Error("Client not found or orgId mismatch");
 	// }
 	const result = await sql`
-        INSERT INTO cutting_schedule(client_id, cutting_week, cutting_day, organization_id)
-  VALUES(${data.clientId}, ${data.cuttingWeek}, ${data.updatedDay}, ${orgId})
-        ON CONFLICT(client_id, cutting_week, organization_id) DO UPDATE
-        SET cutting_day = EXCLUDED.cutting_day, cutting_week = EXCLUDED.cutting_week
-  RETURNING *
+        INSERT INTO cutting_schedule(address_id, cutting_week, cutting_day)
+		VALUES(${data.addressId}, ${data.cuttingWeek}, ${data.updatedDay})
+			ON CONFLICT(address_id, cutting_week) DO UPDATE
+			SET cutting_day = EXCLUDED.cutting_day, cutting_week = EXCLUDED.cutting_week
+		RETURNING *
     `
 	return result
 }

@@ -17,119 +17,128 @@ export default async function ClientListAll({
 	orgMembersPromise,
 	searchParamsPromise,
 }: ClientListServiceProps) {
-		
 	const result = await clientsPromise
 
 	if (!result)
 		return (
 			<ContentContainer>
-				{' '}
-				<p>Error Loading clients</p>{' '}
+				<p>Error Loading clients</p>
 			</ContentContainer>
 		)
 
-	const { clients, accounts, addresses, assignments, totalPages } = result
+	const { clients, accounts, addresses, assignments, schedules, totalPages } =
+		result
 
-	if (!clients)
+	if (!clients || clients.length === 0)
 		return (
 			<ContentContainer>
-				{' '}
-				<p>Please add clients</p>{' '}
+				<p>Please add clients</p>
 			</ContentContainer>
 		)
-	console.log('assignments:', assignments)
+
+	console.log('schedules:', schedules)
 
 	return (
 		<>
 			<PaginationTabs path="/lists/client" totalPages={totalPages} />
-			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
-				{clients.map((client, index) => (
-					<FormContainer key={client.id}>
-						<li className="relative rounded-sm border bg-white/70 p-4">
-							<Suspense>
-								<DeleteClientButton
-									clientId={client.id}
-									pagePromise={searchParamsPromise.then(
-										(params) => params.page,
-									)}
-								/>
-							</Suspense>
 
-							<FormHeader text={client.full_name} />
-							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
-								{client.phone_number && client.phone_number && (
-									<ClientListItemHeader
-										clientPhoneNumber={Number(
-											client.phone_number,
+			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
+				{clients.map((client, index) => {
+					// PRECOMPUTE data for this client
+					const clientAddresses = addresses.filter(
+						(a) => a.client_id === client.id,
+					)
+
+					const clientAddressIds = clientAddresses.map((a) => a.id)
+
+					const clientAssignments = assignments.filter((a) =>
+						clientAddressIds.includes(a.address_id),
+					)
+					
+					const clientSchedules = schedules.filter((s) =>
+    clientAddresses.map((a) => a.id).includes(s.address_id)
+)
+
+					const editAddresses = clientAddresses.map((a) => ({
+						id: a.id,
+						client_id: client.id,
+						address: a.address,
+					}))
+
+					return (
+						<FormContainer key={client.id}>
+							<li className="relative rounded-sm border bg-white/70 p-4">
+								<Suspense>
+									<DeleteClientButton
+										clientId={client.id}
+										pagePromise={searchParamsPromise.then(
+											(params) => params.page,
 										)}
 									/>
-								)}
-								{client.email_address && (
-									<ClientListItemEmail
-										clientEmailAddress={
-											client.email_address
-										}
-										clientFullName={client.full_name}
-									/>
-								)}
+								</Suspense>
 
-								{addresses
-									.filter(
-										(addr) => addr.client_id === client.id,
-									)
-									.map((addr) => (
+								<FormHeader text={client.full_name} />
+
+								<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
+									{client.phone_number && (
+										<ClientListItemHeader
+											clientPhoneNumber={Number(
+												client.phone_number,
+											)}
+										/>
+									)}
+
+									{client.email_address && (
+										<ClientListItemEmail
+											clientEmailAddress={
+												client.email_address
+											}
+											clientFullName={client.full_name}
+										/>
+									)}
+
+									{clientAddresses.map((addr) => (
 										<ClientListItemAddress
 											clientAddress={addr.address}
 											clientId={client.id}
 											key={addr.id}
 										/>
 									))}
-							</div>
+								</div>
 
-							<div className="flex flex-col items-center gap-2">
-								<p>
-									Amount owing: $
-									{accounts[index].current_balance}{' '}
-								</p>
+								<div className="flex flex-col items-center gap-2">
+									<p>
+										Amount owing: $
+										{accounts[index].current_balance}
+									</p>
 
-								<AssignedToSection
-									addresses={addresses}
-									assignments={assignments}
-									clientId={client.id}
-									orgMembersPromise={orgMembersPromise}
-								/>
-							</div>
-
-							<div className="flex flex-col gap-2">
-								<Suspense>
-									<EditClientFormContainer
-										addresses={addresses
-											.filter(
-												(a) =>
-													a.client_id === client.id,
-											)
-											.map((a) => ({
-												id: a.id,
-												client_id: client.id,
-												address: a.address,
-											}))}
-										client={client}
-										pagePromise={searchParamsPromise.then(
-											(params) => params.page,
-										)}
+									<AssignedToSection
+										addresses={clientAddresses}
+										assignments={clientAssignments}
+										orgMembersPromise={orgMembersPromise}
+										schedules={clientSchedules}
 									/>
-								</Suspense>
-								<ViewSitePhotoSheet clientId={client.id} />
-							</div>
-							{/* <ImageList
-								client={client}
-								isAdmin={isAdmin?.isAdmin}
-								page={searchParams.page}
-							/> */}
-						</li>
-					</FormContainer>
-				))}
+								</div>
+
+								<div className="flex flex-col gap-2">
+									<Suspense>
+										<EditClientFormContainer
+											addresses={editAddresses}
+											client={client}
+											pagePromise={searchParamsPromise.then(
+												(params) => params.page,
+											)}
+										/>
+									</Suspense>
+
+									<ViewSitePhotoSheet clientId={client.id} />
+								</div>
+							</li>
+						</FormContainer>
+					)
+				})}
 			</ul>
+
 			<PaginationTabs path="/lists/client" totalPages={totalPages} />
 		</>
 	)

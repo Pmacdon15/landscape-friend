@@ -1,6 +1,8 @@
+import type { ClientAssignment } from '@/types/assignment-types'
 import type { OrgMember } from './clerk-types'
 import type { ParsedClientListParams } from './params-types'
-import type { ClientAssignment } from '@/types/assignment-types'
+import type { ClientCuttingSchedule } from './schedules-types'
+
 export interface Image {
 	id: number
 	url: string
@@ -33,21 +35,21 @@ export interface CustomerName {
 // 	stripe_customer_id?: string
 // }
 
-export interface EditClientInfo {
-	id: number
-	full_name: string
-	phone_number?: string
-	email_address?: string
-	address: string
-	amount_owing: number
-	cutting_week: number
-	cutting_day: string
-	cutting_schedules: CuttingSchedule[]
-	snow_assigned_to: string
-	grass_assigned_to: string
-	images: Image[]
-	stripe_customer_id?: string
-}
+// export interface EditClientInfo {
+// 	id: number
+// 	full_name: string
+// 	phone_number?: string
+// 	email_address?: string
+// 	address: string
+// 	amount_owing: number
+// 	cutting_week: number
+// 	cutting_day: string
+// 	cutting_schedules: CuttingSchedule[]
+// 	snow_assigned_to: string
+// 	grass_assigned_to: string
+// 	images: Image[]
+// 	stripe_customer_id?: string
+// }
 // export interface ClientListItemProps {
 //     client: Client;
 //     children?: React.ReactNode;
@@ -103,6 +105,7 @@ export interface ClientListServiceProps {
 		addresses: ClientAddress[]
 		accounts: ClientAccount[]
 		assignments: ClientAssignment[]
+		schedules: ClientCuttingSchedule[]
 		totalPages: number
 	} | null>
 
@@ -112,10 +115,10 @@ export interface ClientListServiceProps {
 	// Promise for search/filter parameters
 	searchParamsPromise: Promise<ParsedClientListParams>
 }
-export interface CuttingSchedule {
-	cutting_week: number | null
-	cutting_day: string | null
-}
+// export interface CuttingSchedule {
+// 	cutting_week: number | null
+// 	cutting_day: string | null
+// }
 
 export interface CutStatusSelectorProps {
 	value: string

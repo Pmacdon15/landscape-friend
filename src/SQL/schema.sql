@@ -78,10 +78,9 @@ CREATE TABLE cutting_schedule (
     id SERIAL PRIMARY KEY,
     cutting_week INT NULL,
     cutting_day VARCHAR(10) NULL,
-    client_id INT NOT NULL,
-    organization_id VARCHAR(100) NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
-    UNIQUE (client_id, cutting_week, organization_id)
+    address_id INT NOT NULL,    
+    FOREIGN KEY (address_id) REFERENCES client_addresses (id) ON DELETE CASCADE,
+    UNIQUE (address_id, cutting_week )
 );
 
 CREATE TABLE yards_marked_cut (

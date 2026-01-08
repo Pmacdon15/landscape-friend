@@ -16,17 +16,15 @@ export default function page(props: PageProps<'/lists/client'>) {
 	const isAdminPromise = isOrgAdmin()
 	const searchParamsPromise = props.searchParams.then(parseClientListParams)
 
-	const clientsPromise = props.searchParams
-		.then(parseClientListParams)
-		.then((params) =>
-			fetchAllClientsInfo(
-				params.page,
-				params.searchTerm,
-				params.searchTermCuttingWeek,
-				params.searchTermCuttingDay,
-				params.searchTermAssignedTo,
-			),
-		)
+	const clientsPromise = searchParamsPromise.then((params) =>
+		fetchAllClientsInfo(
+			params.page,
+			params.searchTerm,
+			params.searchTermCuttingWeek,
+			params.searchTermCuttingDay,
+			params.searchTermAssignedTo,
+		),
+	)
 
 	return (
 		<>

@@ -21,8 +21,10 @@ import type {
 	CustomerName,
 	NamesAndEmails,
 } from '@/types/clients-types'
+import type { ClientCuttingSchedule } from '@/types/schedules-types'
 import { fetchClientAssignments } from '../DB/assignment-db'
 import { getServicedImagesUrlsDb } from '../DB/db-get-images'
+import { fetchClientSchedules } from '../DB/schedules-db'
 
 export async function fetchAllClientsInfo(
 	clientPageNumber: number,
@@ -35,6 +37,7 @@ export async function fetchAllClientsInfo(
 	addresses: ClientAddress[]
 	accounts: ClientAccount[]
 	assignments: ClientAssignment[]
+	schedules: ClientCuttingSchedule[]
 	totalPages: number
 } | null> {
 	'use cache: private'
@@ -58,13 +61,23 @@ export async function fetchAllClientsInfo(
 		)
 
 		const clientIds = clients.map((client) => client.id)
-		const [accounts, addresses, assignments] = await Promise.all([
-			fetchClientsAccounts(clientIds),
-			fetchClientsAddresses(clientIds),
-			fetchClientAssignments(clientIds),
-		])
+		const [accounts, addresses, assignments, schedules] = await Promise.all(
+			[
+				fetchClientsAccounts(clientIds),
+				fetchClientsAddresses(clientIds),
+				fetchClientAssignments(clientIds),
+				fetchClientSchedules(clientIds),
+			],
+		)
 
-		return { clients, accounts, addresses, assignments, totalPages: 1 }
+		return {
+			clients,
+			accounts,
+			addresses,
+			assignments,
+			schedules,
+			totalPages: 1,
+		}
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)
