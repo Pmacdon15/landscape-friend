@@ -10,6 +10,7 @@ import ClientDetailsCard from './ClientDetailsCard'
 interface DraggableClientItemProps {
 	client: ScheduledClient
 	isAdmin: boolean
+	addressId:number
 	searchTermIsServiced: boolean
 	serviceDate?: Date
 	snow: boolean
@@ -19,6 +20,7 @@ interface DraggableClientItemProps {
 export default function DraggableClientItem({
 	client,
 	isAdmin,
+	addressId,
 	searchTermIsServiced,
 	serviceDate,
 	snow,
@@ -72,7 +74,7 @@ export default function DraggableClientItem({
 
 				{serviceDate && (
 					<MarkYardServiced
-						clientId={client.id}
+						addressId={addressId}
 						serviceDate={serviceDate}
 						snow={snow}
 					/>

@@ -8,6 +8,7 @@ import type {
 	schemaUpdateCuttingDay,
 	schemaUpdatePricePerMonth,
 } from '@/lib/zod/schemas'
+import type { ScheduledClient } from '@/types/assignment-types'
 import type { BlobUrl } from '@/types/blob-types'
 import type {
 	Client,
@@ -18,7 +19,6 @@ import type {
 	CustomerName,
 } from '@/types/clients-types'
 import type { NovuSubscriberIds } from '@/types/novu-types'
-import { ScheduledClient } from '@/types/assignment-types'
 
 //MARK: Add clients
 export async function addClientDB(
@@ -304,6 +304,7 @@ export async function fetchClientsClearingGroupsDb(
 			c.phone_number, 
 			c.email_address, 
 			ca.address, 
+			ca.id as address_id,
 			a.id AS assignment_id, 
 			a.user_id, 
 			a.priority
@@ -334,16 +335,20 @@ export async function fetchClientsClearingGroupsDb(
 	if (searchTermIsServiced !== undefined) {
 		if (searchTermIsServiced) {
 			baseQuery = sql`${baseQuery} AND EXISTS (
-				SELECT 1 FROM yards_marked_clear ymc
-				WHERE ymc.client_id = c.id
-				  AND ymc.clearing_date = ${clearingDate}
-			)`
+      SELECT 1
+      FROM yards_marked_clear ymc
+      JOIN client_addresses ca ON ca.id = ymc.address_id
+      WHERE ca.client_id = c.id
+        AND ymc.clearing_date = ${clearingDate}
+    )`
 		} else {
 			baseQuery = sql`${baseQuery} AND NOT EXISTS (
-				SELECT 1 FROM yards_marked_clear ymc
-				WHERE ymc.client_id = c.id
-				  AND ymc.clearing_date = ${clearingDate}
-			)`
+      SELECT 1
+      FROM yards_marked_clear ymc
+      JOIN client_addresses ca ON ca.id = ymc.address_id
+      WHERE ca.client_id = c.id
+        AND ymc.clearing_date = ${clearingDate}
+    )`
 		}
 	}
 
@@ -731,7 +736,6 @@ export async function fetchClientsCuttingSchedules(
 //MARK: Mark yard cut
 export async function markYardServicedDb(
 	data: z.infer<typeof schemaMarkYardCut>,
-	organization_id: string,
 	snow: boolean,
 	assigned_to: string,
 ) {
@@ -740,24 +744,13 @@ export async function markYardServicedDb(
 	try {
 		const query = snow
 			? sql`
-          INSERT INTO yards_marked_clear(client_id, clearing_date, assigned_to)
-          SELECT ${data.clientId}, ${data.date}, ${assigned_to}
-          FROM clients
-          WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-          ON CONFLICT(client_id, clearing_date) DO UPDATE
-          SET assigned_to = EXCLUDED.assigned_to
-          RETURNING id;
-          `
+      INSERT INTO yards_marked_clear (address_id, clearing_date, assigned_to)
+      VALUES (${data.addressId}, ${data.date}, ${assigned_to})
+    `
 			: sql`
-          INSERT INTO yards_marked_cut(client_id, cutting_date, assigned_to)
-          SELECT ${data.clientId}, ${data.date}, ${assigned_to}
-          FROM clients
-          WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-          ON CONFLICT(client_id, cutting_date) DO UPDATE
-          SET assigned_to = EXCLUDED.assigned_to
-          RETURNING id;
-          `
-
+      INSERT INTO yards_marked_cut (address_id, cutting_date, assigned_to)
+      VALUES (${data.addressId}, ${data.date}, ${assigned_to})
+    `
 		const result = await query
 
 		if (!result || result.length === 0) {
@@ -765,7 +758,7 @@ export async function markYardServicedDb(
 				'Error inserting data on table yards_marked_cut or yards_marked_clear',
 			)
 		}
-		return result[0].id
+		return result
 	} catch (e) {
 		console.log(e)
 	}

@@ -54,8 +54,6 @@ export async function uploadImageBlob(
 }
 
 export async function uploadImageBlobServiceDone(
-	orgId: string,
-	customerId: number,
 	file: File | Blob,
 	isServiceImage = false,
 ): Promise<
@@ -64,27 +62,6 @@ export async function uploadImageBlobServiceDone(
 > {
 	if (!(file instanceof Blob)) {
 		return { error: 'Invalid file type.', status: 400, url: '' }
-	}
-
-	const clientResult = await sql`
-    SELECT organization_id FROM clients WHERE id = ${customerId};
-  `
-
-	if (
-		!clientResult ||
-		(clientResult.rowCount && clientResult.rowCount <= 0)
-	) {
-		return { error: 'Client not found.', status: 404, url: '' }
-	}
-
-	const clientOrgId = clientResult.rows[0].organization_id
-
-	if (clientOrgId !== orgId) {
-		return {
-			error: 'Customer ID does not belong to the organization.',
-			status: 403,
-			url: '',
-		}
 	}
 
 	const { url } = await put(

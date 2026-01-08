@@ -293,17 +293,17 @@ export const useMarkYardServiced = (options?: {
 }) => {
 	return useMutation({
 		mutationFn: async ({
-			clientId,
+			addressId,
 			date,
 			snow = false,
 			images,
 		}: {
-			clientId: number
+			addressId: number
 			date: Date
 			snow?: boolean
 			images: File[]
 		}) => {
-			const result = await markYardServiced(clientId, date, snow, images)
+			const result = await markYardServiced(addressId, date, snow, images)
 			if (result?.errorMessage) {
 				throw new Error(result.errorMessage)
 			}

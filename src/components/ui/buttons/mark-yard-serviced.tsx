@@ -8,11 +8,11 @@ import { Button } from '../button'
 import Spinner from '../loaders/spinner'
 
 export default function MarkYardServiced({
-	clientId,
+	addressId,
 	serviceDate,
 	snow = false,
 }: {
-	clientId: number
+	addressId: number
 	serviceDate: Date
 	snow?: boolean
 }) {
@@ -87,8 +87,10 @@ export default function MarkYardServiced({
 		})
 	}
 
+	//TODO: uncomment below
 	function isMobileDevice() {
-		return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		// return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		return true
 		// return true
 	}
 
@@ -158,7 +160,7 @@ export default function MarkYardServiced({
 						onClick={() =>
 							images
 								? mutate({
-										clientId,
+										addressId,
 										date: serviceDate,
 										snow,
 										images,

@@ -17,7 +17,6 @@ import {
 import { use, useEffect, useState } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
 import type { ScheduledClient } from '@/types/assignment-types'
-import type { ClientResult } from '@/types/clients-types'
 import type { ParsedClientListParams } from '@/types/params-types'
 import FormContainer from '../../containers/form-container'
 import FormHeader from '../../header/form-header'
@@ -116,7 +115,10 @@ export default function ClientCards({
 				// const newPriority = targetAssignment
 
 				// Call the mutate function
-				mutate({ assignmentId:draggedAssignment, priority: targetAssignment})
+				mutate({
+					assignmentId: draggedAssignment,
+					priority: targetAssignment,
+				})
 
 				console.log('Client order changed:', {
 					clientId: active.id,
@@ -187,6 +189,7 @@ export default function ClientCards({
 					<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
 						{orderedClients.map((client: ScheduledClient) => (
 							<DraggableClientItem
+								addressId={client.address_id}
 								client={client}
 								isAdmin={isAdmin?.isAdmin ?? false}
 								key={`${client.id}-${client.address}`}

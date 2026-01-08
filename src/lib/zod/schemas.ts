@@ -40,7 +40,7 @@ export const schemaUpdateCuttingDay = z.object({
 })
 
 export const schemaMarkYardCut = z.object({
-	clientId: z.number(),
+	addressId: z.number(),
 	date: z.date(),
 })
 

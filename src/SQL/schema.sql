@@ -86,20 +86,20 @@ CREATE TABLE cutting_schedule (
 CREATE TABLE yards_marked_cut (
     id SERIAL PRIMARY KEY,
     cutting_date DATE NOT NULL,
-    client_id INT NOT NULL,
+    address_id INT NOT NULL,
     assigned_to VARCHAR(100) NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
-    UNIQUE (client_id, cutting_date)
+    FOREIGN KEY (address_id) REFERENCES client_addresses (id) ON DELETE CASCADE,
+    UNIQUE (address_id, cutting_date)
 );
 
 CREATE TABLE yards_marked_clear (
     id SERIAL PRIMARY KEY,
     clearing_date DATE NOT NULL,
-    client_id INT NOT NULL,
+    address_id INT NOT NULL,
     assigned_to VARCHAR(100) NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
+    FOREIGN KEY (address_id) REFERENCES client_addresses (id) ON DELETE CASCADE,
     FOREIGN KEY (assigned_to) REFERENCES users (id) ON DELETE CASCADE,
-    UNIQUE (client_id, clearing_date)
+    UNIQUE (address_id, clearing_date)
 );
 
 CREATE TABLE assignments (

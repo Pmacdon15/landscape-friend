@@ -9,7 +9,7 @@ import { uploadImageBlobServiceDone } from '../utils/image-control'
 import { schemaAssign, schemaMarkYardCut } from '../zod/schemas'
 
 export async function markYardServiced(
-	clientId: number,
+	addressId: number,
 	date: Date,
 	snow = false,
 	images: File[],
@@ -19,7 +19,7 @@ export async function markYardServiced(
 	if (!userId) return { errorMessage: 'User ID is missing.' }
 
 	const validatedFields = schemaMarkYardCut.safeParse({
-		clientId: clientId,
+		addressId: addressId,
 		date: date,
 	})
 
@@ -31,12 +31,7 @@ export async function markYardServiced(
 	/// Try upload Image to Vercel Blob
 	try {
 		for (let i = 0; i < images.length; i++) {
-			result_upload[i] = await uploadImageBlobServiceDone(
-				orgId || userId,
-				clientId,
-				images[i],
-				true,
-			)
+			result_upload[i] = await uploadImageBlobServiceDone(images[i], true)
 			images_url[i] = result_upload[i].url
 		}
 		if (!result_upload)
@@ -56,7 +51,6 @@ export async function markYardServiced(
 	try {
 		const result_mark = await markYardServicedDb(
 			validatedFields.data,
-			orgId || userId,
 			snow,
 			userId,
 		)
@@ -91,7 +85,7 @@ export async function markYardServiced(
 }
 
 export async function assignGrassCutting(
-		assignedTo: string,
+	assignedTo: string,
 	addressId: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
@@ -108,15 +102,13 @@ export async function assignGrassCutting(
 
 	try {
 		if (assignedTo === 'not-assigned') {
-			const result = await unassignGrassCuttingDb(
-				addressId,				
-			)
+			const result = await unassignGrassCuttingDb(addressId)
 			if (!result) throw new Error('Failed to unassign grass cutting')
 			return result
 		} else {
 			const result = await assignGrassCuttingDb(
-				validatedFields.data,				
-				addressId
+				validatedFields.data,
+				addressId,
 			)
 			if (!result) throw new Error('Failed to update Client cut day')
 			return result
