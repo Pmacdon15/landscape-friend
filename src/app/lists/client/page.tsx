@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import AddClientFormContainer from '@/components/ui/client-list/add-client-form-container'
 import ClientListAll from '@/components/ui/client-list/client-list-all'
 import FormContainer from '@/components/ui/containers/form-container'
+import ClientListAllFallback from '@/components/ui/fallbacks/client-list-all-fallback'
 import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fallback'
 import FormHeader from '@/components/ui/header/form-header'
 import SearchForm from '@/components/ui/search/search-form'
@@ -14,6 +15,7 @@ export default function page(props: PageProps<'/lists/client'>) {
 	const orgMembersPromise = fetchOrgMembers()
 	const isAdminPromise = isOrgAdmin()
 	const searchParamsPromise = props.searchParams.then(parseClientListParams)
+
 	const clientsPromise = props.searchParams
 		.then(parseClientListParams)
 		.then((params) =>
@@ -37,16 +39,10 @@ export default function page(props: PageProps<'/lists/client'>) {
 					/>
 				</Suspense>
 			</FormContainer>
-			<Suspense>
-				<AddClientFormContainer isAdminPromise={isAdminPromise} />
-			</Suspense>
-			<Suspense
-				fallback={
-					<FormContainer>
-						<FormHeader text="Loading . . ." />
-					</FormContainer>
-				}
-			>
+
+			<AddClientFormContainer />
+
+			<Suspense fallback={<ClientListAllFallback />}>
 				<ClientListAll
 					clientsPromise={clientsPromise}
 					isAdminPromise={isAdminPromise}
