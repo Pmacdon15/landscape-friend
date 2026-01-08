@@ -440,6 +440,21 @@ export async function fetchClientsAddresses(
 	`) as ClientAddress[]
 }
 
+export async function fetchClientsSchedules(
+	clients: Client[],
+): Promise<ClientSchedules[]> {
+	if (clients.length === 0) return []
+
+	const sql = neon(`${process.env.DATABASE_URL}`)
+	const clientIds = clients.map((c) => c.id)
+
+	return (await sql`
+		SELECT *
+		FROM client_addresses
+		WHERE client_id = ANY(${clientIds})
+	`) as ClientClientSchedules[]
+}
+
 // export async function fetchClientsWithSchedules(
 // 	orgId: string,
 // 	pageSize: number,

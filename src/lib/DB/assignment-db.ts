@@ -51,18 +51,17 @@ export async function changePriorityDb(
 }
 
 export async function assignGrassCuttingDb(
-	data: z.infer<typeof schemaAssign>,
-	organization_id: string,
+	data: z.infer<typeof schemaAssign>,	
 	addressId: number,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 
 	const allAssignmentsForOrg = await sql`
 		SELECT client_id, priority FROM assignments
-		WHERE org_id = ${organization_id} AND service_type = 'grass'
+		WHERE user_id = ${data.assignedTo} AND service_type = 'grass'
 	`
 
-	await unassignGrassCuttingDb(data.clientId, organization_id)
+	await unassignGrassCuttingDb(data.clientId)
 
 	const priorityResult = allAssignmentsForOrg.filter(
 		(a) => Number(a.client_id) === data.clientId,
@@ -73,10 +72,10 @@ export async function assignGrassCuttingDb(
 	const nextPriority = maxPriority + 1
 
 	const result = await sql`
-		INSERT INTO assignments(client_id, org_id, user_id,address_id, service_type, priority)
-		SELECT ${data.clientId}, ${organization_id}, ${data.assignedTo}, ${addressId}, 'grass', ${nextPriority}
+		INSERT INTO assignments(client_id, user_id,address_id, service_type, priority)
+		SELECT ${data.clientId}, ${data.assignedTo}, ${addressId}, 'grass', ${nextPriority}
 		FROM clients
-		WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+		WHERE id = ${data.clientId} 
 		RETURNING *;
 	`
 
@@ -89,15 +88,13 @@ export async function assignGrassCuttingDb(
 
 //MARK: Unassign grass cutting
 export async function unassignGrassCuttingDb(
-	clientId: number,
-	organization_id: string,
+	clientId: number,	
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
 	const result = await sql`
     DELETE FROM assignments
     WHERE client_id = ${clientId}
-      AND service_type = 'grass'
-      AND org_id = ${organization_id}
+      AND service_type = 'grass'      
     RETURNING *;
   `
 	return result
@@ -105,16 +102,14 @@ export async function unassignGrassCuttingDb(
 
 //MARK: Unassign snow clearing
 export async function unassignSnowClearingDb(
-	clientId: number,
-	organization_id: string,
+	clientId: number,	
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 
 	const result = await sql`
     DELETE FROM assignments
     WHERE client_id = ${clientId}
-      AND service_type = 'snow'
-      AND org_id = ${organization_id}
+      AND service_type = 'snow'      
     RETURNING *;
   `
 	return result
@@ -122,8 +117,7 @@ export async function unassignSnowClearingDb(
 //MARK: Toggle snow client
 
 export async function assignSnowClearingDb(
-	data: z.infer<typeof schemaAssignSnow>,
-	organization_id: string,
+	data: z.infer<typeof schemaAssignSnow>,	
 	addressId: number,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
@@ -131,17 +125,17 @@ export async function assignSnowClearingDb(
 	// console.log('Assigning snow clearing for client:', data.clientId)
 	// console.log('Organization ID:', organization_id)
 
-	if (!data.clientId || !organization_id) {
+	if (!data.clientId) {
 		throw new Error('Client ID and organization ID are required')
 	}
 
 	const allAssignmentsForOrg = await sql`
 		SELECT client_id, priority FROM assignments
-		WHERE org_id = ${organization_id} AND service_type = 'snow'
+		WHERE user_id = ${data.assignedTo} AND service_type = 'snow'
 	`
 	// console.log('All assignments for org:', allAssignmentsForOrg)
 
-	await unassignSnowClearingDb(data.clientId, organization_id)
+	await unassignSnowClearingDb(data.clientId)
 
 	const priorities = allAssignmentsForOrg.map((a) => a.priority)
 	const maxPriority = Math.max(0, ...priorities)
@@ -150,10 +144,10 @@ export async function assignSnowClearingDb(
 	// console.log('Next priority:', nextPriority)
 
 	const result = await sql`
-			INSERT INTO assignments(client_id, org_id, user_id, address_id, service_type, priority)
-			SELECT ${data.clientId}, ${organization_id}, ${data.assignedTo}, ${addressId}, 'snow', ${nextPriority}
+			INSERT INTO assignments(client_id, user_id, address_id, service_type, priority)
+			SELECT ${data.clientId}, ${data.assignedTo}, ${addressId}, 'snow', ${nextPriority}
 			FROM clients
-			WHERE id = ${data.clientId} AND organization_id = ${organization_id}
+			WHERE id = ${data.clientId}
 			RETURNING *;
 		`
 	// console.log('Assignment result:', result)

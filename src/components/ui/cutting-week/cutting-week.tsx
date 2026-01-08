@@ -77,22 +77,22 @@ function CuttingWeekDropDown({
 	)
 }
 
-interface CuttingWeekClient {
-	id: number
-	cutting_schedules: CuttingSchedule[]
-}
+// interface CuttingWeekClient {
+// 	id: number
+// 	cutting_schedules: CuttingSchedule[]
+// }
 
 export function CuttingWeekDropDownContainer({
-	client,
+	clientId,
 	isAdmin = false,
 }: {
-	client: CuttingWeekClient
+	clientId: number
 	isAdmin?: boolean
 }) {
 	// Ensure all weeks (1–4) have a schedule, defaulting to "No cut" if missing
 	const schedules: CuttingSchedule[] = Array.from({ length: 4 }, (_, i) => {
 		const week = i + 1
-		const existingSchedule = client.cutting_schedules.find(
+		const existingSchedule = cuttingSchedules.find(
 			(s) => s.cutting_week === week,
 		)
 		return existingSchedule || { cutting_week: week, cutting_day: 'No cut' }
@@ -102,7 +102,7 @@ export function CuttingWeekDropDownContainer({
 		<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
 			{schedules.map((schedule, index) => (
 				<CuttingWeekDropDown
-					clientId={client.id}
+					clientId={clientId}
 					isAdmin={isAdmin}
 					key={schedule.cutting_week}
 					schedule={schedule}

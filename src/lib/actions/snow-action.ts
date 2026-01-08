@@ -27,8 +27,7 @@ export async function assignSnowClearing(
 	try {
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignSnowClearingDb(
-				validatedFields.data.clientId,
-				orgId || String(userId),
+				validatedFields.data.clientId,				
 			)
 			return {
 				...result,
@@ -36,8 +35,7 @@ export async function assignSnowClearing(
 			}
 		} else {
 			const result = await assignSnowClearingDb(
-				validatedFields.data,
-				orgId || String(userId),
+				validatedFields.data,				
 				addressId
 			)
 			if (!result) throw new Error('Failed to update Client cut day')

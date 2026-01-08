@@ -105,17 +105,15 @@ CREATE TABLE yards_marked_clear (
 
 CREATE TABLE assignments (
     id SERIAL PRIMARY KEY,
-    client_id INT NOT NULL,
-    org_id VARCHAR(150) NOT NULL,
+    client_id INT NOT NULL,    
     user_id VARCHAR(100) NOT NULL,
     address_id INT NOT NULL,
     priority INT NOT NULL,
     service_type VARCHAR(10) NOT NULL CHECK (service_type IN ('grass', 'snow')),
     FOREIGN KEY (client_id) REFERENCES clients (id) ON DELETE CASCADE,
-    FOREIGN KEY (address_id) REFERENCES client_addresses (id) ON DELETE CASCADE,
-    FOREIGN KEY (org_id) REFERENCES  organizations (organization_id) ON DELETE CASCADE,
+    FOREIGN KEY (address_id) REFERENCES client_addresses (id) ON DELETE CASCADE,  
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    UNIQUE (client_id, service_type, priority, org_id, address_id)
+    UNIQUE (client_id, service_type, priority, address_id)
 );
 
 CREATE TABLE images (

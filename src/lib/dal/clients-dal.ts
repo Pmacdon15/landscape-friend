@@ -22,7 +22,7 @@ import type {
 } from '@/types/clients-types'
 import { getServicedImagesUrlsDb } from '../DB/db-get-images'
 
-export async function fetchAllClients(
+export async function fetchAllClientsInfo(
 	clientPageNumber: number,
 	searchTerm: string,
 	searchTermCuttingWeek: number,

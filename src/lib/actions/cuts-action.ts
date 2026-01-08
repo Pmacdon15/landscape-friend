@@ -95,7 +95,7 @@ export async function assignGrassCutting(
 	assignedTo: string,
 	address_id: number,
 ) {
-	const { isAdmin, orgId, userId } = await isOrgAdmin()
+	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!orgId && !userId)
 		throw new Error('Organization ID or User ID is missing.')
@@ -110,15 +110,13 @@ export async function assignGrassCutting(
 	try {
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignGrassCuttingDb(
-				validatedFields.data.clientId,
-				orgId || String(userId),
+				validatedFields.data.clientId,				
 			)
 			if (!result) throw new Error('Failed to unassign grass cutting')
 			return result
 		} else {
 			const result = await assignGrassCuttingDb(
-				validatedFields.data,
-				orgId || String(userId),
+				validatedFields.data,				
 				address_id
 			)
 			if (!result) throw new Error('Failed to update Client cut day')

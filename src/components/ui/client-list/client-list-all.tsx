@@ -3,6 +3,7 @@ import type { ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
+import { CuttingWeekDropDownContainer } from '../cutting-week/cutting-week'
 import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
 import ImageList from '../image-list/image-list'
@@ -98,7 +99,7 @@ export default async function ClientListAll({
 										Amount owing: $
 										{accounts[index].current_balance}{' '}
 									</p>
-									
+
 									{addresses
 										.filter(
 											(addr) =>
@@ -110,50 +111,50 @@ export default async function ClientListAll({
 												key={`${addr.id} + addresses`}
 											>
 												<h1>{addr.address}</h1>
-												<Suspense
-													fallback={
-														<AssignedToFallback />
-													}
-												>
-													<AssignedTo
-														addressId={addr.id}
-														clientAssignedTo={
-															'not-assigned'
+												<div className="flex flex-warp gap-4">
+													<Suspense
+														fallback={
+															<AssignedToFallback />
 														}
-														clientId={client.id}
-														orgMembersPromise={
-															orgMembersPromise
+													>
+														<AssignedTo
+															addressId={addr.id}
+															clientAssignedTo={
+																'not-assigned'
+															}
+															clientId={client.id}
+															orgMembersPromise={
+																orgMembersPromise
+															}
+														/>
+													</Suspense>
+													<Suspense
+														fallback={
+															<AssignedToFallback />
 														}
-													/>
-												</Suspense>
-												<Suspense
-													fallback={
-														<AssignedToFallback />
-													}
-												>
-													<AssignedTo
-														addressId={addr.id}
-														clientAssignedTo={
-															'not-assigned'
-														}
-														clientId={client.id}
-														orgMembersPromise={
-															orgMembersPromise
-														}
-														snow
-													/>
-												</Suspense>
+													>
+														<AssignedTo
+															addressId={addr.id}
+															clientAssignedTo={
+																'not-assigned'
+															}
+															clientId={client.id}
+															orgMembersPromise={
+																orgMembersPromise
+															}
+															snow
+														/>
+													</Suspense>
+												</div>
+												{/* <CuttingWeekDropDownContainer
+													clientId={client.id}
+													isAdmin={isAdmin?.isAdmin}
+												/> */}
 											</div>
 										))}
 								</div>
 							)}
-							{/* <CuttingWeekDropDownContainer
-								client={{
-									id: client.id,
-									cutting_schedules: client.cutting_schedules,
-								}}
-								isAdmin={isAdmin?.isAdmin}
-							/> */}
+
 							<div className="flex flex-col gap-2">
 								<EditClientFormContainer
 									addresses={addresses
