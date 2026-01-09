@@ -20,8 +20,7 @@ export async function ManageQuoteCardView({
 	return (
 		<>
 			<PaginationTabs
-				fullWidth
-				page={page}
+				fullWidth				
 				path={'/billing/manage/quotes'}
 				totalPages={totalPages}
 			/>
@@ -147,8 +146,7 @@ export async function ManageQuoteCardView({
 				))}
 			</div>
 			<PaginationTabs
-				fullWidth
-				page={page}
+				fullWidth				
 				path={'/billing/manage/quotes'}
 				totalPages={totalPages}
 			/>

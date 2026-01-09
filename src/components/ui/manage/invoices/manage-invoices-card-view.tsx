@@ -40,7 +40,6 @@ export async function CardView({
 		<>
 			<PaginationTabs
 				fullWidth
-				page={page}
 				path={'/billing/manage/invoices'}
 				totalPages={totalPages}
 			/>
@@ -157,7 +156,6 @@ export async function CardView({
 			</div>
 			<PaginationTabs
 				fullWidth
-				page={page}
 				path={'/billing/manage/invoices'}
 				totalPages={totalPages}
 			/>

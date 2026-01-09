@@ -1,7 +1,6 @@
 'use client'
 import { MapPlus } from 'lucide-react'
 import { Activity, use, useState } from 'react'
-import page from '@/app/page'
 import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
 import ImageGallery from './image-gallery'
