@@ -161,14 +161,13 @@ export const useUploadImage = ({
 
 export const useDeleteSiteMap = (page?: number) => {
 	return useMutation({
-		mutationFn: ({
-			clientId,
+		mutationFn: ({			
 			siteMapId,
 		}: {
-			clientId: number
+			
 			siteMapId: number
 		}) => {
-			return deleteSiteMap(clientId, siteMapId)
+			return deleteSiteMap( siteMapId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1

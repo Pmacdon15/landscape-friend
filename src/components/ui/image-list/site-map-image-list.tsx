@@ -1,8 +1,10 @@
 'use client'
 import { MapPlus } from 'lucide-react'
 import { Activity, use, useState } from 'react'
+import page from '@/app/page'
 import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
+import ImageGallery from './image-gallery'
 import AddSiteMap from './list-view/add-site-map'
 import NonAdminPlaceHolder from './list-view/non-admin-placeholder'
 
@@ -19,7 +21,7 @@ export default function SiteMapImageList({
 	isAdminPromise: Promise<{ isAdmin: boolean }>
 	siteMaps: ClientSiteMapImages[]
 }) {
-	const isAdmin = use(isAdminPromise)
+	const isAdmin = use(isAdminPromise)	
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
 	const addressSiteMaps = siteMaps.filter(
@@ -64,15 +66,14 @@ export default function SiteMapImageList({
 						setView={setView}
 					/>
 				)}
-				{/* {view === 'list' &&  siteMaps.length === 0 > 0 && (
+				{view === 'list' && siteMaps.length > 0 && (
 					<ImageGallery
-						client={client}
-						isAdmin={isAdmin}
-						page={page}
+						isAdmin={isAdmin.isAdmin}
+						pagePromise={pagePromise}
 						setView={setView}
+						siteMaps={addressSiteMaps}
 					/>
-				)} */}
-				{/* //TODO return site mape images  */}
+				)}
 			</Activity>
 		</div>
 	)

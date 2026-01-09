@@ -1,5 +1,4 @@
-import type { ScheduledClient } from './assignment-types'
-import type { Client } from './clients-types'
+import type { ClientSiteMapImages } from './site-maps-types'
 
 export interface CuttingPeriodSelectorProps {
 	label: string
@@ -18,7 +17,7 @@ export interface MaterialField {
 
 export interface ImageGalleryProps {
 	isAdmin: boolean
-	client: Client | ScheduledClient
+	siteMaps: ClientSiteMapImages[]
 	setView: (view: string) => void
-	page: number
+	pagePromise: Promise<number>
 }

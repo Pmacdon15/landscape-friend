@@ -23,7 +23,7 @@ export default function AddressManagementSection({
 	assignments: ClientAssignment[]
 	schedules: ClientCuttingSchedule[]
 	orgMembersPromise: Promise<OrgMember[] | { errorMessage: string }>
-	isAdminPromise?: Promise<{ isAdmin: boolean }>
+	isAdminPromise: Promise<{ isAdmin: boolean }>
 	pagePromise: Promise<number>
 	siteMaps: ClientSiteMapImages[]
 }) {
@@ -38,7 +38,7 @@ export default function AddressManagementSection({
 						imageURL: siteMap.imageURL,
 						isActive: siteMap.isActive,
 						client_id: siteMap.client_id,
-						address:siteMap.address
+						address: siteMap.address,
 					}))
 				return (
 					<div
@@ -80,12 +80,14 @@ export default function AddressManagementSection({
 							schedules={schedules}
 						/>
 						<ViewSitePhotoSheet addressId={addr.id} />
-						<SiteMapImageList
-							addressId={addr.id}
-							isAdminPromise={isAdminPromise}
-							pagePromise={pagePromise}
-							siteMaps={clientSiteMaps}
-						/>
+						<Suspense>
+							<SiteMapImageList
+								addressId={addr.id}
+								isAdminPromise={isAdminPromise}
+								pagePromise={pagePromise}
+								siteMaps={clientSiteMaps}
+							/>
+						</Suspense>
 					</div>
 				)
 			})}

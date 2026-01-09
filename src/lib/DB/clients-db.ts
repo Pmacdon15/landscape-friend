@@ -189,7 +189,6 @@ export async function deleteClientDB(
 
 export async function deleteSiteMapDB(
 	data: z.infer<typeof schemaDeleteSiteMap>,
-	organization_id: string,
 ): Promise<{ success: boolean }> {
 	// console.log("deleteSiteMapDB called with data:", data, "and organization_id:", organization_id);
 	const sql = neon(`${process.env.DATABASE_URL}`)
@@ -197,16 +196,8 @@ export async function deleteSiteMapDB(
 		const result = await sql`
     DELETE FROM images
     WHERE
-      id = ${data.siteMap_id} AND
-            customerid = ${data.client_id} AND
-      EXISTS (
-        SELECT 1
-        FROM clients
-        WHERE
-          clients.id = ${data.client_id} AND
-          clients.organization_id = ${organization_id}
-      )
-  RETURNING id;
+      id = ${data.siteMap_id} 
+    RETURNING id;
   `
 		// console.log("deleteSiteMapDB SQL result:", result);
 		return { success: result.length > 0 }

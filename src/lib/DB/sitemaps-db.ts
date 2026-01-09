@@ -9,18 +9,19 @@ export async function fetchClientSiteMapImages(
 	const sql = neon(String(process.env.DATABASE_URL))
 
 	const result = await sql`
-    SELECT 
-      i.id,
-      i.address_id,
-      ca.address,
-      i.imageURL,     
-      i.isActive,
-      ca.client_id,     
-    FROM images i
-    JOIN client_addresses ca ON ca.id = i.address_id
-    WHERE ca.client_id = ANY(${clientIds})
-    ORDER BY i.created_at DESC
-  `
+		SELECT 
+			i.id,
+			i.address_id,
+			ca.address,
+			i.imageURL,     
+			i.isActive,
+			ca.client_id
+		FROM images i
+		JOIN client_addresses ca ON ca.id = i.address_id
+		WHERE ca.client_id = ANY(${clientIds})
+		ORDER BY i.created_at DESC
+	`
 
 	return result as ClientSiteMapImages[]
 }
+

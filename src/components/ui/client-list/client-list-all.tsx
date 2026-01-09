@@ -127,7 +127,10 @@ export default async function ClientListAll({
 									<AddressManagementSection
 										addresses={clientAddresses}
 										assignments={clientAssignments}
-										isAdminPromise={isAdminPromise}
+										isAdminPromise={
+											isAdminPromise ||
+											Promise.resolve({ isAdmin: false })
+										}
 										orgMembersPromise={orgMembersPromise}
 										pagePromise={searchParamsPromise.then(
 											(params) => params.page,

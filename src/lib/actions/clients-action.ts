@@ -223,22 +223,18 @@ export async function updateCuttingDay(
 	}
 }
 
-export async function deleteSiteMap(clientId: number, siteMapId: number) {
+export async function deleteSiteMap(siteMapId: number) {
 	const { orgId, userId } = await isOrgAdmin()
 	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
 	const validatedFields = schemaDeleteSiteMap.safeParse({
-		client_id: clientId,
 		siteMap_id: siteMapId,
 	})
 
 	if (!validatedFields.success) throw new Error('Invalid form data')
 
 	try {
-		const result = await deleteSiteMapDB(
-			validatedFields.data,
-			orgId || String(userId),
-		)
+		const result = await deleteSiteMapDB(validatedFields.data)
 		if (!result.success) throw new Error('Delete Client')
 		return result
 	} catch (e: unknown) {

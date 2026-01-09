@@ -2,15 +2,15 @@
 import { XMarkIcon } from '@heroicons/react/24/solid'
 import { ImagePlusIcon } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import type { ImageGalleryProps } from '@/types/components-types'
 import DeleteSiteMapButton from '../buttons/delete-site-map-button'
 
 export default function ImageGallery({
 	isAdmin,
-	client,
+	siteMaps,
 	setView,
-	page,
+	pagePromise,
 }: ImageGalleryProps) {
 	const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 	return (
@@ -30,22 +30,23 @@ export default function ImageGallery({
 			)}
 
 			<div className="flex h-full flex-wrap items-center justify-center align-middle">
-				{client.images?.map((image, index) => (
-					<div className="relative" key={image.id}>
-						<DeleteSiteMapButton
-							clientId={client.id}
-							page={page}
-							siteMapId={image.id}
-						/>
+				{siteMaps.map((siteMap, index) => (
+					<div className="relative" key={siteMap.imageURL}>
+						<Suspense>
+							<DeleteSiteMapButton
+								pagePromise={pagePromise}
+								siteMap={siteMap}
+							/>
+						</Suspense>
 
 						<Image
 							alt={`Image ${index + 1}`}
 							className="p-2 hover:cursor-zoom-in"
 							height={300}
 							onClick={() => {
-								setPreviewSrc(image.url)
+								setPreviewSrc(siteMap.imageURL)
 							}}
-							src={image.url}
+							src={siteMap.imageURL}
 							width={300}
 						/>
 					</div>
