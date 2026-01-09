@@ -133,7 +133,9 @@ export default function ClientCards({
 		)
 
 	// Flatten addresses for map
-	const flattenedAddresses = clientSchedules.siteMaps.map((m) => m.address)
+	const flattenedAddresses = clientSchedules.clientsSchedules.map(
+		(m) => m.address,
+	)
 
 	return (
 		<>
