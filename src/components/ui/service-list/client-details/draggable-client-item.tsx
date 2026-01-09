@@ -10,7 +10,7 @@ import ClientDetailsCard from './ClientDetailsCard'
 interface DraggableClientItemProps {
 	client: ScheduledClient
 	isAdmin: boolean
-	addressId:number
+	addressId: number
 	searchTermIsServiced: boolean
 	serviceDate?: Date
 	snow: boolean

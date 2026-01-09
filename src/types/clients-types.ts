@@ -2,6 +2,7 @@ import type { ClientAssignment } from '@/types/assignment-types'
 import type { OrgMember } from './clerk-types'
 import type { ParsedClientListParams } from './params-types'
 import type { ClientCuttingSchedule } from './schedules-types'
+import type { ClientSiteMapImages } from './site-maps-types'
 
 export interface Image {
 	id: number
@@ -106,6 +107,7 @@ export interface ClientListServiceProps {
 		accounts: ClientAccount[]
 		assignments: ClientAssignment[]
 		schedules: ClientCuttingSchedule[]
+		siteMaps: ClientSiteMapImages[]
 		totalPages: number
 	} | null>
 

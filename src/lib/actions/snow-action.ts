@@ -6,7 +6,7 @@ import {
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import { schemaAssignSnow } from '../zod/schemas'
 
-export async function assignSnowClearing(	
+export async function assignSnowClearing(
 	assignedTo: string,
 	addressId: number,
 ) {
@@ -15,7 +15,7 @@ export async function assignSnowClearing(
 	if (!orgId && !userId)
 		throw new Error('Organization ID or User ID is missing.')
 
-	const validatedFields = schemaAssignSnow.safeParse({		
+	const validatedFields = schemaAssignSnow.safeParse({
 		assignedTo: assignedTo,
 		addressId: addressId,
 	})
@@ -24,17 +24,15 @@ export async function assignSnowClearing(
 
 	try {
 		if (assignedTo === 'not-assigned') {
-			const result = await unassignSnowClearingDb(
-				addressId,				
-			)
+			const result = await unassignSnowClearingDb(addressId)
 			return {
 				...result,
 				message: 'Successfully unassigned snow clearing',
 			}
 		} else {
 			const result = await assignSnowClearingDb(
-				validatedFields.data,				
-				addressId
+				validatedFields.data,
+				addressId,
 			)
 			if (!result) throw new Error('Failed to update Client cut day')
 			return result

@@ -1,4 +1,5 @@
-import type { Client, ClientResult } from './clients-types'
+import type { ScheduledClient } from './assignment-types'
+import type { Client } from './clients-types'
 
 export interface CuttingPeriodSelectorProps {
 	label: string
@@ -17,7 +18,7 @@ export interface MaterialField {
 
 export interface ImageGalleryProps {
 	isAdmin: boolean
-	client: Client | ClientResult
+	client: Client | ScheduledClient
 	setView: (view: string) => void
 	page: number
 }

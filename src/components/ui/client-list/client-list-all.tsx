@@ -5,8 +5,7 @@ import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
 import FormHeader from '../header/form-header'
 import { PaginationTabs } from '../pagination/pagination-tabs'
-import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
-import AssignedToSection from './assigned-to-section'
+import AddressManagementSection from './address-management-section'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
 import EditClientFormContainer from './edit-client-form-container'
@@ -26,8 +25,15 @@ export default async function ClientListAll({
 			</ContentContainer>
 		)
 
-	const { clients, accounts, addresses, assignments, schedules, totalPages } =
-		result
+	const {
+		clients,
+		accounts,
+		addresses,
+		assignments,
+		schedules,
+		siteMaps,
+		totalPages,
+	} = result
 
 	if (!clients || clients.length === 0)
 		return (
@@ -64,6 +70,12 @@ export default async function ClientListAll({
 						client_id: client.id,
 						address: a.address,
 					}))
+
+					const clientSiteMaps = siteMaps.filter((siteMap) =>
+						clientAddresses
+							.map((a) => a.id)
+							.includes(siteMap.address_id),
+					)
 
 					return (
 						<FormContainer key={client.id}>
@@ -112,11 +124,16 @@ export default async function ClientListAll({
 										{accounts[index].current_balance}
 									</p>
 
-									<AssignedToSection
+									<AddressManagementSection
 										addresses={clientAddresses}
 										assignments={clientAssignments}
+										isAdminPromise={isAdminPromise}
 										orgMembersPromise={orgMembersPromise}
+										pagePromise={searchParamsPromise.then(
+											(params) => params.page,
+										)}
 										schedules={clientSchedules}
+										siteMaps={clientSiteMaps}
 									/>
 								</div>
 
@@ -129,7 +146,7 @@ export default async function ClientListAll({
 												(params) => params.page,
 											)}
 										/>
-									</Suspense>									
+									</Suspense>
 								</div>
 							</li>
 						</FormContainer>

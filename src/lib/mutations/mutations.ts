@@ -136,13 +136,13 @@ export const useUploadImage = ({
 }) => {
 	return useMutation({
 		mutationFn: ({
-			clientId,
+			addressId,
 			formData,
 		}: {
-			clientId: number
+			addressId: number
 			formData: FormData
 		}) => {
-			return uploadImage(clientId, formData)
+			return uploadImage(addressId, formData)
 		},
 		onSuccess: () => {
 			// revalidatePathAction("/lists/client");
@@ -183,8 +183,8 @@ export const useDeleteSiteMap = (page?: number) => {
 // export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
 export const useUploadDrawing = (page?: number) => {
 	return useMutation({
-		mutationFn: ({ file, clientId }: { file: Blob; clientId: number }) => {
-			return uploadDrawing(file, clientId)
+		mutationFn: ({ file, addressId }: { file: Blob; addressId: number }) => {
+			return uploadDrawing(file, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -248,10 +248,10 @@ export const useUpdateCuttingDay = (page?: number) => {
 //MARK: Assign snow clearing
 export const useAssignSnowClearing = (page?: number) => {
 	return useMutation({
-		mutationFn: ({			
+		mutationFn: ({
 			assignedTo,
 			addressId,
-		}: {			
+		}: {
 			assignedTo: string
 			addressId: number
 		}) => {
@@ -269,11 +269,11 @@ export const useAssignSnowClearing = (page?: number) => {
 //MARK: Assign grass cutting
 export const useAssignGrassCutting = (page?: number) => {
 	return useMutation({
-		mutationFn: ({			
+		mutationFn: ({
 			assignedTo,
 			addressId,
 		}: {
-						assignedTo: string
+			assignedTo: string
 			addressId: number
 		}) => {
 			return assignGrassCutting(assignedTo, addressId)

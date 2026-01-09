@@ -1,4 +1,4 @@
-export type  ClientAssignment = {
+export type ClientAssignment = {
 	id: number
 	user_id: string
 	address_id: number
@@ -12,7 +12,7 @@ export type ScheduledClient = {
 	phone_number: string | null
 	email_address: string | null
 	address: string
-	address_id:number
+	address_id: number
 	assignment_id: number
 	user_id: string
 	priority: number

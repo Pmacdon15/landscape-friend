@@ -4,16 +4,15 @@ import type React from 'react'
 import { useRef } from 'react'
 import Spinner from '@/components/ui/loaders/spinner'
 import { useImageSelector } from '@/lib/hooks/useImageSelector'
-import type { Client, ClientResult } from '@/types/clients-types'
 
 export default function ImageSelectorMain({
 	setView,
 	address,
-	client,
+	addressId,
 }: {
 	setView: React.Dispatch<React.SetStateAction<string>>
 	address: string
-	client: ClientResult | Client
+	addressId: number
 }) {
 	const mapContainerRef = useRef<HTMLDivElement | null>(null)
 	const {
@@ -27,12 +26,12 @@ export default function ImageSelectorMain({
 	} = useImageSelector({
 		setView,
 		address,
-		client,
+		addressId,
 		mapContainer: mapContainerRef,
 	})
 
 	return (
-		<div className="relative mx-auto h-[300px] w-full max-w-md">
+		<div className="relative mx-auto h-75 w-full max-w-md">
 			{isLoading && (
 				<div className="absolute inset-0 z-25 flex items-center justify-center bg-white/30">
 					<Spinner />
@@ -73,7 +72,7 @@ export default function ImageSelectorMain({
 				/>
 
 				{showGeocodeSelector && (
-					<div className="absolute top-4 left-4 w-[90%] max-w-md rounded bg-white shadow-md sm:w-[400px]">
+					<div className="absolute top-4 left-4 w-[90%] max-w-md rounded bg-white shadow-md sm:w-100">
 						<h2 className="mb-2 px-4 pt-4 font-bold text-lg">
 							Select a Location
 						</h2>

@@ -1,14 +1,15 @@
+import { Suspense } from 'react'
 import UploadImageButton from '../buttons/upload-image-button'
 import ImageUploadInput from '../inputs/image-upload-input'
 
 export default function ImageUploader({
-	clientId,
+	addressId,
 	setView,
-	page,
+	pagePromise,
 }: {
-	clientId: number
+	addressId: number
 	setView: React.Dispatch<React.SetStateAction<string>>
-	page: number
+	pagePromise: Promise<number>
 }) {
 	return (
 		<form className="w-[45%]">
@@ -17,11 +18,13 @@ export default function ImageUploader({
 				htmlFor="image-upload"
 			>
 				<ImageUploadInput />
-				<UploadImageButton
-					clientId={clientId}
-					page={page}
-					setView={setView}
-				/>
+				<Suspense>
+					<UploadImageButton
+						addressId={addressId}
+						pagePromise={pagePromise}
+						setView={setView}
+					/>
+				</Suspense>
 			</label>
 		</form>
 	)

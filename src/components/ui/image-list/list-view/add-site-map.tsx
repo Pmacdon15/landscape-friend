@@ -4,13 +4,13 @@ import ListViewHeader from './list-view-header'
 import ListViewWrapper from './list-view-warapper'
 
 export default function AddSiteMap({
-	clientId,
+	addressId,
 	setView,
-	page,
+	pagePromise,
 }: {
-	clientId: number
+	addressId: number
 	setView: React.Dispatch<React.SetStateAction<string>>
-	page: number
+	pagePromise: Promise<number>
 }) {
 	return (
 		<ListViewWrapper>
@@ -21,8 +21,8 @@ export default function AddSiteMap({
 					<div>Capture from Maps</div>
 				</SetViewMapButton>
 				<ImageUploader
-					clientId={clientId}
-					page={page}
+					addressId={addressId}
+					pagePromise={pagePromise}
 					setView={setView}
 				/>
 			</div>

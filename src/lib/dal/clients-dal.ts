@@ -20,14 +20,15 @@ import type {
 	ClientAccount,
 	ClientAddress,
 	ClientInfoList,
-	ClientResult,
 	CustomerName,
 	NamesAndEmails,
 } from '@/types/clients-types'
 import type { ClientCuttingSchedule } from '@/types/schedules-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import { fetchClientAssignments } from '../DB/assignment-db'
 import { getServicedImagesUrlsDb } from '../DB/db-get-images'
 import { fetchClientSchedules } from '../DB/schedules-db'
+import { fetchClientSiteMapImages } from '../DB/sitemaps-db'
 
 export async function fetchAllClientsInfo(
 	clientPageNumber: number,
@@ -41,6 +42,7 @@ export async function fetchAllClientsInfo(
 	accounts: ClientAccount[]
 	assignments: ClientAssignment[]
 	schedules: ClientCuttingSchedule[]
+	siteMaps: ClientSiteMapImages[]
 	totalPages: number
 } | null> {
 	'use cache: private'
@@ -64,14 +66,14 @@ export async function fetchAllClientsInfo(
 		)
 
 		const clientIds = clients.map((client) => client.id)
-		const [accounts, addresses, assignments, schedules] = await Promise.all(
-			[
+		const [accounts, addresses, assignments, schedules, siteMaps] =
+			await Promise.all([
 				fetchClientsAccounts(clientIds),
 				fetchClientsAddresses(clientIds),
 				fetchClientAssignments(clientIds),
 				fetchClientSchedules(clientIds),
-			],
-		)
+				fetchClientSiteMapImages(clientIds),
+			])
 
 		return {
 			clients,
@@ -79,6 +81,7 @@ export async function fetchAllClientsInfo(
 			addresses,
 			assignments,
 			schedules,
+			siteMaps,
 			totalPages: 1,
 		}
 	} catch (e: unknown) {

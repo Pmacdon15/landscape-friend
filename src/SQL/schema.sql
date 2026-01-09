@@ -115,11 +115,11 @@ CREATE TABLE assignments (
 
 CREATE TABLE images (
     id SERIAL PRIMARY KEY,
-    customerID INT NOT NULL,
+    address_id INT NOT NULL,
     imageURL TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     isActive BOOLEAN,
-    Foreign Key (customerID) REFERENCES clients (id) ON DELETE CASCADE
+    Foreign Key (address_id) REFERENCES client_addresses (id) ON DELETE CASCADE
 );
 
 CREATE TABLE images_serviced (

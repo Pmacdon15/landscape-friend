@@ -198,7 +198,7 @@ export async function updateCuttingDay(
 	cuttingWeek: number,
 	updatedDay: string,
 ) {
-	const { isAdmin, orgId, userId } = await isOrgAdmin()
+	const { isAdmin, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!userId) throw new Error('User ID is missing.')
 

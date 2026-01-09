@@ -84,7 +84,7 @@ SELECT * FROM yards_marked_cut;
 
 
 INSERT INTO organizations (organization_id, organization_name, max_allowed_clients)
-VALUES ('user_35uYpItCYEItSG6WmiTExQEmT1U', 'Pat', 100);
+VALUES ('org_368RDFv9J3wphFLXKbYL2XCnqeJ', 'Pat', 100);
 
 INSERT INTO users (id, name, email)
 VALUES ('user_35uYpItCYEItSG6WmiTExQEmT1U', 'New User', 'pmacdonald15@proton.me');

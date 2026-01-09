@@ -1,17 +1,19 @@
 'use client'
+import { use } from 'react'
 import { toast } from 'sonner'
 import { useUploadImage } from '@/lib/mutations/mutations'
 import Spinner from '../loaders/spinner'
 
 export default function UploadImageButton({
-	clientId,
+	addressId,
 	setView,
-	page,
+	pagePromise,
 }: {
-	clientId: number
+	addressId: number
 	setView: React.Dispatch<React.SetStateAction<string>>
-	page: number
+	pagePromise: Promise<number>
 }) {
+	const page = use(pagePromise)
 	const { mutate, isPending } = useUploadImage({
 		onSuccess: () => {
 			toast.success('Image uploaded successfully!', {
@@ -34,7 +36,7 @@ export default function UploadImageButton({
 			}`}
 			disabled={isPending}
 			formAction={(formData: FormData) => {
-				mutate({ clientId: clientId, formData })
+				mutate({ addressId, formData })
 			}}
 			type="submit"
 		>

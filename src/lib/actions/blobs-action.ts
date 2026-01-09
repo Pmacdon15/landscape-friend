@@ -5,7 +5,7 @@ import { uploadImageBlob } from '@/lib/utils/image-control'
 import { ImageSchema } from '@/lib/zod/schemas'
 
 export async function uploadImage(
-	customerId: number,
+	addressId: number,
 	formData: FormData,
 ): Promise<
 	| { success: boolean; message: string; status: number }
@@ -14,7 +14,7 @@ export async function uploadImage(
 	| Error
 	| null
 > {
-	const { isAdmin, userId, orgId } = await isOrgAdmin()
+	const { isAdmin, userId } = await isOrgAdmin()
 	if (!isAdmin) return new Error('Not Admin')
 	if (!userId) return new Error('No Id')
 
@@ -28,9 +28,8 @@ export async function uploadImage(
 
 		if (!validatedImage.success) throw new Error('invalid inputs')
 
-		result = await uploadImageBlob(
-			orgId || userId,
-			customerId,
+		result = await uploadImageBlob(			
+			addressId,
 			validatedImage.data.image,
 		)
 		if (result && 'error' in result) {
@@ -48,14 +47,14 @@ export async function uploadImage(
 
 export async function uploadDrawing(
 	file: Blob,
-	clientId: number,
+	addressId: number,
 ): Promise<
 	| { success: boolean; message: string; status: number }
 	| { error: string; status: number }
 	| Error
 	| null
 > {
-	const { isAdmin, userId, orgId } = await isOrgAdmin()
+	const { isAdmin} = await isOrgAdmin()
 	if (!isAdmin) return new Error('Not Admin')
 
 	// Check if the file is an image
@@ -80,7 +79,7 @@ export async function uploadDrawing(
 		| { error: string; status: number }
 
 	try {
-		result = await uploadImageBlob(orgId || String(userId), clientId, file)
+		result = await uploadImageBlob( addressId, file)
 		if (result && 'error' in result) {
 			throw new Error(result.error)
 		}
