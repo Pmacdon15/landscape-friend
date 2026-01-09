@@ -1,6 +1,6 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import type React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { UseFormReset } from 'react-hook-form'
 import type { MaterialField } from '@/types/components-types'
 import type { Location } from '@/types/google-map-iframe-types'
@@ -56,10 +56,16 @@ export function useDebouncedValue<T>(value: T, delay: number): T {
 
 export function useGetLocation(): { userLocation: Location | '' } {
 	const [userLocation, setUserLocation] = useState<Location | ''>('')
+	const hasFetched = useRef(false)
 
 	useEffect(() => {
+		if (userLocation || hasFetched.current) {
+			return
+		}
+
 		const getUserLocation = async () => {
 			if (navigator.geolocation) {
+				hasFetched.current = true
 				try {
 					const position = await new Promise<GeolocationPosition>(
 						(resolve, reject) => {
@@ -81,7 +87,7 @@ export function useGetLocation(): { userLocation: Location | '' } {
 			}
 		}
 		getUserLocation()
-	}, [])
+	}, [userLocation])
 
 	return { userLocation }
 }

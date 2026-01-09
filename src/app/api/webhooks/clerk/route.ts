@@ -14,6 +14,7 @@ import type {
 	UserDeletedEvent,
 	WebhookEvent,
 } from '@/types/clerk-types'
+import { revalidateTag } from 'next/cache'
 
 function isSubscriptionItem(
 	data: WebhookEvent['data'],
@@ -68,6 +69,11 @@ export async function POST(req: NextRequest) {
 					break
 				}
 
+				case 'organizationMembership.created': {
+					const orgId = (evt.data as OrganizationCreatedEvent).id
+					revalidateTag(`org_membership-${orgId}`, { expire: 0 })
+					break
+				}
 				case 'user.deleted': {
 					const id = (evt.data as UserDeletedEvent).id
 					await handleOrganizationDeleted(id)

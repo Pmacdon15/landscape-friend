@@ -10,7 +10,7 @@ import ClientListService from '../../../components/ui/service-list/clients-list-
 export default function Page(props: PageProps<'/lists/cutting'>) {
 	const isAdminPromise = isOrgAdmin()
 	const orgMembersPromise = fetchOrgMembers()
-
+	
 	return (
 		<>
 			<FormContainer>
