@@ -6,7 +6,7 @@ import {
 	addClient,
 	deleteClient,
 	deleteSiteMap,
-	updateClient,	
+	updateClient,
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
@@ -286,10 +286,13 @@ export const useAssignGrassCutting = (page?: number) => {
 	})
 }
 //MARK:Mark yard serviced
-export const useMarkYardServiced = (options?: {
-	onSuccess?: () => void
-	onError?: (error: Error) => void
-}) => {
+export const useMarkYardServiced = (
+	addressId: number,
+	options?: {
+		onSuccess?: () => void
+		onError?: (error: Error) => void
+	},
+) => {
 	return useMutation({
 		mutationFn: async ({
 			addressId,
@@ -312,6 +315,7 @@ export const useMarkYardServiced = (options?: {
 			options?.onSuccess?.()
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
+			updateTagAction(`serviced-images-${addressId}`)
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)

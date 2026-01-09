@@ -255,7 +255,7 @@ export async function getServicedImagesUrls(
 	addressId: number,
 ): Promise<{ date: Date; imageurl: string }[]> {
 	'use cache: private'
-
+	cacheTag(`serviced-images-${addressId}`)
 	await auth.protect()
 	try {
 		return await getServicedImagesUrlsDb(addressId)

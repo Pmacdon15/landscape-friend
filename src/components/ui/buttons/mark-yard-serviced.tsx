@@ -16,15 +16,18 @@ export default function MarkYardServiced({
 	serviceDate: Date
 	snow?: boolean
 }) {
-	const { mutate, isError, isPending, error } = useMarkYardServiced({
-		onSuccess: () => {
-			toast.success('Yard marked serviced!', { duration: 1500 })
+	const { mutate, isError, isPending, error } = useMarkYardServiced(
+		addressId,
+		{
+			onSuccess: () => {
+				toast.success('Yard marked serviced!', { duration: 1500 })
+			},
+			onError: (error) => {
+				console.error('Error marking yard serviced', error)
+				toast.error('Error marking yard serviced!', { duration: 1500 })
+			},
 		},
-		onError: (error) => {
-			console.error('Error marking yard serviced', error)
-			toast.error('Error marking yard serviced!', { duration: 1500 })
-		},
-	})
+	)
 	const [images, setImages] = useState<File[]>([])
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
