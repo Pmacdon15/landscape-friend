@@ -208,30 +208,30 @@ export async function deleteSiteMapDB(
 }
 
 //MARK: Update price per cut
-export async function updateClientPricePerDb(
-	data: z.infer<typeof schemaUpdatePricePerMonth>,
-	orgId: string,
-) {
-	const sql = neon(`${process.env.DATABASE_URL}`)
+// export async function updateClientPricePerDb(
+// 	data: z.infer<typeof schemaUpdatePricePerMonth>,
+// 	orgId: string,
+// ) {
+// 	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	//TODO: Confirm this works
-	let setClause: ReturnType<typeof sql> = data.snow
-		? sql`price_per_month_snow = ${data.pricePerMonthSnow} `
-		: sql`price_per_month_grass = ${data.pricePerMonthGrass} `
+// 	//TODO: Confirm this works
+// 	let setClause: ReturnType<typeof sql> = data.snow
+// 		? sql`price_per_month_snow = ${data.pricePerMonthSnow} `
+// 		: sql`price_per_month_grass = ${data.pricePerMonthGrass} `
 
-	if (data.snow) {
-		setClause = sql`price_per_month_snow = ${data.pricePerMonthSnow} `
-	} else {
-		setClause = sql`price_per_month_grass = ${data.pricePerMonthGrass} `
-	}
+// 	if (data.snow) {
+// 		setClause = sql`price_per_month_snow = ${data.pricePerMonthSnow} `
+// 	} else {
+// 		setClause = sql`price_per_month_grass = ${data.pricePerMonthGrass} `
+// 	}
 
-	const result = await sql`
-        UPDATE clients
-        SET ${setClause}
-        WHERE id = ${data.clientId} AND organization_id = ${orgId}
-  `
-	return result
-}
+// 	const result = await sql`
+//         UPDATE clients
+//         SET ${setClause}
+//         WHERE id = ${data.clientId} AND organization_id = ${orgId}
+//   `
+// 	return result
+// }
 
 //MARK: Updated Client Cut Day
 export async function updatedClientCutDayDb(

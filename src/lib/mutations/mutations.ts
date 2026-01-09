@@ -6,8 +6,7 @@ import {
 	addClient,
 	deleteClient,
 	deleteSiteMap,
-	updateClient,
-	updateClientPricePerMonth,
+	updateClient,	
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
@@ -161,13 +160,8 @@ export const useUploadImage = ({
 
 export const useDeleteSiteMap = (page?: number) => {
 	return useMutation({
-		mutationFn: ({			
-			siteMapId,
-		}: {
-			
-			siteMapId: number
-		}) => {
-			return deleteSiteMap( siteMapId)
+		mutationFn: ({ siteMapId }: { siteMapId: number }) => {
+			return deleteSiteMap(siteMapId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -182,7 +176,13 @@ export const useDeleteSiteMap = (page?: number) => {
 // export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
 export const useUploadDrawing = (page?: number) => {
 	return useMutation({
-		mutationFn: ({ file, addressId }: { file: Blob; addressId: number }) => {
+		mutationFn: ({
+			file,
+			addressId,
+		}: {
+			file: Blob
+			addressId: number
+		}) => {
 			return uploadDrawing(file, addressId)
 		},
 		onSuccess: () => {
@@ -198,25 +198,25 @@ export const useUploadDrawing = (page?: number) => {
 	})
 }
 
-//MARK:Update client price per cut
-export const useUpdateClientPricePer = () => {
-	return useMutation({
-		mutationFn: ({
-			clientId,
-			pricePerMonthGrass,
-			snow = false,
-		}: {
-			clientId: number
-			pricePerMonthGrass: number
-			snow: boolean
-		}) => {
-			return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow)
-		},
-		onError: (error) => {
-			console.error('Mutation error:', error)
-		},
-	})
-}
+// //MARK:Update client price per cut
+// export const useUpdateClientPricePer = () => {
+// 	return useMutation({
+// 		mutationFn: ({
+// 			clientId,
+// 			pricePerMonthGrass,
+// 			snow = false,
+// 		}: {
+// 			clientId: number
+// 			pricePerMonthGrass: number
+// 			snow: boolean
+// 		}) => {
+// 			return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow)
+// 		},
+// 		onError: (error) => {
+// 			console.error('Mutation error:', error)
+// 		},
+// 	})
+// }
 
 //MARK:Update cutting day
 export const useUpdateCuttingDay = (page?: number) => {

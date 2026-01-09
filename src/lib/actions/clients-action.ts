@@ -5,7 +5,6 @@ import {
 	countClientsByOrgId,
 	deleteClientDB,
 	deleteSiteMapDB,
-	updateClientPricePerDb,
 	updatedClientCutDayDb,
 } from '@/lib/DB/clients-db'
 import { getOrganizationSettings } from '@/lib/DB/org-db'
@@ -14,7 +13,6 @@ import {
 	schemaDeleteClient,
 	schemaDeleteSiteMap,
 	schemaUpdateCuttingDay,
-	schemaUpdatePricePerMonth,
 } from '@/lib/zod/schemas'
 import { triggerNotificationSendToAdmin } from '../utils/novu'
 import {
@@ -162,36 +160,36 @@ export async function deleteClient(clientId: number) {
 	}
 }
 
-export async function updateClientPricePerMonth(
-	clientId: number,
-	price: number,
-	snow: boolean,
-) {
-	const { isAdmin, orgId, userId } = await isOrgAdmin()
-	if (!isAdmin) throw new Error('Not Admin')
-	if (!userId) throw new Error('User ID is missing.')
+// export async function updateClientPricePerMonth(
+// 	clientId: number,
+// 	price: number,
+// 	snow: boolean,
+// ) {
+// 	const { isAdmin, orgId, userId } = await isOrgAdmin()
+// 	if (!isAdmin) throw new Error('Not Admin')
+// 	if (!userId) throw new Error('User ID is missing.')
 
-	const validatedFields = schemaUpdatePricePerMonth.safeParse({
-		clientId: clientId,
-		pricePerMonthGrass: snow ? undefined : price,
-		pricePerMonthSnow: snow ? price : undefined,
-		snow: snow,
-	})
+// 	const validatedFields = schemaUpdatePricePerMonth.safeParse({
+// 		clientId: clientId,
+// 		pricePerMonthGrass: snow ? undefined : price,
+// 		pricePerMonthSnow: snow ? price : undefined,
+// 		snow: snow,
+// 	})
 
-	if (!validatedFields.success) throw new Error('Invalid input data')
+// 	if (!validatedFields.success) throw new Error('Invalid input data')
 
-	try {
-		const result = await updateClientPricePerDb(
-			validatedFields.data,
-			orgId || String(userId),
-		)
-		if (!result) throw new Error('Failed to update Client price per')
-		return result
-	} catch (e: unknown) {
-		const errorMessage = e instanceof Error ? e.message : String(e)
-		throw new Error(errorMessage)
-	}
-}
+// 	try {
+// 		const result = await updateClientPricePerDb(
+// 			validatedFields.data,
+// 			orgId || String(userId),
+// 		)
+// 		if (!result) throw new Error('Failed to update Client price per')
+// 		return result
+// 	} catch (e: unknown) {
+// 		const errorMessage = e instanceof Error ? e.message : String(e)
+// 		throw new Error(errorMessage)
+// 	}
+// }
 
 export async function updateCuttingDay(
 	addressId: number,
