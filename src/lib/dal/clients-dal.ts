@@ -254,6 +254,8 @@ export async function fetchClientNamesByStripeIds(
 export async function getServicedImagesUrls(
 	addressId: number,
 ): Promise<{ date: Date; imageurl: string }[]> {
+	'use cache: private'
+
 	await auth.protect()
 	try {
 		return await getServicedImagesUrlsDb(addressId)
