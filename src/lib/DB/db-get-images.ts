@@ -17,6 +17,7 @@ export async function getServicedImagesUrlsDb(
     `) as { date: Date; imageurl: string }[]
 
 		console.log('Serviced images for address:', addressId, result)
+		if (result.length < 1) return []
 		return result
 	} catch (error) {
 		console.error('Error in getting Serviced Images Urls:', error)
