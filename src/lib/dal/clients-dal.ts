@@ -117,7 +117,15 @@ export async function fetchCuttingClients(
 	cuttingDate?: Date | undefined,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ScheduledClient[] | { errorMessage: string }> {
+): Promise<
+	| {
+			clientsSchedules: ScheduledClient[]
+			siteMaps: ClientSiteMapImages[]
+	  }
+	| {
+			errorMessage: string
+	  }
+> {
 	'use cache: private'
 	cacheTag('grass-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
@@ -139,7 +147,7 @@ export async function fetchCuttingClients(
 		if (!assignedTo)
 			return { errorMessage: 'Can not search with no one assigned.' }
 
-		const result = await fetchClientsCuttingSchedules(
+		const clientsSchedules = await fetchClientsCuttingSchedules(
 			orgId || userId,
 			searchTerm,
 			cuttingDate || new Date(),
@@ -147,7 +155,10 @@ export async function fetchCuttingClients(
 			assignedTo,
 		)
 
-		return result
+		const clientIds = clientsSchedules.map((client) => client.id)
+		const siteMaps = await fetchClientSiteMapImages(clientIds)
+
+		return { clientsSchedules, siteMaps }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)
