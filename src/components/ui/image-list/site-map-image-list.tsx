@@ -20,12 +20,13 @@ export default function SiteMapImageList({
 	isAdminPromise: Promise<{ isAdmin: boolean }>
 	siteMaps: ClientSiteMapImages[]
 }) {
-	const isAdmin = use(isAdminPromise)	
+	const isAdmin = use(isAdminPromise)
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
 	const addressSiteMaps = siteMaps.filter(
 		(map) => map.address_id === addressId,
 	)
+	
 	return (
 		<div className="flex w-full flex-col">
 			<button

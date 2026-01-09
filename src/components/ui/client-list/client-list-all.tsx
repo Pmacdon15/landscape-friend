@@ -42,7 +42,7 @@ export default async function ClientListAll({
 			</ContentContainer>
 		)
 
-	// console.log('schedules:', schedules)
+	console.log('siteMaps:', siteMaps)
 
 	return (
 		<>
@@ -76,6 +76,7 @@ export default async function ClientListAll({
 							.map((a) => a.id)
 							.includes(siteMap.address_id),
 					)
+					// console.log('clientSiteMap: ', clientSiteMaps)
 
 					return (
 						<FormContainer key={client.id}>
