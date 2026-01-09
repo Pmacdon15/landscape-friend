@@ -15,9 +15,9 @@ export default function ImageUploader({
 		<form className="w-[45%]">
 			<label
 				className="flex w-full cursor-pointer flex-col gap-2"
-				htmlFor="image-upload"
+				htmlFor={`image-upload-${addressId}`}
 			>
-				<ImageUploadInput />
+				<ImageUploadInput addressId={addressId} />
 				<Suspense>
 					<UploadImageButton
 						addressId={addressId}

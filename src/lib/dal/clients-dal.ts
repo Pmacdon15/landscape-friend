@@ -159,7 +159,15 @@ export async function fetchSnowClearingClients(
 	clearingDate?: Date,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ScheduledClient[] | { errorMessage: string }> {
+): Promise<
+	| {
+			clientsSchedules: ScheduledClient[]
+			siteMaps: ClientSiteMapImages[]
+	  }
+	| {
+			errorMessage: string
+	  }
+> {
 	'use cache: private'
 	cacheTag('snow-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
@@ -175,7 +183,7 @@ export async function fetchSnowClearingClients(
 	}
 
 	try {
-		const result = await fetchClientsClearingGroupsDb(
+		const clientsSchedules = await fetchClientsClearingGroupsDb(
 			orgId || userId,
 			searchTerm,
 			clearingDate || new Date(),
@@ -184,7 +192,12 @@ export async function fetchSnowClearingClients(
 			searchTermAssignedTo,
 		)
 
-		return result
+		// let clientIds
+		// if('errorMessage' in result )throw new Error(" error Fetching from db")
+		const clientIds = clientsSchedules.map((client) => client.id)
+		const siteMaps = await fetchClientSiteMapImages(clientIds)
+
+		return { clientsSchedules, siteMaps }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)

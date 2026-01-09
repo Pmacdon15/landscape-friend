@@ -3,28 +3,29 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Grip } from 'lucide-react'
 import type { ScheduledClient } from '@/types/assignment-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import MarkYardServiced from '../../buttons/mark-yard-serviced'
 import FormContainer from '../../containers/form-container'
 import ClientDetailsCard from './ClientDetailsCard'
 
 interface DraggableClientItemProps {
 	client: ScheduledClient
-	isAdmin: boolean
-	addressId: number
-	searchTermIsServiced: boolean
+	isAdminPromise: Promise<{ isAdmin: boolean }>
+	addressId: number	
 	serviceDate?: Date
 	snow: boolean
-	page: number
+	pagePromise: Promise<number>
+	siteMaps: ClientSiteMapImages[]
 }
 
 export default function DraggableClientItem({
 	client,
-	isAdmin,
-	addressId,
-	searchTermIsServiced,
+	isAdminPromise,
+	addressId,	
 	serviceDate,
 	snow,
-	page,
+	pagePromise,
+	siteMaps,
 }: DraggableClientItemProps) {
 	const {
 		attributes,
@@ -33,7 +34,9 @@ export default function DraggableClientItem({
 		transform,
 		transition,
 		isDragging,
-	} = useSortable({ id: `${client.id}-${client.address}` })
+	} = useSortable({
+		id: `${client.id}-${client.address}`,
+	})
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
@@ -63,11 +66,10 @@ export default function DraggableClientItem({
 					<div className="flex-1">
 						<ClientDetailsCard
 							client={client}
-							isAdmin={isAdmin}
-							page={page}
-							searchTermIsServiced={searchTermIsServiced}
+							isAdminPromise={isAdminPromise}
+							pagePromise={pagePromise}							
 							serviceDate={serviceDate}
-							snow={snow}
+							siteMaps={siteMaps}							
 						/>
 					</div>
 				</div>

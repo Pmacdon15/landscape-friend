@@ -20,8 +20,7 @@ export const schemaDeleteClient = z.object({
 	client_id: z.number(),
 })
 
-export const schemaDeleteSiteMap = z.object({
-	client_id: z.number(),
+export const schemaDeleteSiteMap = z.object({	
 	siteMap_id: z.number(),
 })
 

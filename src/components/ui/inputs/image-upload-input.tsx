@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useState } from 'react'
 
-export default function ImageUploadInput() {
+export default function ImageUploadInput({ addressId }: { addressId: number }) {
 	const fileInputRef = useRef<HTMLInputElement>(null)
 	const [file, setFile] = useState<File | null>(null)
 	const [captionButtonImage, setCaptionButtonImage] = useState('Select Image')
@@ -22,7 +22,7 @@ export default function ImageUploadInput() {
 			<input
 				accept="image/*"
 				className="hidden"
-				id="image-upload"
+				id={`image-upload-${addressId}`}
 				name="image"
 				onChange={handleFileChange}
 				ref={fileInputRef}

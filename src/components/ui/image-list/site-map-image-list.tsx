@@ -23,10 +23,7 @@ export default function SiteMapImageList({
 	const isAdmin = use(isAdminPromise)
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
-	const addressSiteMaps = siteMaps.filter(
-		(map) => map.address_id === addressId,
-	)
-	
+	console.log('SiteMaps: ', siteMaps)
 	return (
 		<div className="flex w-full flex-col">
 			<button
@@ -38,28 +35,28 @@ export default function SiteMapImageList({
 				{showSiteMap ? 'Hide site map' : 'Show site map'}
 			</button>
 			<Activity mode={showSiteMap ? 'visible' : 'hidden'}>
+				{view === 'list' && siteMaps.length < 1 && (
+					<AddSiteMap
+						addressId={addressId}
+						pagePromise={pagePromise}
+						setView={setView}
+					/>
+				)}
+
 				{view === 'map' && (
 					<div className="flex h-75 min-h-75 w-full flex-col gap-y-2 overflow-y-auto rounded-md bg-background p-2">
 						<ImageSelectorMain
-							address={addressSiteMaps[0].address}
+							address={siteMaps[0].address}
 							addressId={addressId}
 							setView={setView}
 						/>
 					</div>
 				)}
-				{view === 'list' &&
-					siteMaps.length === 0 &&
-					isAdmin.isAdmin && (
-						<AddSiteMap
-							addressId={addressId}
-							pagePromise={pagePromise}
-							setView={setView}
-						/>
-					)}
-				{view === 'list' &&
-					siteMaps.length === 0 &&
-					!isAdmin.isAdmin && <NonAdminPlaceHolder />}
-				{view === 'add' && (
+
+				{view === 'list' && siteMaps && !isAdmin.isAdmin && (
+					<NonAdminPlaceHolder />
+				)}
+				{view === 'add' && siteMaps.length > 0 && (
 					<AddSiteMap
 						addressId={addressId}
 						pagePromise={pagePromise}
@@ -71,7 +68,7 @@ export default function SiteMapImageList({
 						isAdmin={isAdmin.isAdmin}
 						pagePromise={pagePromise}
 						setView={setView}
-						siteMaps={addressSiteMaps}
+						siteMaps={siteMaps}
 					/>
 				)}
 			</Activity>

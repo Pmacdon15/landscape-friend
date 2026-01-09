@@ -1,20 +1,23 @@
+import { Suspense } from 'react'
 import type { ScheduledClient } from '@/types/assignment-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
+import SiteMapImageList from '../../image-list/site-map-image-list'
 import ClientAddress from './ClientAddress'
 import ClientName from './ClientName'
 
 interface ClientDetailsCardProps {
 	client: ScheduledClient
-	isAdmin?: boolean
-	searchTermIsServiced: boolean
+	siteMaps: ClientSiteMapImages[]
+	isAdminPromise: Promise<{ isAdmin: boolean }>
 	serviceDate?: Date
-	snow: boolean
-	page: number
+	pagePromise: Promise<number>
 }
 //TODO: clean up this type
 export default function ClientDetailsCard({
 	client,
-	isAdmin,
-	page,
+	siteMaps,
+	isAdminPromise,
+	pagePromise,
 }: ClientDetailsCardProps) {
 	return (
 		<>
@@ -23,10 +26,16 @@ export default function ClientDetailsCard({
 				<ClientAddress address={client.address} />
 			</div>
 
-			{/* //TODO: fix this with new schema */}
-			{/* <div className="mt-2 flex flex-col gap-1 sm:flex-row">
-				<ImageList client={client} isAdmin={isAdmin} page={page} />
-			</div> */}
+			<div className="mt-2 flex flex-col gap-1 sm:flex-row">
+				<Suspense>
+					<SiteMapImageList
+						addressId={client.address_id}
+						isAdminPromise={isAdminPromise}
+						pagePromise={pagePromise}
+						siteMaps={siteMaps}
+					/>
+				</Suspense>
+			</div>
 		</>
 	)
 }

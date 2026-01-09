@@ -222,7 +222,7 @@ export async function updateCuttingDay(
 }
 
 export async function deleteSiteMap(siteMapId: number) {
-	const { orgId, userId } = await isOrgAdmin()
+	const { userId } = await isOrgAdmin()
 	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
 	const validatedFields = schemaDeleteSiteMap.safeParse({
