@@ -76,6 +76,9 @@ export default async function ClientListAll({
 							.map((a) => a.id)
 							.includes(siteMap.address_id),
 					)
+					const account = accounts.find(
+						(acc) => acc.client_id === client.id,
+					)
 					// console.log('clientSiteMap: ', clientSiteMaps)
 
 					return (
@@ -122,7 +125,9 @@ export default async function ClientListAll({
 								<div className="flex flex-col items-center gap-2">
 									<p>
 										Amount owing: $
-										{accounts[index].current_balance}
+										{account
+											? account.current_balance
+											: 0}
 									</p>
 
 									<AddressManagementSection
