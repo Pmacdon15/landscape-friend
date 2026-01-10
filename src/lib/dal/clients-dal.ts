@@ -2,11 +2,9 @@ import { auth } from '@clerk/nextjs/server'
 import { cacheTag } from 'next/cache'
 import {
 	fetchClientListDb,
-	fetchClients,
-	fetchClientsAccounts,
-	fetchClientsAddresses,
 	fetchClientsClearingGroupsDb,
 	fetchClientsCuttingSchedules,
+	fetchClientsTest,
 	fetchStripeCustomerNamesDB,
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
@@ -25,9 +23,7 @@ import type {
 } from '@/types/clients-types'
 import type { ClientCuttingSchedule } from '@/types/schedules-types'
 import type { ClientSiteMapImages } from '@/types/site-maps-types'
-import { fetchClientAssignments } from '../DB/assignment-db'
 import { getServicedImagesUrlsDb } from '../DB/db-get-images'
-import { fetchClientSchedules } from '../DB/schedules-db'
 import { fetchClientSiteMapImages } from '../DB/sitemaps-db'
 
 export async function fetchAllClientsInfo(
@@ -47,33 +43,48 @@ export async function fetchAllClientsInfo(
 } | null> {
 	'use cache: private'
 	cacheTag(`clients-page-${clientPageNumber}`)
-	const { orgId, userId } = await isOrgAdmin(true)
-	// if (!isAdmin) throw new Error('Not admin!')
+	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
+	if (!isAdmin) throw new Error('Not admin!')
 
 	if (!userId) throw new Error('Not logged in!')
 	const pageSize = Number(process.env.PAGE_SIZE) || 10
 	const offset = (clientPageNumber - 1) * pageSize
 
 	try {
-		const clients = await fetchClients(
+		const allClientsInfo = await fetchClientsTest(
 			orgId || userId,
-			pageSize,
-			offset,
-			searchTerm,
-			searchTermCuttingWeek,
-			searchTermCuttingDay,
-			searchTermAssignedTo,
+			// pageSize,
+			// offset,
+			// searchTerm,
+			// searchTermCuttingWeek,
+			// searchTermCuttingDay,
+			// searchTermAssignedTo,
 		)
 
-		const clientIds = clients.map((client) => client.id)
-		const [accounts, addresses, assignments, schedules, siteMaps] =
-			await Promise.all([
-				fetchClientsAccounts(clientIds),
-				fetchClientsAddresses(clientIds),
-				fetchClientAssignments(clientIds),
-				fetchClientSchedules(clientIds),
-				fetchClientSiteMapImages(clientIds),
-			])
+		// const clientIds = clients.map((client) => client.id)
+		// const [accounts, addresses, assignments, schedules, siteMaps] =
+		// 	await Promise.all([
+		// 		fetchClientsAccounts(clientIds),
+		// 		fetchClientsAddresses(clientIds),
+		// 		fetchClientAssignments(clientIds),
+		// 		fetchClientSchedules(clientIds),
+		// 		fetchClientSiteMapImages(clientIds),
+		// 	])
+
+		if (!allClientsInfo) {
+			console.error('Failed to fetch clients')
+			return null
+		}
+
+		const {
+			clients,
+			accounts,
+			addresses,
+			assignments,
+			schedules,
+			siteMaps,
+			totalPages,
+		} = allClientsInfo
 
 		return {
 			clients,
@@ -82,7 +93,7 @@ export async function fetchAllClientsInfo(
 			assignments,
 			schedules,
 			siteMaps,
-			totalPages: 1,
+			totalPages,
 		}
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)

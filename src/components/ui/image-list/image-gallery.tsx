@@ -31,7 +31,7 @@ export default function ImageGallery({
 
 			<div className="flex h-full flex-wrap items-center justify-center align-middle">
 				{siteMaps.map((siteMap, index) => (
-					<div className="relative" key={siteMap.imageurl}>
+					<div className="relative" key={`${siteMap.imageurl}-${index}`}>
 						<Suspense>
 							<DeleteSiteMapButton
 								pagePromise={pagePromise}

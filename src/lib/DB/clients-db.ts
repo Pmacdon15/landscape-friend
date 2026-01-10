@@ -6,9 +6,11 @@ import type {
 	schemaDeleteSiteMap,
 	schemaMarkYardCut,
 	schemaUpdateCuttingDay,
-	schemaUpdatePricePerMonth,
 } from '@/lib/zod/schemas'
-import type { ScheduledClient } from '@/types/assignment-types'
+import type {
+	ClientAssignment,
+	ScheduledClient,
+} from '@/types/assignment-types'
 import type { BlobUrl } from '@/types/blob-types'
 import type {
 	Client,
@@ -18,6 +20,8 @@ import type {
 	CustomerName,
 } from '@/types/clients-types'
 import type { NovuSubscriberIds } from '@/types/novu-types'
+import { ClientCuttingSchedule } from '@/types/schedules-types'
+import { ClientSiteMapImages } from '@/types/site-maps-types'
 
 //MARK: Add clients
 export async function addClientDB(
@@ -207,45 +211,13 @@ export async function deleteSiteMapDB(
 	}
 }
 
-//MARK: Update price per cut
-// export async function updateClientPricePerDb(
-// 	data: z.infer<typeof schemaUpdatePricePerMonth>,
-// 	orgId: string,
-// ) {
-// 	const sql = neon(`${process.env.DATABASE_URL}`)
-
-// 	//TODO: Confirm this works
-// 	let setClause: ReturnType<typeof sql> = data.snow
-// 		? sql`price_per_month_snow = ${data.pricePerMonthSnow} `
-// 		: sql`price_per_month_grass = ${data.pricePerMonthGrass} `
-
-// 	if (data.snow) {
-// 		setClause = sql`price_per_month_snow = ${data.pricePerMonthSnow} `
-// 	} else {
-// 		setClause = sql`price_per_month_grass = ${data.pricePerMonthGrass} `
-// 	}
-
-// 	const result = await sql`
-//         UPDATE clients
-//         SET ${setClause}
-//         WHERE id = ${data.clientId} AND organization_id = ${orgId}
-//   `
-// 	return result
-// }
-
 //MARK: Updated Client Cut Day
 export async function updatedClientCutDayDb(
 	data: z.infer<typeof schemaUpdateCuttingDay>,
 	// orgId: string,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
-	// const clientCheck = await sql`
-	//       SELECT id FROM clients
-	//       WHERE clients.id = ${data.clientId} AND clients.organization_id = ${orgId}
-	// `;
-	// if (!clientCheck || clientCheck.length === 0) {
-	//   throw new Error("Client not found or orgId mismatch");
-	// }
+
 	const result = await sql`
         INSERT INTO cutting_schedule(address_id, cutting_week, cutting_day)
 		VALUES(${data.addressId}, ${data.cuttingWeek}, ${data.updatedDay})
@@ -346,7 +318,94 @@ export async function fetchClientsClearingGroupsDb(
 	const clientsResult = await baseQuery
 	return clientsResult as ScheduledClient[]
 }
+export async function fetchClientsTest(orgId: string): Promise<{
+	clients: Client[]
+	addresses: ClientAddress[]
+	accounts: ClientAccount[]
+	assignments: ClientAssignment[]
+	schedules: ClientCuttingSchedule[]
+	siteMaps: ClientSiteMapImages[]
+	totalPages: number
+} | null> {
+	const sql = neon(process.env.DATABASE_URL as string)
+	const results = (await sql`
+			SELECT
+				c.*,
+				(SELECT json_agg(acc) FROM accounts acc WHERE acc.client_id = c.id) as accounts,
+				(SELECT json_agg(ca) FROM client_addresses ca WHERE ca.client_id = c.id) as addresses,
+				(
+					SELECT json_agg(a)
+					FROM assignments a
+					INNER JOIN client_addresses ca ON a.address_id = ca.id
+					WHERE ca.client_id = c.id
+				) as assignments,
+				(
+					SELECT json_agg(cs)
+					FROM cutting_schedule cs
+					INNER JOIN client_addresses ca ON cs.address_id = ca.id
+					WHERE ca.client_id = c.id
+				) as schedules,
+				(
+					SELECT json_agg(
+						json_build_object(
+							'id', i.id,
+							'address_id', i.address_id,
+							'address', ca.address,
+							'imageURL', i.imageURL,
+							'isActive', i.isActive,
+							'client_id', ca.client_id
+						)
+					)
+					FROM images i
+					INNER JOIN client_addresses ca ON i.address_id = ca.id
+					WHERE ca.client_id = c.id
+				) as "siteMaps"
+			FROM
+				clients c
+			WHERE
+				c.organization_id = ${orgId};
+		`) as (Client & {
+		accounts: ClientAccount[] | null
+		addresses: ClientAddress[] | null
+		assignments: ClientAssignment[] | null
+		schedules: ClientCuttingSchedule[] | null
+		siteMaps: ClientSiteMapImages[] | null
+	})[]
 
+	const clients: Client[] = []
+	const accounts: ClientAccount[] = []
+	const addresses: ClientAddress[] = []
+	const assignments: ClientAssignment[] = []
+	const schedules: ClientCuttingSchedule[] = []
+	const siteMaps: ClientSiteMapImages[] = []
+
+	for (const row of results) {
+		const {
+			accounts: accs,
+			addresses: addrs,
+			assignments: asgns,
+			schedules: scheds,
+			siteMaps: sms,
+			...clientData
+		} = row
+		clients.push(clientData as Client)
+		if (accs) accounts.push(...accs)
+		if (addrs) addresses.push(...addrs)
+		if (asgns) assignments.push(...asgns)
+		if (scheds) schedules.push(...scheds)
+		if (sms) siteMaps.push(...sms)
+	}
+
+	return {
+		clients,
+		accounts,
+		addresses,
+		assignments,
+		schedules,
+		siteMaps,
+		totalPages: 1,
+	}
+}
 export async function fetchClients(
 	orgId: string,
 	_pageSize: number,
