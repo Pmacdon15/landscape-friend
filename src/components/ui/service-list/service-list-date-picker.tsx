@@ -1,11 +1,16 @@
 'use client'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
-import { useServiceDateSearch } from '@/lib/hooks/hooks'
 
 export const ServiceListDatePicker = () => {
-	const { currentServiceDate, setServiceDate } = useServiceDateSearch()
+	const router = useRouter()
+	const searchParams = useSearchParams()
+
+	const date =
+		searchParams.get('date') ||
+		`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
 
 	// Parse currentServiceDate as a local date
 	const parseLocalDate = (dateStr: string) => {
@@ -19,9 +24,11 @@ export const ServiceListDatePicker = () => {
 		if (date) {
 			// Format as local YYYY-MM-DD
 			const localDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-			setServiceDate(localDateStr)
-		} else {
-			setServiceDate('') // Clear the date if null is passed
+			if (localDateStr) {
+				router.push(`?date=${encodeURIComponent(localDateStr)}`)
+			} else {
+				router.push(`?`)
+			}
 		}
 	}
 
@@ -35,6 +42,7 @@ export const ServiceListDatePicker = () => {
 		)
 	}
 
+	
 	return (
 		<Suspense>
 			<DatePicker
@@ -51,7 +59,7 @@ export const ServiceListDatePicker = () => {
 				}}
 				onChange={handleDateChange}
 				portalId="root-portal"
-				selected={parseLocalDate(currentServiceDate)}
+				selected={date ? parseLocalDate(date) : null}
 				withPortal
 				wrapperClassName="custom-datepicker-wrapper"
 			/>

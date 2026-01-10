@@ -1,5 +1,4 @@
 'use client'
-import { useDebouncedCallback } from '@tanstack/react-pacer/debouncer'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { days, weeks } from '@/lib/values'
 import {
@@ -28,20 +27,15 @@ export function CuttingPeriodSelector({
 
 	const router = useRouter()
 	const searchParams = useSearchParams()
+	const dayOrWeekSearchParam = searchParams.get(`${variant}`) || ''
 
-	const search = searchParams.get('search')
-
-	const updateAssignedTo = useDebouncedCallback(
-		(next: string) => {
-			if (next && next !== 'assigned_to') {
-				router.push(`?assigned_to=${encodeURIComponent(next)}`)
-			} else {
-				router.push(`?`)
-			}
-		},
-		{ wait: 1000 },
-	)
-	
+	function handleChange(value: string) {
+		if (value && value !== 'assigned_to') {
+			router.push(`?${variant}=${encodeURIComponent(value)}`)
+		} else {
+			router.push(`?`)
+		}
+	}
 
 	return (
 		<div className="flex gap-1">
@@ -49,10 +43,10 @@ export function CuttingPeriodSelector({
 				{label}{' '}
 			</label>
 			<Select
-				defaultValue={search || 'all'}
+				defaultValue={dayOrWeekSearchParam || 'all'}
 				name={variant}
 				// value={optimisticPeriod || 'all'}
-				onValueChange={updateAssignedTo}
+				onValueChange={handleChange}
 			>
 				<SelectTrigger>
 					<SelectValue placeholder="All" />

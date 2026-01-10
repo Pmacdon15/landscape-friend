@@ -31,7 +31,7 @@ export default async function SearchForm({
 					<AssignedToSelector orgMembersPromise={orgMembersPromise} />
 				</Suspense>
 			)}
-			{/*
+			
 			{variant === 'default' && (
 				<>
 					<CuttingPeriodSelector variant="week" />
@@ -55,7 +55,7 @@ export default async function SearchForm({
 			{variant === 'quotes' && <BillingStatusSelector variant="quotes" />}
 			{variant === 'subscriptions' && (
 				<BillingStatusSelector variant="subscriptions" />
-			)} */}
+			)}
 		</div>
 	)
 }
