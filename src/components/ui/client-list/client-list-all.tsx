@@ -141,7 +141,7 @@ export default async function ClientListAll({
 									/>
 								</div>
 
-								<div className="flex flex-col gap-2 mt-2">
+								<div className="mt-2 flex flex-col gap-2">
 									<Suspense>
 										<EditClientFormContainer
 											addresses={editAddresses}

@@ -1,6 +1,5 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import type { MaterialField } from '@/types/components-types'
 import type { Location } from '@/types/google-map-iframe-types'
 // import { fetchGeocode } from '../actions/geo-codes-action'
 
@@ -89,6 +88,8 @@ export function useGetLocation(): { userLocation: Location | '' } {
 
 	return { userLocation }
 }
+
+
 
 // export function useGetLonAndLatFromAddresses(addresses: string[]): {
 // 	loading: boolean

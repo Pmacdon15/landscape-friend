@@ -1,5 +1,6 @@
 'use client'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useSearch } from '@/lib/hooks/use-search'
 import {
 	Select,
 	SelectContent,
@@ -10,17 +11,13 @@ import {
 } from '../select'
 
 export const ServiceStatusSelector = () => {
-	const router = useRouter()
 	const searchParams = useSearchParams()
+	const { updateSearchParams } = useSearch()
 
 	const currentServiceStatus = searchParams.get('serviced') || 'false'
 
 	function handleChange(next: string) {
-		if (next) {
-			router.push(`?serviced=${encodeURIComponent(next)}`)
-		} else {
-			router.push(`?`)
-		}
+		updateSearchParams('serviced', next)
 	}
 
 	return (

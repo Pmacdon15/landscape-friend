@@ -1,5 +1,6 @@
 'use client'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useSearch } from '@/lib/hooks/use-search'
 import { days, weeks } from '@/lib/values'
 import {
 	Select,
@@ -25,16 +26,12 @@ export function CuttingPeriodSelector({
 	const label = variant === 'week' ? 'Cutting Week' : 'Cutting Day'
 	const options = variant === 'week' ? weeks : days
 
-	const router = useRouter()
 	const searchParams = useSearchParams()
+	const { updateSearchParams } = useSearch()
 	const dayOrWeekSearchParam = searchParams.get(`${variant}`) || ''
 
 	function handleChange(value: string) {
-		if (value && value !== 'assigned_to') {
-			router.push(`?${variant}=${encodeURIComponent(value)}`)
-		} else {
-			router.push(`?`)
-		}
+		updateSearchParams(variant, value)
 	}
 
 	return (

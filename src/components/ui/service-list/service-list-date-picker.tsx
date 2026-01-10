@@ -1,12 +1,13 @@
 'use client'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
+import { useSearch } from '@/lib/hooks/use-search'
 
 export const ServiceListDatePicker = () => {
-	const router = useRouter()
 	const searchParams = useSearchParams()
+	const { updateSearchParams } = useSearch()
 
 	const date =
 		searchParams.get('date') ||
@@ -24,11 +25,7 @@ export const ServiceListDatePicker = () => {
 		if (date) {
 			// Format as local YYYY-MM-DD
 			const localDateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-			if (localDateStr) {
-				router.push(`?date=${encodeURIComponent(localDateStr)}`)
-			} else {
-				router.push(`?`)
-			}
+			updateSearchParams('date', localDateStr)
 		}
 	}
 
@@ -42,7 +39,6 @@ export const ServiceListDatePicker = () => {
 		)
 	}
 
-	
 	return (
 		<Suspense>
 			<DatePicker

@@ -1,6 +1,7 @@
 'use client'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { use } from 'react'
+import { useSearch } from '@/lib/hooks/use-search'
 import type { OrgMember } from '@/types/clerk-types'
 import {
 	Select,
@@ -18,15 +19,11 @@ export function AssignedToSelector({
 }) {
 	const orgMembers = orgMembersPromise ? use(orgMembersPromise) : []
 
-	const router = useRouter()
 	const searchParams = useSearchParams()
+	const { updateSearchParams } = useSearch()
 	const assignedTo = searchParams.get('assigned_to') || ''
 	function handleChange(value: string) {
-		if (value && value !== 'assigned_to') {
-			router.push(`?assigned_to=${encodeURIComponent(value)}`)
-		} else {
-			router.push(`?`)
-		}
+		updateSearchParams('assigned_to', value)
 	}
 	return (
 		<div className="flex gap-1">

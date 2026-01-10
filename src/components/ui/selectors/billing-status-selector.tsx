@@ -1,5 +1,6 @@
 'use client'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useSearch } from '@/lib/hooks/use-search'
 import type { VariantBillingStatusSelector } from '@/types/search-fallback-types'
 import {
 	Select,
@@ -15,8 +16,8 @@ export function BillingStatusSelector({
 }: {
 	variant?: VariantBillingStatusSelector
 }) {
-	const router = useRouter()
 	const searchParams = useSearchParams()
+	const { updateSearchParams } = useSearch()
 	const billingStatus = searchParams.get('status') || 'all'
 
 	const statuses =
@@ -27,11 +28,7 @@ export function BillingStatusSelector({
 				: ['active', 'canceled', 'incomplete']
 
 	function handleChange(value: string) {
-		if (value && value !== 'status') {
-			router.push(`?status=${encodeURIComponent(value)}`)
-		} else {
-			router.push(`?`)
-		}
+		updateSearchParams('status', value)
 	}
 
 	return (
