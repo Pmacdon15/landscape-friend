@@ -44,11 +44,11 @@ export default function AddressManagementSection({
 				console.log('clientSiteMaps: ', clientSiteMaps)
 				return (
 					<div
-						className="flex w-full flex-col flex-wrap items-center justify-center gap-4 rounded-sm border p-8 md:w-4/6"
+						className="flex w-full flex-col flex-wrap items-center justify-center gap-2 rounded-sm border p-8 md:w-4/6"
 						key={`${addr.id} + addresses`}
 					>
 						<h1>{addr.address}</h1>
-						<div className="flex flex-wrap gap-4">
+						<div className="flex flex-wrap gap-2">
 							<Suspense fallback={<AssignedToFallback />}>
 								<AssignedTo
 									addressId={addr.id}

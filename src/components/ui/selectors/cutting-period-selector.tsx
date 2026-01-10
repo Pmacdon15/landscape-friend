@@ -1,7 +1,6 @@
 'use client'
-import { useOptimistic, useTransition } from 'react'
-import { useCuttingPeriodSearch } from '@/lib/hooks/hooks'
-
+import { useDebouncedCallback } from '@tanstack/react-pacer/debouncer'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { days, weeks } from '@/lib/values'
 import {
 	Select,
@@ -17,22 +16,32 @@ export function CuttingPeriodSelector({
 }: {
 	variant: 'week' | 'day'
 }) {
-	const { currentPeriod, setCuttingPeriod } = useCuttingPeriodSearch(variant)
-	const [optimisticPeriod, setOptimisticPeriod] = useOptimistic(
-		currentPeriod,
-		(_, newPeriod: string) => newPeriod,
-	)
-	const [, startTransition] = useTransition()
+	// const { currentPeriod, setCuttingPeriod } = useCuttingPeriodSearch(variant)
+	// const [optimisticPeriod, setOptimisticPeriod] = useOptimistic(
+	// 	currentPeriod,
+	// 	(_, newPeriod: string) => newPeriod,
+	// )
+	// const [, startTransition] = useTransition()
 
 	const label = variant === 'week' ? 'Cutting Week' : 'Cutting Day'
 	const options = variant === 'week' ? weeks : days
 
-	function handleChange(value: string) {
-		startTransition(() => {
-			setOptimisticPeriod(value === 'all' ? '' : value)
-			setCuttingPeriod(value === 'all' ? '' : value)
-		})
-	}
+	const router = useRouter()
+	const searchParams = useSearchParams()
+
+	const search = searchParams.get('search')
+
+	const updateAssignedTo = useDebouncedCallback(
+		(next: string) => {
+			if (next && next !== 'assigned_to') {
+				router.push(`?assigned_to=${encodeURIComponent(next)}`)
+			} else {
+				router.push(`?`)
+			}
+		},
+		{ wait: 1000 },
+	)
+	
 
 	return (
 		<div className="flex gap-1">
@@ -40,9 +49,10 @@ export function CuttingPeriodSelector({
 				{label}{' '}
 			</label>
 			<Select
+				defaultValue={search || 'all'}
 				name={variant}
-				onValueChange={handleChange}
-				value={optimisticPeriod || 'all'}
+				// value={optimisticPeriod || 'all'}
+				onValueChange={updateAssignedTo}
 			>
 				<SelectTrigger>
 					<SelectValue placeholder="All" />

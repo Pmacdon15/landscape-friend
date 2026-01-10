@@ -1,7 +1,5 @@
 import { useRouter, useSearchParams } from 'next/navigation'
-import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import type { UseFormReset } from 'react-hook-form'
 import type { MaterialField } from '@/types/components-types'
 import type { Location } from '@/types/google-map-iframe-types'
 // import { fetchGeocode } from '../actions/geo-codes-action'
@@ -147,158 +145,158 @@ export function useGetLocation(): { userLocation: Location | '' } {
 // 	return { loading, geocodeResults }
 // }
 
-export function useMediaQuery(query: string) {
-	const [matches, setMatches] = useState(false)
+// export function useMediaQuery(query: string) {
+// 	const [matches, setMatches] = useState(false)
 
-	useEffect(() => {
-		const mediaQuery = window.matchMedia(query)
-		const handleChange = () => setMatches(mediaQuery.matches)
-		mediaQuery.addEventListener('change', handleChange)
-		setMatches(mediaQuery.matches)
+// 	useEffect(() => {
+// 		const mediaQuery = window.matchMedia(query)
+// 		const handleChange = () => setMatches(mediaQuery.matches)
+// 		mediaQuery.addEventListener('change', handleChange)
+// 		setMatches(mediaQuery.matches)
 
-		return () => {
-			mediaQuery.removeEventListener('change', handleChange)
-		}
-	}, [query])
+// 		return () => {
+// 			mediaQuery.removeEventListener('change', handleChange)
+// 		}
+// 	}, [query])
 
-	return matches
-}
+// 	return matches
+// }
 
-export function useBillingStatusSearch() {
-	const router = useRouter()
-	const searchParams = useSearchParams()
-	const currentStatus = searchParams.get('status') || 'all'
+// export function useBillingStatusSearch() {
+// 	const router = useRouter()
+// 	const searchParams = useSearchParams()
+// 	const currentStatus = searchParams.get('status') || 'all'
 
-	const setBillingStatus = (status: string) => {
-		const params = new URLSearchParams(searchParams.toString())
-		if (status && status !== 'all') {
-			params.set('status', status)
-		} else {
-			params.delete('status')
-		}
-		params.set('page', '1')
-		router.replace(`?${params.toString()}`, { scroll: false })
-	}
+// 	const setBillingStatus = (status: string) => {
+// 		const params = new URLSearchParams(searchParams.toString())
+// 		if (status && status !== 'all') {
+// 			params.set('status', status)
+// 		} else {
+// 			params.delete('status')
+// 		}
+// 		params.set('page', '1')
+// 		router.replace(`?${params.toString()}`, { scroll: false })
+// 	}
 
-	return { currentStatus, setBillingStatus }
-}
+// 	return { currentStatus, setBillingStatus }
+// }
 
-export function useSearchParam(paramName: string, defaultValue: string = '') {
-	const router = useRouter()
-	const searchParams = useSearchParams()
-	const currentValue = searchParams.get(paramName) || defaultValue
+// export function useSearchParam(paramName: string, defaultValue: string = '') {
+// 	const router = useRouter()
+// 	const searchParams = useSearchParams()
+// 	const currentValue = searchParams.get(paramName) || defaultValue
 
-	const setParam = (value: string) => {
-		const params = new URLSearchParams(searchParams.toString())
-		if (value && value !== defaultValue) {
-			params.set(paramName, value)
-		} else {
-			params.delete(paramName)
-		}
-		params.set('page', '1')
-		router.replace(`?${params.toString()}`, { scroll: false })
-	}
+// 	const setParam = (value: string) => {
+// 		const params = new URLSearchParams(searchParams.toString())
+// 		if (value && value !== defaultValue) {
+// 			params.set(paramName, value)
+// 		} else {
+// 			params.delete(paramName)
+// 		}
+// 		params.set('page', '1')
+// 		router.replace(`?${params.toString()}`, { scroll: false })
+// 	}
 
-	return { currentValue, setParam }
-}
+// 	return { currentValue, setParam }
+// }
 
-export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
-	const { currentValue: currentPeriod, setParam: setCuttingPeriod } =
-		useSearchParam(paramName, '')
-	return { currentPeriod, setCuttingPeriod }
-}
+// export function useCuttingPeriodSearch(paramName: 'week' | 'day') {
+// 	const { currentValue: currentPeriod, setParam: setCuttingPeriod } =
+// 		useSearchParam(paramName, '')
+// 	return { currentPeriod, setCuttingPeriod }
+// }
 
-export function useServiceDateSearch() {
-	const today = new Date().toISOString().slice(0, 10)
-	const { currentValue: rawValue, setParam: setServiceDate } = useSearchParam(
-		'date',
-		'',
-	)
-	const currentServiceDate = rawValue || today
-	return { currentServiceDate, setServiceDate }
-}
+// export function useServiceDateSearch() {
+// 	const today = new Date().toISOString().slice(0, 10)
+// 	const { currentValue: rawValue, setParam: setServiceDate } = useSearchParam(
+// 		'date',
+// 		'',
+// 	)
+// 	const currentServiceDate = rawValue || today
+// 	return { currentServiceDate, setServiceDate }
+// }
 
-export function useServiceStatusSearch() {
-	const { currentValue: currentServiceStatus, setParam: setServiceStatus } =
-		useSearchParam('serviced', '')
-	return { currentServiceStatus, setServiceStatus }
-}
+// export function useServiceStatusSearch() {
+// 	const { currentValue: currentServiceStatus, setParam: setServiceStatus } =
+// 		useSearchParam('serviced', '')
+// 	return { currentServiceStatus, setServiceStatus }
+// }
 
-export function useSearchInput(delay: number = 600) {
-	const router = useRouter()
-	const searchParams = useSearchParams()
-	const urlSearchTerm = searchParams.get('search') || ''
+// export function useSearchInput(delay: number = 600) {
+// 	const router = useRouter()
+// 	const searchParams = useSearchParams()
+// 	const urlSearchTerm = searchParams.get('search') || ''
 
-	const [searchTerm, setSearchTerm] = useState(urlSearchTerm)
+// 	const [searchTerm, setSearchTerm] = useState(urlSearchTerm)
 
-	useEffect(() => {
-		setSearchTerm(urlSearchTerm)
-	}, [urlSearchTerm])
+// 	useEffect(() => {
+// 		setSearchTerm(urlSearchTerm)
+// 	}, [urlSearchTerm])
 
-	useEffect(() => {
-		const handler = setTimeout(() => {
-			if (searchTerm !== urlSearchTerm) {
-				const params = new URLSearchParams(searchParams.toString())
-				if (searchTerm) {
-					params.set('search', searchTerm)
-				} else {
-					params.delete('search')
-				}
-				router.replace(`?${params.toString()}`, { scroll: false })
-			}
-		}, delay)
+// 	useEffect(() => {
+// 		const handler = setTimeout(() => {
+// 			if (searchTerm !== urlSearchTerm) {
+// 				const params = new URLSearchParams(searchParams.toString())
+// 				if (searchTerm) {
+// 					params.set('search', searchTerm)
+// 				} else {
+// 					params.delete('search')
+// 				}
+// 				router.replace(`?${params.toString()}`, { scroll: false })
+// 			}
+// 		}, delay)
 
-		return () => {
-			clearTimeout(handler)
-		}
-	}, [searchTerm, urlSearchTerm, delay, router, searchParams])
+// 		return () => {
+// 			clearTimeout(handler)
+// 		}
+// 	}, [searchTerm, urlSearchTerm, delay, router, searchParams])
 
-	return { searchTerm, setSearchTerm }
-}
+// 	return { searchTerm, setSearchTerm }
+// }
 
-export function useCreateQuoteForm({
-	isSuccess,
-	reset,
-	fields,
-	append,
-}: {
-	isSuccess: boolean
-	reset: () => void
-	fields: MaterialField[]
-	append: (material: {
-		materialType: string
-		materialCostPerUnit: number
-		materialUnits: number
-	}) => void
-}) {
-	useEffect(() => {
-		if (isSuccess) {
-			reset()
-		}
-	}, [isSuccess, reset])
+// export function useCreateQuoteForm({
+// 	isSuccess,
+// 	reset,
+// 	fields,
+// 	append,
+// }: {
+// 	isSuccess: boolean
+// 	reset: () => void
+// 	fields: MaterialField[]
+// 	append: (material: {
+// 		materialType: string
+// 		materialCostPerUnit: number
+// 		materialUnits: number
+// 	}) => void
+// }) {
+// 	useEffect(() => {
+// 		if (isSuccess) {
+// 			reset()
+// 		}
+// 	}, [isSuccess, reset])
 
-	useEffect(() => {
-		if (fields.length === 0) {
-			append({
-				materialType: '',
-				materialCostPerUnit: 0,
-				materialUnits: 0,
-			})
-		}
-	}, [fields.length, append])
-}
+// 	useEffect(() => {
+// 		if (fields.length === 0) {
+// 			append({
+// 				materialType: '',
+// 				materialCostPerUnit: 0,
+// 				materialUnits: 0,
+// 			})
+// 		}
+// 	}, [fields.length, append])
+// }
 
-export function useResetFormOnSuccess<T extends object>(
-	isSuccess: boolean,
-	submittedData: React.MutableRefObject<T | null>,
-	reset: UseFormReset<T>,
-) {
-	useEffect(() => {
-		if (isSuccess && submittedData.current) {
-			reset(submittedData.current)
-		}
-	}, [isSuccess, reset, submittedData])
-}
+// export function useResetFormOnSuccess<T extends object>(
+// 	isSuccess: boolean,
+// 	submittedData: React.MutableRefObject<T | null>,
+// 	reset: UseFormReset<T>,
+// ) {
+// 	useEffect(() => {
+// 		if (isSuccess && submittedData.current) {
+// 			reset(submittedData.current)
+// 		}
+// 	}, [isSuccess, reset, submittedData])
+// }
 
 // export const useFetchGeocode = (address: string) => {
 // 	return useQuery({

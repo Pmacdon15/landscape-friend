@@ -2,13 +2,14 @@
 
 import { useDebouncedCallback } from '@tanstack/react-pacer/debouncer'
 import { X } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '../input'
 
 export function SearchInput() {
 	const router = useRouter()
-	const [value, setValue] = useState('')
+	const searchParams = useSearchParams()
+
+	const search = searchParams.get('search')
 
 	const updateSearch = useDebouncedCallback(
 		(next: string) => {
@@ -24,20 +25,19 @@ export function SearchInput() {
 	return (
 		<div className="relative sm:w-1/2 md:w-2/6">
 			<Input
+				defaultValue={search || ''}
 				onChange={(e) => {
 					const v = e.target.value
-					setValue(v)
+					// setValue(v)
 					updateSearch(v)
 				}}
 				placeholder="Search"
-				value={value}
 			/>
 
-			{value && (
+			{search && (
 				<button
 					className="-translate-y-1/2 absolute top-1/2 right-2"
 					onClick={() => {
-						setValue('')
 						updateSearch('')
 					}}
 					type="button"

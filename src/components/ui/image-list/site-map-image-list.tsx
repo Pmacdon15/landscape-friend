@@ -23,7 +23,7 @@ export default function SiteMapImageList({
 	const isAdmin = use(isAdminPromise)
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
-	console.log('SiteMaps: ', siteMaps)
+	// console.log('SiteMaps: ', siteMaps)
 	return (
 		<div className="flex w-full flex-col">
 			<button
