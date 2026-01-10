@@ -1,25 +1,45 @@
 'use client'
 
+import { useDebouncedCallback } from '@tanstack/react-pacer/debouncer'
 import { X } from 'lucide-react'
-import { useSearchInput } from '@/lib/hooks/hooks'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Input } from '../input'
 
 export function SearchInput() {
-	const { searchTerm, setSearchTerm } = useSearchInput()
+	const router = useRouter()
+	const [value, setValue] = useState('')
+
+	const updateSearch = useDebouncedCallback(
+		(next: string) => {
+			if (next) {
+				router.push(`?search=${encodeURIComponent(next)}`)
+			} else {
+				router.push(`?`)
+			}
+		},
+		{ wait: 1000 },
+	)
 
 	return (
 		<div className="relative sm:w-1/2 md:w-2/6">
 			<Input
-				className="w-full p-2 pr-8 focus:outline-none"
-				name="search"
-				onChange={(e) => setSearchTerm(e.target.value)}
+				onChange={(e) => {
+					const v = e.target.value
+					setValue(v)
+					updateSearch(v)
+				}}
 				placeholder="Search"
-				value={searchTerm}
+				value={value}
 			/>
-			{searchTerm && (
+
+			{value && (
 				<button
-					className="-translate-y-1/2 absolute top-1/2 right-2 rounded-sm p-0.5 text-gray-500 hover:border hover:text-gray-700"
-					onClick={() => setSearchTerm('')}
+					className="-translate-y-1/2 absolute top-1/2 right-2"
+					onClick={() => {
+						setValue('')
+						updateSearch('')
+					}}
 					type="button"
 				>
 					<X size={16} />

@@ -60,7 +60,7 @@ export async function fetchAllClientsInfo(
 			searchTermCuttingDay,
 			searchTermAssignedTo,
 		)
-		
+
 		if (!allClientsInfo) {
 			console.error('Failed to fetch clients')
 			return null
