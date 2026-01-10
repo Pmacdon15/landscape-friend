@@ -2,9 +2,9 @@ import { auth } from '@clerk/nextjs/server'
 import { cacheTag } from 'next/cache'
 import {
 	fetchClientListDb,
+	fetchClients,
 	fetchClientsClearingGroupsDb,
 	fetchClientsCuttingSchedules,
-	fetchClientsTest,
 	fetchStripeCustomerNamesDB,
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
@@ -51,7 +51,7 @@ export async function fetchAllClientsInfo(
 	const offset = (clientPageNumber - 1) * pageSize
 
 	try {
-		const allClientsInfo = await fetchClientsTest(
+		const allClientsInfo = await fetchClients(
 			orgId || userId,
 			pageSize,
 			offset,
@@ -60,17 +60,7 @@ export async function fetchAllClientsInfo(
 			searchTermCuttingDay,
 			searchTermAssignedTo,
 		)
-
-		// const clientIds = clients.map((client) => client.id)
-		// const [accounts, addresses, assignments, schedules, siteMaps] =
-		// 	await Promise.all([
-		// 		fetchClientsAccounts(clientIds),
-		// 		fetchClientsAddresses(clientIds),
-		// 		fetchClientAssignments(clientIds),
-		// 		fetchClientSchedules(clientIds),
-		// 		fetchClientSiteMapImages(clientIds),
-		// 	])
-
+		
 		if (!allClientsInfo) {
 			console.error('Failed to fetch clients')
 			return null

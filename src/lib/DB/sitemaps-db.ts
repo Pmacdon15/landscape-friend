@@ -24,4 +24,3 @@ export async function fetchClientSiteMapImages(
 
 	return result as ClientSiteMapImages[]
 }
-

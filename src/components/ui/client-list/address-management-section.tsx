@@ -27,7 +27,7 @@ export default function AddressManagementSection({
 	pagePromise: Promise<number>
 	siteMaps: ClientSiteMapImages[]
 }) {
-	console.log("SiteMaps addressms: ", siteMaps)
+	console.log('SiteMaps addressms: ', siteMaps)
 	return (
 		<>
 			{addresses.map((addr) => {
@@ -41,7 +41,7 @@ export default function AddressManagementSection({
 						client_id: siteMap.client_id,
 						address: siteMap.address,
 					}))
-					console.log('clientSiteMaps: ', clientSiteMaps)
+				console.log('clientSiteMaps: ', clientSiteMaps)
 				return (
 					<div
 						className="flex w-full flex-col flex-wrap items-center justify-center gap-4 rounded-sm border p-8 md:w-4/6"

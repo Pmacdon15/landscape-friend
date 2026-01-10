@@ -11,7 +11,7 @@ import ClientDetailsCard from './ClientDetailsCard'
 interface DraggableClientItemProps {
 	client: ScheduledClient
 	isAdminPromise: Promise<{ isAdmin: boolean }>
-	addressId: number	
+	addressId: number
 	serviceDate?: Date
 	snow: boolean
 	pagePromise: Promise<number>
@@ -21,7 +21,7 @@ interface DraggableClientItemProps {
 export default function DraggableClientItem({
 	client,
 	isAdminPromise,
-	addressId,	
+	addressId,
 	serviceDate,
 	snow,
 	pagePromise,
@@ -67,9 +67,9 @@ export default function DraggableClientItem({
 						<ClientDetailsCard
 							client={client}
 							isAdminPromise={isAdminPromise}
-							pagePromise={pagePromise}							
+							pagePromise={pagePromise}
 							serviceDate={serviceDate}
-							siteMaps={siteMaps}							
+							siteMaps={siteMaps}
 						/>
 					</div>
 				</div>

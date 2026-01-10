@@ -1,4 +1,5 @@
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
+import { revalidateTag } from 'next/cache'
 import type { NextRequest } from 'next/server'
 import {
 	handleOrganizationCreated,
@@ -14,7 +15,6 @@ import type {
 	UserDeletedEvent,
 	WebhookEvent,
 } from '@/types/clerk-types'
-import { revalidateTag } from 'next/cache'
 
 function isSubscriptionItem(
 	data: WebhookEvent['data'],

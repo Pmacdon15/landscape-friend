@@ -20,8 +20,8 @@ import type {
 	CustomerName,
 } from '@/types/clients-types'
 import type { NovuSubscriberIds } from '@/types/novu-types'
-import { ClientCuttingSchedule } from '@/types/schedules-types'
-import { ClientSiteMapImages } from '@/types/site-maps-types'
+import type { ClientCuttingSchedule } from '@/types/schedules-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
 
 //MARK: Add clients
 export async function addClientDB(
@@ -319,14 +319,13 @@ export async function fetchClientsClearingGroupsDb(
 	return clientsResult as ScheduledClient[]
 }
 
-
-export async function fetchClientsTest(
+export async function fetchClients(
 	orgId: string,
 	pageSize: number,
 	offset: number,
 	searchTerm?: string,
 	cuttingWeek?: number,
-	cuttingDay?: number,
+	cuttingDay?: string,
 	assignedTo?: string,
 ): Promise<{
 	clients: Client[]
@@ -476,38 +475,37 @@ export async function fetchClientsTest(
 	}
 }
 
+// export async function fetchClients(
+// 	orgId: string,
+// 	_pageSize: number,
+// 	_offset: number,
+// 	_searchTerm: string,
+// 	_searchTermCuttingWeek: number,
+// 	_searchTermCuttingDay: string,
+// 	_searchTermAssignedTo: string,
+// ) {
+// 	const sql = neon(`${process.env.DATABASE_URL} `)
 
-export async function fetchClients(
-	orgId: string,
-	_pageSize: number,
-	_offset: number,
-	_searchTerm: string,
-	_searchTermCuttingWeek: number,
-	_searchTermCuttingDay: string,
-	_searchTermAssignedTo: string,
-) {
-	const sql = neon(`${process.env.DATABASE_URL} `)
+// 	return (await sql`
 
-	return (await sql`
+//         SELECT * FROM clients WHERE organization_id = ${orgId}
 
-        SELECT * FROM clients WHERE organization_id = ${orgId}
+//   `) as Client[]
+// }
+// //MARK: Fetch client accounts for an array of clients
+// export async function fetchClientsAccounts(
+// 	clientIds: number[],
+// ): Promise<ClientAccount[]> {
+// 	if (clientIds.length === 0) return []
 
-  `) as Client[]
-}
-//MARK: Fetch client accounts for an array of clients
-export async function fetchClientsAccounts(
-	clientIds: number[],
-): Promise<ClientAccount[]> {
-	if (clientIds.length === 0) return []
+// 	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	const sql = neon(`${process.env.DATABASE_URL}`)
-
-	return (await sql`
-		SELECT *
-		FROM accounts
-		WHERE client_id = ANY(${clientIds})
-	`) as ClientAccount[]
-}
+// 	return (await sql`
+// 		SELECT *
+// 		FROM accounts
+// 		WHERE client_id = ANY(${clientIds})
+// 	`) as ClientAccount[]
+// }
 
 //MARK: Fetch client addresses for an array of clients
 export async function fetchClientsAddresses(

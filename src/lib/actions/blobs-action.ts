@@ -28,10 +28,7 @@ export async function uploadImage(
 
 		if (!validatedImage.success) throw new Error('invalid inputs')
 
-		result = await uploadImageBlob(			
-			addressId,
-			validatedImage.data.image,
-		)
+		result = await uploadImageBlob(addressId, validatedImage.data.image)
 		if (result && 'error' in result) {
 			throw new Error(result.error)
 		}
@@ -54,7 +51,7 @@ export async function uploadDrawing(
 	| Error
 	| null
 > {
-	const { isAdmin} = await isOrgAdmin()
+	const { isAdmin } = await isOrgAdmin()
 	if (!isAdmin) return new Error('Not Admin')
 
 	// Check if the file is an image
@@ -79,7 +76,7 @@ export async function uploadDrawing(
 		| { error: string; status: number }
 
 	try {
-		result = await uploadImageBlob( addressId, file)
+		result = await uploadImageBlob(addressId, file)
 		if (result && 'error' in result) {
 			throw new Error(result.error)
 		}

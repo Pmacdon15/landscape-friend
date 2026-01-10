@@ -10,9 +10,9 @@ export async function fetchOrgMembers(): Promise<
 	const { orgId, sessionClaims } = await auth.protect()
 
 	cacheTag(`org_members-${orgId}`)
-	
+
 	if (!orgId) {
-		// If there's no organization, return the current user's information		
+		// If there's no organization, return the current user's information
 		return [
 			{
 				userId: sessionClaims.sub,
