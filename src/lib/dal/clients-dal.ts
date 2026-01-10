@@ -53,12 +53,12 @@ export async function fetchAllClientsInfo(
 	try {
 		const allClientsInfo = await fetchClientsTest(
 			orgId || userId,
-			// pageSize,
-			// offset,
-			// searchTerm,
-			// searchTermCuttingWeek,
-			// searchTermCuttingDay,
-			// searchTermAssignedTo,
+			pageSize,
+			offset,
+			searchTerm,
+			searchTermCuttingWeek,
+			searchTermCuttingDay,
+			searchTermAssignedTo,
 		)
 
 		// const clientIds = clients.map((client) => client.id)

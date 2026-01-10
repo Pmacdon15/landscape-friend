@@ -318,7 +318,17 @@ export async function fetchClientsClearingGroupsDb(
 	const clientsResult = await baseQuery
 	return clientsResult as ScheduledClient[]
 }
-export async function fetchClientsTest(orgId: string): Promise<{
+
+
+export async function fetchClientsTest(
+	orgId: string,
+	pageSize: number,
+	offset: number,
+	searchTerm?: string,
+	cuttingWeek?: number,
+	cuttingDay?: number,
+	assignedTo?: string,
+): Promise<{
 	clients: Client[]
 	addresses: ClientAddress[]
 	accounts: ClientAccount[]
@@ -328,49 +338,107 @@ export async function fetchClientsTest(orgId: string): Promise<{
 	totalPages: number
 } | null> {
 	const sql = neon(process.env.DATABASE_URL as string)
+
+	/* ---------------- WHERE CLAUSE ---------------- */
+
+	let whereSql = sql`c.organization_id = ${orgId}`
+
+	if (searchTerm) {
+		const like = `%${searchTerm.toLowerCase()}%`
+		whereSql = sql`${whereSql} AND (
+			LOWER(c.full_name) LIKE ${like}
+			OR CAST(c.id AS TEXT) LIKE ${like}
+			OR LOWER(c.email_address) LIKE ${like}
+			OR LOWER(c.phone_number) LIKE ${like}
+			OR EXISTS (
+				SELECT 1
+				FROM client_addresses ca
+				WHERE ca.client_id = c.id
+				AND LOWER(ca.address) LIKE ${like}
+			)
+		)`
+	}
+
+	if (cuttingWeek || cuttingDay) {
+		whereSql = sql`${whereSql} AND EXISTS (
+			SELECT 1
+			FROM cutting_schedule cs
+			INNER JOIN client_addresses ca ON ca.id = cs.address_id
+			WHERE ca.client_id = c.id
+			${cuttingWeek ? sql`AND cs.cutting_week = ${cuttingWeek}` : sql``}
+			${cuttingDay ? sql`AND cs.cutting_day = ${cuttingDay}` : sql``}
+		)`
+	}
+
+	if (assignedTo) {
+		whereSql = sql`${whereSql} AND EXISTS (
+			SELECT 1
+			FROM assignments a
+			INNER JOIN client_addresses ca ON ca.id = a.address_id
+			WHERE ca.client_id = c.id
+			AND a.assigned_to = ${assignedTo}
+		)`
+	}
+
+	/* ---------------- TOTAL COUNT ---------------- */
+
+	const countResult = await sql`
+		SELECT COUNT(*)::int AS count
+		FROM clients c
+		WHERE ${whereSql}
+	`
+
+	const totalCount = countResult[0]?.count ?? 0
+	const totalPages = Math.ceil(totalCount / pageSize)
+
+	/* ---------------- DATA QUERY ---------------- */
+
 	const results = (await sql`
-			SELECT
-				c.*,
-				(SELECT json_agg(acc) FROM accounts acc WHERE acc.client_id = c.id) as accounts,
-				(SELECT json_agg(ca) FROM client_addresses ca WHERE ca.client_id = c.id) as addresses,
-				(
-					SELECT json_agg(a)
-					FROM assignments a
-					INNER JOIN client_addresses ca ON a.address_id = ca.id
-					WHERE ca.client_id = c.id
-				) as assignments,
-				(
-					SELECT json_agg(cs)
-					FROM cutting_schedule cs
-					INNER JOIN client_addresses ca ON cs.address_id = ca.id
-					WHERE ca.client_id = c.id
-				) as schedules,
-				(
-					SELECT json_agg(
-						json_build_object(
-							'id', i.id,
-							'address_id', i.address_id,
-							'address', ca.address,
-							'imageURL', i.imageURL,
-							'isActive', i.isActive,
-							'client_id', ca.client_id
-						)
+		SELECT
+			c.*,
+			(SELECT json_agg(acc) FROM accounts acc WHERE acc.client_id = c.id) AS accounts,
+			(SELECT json_agg(ca) FROM client_addresses ca WHERE ca.client_id = c.id) AS addresses,
+			(
+				SELECT json_agg(a)
+				FROM assignments a
+				INNER JOIN client_addresses ca ON a.address_id = ca.id
+				WHERE ca.client_id = c.id
+			) AS assignments,
+			(
+				SELECT json_agg(cs)
+				FROM cutting_schedule cs
+				INNER JOIN client_addresses ca ON cs.address_id = ca.id
+				WHERE ca.client_id = c.id
+			) AS schedules,
+			(
+				SELECT json_agg(
+					json_build_object(
+						'id', i.id,
+						'address_id', i.address_id,
+						'address', ca.address,
+						'imageURL', i.imageURL,
+						'isActive', i.isActive,
+						'client_id', ca.client_id
 					)
-					FROM images i
-					INNER JOIN client_addresses ca ON i.address_id = ca.id
-					WHERE ca.client_id = c.id
-				) as "siteMaps"
-			FROM
-				clients c
-			WHERE
-				c.organization_id = ${orgId};
-		`) as (Client & {
+				)
+				FROM images i
+				INNER JOIN client_addresses ca ON i.address_id = ca.id
+				WHERE ca.client_id = c.id
+			) AS "siteMaps"
+		FROM clients c
+		WHERE ${whereSql}
+		ORDER BY c.id DESC
+		LIMIT ${pageSize}
+		OFFSET ${offset}
+	`) as (Client & {
 		accounts: ClientAccount[] | null
 		addresses: ClientAddress[] | null
 		assignments: ClientAssignment[] | null
 		schedules: ClientCuttingSchedule[] | null
 		siteMaps: ClientSiteMapImages[] | null
 	})[]
+
+	/* ---------------- FLATTEN ---------------- */
 
 	const clients: Client[] = []
 	const accounts: ClientAccount[] = []
@@ -388,6 +456,7 @@ export async function fetchClientsTest(orgId: string): Promise<{
 			siteMaps: sms,
 			...clientData
 		} = row
+
 		clients.push(clientData as Client)
 		if (accs) accounts.push(...accs)
 		if (addrs) addresses.push(...addrs)
@@ -403,9 +472,11 @@ export async function fetchClientsTest(orgId: string): Promise<{
 		assignments,
 		schedules,
 		siteMaps,
-		totalPages: 1,
+		totalPages,
 	}
 }
+
+
 export async function fetchClients(
 	orgId: string,
 	_pageSize: number,
