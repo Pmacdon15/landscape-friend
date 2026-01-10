@@ -375,7 +375,7 @@ export async function fetchClients(
 			FROM assignments a
 			INNER JOIN client_addresses ca ON ca.id = a.address_id
 			WHERE ca.client_id = c.id
-			AND a.assigned_to = ${assignedTo}
+			AND a.user_id = ${assignedTo}
 		)`
 	}
 

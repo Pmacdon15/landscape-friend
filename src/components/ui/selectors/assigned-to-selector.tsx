@@ -21,9 +21,10 @@ export function AssignedToSelector({
 
 	const searchParams = useSearchParams()
 	const { updateSearchParams } = useSearch()
-	const assignedTo = searchParams.get('assigned_to') || ''
+	const assignedTo = searchParams.get('assigned') || ''
 	function handleChange(value: string) {
-		updateSearchParams('assigned_to', value)
+		if (value === 'assigned_to')
+		updateSearchParams('assigned', '')
 	}
 	return (
 		<div className="flex gap-1">

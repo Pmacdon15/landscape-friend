@@ -92,3 +92,5 @@ VALUES ('user_35uYpItCYEItSG6WmiTExQEmT1U', 'New User', 'pmacdonald15@proton.me'
 -- ALTER TABLE organizations
 -- ALTER COLUMN max_allowed_clients
 -- SET DEFAULT 25;
+
+SELECT * From assignments;
