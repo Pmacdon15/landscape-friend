@@ -3,8 +3,8 @@ import z from 'zod'
 export const schemaAddClient = z.object({
 	full_name: z.string(),
 	phone_number: z.string().optional().nullable(),
-	email_address: z.email().optional().nullable(),
-	address: z.string(),
+	email_address: z.string().optional().nullable(),
+	addresses: z.array(z.object({ address: z.string() })),
 	stripe_customer_id: z.string().optional().nullable(),
 	organization_id: z.string(),
 })
@@ -21,7 +21,6 @@ export const schemaDeleteClient = z.object({
 })
 
 export const schemaDeleteSiteMap = z.object({
-	client_id: z.number(),
 	siteMap_id: z.number(),
 })
 
@@ -34,24 +33,25 @@ export const schemaSendEmail = z.object({
 })
 
 export const schemaUpdateCuttingDay = z.object({
-	clientId: z.number(),
+	addressId: z.number(),
 	cuttingWeek: z.number(),
 	updatedDay: z.string(),
 })
 
 export const schemaMarkYardCut = z.object({
-	clientId: z.number(),
+	addressId: z.number(),
 	date: z.date(),
 })
 
 export const schemaAssign = z.object({
-	clientId: z.number(),
+	addressId: z.number(),
 	assignedTo: z.string(),
 })
 
 export const schemaAssignSnow = z.object({
-	clientId: z.number(),
+	// clientId: z.number(),
 	assignedTo: z.string(),
+	addressId: z.number(),
 })
 
 export const schemaUpdateAPI = z.object({

@@ -1,10 +1,15 @@
 import { auth, clerkClient } from '@clerk/nextjs/server'
+import { cacheTag } from 'next/cache'
 import type { OrgMember } from '@/types/clerk-types'
 
 export async function fetchOrgMembers(): Promise<
 	OrgMember[] | { errorMessage: string }
 > {
+	'use cache: private'
+
 	const { orgId, sessionClaims } = await auth.protect()
+
+	cacheTag(`org_members-${orgId}`)
 
 	if (!orgId) {
 		// If there's no organization, return the current user's information
@@ -22,11 +27,16 @@ export async function fetchOrgMembers(): Promise<
 			await clerk.organizations.getOrganizationMembershipList({
 				organizationId: orgId,
 			})
+		console.log('fetchOrgMembers: Clerk API Response:', response)
 
 		// Transform OrganizationMembership objects into the simplified OrgMember type
 		const orgMembers: OrgMember[] = response.data.flatMap((member) => {
 			const userId = member.publicUserData?.userId
 			if (!userId) {
+				console.warn(
+					'fetchOrgMembers: Skipping member due to missing userId:',
+					member,
+				)
 				return [] // Skip this member if userId is not available
 			}
 
@@ -45,7 +55,7 @@ export async function fetchOrgMembers(): Promise<
 			]
 		})
 
-		// console.log('Org Members: ', orgMembers)
+		console.log('fetchOrgMembers: Processed Org Members:', orgMembers)
 		return orgMembers
 	} catch (error) {
 		console.error('Error fetching org members:', error)

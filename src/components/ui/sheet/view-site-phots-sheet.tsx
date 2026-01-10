@@ -15,8 +15,8 @@ import ServicedImageCarousel from '../client-list/serviced-image-carousel'
 import FormHeader from '../header/form-header'
 import SheetLogoHeader from '../header/sheet-logo-header'
 
-export async function ViewSitePhotoSheet({ clientId }: { clientId: number }) {
-	const imagesUrlsObjects = await getServicedImagesUrls(clientId)
+export async function ViewSitePhotoSheet({ addressId }: { addressId: number }) {
+	const imagesUrlsObjects = await getServicedImagesUrls(addressId)
 
 	return (
 		<Sheet>

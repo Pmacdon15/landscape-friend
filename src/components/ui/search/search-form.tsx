@@ -22,7 +22,7 @@ export default async function SearchForm({
 
 	return (
 		<div className="flex flex-col flex-wrap justify-center gap-2 rounded-sm bg-white/70 p-2 shadow-lg md:flex-row">
-			<SearchInput />
+			 <SearchInput />
 			{isAdmin?.isAdmin && (
 				// variant !== 'invoices' &&
 				// variant !== 'quotes' &&
@@ -31,6 +31,7 @@ export default async function SearchForm({
 					<AssignedToSelector orgMembersPromise={orgMembersPromise} />
 				</Suspense>
 			)}
+			
 			{variant === 'default' && (
 				<>
 					<CuttingPeriodSelector variant="week" />

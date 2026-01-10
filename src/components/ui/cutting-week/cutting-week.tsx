@@ -1,7 +1,7 @@
 'use client'
 import { useOptimistic, useTransition } from 'react'
 import { useUpdateCuttingDay } from '@/lib/mutations/mutations'
-import type { CuttingSchedule } from '@/types/clients-types'
+import type { ClientCuttingSchedule } from '@/types/schedules-types'
 import {
 	Select,
 	SelectContent,
@@ -12,15 +12,13 @@ import {
 } from '../select'
 
 function CuttingWeekDropDown({
+	addressId,
 	week,
 	schedule,
-	clientId,
-	isAdmin,
 }: {
+	addressId: number
 	week: number
-	schedule: CuttingSchedule
-	clientId: number
-	isAdmin: boolean
+	schedule: ClientCuttingSchedule
 }) {
 	const days = [
 		'No cut',
@@ -46,7 +44,7 @@ function CuttingWeekDropDown({
 			setOptimisticDay(value)
 		})
 		mutate({
-			clientId,
+			addressId: addressId,
 			cuttingWeek: week,
 			cuttingDay: value,
 		})
@@ -55,55 +53,59 @@ function CuttingWeekDropDown({
 	return (
 		<p className="mb-3 flex flex-row items-center gap-3 text-sm md:text-base">
 			<span className="w-32">Cutting week {week}:</span>
-			{isAdmin ? (
-				<Select onValueChange={handleChange} value={optimisticDay}>
-					<SelectTrigger className="w-28">
-						<SelectValue placeholder="Select Day" />
-					</SelectTrigger>
-					<SelectContent>
-						<SelectGroup>
-							{days.map((day) => (
-								<SelectItem key={day} value={day}>
-									{day}
-								</SelectItem>
-							))}
-						</SelectGroup>
-					</SelectContent>
-				</Select>
-			) : (
-				<span className="w-28">{cuttingDay}</span>
-			)}
+
+			<Select onValueChange={handleChange} value={optimisticDay}>
+				<SelectTrigger className="w-28">
+					<SelectValue placeholder="Select Day" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						{days.map((day) => (
+							<SelectItem key={day} value={day}>
+								{day}
+							</SelectItem>
+						))}
+					</SelectGroup>
+				</SelectContent>
+			</Select>
 		</p>
 	)
 }
 
-interface CuttingWeekClient {
-	id: number
-	cutting_schedules: CuttingSchedule[]
-}
-
 export function CuttingWeekDropDownContainer({
-	client,
-	isAdmin = false,
+	addressId,
+	schedules,
 }: {
-	client: CuttingWeekClient
-	isAdmin?: boolean
+	addressId: number
+	schedules: ClientCuttingSchedule[]
 }) {
+	// Filter schedules for THIS address first
+	const addressSchedules = schedules.filter((s) => s.address_id === addressId)
+
 	// Ensure all weeks (1–4) have a schedule, defaulting to "No cut" if missing
-	const schedules: CuttingSchedule[] = Array.from({ length: 4 }, (_, i) => {
-		const week = i + 1
-		const existingSchedule = client.cutting_schedules.find(
-			(s) => s.cutting_week === week,
-		)
-		return existingSchedule || { cutting_week: week, cutting_day: 'No cut' }
-	})
+	const clientSchedules: ClientCuttingSchedule[] = Array.from(
+		{ length: 4 },
+		(_, i) => {
+			const week = i + 1
+			const existingSchedule = addressSchedules.find(
+				(s) => s.cutting_week === week,
+			)
+			return (
+				existingSchedule || {
+					id: 0,
+					address_id: addressId,
+					cutting_week: week,
+					cutting_day: 'No cut',
+				}
+			)
+		},
+	)
 
 	return (
 		<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-			{schedules.map((schedule, index) => (
+			{clientSchedules.map((schedule, index) => (
 				<CuttingWeekDropDown
-					clientId={client.id}
-					isAdmin={isAdmin}
+					addressId={addressId}
 					key={schedule.cutting_week}
 					schedule={schedule}
 					week={index + 1}

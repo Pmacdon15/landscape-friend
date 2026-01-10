@@ -1,7 +1,5 @@
 'use client'
-import { useOptimistic, useTransition } from 'react'
-import { useCuttingPeriodSearch } from '@/lib/hooks/hooks'
-
+import { useRouter, useSearchParams } from 'next/navigation'
 import { days, weeks } from '@/lib/values'
 import {
 	Select,
@@ -17,21 +15,26 @@ export function CuttingPeriodSelector({
 }: {
 	variant: 'week' | 'day'
 }) {
-	const { currentPeriod, setCuttingPeriod } = useCuttingPeriodSearch(variant)
-	const [optimisticPeriod, setOptimisticPeriod] = useOptimistic(
-		currentPeriod,
-		(_, newPeriod: string) => newPeriod,
-	)
-	const [, startTransition] = useTransition()
+	// const { currentPeriod, setCuttingPeriod } = useCuttingPeriodSearch(variant)
+	// const [optimisticPeriod, setOptimisticPeriod] = useOptimistic(
+	// 	currentPeriod,
+	// 	(_, newPeriod: string) => newPeriod,
+	// )
+	// const [, startTransition] = useTransition()
 
 	const label = variant === 'week' ? 'Cutting Week' : 'Cutting Day'
 	const options = variant === 'week' ? weeks : days
 
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const dayOrWeekSearchParam = searchParams.get(`${variant}`) || ''
+
 	function handleChange(value: string) {
-		startTransition(() => {
-			setOptimisticPeriod(value === 'all' ? '' : value)
-			setCuttingPeriod(value === 'all' ? '' : value)
-		})
+		if (value && value !== 'assigned_to') {
+			router.push(`?${variant}=${encodeURIComponent(value)}`)
+		} else {
+			router.push(`?`)
+		}
 	}
 
 	return (
@@ -40,9 +43,10 @@ export function CuttingPeriodSelector({
 				{label}{' '}
 			</label>
 			<Select
+				defaultValue={dayOrWeekSearchParam || 'all'}
 				name={variant}
+				// value={optimisticPeriod || 'all'}
 				onValueChange={handleChange}
-				value={optimisticPeriod || 'all'}
 			>
 				<SelectTrigger>
 					<SelectValue placeholder="All" />

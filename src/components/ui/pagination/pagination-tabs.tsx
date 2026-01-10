@@ -15,16 +15,16 @@ import {
 export function PaginationTabs({
 	fullWidth = false,
 	path,
-	page,
 	totalPages,
 }: {
 	fullWidth?: boolean
 	path: Route
-	page: number
 	totalPages: number
 }) {
 	const searchParams = useSearchParams()
 	const query = Object.fromEntries(searchParams.entries())
+
+	const page = Number(searchParams.get('page'))
 
 	return totalPages > 1 ? (
 		<div

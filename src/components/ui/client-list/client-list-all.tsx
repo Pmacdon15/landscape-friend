@@ -1,15 +1,11 @@
 import { Suspense } from 'react'
-import type { ClientListServiceProps } from '@/types/clients-types'
+import type { Client, ClientListServiceProps } from '@/types/clients-types'
 import DeleteClientButton from '../buttons/delete-client-button'
 import ContentContainer from '../containers/content-container'
 import FormContainer from '../containers/form-container'
-import { CuttingWeekDropDownContainer } from '../cutting-week/cutting-week'
-import AssignedToFallback from '../fallbacks/assigned-to-fallback'
 import FormHeader from '../header/form-header'
-import ImageList from '../image-list/image-list'
-import AssignedTo from '../inputs/AssignedToSelect'
 import { PaginationTabs } from '../pagination/pagination-tabs'
-import { ViewSitePhotoSheet } from '../sheet/view-site-phots-sheet'
+import AddressManagementSection from './address-management-section'
 import { ClientListItemEmail, ClientListItemHeader } from './client-list-item'
 import ClientListItemAddress from './client-list-item-address'
 import EditClientFormContainer from './edit-client-form-container'
@@ -20,138 +16,149 @@ export default async function ClientListAll({
 	orgMembersPromise,
 	searchParamsPromise,
 }: ClientListServiceProps) {
-	const [isAdmin, result, searchParams] = await Promise.all([
-		isAdminPromise,
-		clientsPromise,
-		searchParamsPromise,
-	])
+	const result = await clientsPromise
 
 	if (!result)
 		return (
 			<ContentContainer>
-				{' '}
-				<p>Error Loading clients</p>{' '}
+				<p>Error Loading clients</p>
 			</ContentContainer>
 		)
 
-	const { clients, totalPages } = result
+	const {
+		clients,
+		accounts,
+		addresses,
+		assignments,
+		schedules,
+		siteMaps,
+		totalPages,
+	} = result
 
-	if (clients.length < 1)
+	if (!clients || clients.length === 0)
 		return (
 			<ContentContainer>
-				{' '}
-				<p>Please add clients</p>{' '}
+				<p>Please add clients</p>
 			</ContentContainer>
 		)
-	// console.log('clients:', clients)
+
+	console.log('siteMaps:', siteMaps)
 
 	return (
 		<>
-			<PaginationTabs
-				page={searchParams.page}
-				path="/lists/client"
-				totalPages={totalPages}
-			/>
-			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
-				{clients.map((client) => (
-					<FormContainer key={client.id}>
-						<li className="relative rounded-sm border bg-white/70 p-4">
-							{isAdmin?.isAdmin && (
-								<DeleteClientButton
-									clientId={client.id}
-									page={searchParams.page}
-								/>
-							)}
-							<FormHeader text={client.full_name} />
-							<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
-								{client.phone_number && client.phone_number && (
-									<ClientListItemHeader
-										clientPhoneNumber={client.phone_number}
-									/>
-								)}
-								{client.email_address && (
-									<ClientListItemEmail
-										clientEmailAddress={
-											client.email_address
-										}
-										clientFullName={client.full_name}
-									/>
-								)}
+			<PaginationTabs path="/lists/client" totalPages={totalPages} />
 
-								<ClientListItemAddress
-									clientAddress={client.address}
-									clientId={client.id}
-								/>
-							</div>
-							{isAdmin?.isAdmin && (
-								<div className="flex flex-col items-center gap-2">
-									<p>Amount owing: ${client.amount_owing} </p>
-									<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
-										<Suspense
-											fallback={<AssignedToFallback />}
-										>
-											<AssignedTo
-												clientAssignedTo={
-													client.grass_assigned_to !==
-													'Unassigned'
-														? client.grass_assigned_to
-														: 'not-assigned'
-												}
-												clientId={client.id}
-												orgMembersPromise={
-													orgMembersPromise
-												}
-											/>
-										</Suspense>
-										<Suspense
-											fallback={<AssignedToFallback />}
-										>
-											<AssignedTo
-												clientAssignedTo={
-													client.snow_assigned_to !==
-													'Unassigned'
-														? client.snow_assigned_to
-														: 'not-assigned'
-												}
-												clientId={client.id}
-												orgMembersPromise={
-													orgMembersPromise
-												}
-												snow
-											/>
-										</Suspense>
-									</div>
+			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
+				{clients.map((client: Client, index) => {
+					// PRECOMPUTE data for this client
+					const clientAddresses = addresses.filter(
+						(a) => a.client_id === client.id,
+					)
+
+					const clientAddressIds = clientAddresses.map((a) => a.id)
+
+					const clientAssignments = assignments.filter((a) =>
+						clientAddressIds.includes(a.address_id),
+					)
+
+					const clientSchedules = schedules.filter((s) =>
+						clientAddresses.map((a) => a.id).includes(s.address_id),
+					)
+
+					const editAddresses = clientAddresses.map((a) => ({
+						id: a.id,
+						client_id: client.id,
+						address: a.address,
+					}))
+
+					const clientSiteMaps = siteMaps.filter((siteMap) =>
+						clientAddresses
+							.map((a) => a.id)
+							.includes(siteMap.address_id),
+					)
+					// console.log('clientSiteMap: ', clientSiteMaps)
+
+					return (
+						<FormContainer key={client.id}>
+							<li className="relative rounded-sm border bg-white/70 p-4">
+								<Suspense>
+									<DeleteClientButton
+										clientId={client.id}
+										pagePromise={searchParamsPromise.then(
+											(params) => params.page,
+										)}
+									/>
+								</Suspense>
+
+								<FormHeader text={client.full_name} />
+
+								<div className="mt-8 mb-8 flex w-full flex-col items-center justify-center gap-2 lg:flex-row">
+									{client.phone_number && (
+										<ClientListItemHeader
+											clientPhoneNumber={Number(
+												client.phone_number,
+											)}
+										/>
+									)}
+
+									{client.email_address && (
+										<ClientListItemEmail
+											clientEmailAddress={
+												client.email_address
+											}
+											clientFullName={client.full_name}
+										/>
+									)}
+
+									{clientAddresses.map((addr) => (
+										<ClientListItemAddress
+											clientAddress={addr.address}
+											clientId={client.id}
+											key={addr.id}
+										/>
+									))}
 								</div>
-							)}
-							<CuttingWeekDropDownContainer
-								client={{
-									id: client.id,
-									cutting_schedules: client.cutting_schedules,
-								}}
-								isAdmin={isAdmin?.isAdmin}
-							/>
-							<div className="flex flex-col gap-2">
-								<EditClientFormContainer
-									client={client}
-									isAdmin={isAdmin?.isAdmin || false}
-									page={searchParams.page}
-								/>
-								<ViewSitePhotoSheet clientId={client.id} />
-							</div>
-							<ImageList
-								client={client}
-								isAdmin={isAdmin?.isAdmin}
-								page={searchParams.page}
-							/>
-						</li>
-					</FormContainer>
-				))}
+
+								<div className="flex flex-col items-center gap-2">
+									<p>
+										Amount owing: $
+										{accounts[index].current_balance}
+									</p>
+
+									<AddressManagementSection
+										addresses={clientAddresses}
+										assignments={clientAssignments}
+										isAdminPromise={
+											isAdminPromise ||
+											Promise.resolve({ isAdmin: false })
+										}
+										orgMembersPromise={orgMembersPromise}
+										pagePromise={searchParamsPromise.then(
+											(params) => params.page,
+										)}
+										schedules={clientSchedules}
+										siteMaps={clientSiteMaps}
+									/>
+								</div>
+
+								<div className="flex flex-col gap-2 mt-2">
+									<Suspense>
+										<EditClientFormContainer
+											addresses={editAddresses}
+											client={client}
+											pagePromise={searchParamsPromise.then(
+												(params) => params.page,
+											)}
+										/>
+									</Suspense>
+								</div>
+							</li>
+						</FormContainer>
+					)
+				})}
 			</ul>
-			<PaginationTabs
-				page={searchParams.page}
-				path="/lists/client"
-				totalPages={totalPages}
-			/>
+
+			<PaginationTabs path="/lists/client" totalPages={totalPages} />
 		</>
 	)
 }

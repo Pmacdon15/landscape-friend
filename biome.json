@@ -29,6 +29,11 @@
 			"suspicious": {
 				"noArrayIndexKey": "off",
 				"noUnknownAtRules": "off"
+			},
+			"correctness": {
+				"noUnusedImports": "on",
+				"noUnusedFunctionParameters": "on",
+				"noUnusedVariables": "on"
 			}
 		},
 		"domains": {

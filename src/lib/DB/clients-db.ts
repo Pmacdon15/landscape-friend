@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless'
+import { type NeonQueryFunction, neon } from '@neondatabase/serverless'
 import type z from 'zod'
 import type {
 	schemaAddClient,
@@ -6,50 +6,75 @@ import type {
 	schemaDeleteSiteMap,
 	schemaMarkYardCut,
 	schemaUpdateCuttingDay,
-	schemaUpdatePricePerMonth,
 } from '@/lib/zod/schemas'
+import type {
+	ClientAssignment,
+	ScheduledClient,
+} from '@/types/assignment-types'
 import type { BlobUrl } from '@/types/blob-types'
 import type {
-	Account,
 	Client,
+	ClientAccount,
+	ClientAddress,
 	ClientInfoList,
-	ClientResult,
 	CustomerName,
 } from '@/types/clients-types'
 import type { NovuSubscriberIds } from '@/types/novu-types'
+import type { ClientCuttingSchedule } from '@/types/schedules-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
 
 //MARK: Add clients
-
 export async function addClientDB(
 	data: z.infer<typeof schemaAddClient>,
 	organization_id: string,
-): Promise<{ client: Client; account: Account }[]> {
-	// console.log("addClientDB called with data:", data, "and organization_id:", organization_id);
-	const sql = neon(`${process.env.DATABASE_URL}`)
-	try {
-		const result = (await sql`
-        WITH new_client AS (
-            INSERT INTO clients (full_name, phone_number, email_address, organization_id, address, stripe_customer_id)
-            VALUES (${data.full_name}, ${data.phone_number}, ${data.email_address}, ${organization_id}, ${data.address}, ${data.stripe_customer_id || null})
-            RETURNING *
-        ),
-        new_account AS (
-            INSERT INTO accounts (client_id)
-            SELECT id
-            FROM new_client
-            RETURNING *
-        )
-        SELECT 
-            (SELECT row_to_json(new_client.*)::jsonb AS client FROM new_client),
-            (SELECT row_to_json(new_account.*)::jsonb AS account FROM new_account);
-    `) as { client: Client; account: Account }[]
-		// console.log("addClientDB result:", result);
-		return result
-	} catch (error) {
-		console.error('Error in addClientDB SQL query:', error)
-		throw error
+): Promise<Client> {
+	const databaseUrl = process.env.DATABASE_URL
+	if (!databaseUrl) {
+		throw new Error('DATABASE_URL environment variable is not set')
 	}
+
+	const sql = neon(databaseUrl)
+
+	/* ------------------------
+	   1. Insert client
+	------------------------ */
+	const [client] = (await sql`
+		INSERT INTO clients (
+			full_name,
+			phone_number,
+			email_address,
+			organization_id,
+			stripe_customer_id
+		)
+		VALUES (
+			${data.full_name},
+			${data.phone_number},
+			${data.email_address},
+			${organization_id},
+			${data.stripe_customer_id ?? null}
+		)
+		RETURNING *
+	`) as Client[]
+
+	await sql`
+		INSERT INTO accounts (client_id)
+		VALUES (${client.id})
+	`
+
+	await Promise.allSettled(
+		data.addresses?.map(
+			(addr) =>
+				sql`
+				INSERT INTO client_addresses (client_id, address)
+				VALUES (${client.id}, ${addr.address})
+				RETURNING *
+			`,
+		) ?? [],
+	)
+
+	return client
 }
+
 //MARK:Fetch novu id
 export async function getNovuIds(
 	userIds: string[],
@@ -168,7 +193,6 @@ export async function deleteClientDB(
 
 export async function deleteSiteMapDB(
 	data: z.infer<typeof schemaDeleteSiteMap>,
-	organization_id: string,
 ): Promise<{ success: boolean }> {
 	// console.log("deleteSiteMapDB called with data:", data, "and organization_id:", organization_id);
 	const sql = neon(`${process.env.DATABASE_URL}`)
@@ -176,16 +200,8 @@ export async function deleteSiteMapDB(
 		const result = await sql`
     DELETE FROM images
     WHERE
-      id = ${data.siteMap_id} AND
-            customerid = ${data.client_id} AND
-      EXISTS (
-        SELECT 1
-        FROM clients
-        WHERE
-          clients.id = ${data.client_id} AND
-          clients.organization_id = ${organization_id}
-      )
-  RETURNING id;
+      id = ${data.siteMap_id} 
+    RETURNING id;
   `
 		// console.log("deleteSiteMapDB SQL result:", result);
 		return { success: result.length > 0 }
@@ -195,51 +211,19 @@ export async function deleteSiteMapDB(
 	}
 }
 
-//MARK: Update price per cut
-export async function updateClientPricePerDb(
-	data: z.infer<typeof schemaUpdatePricePerMonth>,
-	orgId: string,
-) {
-	const sql = neon(`${process.env.DATABASE_URL}`)
-
-	//TODO: Confirm this works
-	let setClause: ReturnType<typeof sql> = data.snow
-		? sql`price_per_month_snow = ${data.pricePerMonthSnow} `
-		: sql`price_per_month_grass = ${data.pricePerMonthGrass} `
-
-	if (data.snow) {
-		setClause = sql`price_per_month_snow = ${data.pricePerMonthSnow} `
-	} else {
-		setClause = sql`price_per_month_grass = ${data.pricePerMonthGrass} `
-	}
-
-	const result = await sql`
-        UPDATE clients
-        SET ${setClause}
-        WHERE id = ${data.clientId} AND organization_id = ${orgId}
-  `
-	return result
-}
-
 //MARK: Updated Client Cut Day
 export async function updatedClientCutDayDb(
 	data: z.infer<typeof schemaUpdateCuttingDay>,
-	orgId: string,
+	// orgId: string,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL} `)
-	// const clientCheck = await sql`
-	//       SELECT id FROM clients
-	//       WHERE clients.id = ${data.clientId} AND clients.organization_id = ${orgId}
-	// `;
-	// if (!clientCheck || clientCheck.length === 0) {
-	//   throw new Error("Client not found or orgId mismatch");
-	// }
+
 	const result = await sql`
-        INSERT INTO cutting_schedule(client_id, cutting_week, cutting_day, organization_id)
-  VALUES(${data.clientId}, ${data.cuttingWeek}, ${data.updatedDay}, ${orgId})
-        ON CONFLICT(client_id, cutting_week, organization_id) DO UPDATE
-        SET cutting_day = EXCLUDED.cutting_day, cutting_week = EXCLUDED.cutting_week
-  RETURNING *
+        INSERT INTO cutting_schedule(address_id, cutting_week, cutting_day)
+		VALUES(${data.addressId}, ${data.cuttingWeek}, ${data.updatedDay})
+			ON CONFLICT(address_id, cutting_week) DO UPDATE
+			SET cutting_day = EXCLUDED.cutting_day, cutting_week = EXCLUDED.cutting_week
+		RETURNING *
     `
 	return result
 }
@@ -260,8 +244,7 @@ export async function fetchClientListDb(
   `
 	return result as ClientInfoList[]
 }
-
-//MARK: Fetch clients snow clearing
+//MARK: Fetch clients assigned for snow clearing
 export async function fetchClientsClearingGroupsDb(
 	orgId: string,
 	searchTerm: string,
@@ -270,312 +253,283 @@ export async function fetchClientsClearingGroupsDb(
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
 ) {
-	const sql = neon(`${process.env.DATABASE_URL} `)
+	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	const baseQuery = sql`
-    WITH clients_with_balance AS(
-      SELECT 
-        c.*,
-      a.current_balance AS amount_owing
-      FROM clients c
-      LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId}
-    ),
-    cleared_yards AS(
-      SELECT client_id
-      FROM yards_marked_clear
-      WHERE clearing_date = ${clearingDate}
-    ),
-    clients_with_assignments AS(
-        SELECT
-            cwb.*,
-            snow_assignments.assignments AS snow_assignments
-        FROM clients_with_balance cwb
-        , LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'snow'
-        ) snow_assignments
-    )
-  `
-
-	let selectQuery = sql`
-    SELECT DISTINCT
-      cwa.id
-    FROM clients_with_assignments cwa
-    LEFT JOIN cleared_yards cy ON cwa.id = cy.client_id
-    WHERE ${searchTermIsServiced ? sql`cy.client_id IS NOT NULL` : sql`cy.client_id IS NULL`}
-  `
-
-	const whereClauses = []
-
-	if (searchTerm !== '') {
-		whereClauses.push(sql`
-      (cwa.full_name ILIKE ${`%${searchTerm}%`} 
-        OR cwa.phone_number ILIKE ${`%${searchTerm}%`} 
-        OR cwa.email_address ILIKE ${`%${searchTerm}%`} 
-        OR cwa.address ILIKE ${`%${searchTerm}%`})
-    `)
-	}
-
+	// Determine which user to filter assignments by
 	const assignedToFilter = searchTermAssignedTo || userId
+
+	// Base query: all clients in the org with their snow assignments
+	let baseQuery = sql`
+		SELECT 
+			c.id, 
+			c.full_name, 
+			c.phone_number, 
+			c.email_address, 
+			ca.address, 
+			ca.id as address_id,
+			a.id AS assignment_id, 
+			a.user_id, 
+			a.priority
+		FROM clients c
+		JOIN client_addresses ca ON ca.client_id = c.id
+		JOIN assignments a ON a.address_id = ca.id
+		WHERE c.organization_id = ${orgId}
+		  AND a.service_type = 'snow'
+	`
+
+	// Filter by assigned user
 	if (assignedToFilter) {
-		whereClauses.push(
-			sql`
-            EXISTS (
-                SELECT 1
-                FROM jsonb_array_elements(cwa.snow_assignments) AS sa
-                WHERE sa->>'user_id' = ${assignedToFilter}
-            )
-        `,
-		)
+		baseQuery = sql`${baseQuery} AND a.user_id = ${assignedToFilter}`
 	}
 
-	if (whereClauses.length > 0) {
-		let whereClause = sql`AND ${whereClauses[0]} `
-		for (let i = 1; i < whereClauses.length; i++) {
-			whereClause = sql`${whereClause} AND ${whereClauses[i]} `
+	// Filter by search term
+	if (searchTerm && searchTerm.trim() !== '') {
+		const term = `%${searchTerm}%`
+		baseQuery = sql`${baseQuery} AND (
+			c.full_name ILIKE ${term} OR
+			c.phone_number ILIKE ${term} OR
+			c.email_address ILIKE ${term} OR
+			ca.address ILIKE ${term}
+		)`
+	}
+
+	// Filter by whether already cleared
+	if (searchTermIsServiced !== undefined) {
+		if (searchTermIsServiced) {
+			baseQuery = sql`${baseQuery} AND EXISTS (
+      SELECT 1
+      FROM yards_marked_clear ymc
+      WHERE ymc.address_id = ca.id
+        AND ymc.clearing_date = ${clearingDate}
+    )`
+		} else {
+			baseQuery = sql`${baseQuery} AND NOT EXISTS (
+      SELECT 1
+      FROM yards_marked_clear ymc
+      WHERE ymc.address_id = ca.id
+        AND ymc.clearing_date = ${clearingDate}
+    )`
 		}
-
-		selectQuery = sql`
-      ${selectQuery}
-      ${whereClause}
-    `
 	}
 
-	const clientsQuery = sql`
-  ${baseQuery}
-  SELECT
-    cwa.id,
-    cwa.full_name,   
-    cwa.address,
-    cwa.snow_assignments,
-    COALESCE(img.urls, '[]'::jsonb) AS images
-  FROM clients_with_assignments cwa
-  LEFT JOIN LATERAL(
-    SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.imageURL)) as urls
-    FROM images i
-    WHERE i.customerid = cwa.id
-  ) img ON TRUE
-  WHERE cwa.id IN (${selectQuery})
-  ORDER BY (SELECT MIN((sa->>'priority')::int) FROM jsonb_array_elements(cwa.snow_assignments) AS sa) NULLS LAST, cwa.id
-`
+	// Order by assignment priority then client id
+	baseQuery = sql`${baseQuery} ORDER BY a.priority, c.id`
 
-	const clientsResult = await clientsQuery
-
-	return clientsResult as ClientResult[]
+	const clientsResult = await baseQuery
+	return clientsResult as ScheduledClient[]
 }
 
-//MARK: Fetch clients cutting
-export async function fetchClientsWithSchedules(
+export async function fetchClients(
 	orgId: string,
 	pageSize: number,
 	offset: number,
-	searchTerm: string,
-	searchTermCuttingWeek: number,
-	searchTermCuttingDay: string,
-	searchTermAssignedTo: string,
-) {
-	const sql = neon(`${process.env.DATABASE_URL} `)
+	searchTerm?: string,
+	cuttingWeek?: number,
+	cuttingDay?: string,
+	assignedTo?: string,
+): Promise<{
+	clients: Client[]
+	addresses: ClientAddress[]
+	accounts: ClientAccount[]
+	assignments: ClientAssignment[]
+	schedules: ClientCuttingSchedule[]
+	siteMaps: ClientSiteMapImages[]
+	totalPages: number
+} | null> {
+	const sql = neon(process.env.DATABASE_URL as string)
 
-	const baseQuery = sql`
-    WITH clients_with_balance AS (
-        SELECT 
-            c.*,
-            a.current_balance AS amount_owing
-        FROM clients c
-        LEFT JOIN accounts a ON c.id = a.client_id
-        WHERE c.organization_id = ${orgId}
-    ),
-    clients_with_schedules AS (
-        SELECT
-            cwb.*,
-            COALESCE(cs.cutting_week, 0) AS cutting_week,
-            COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-            COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments,
-            COALESCE(snow_assignments.assignments, '[]'::jsonb) AS snow_assignments
-        FROM clients_with_balance cwb
-        LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-        LEFT JOIN LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'grass'
-        ) grass_assignments ON TRUE
-        LEFT JOIN LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'snow'
-        ) snow_assignments ON TRUE
-    )
-    `
+	/* ---------------- WHERE CLAUSE ---------------- */
 
-	let selectQuery = sql`
-    SELECT DISTINCT
-        cws.id
-    FROM clients_with_schedules cws
-  `
+	let whereSql = sql`c.organization_id = ${orgId}`
 
-	const whereClauses = []
-
-	if (searchTerm !== '') {
-		whereClauses.push(sql`
-  (cws.full_name ILIKE ${`%${searchTerm}%`}
-    OR cws.phone_number ILIKE ${`%${searchTerm}%`}
-    OR cws.email_address ILIKE ${`%${searchTerm}%`}
-    OR cws.address ILIKE ${`%${searchTerm}%`})
-  `)
+	if (searchTerm) {
+		const like = `%${searchTerm.toLowerCase()}%`
+		whereSql = sql`${whereSql} AND (
+			LOWER(c.full_name) LIKE ${like}
+			OR CAST(c.id AS TEXT) LIKE ${like}
+			OR LOWER(c.email_address) LIKE ${like}
+			OR LOWER(c.phone_number) LIKE ${like}
+			OR EXISTS (
+				SELECT 1
+				FROM client_addresses ca
+				WHERE ca.client_id = c.id
+				AND LOWER(ca.address) LIKE ${like}
+			)
+		)`
 	}
 
-	if (searchTermCuttingWeek > 0 && searchTermCuttingDay !== '') {
-		whereClauses.push(sql`
-cws.cutting_week = ${searchTermCuttingWeek} 
-      AND cws.cutting_day = ${searchTermCuttingDay}
-`)
-	} else if (searchTermCuttingWeek > 0) {
-		whereClauses.push(sql`
-cws.cutting_week = ${searchTermCuttingWeek}
-`)
-	} else if (searchTermCuttingDay !== '') {
-		whereClauses.push(sql`
-cws.cutting_day = ${searchTermCuttingDay}
-`)
+	if (cuttingWeek || cuttingDay) {
+		whereSql = sql`${whereSql} AND EXISTS (
+			SELECT 1
+			FROM cutting_schedule cs
+			INNER JOIN client_addresses ca ON ca.id = cs.address_id
+			WHERE ca.client_id = c.id
+			${cuttingWeek ? sql`AND cs.cutting_week = ${cuttingWeek}` : sql``}
+			${cuttingDay ? sql`AND cs.cutting_day = ${cuttingDay}` : sql``}
+		)`
 	}
 
-	if (searchTermAssignedTo !== '') {
-		whereClauses.push(
-			sql`(
-            EXISTS (
-                SELECT 1
-                FROM jsonb_array_elements(cws.grass_assignments) AS ga
-                WHERE ga->>'user_id' = ${searchTermAssignedTo}
-            )
-            OR
-            EXISTS (
-                SELECT 1
-                FROM jsonb_array_elements(cws.snow_assignments) AS sa
-                WHERE sa->>'user_id' = ${searchTermAssignedTo}
-            )
-        )`,
-		)
+	if (assignedTo) {
+		whereSql = sql`${whereSql} AND EXISTS (
+			SELECT 1
+			FROM assignments a
+			INNER JOIN client_addresses ca ON ca.id = a.address_id
+			WHERE ca.client_id = c.id
+			AND a.assigned_to = ${assignedTo}
+		)`
 	}
 
-	if (whereClauses.length > 0) {
-		let whereQuery = sql`WHERE ${whereClauses[0]}`
-		for (let i = 1; i < whereClauses.length; i++) {
-			whereQuery = sql`${whereQuery} AND ${whereClauses[i]}`
-		}
-		selectQuery = sql`${selectQuery} ${whereQuery}`
+	/* ---------------- TOTAL COUNT ---------------- */
+
+	const countResult = await sql`
+		SELECT COUNT(*)::int AS count
+		FROM clients c
+		WHERE ${whereSql}
+	`
+
+	const totalCount = countResult[0]?.count ?? 0
+	const totalPages = Math.ceil(totalCount / pageSize)
+
+	/* ---------------- DATA QUERY ---------------- */
+
+	const results = (await sql`
+		SELECT
+			c.*,
+			(SELECT json_agg(acc) FROM accounts acc WHERE acc.client_id = c.id) AS accounts,
+			(SELECT json_agg(ca) FROM client_addresses ca WHERE ca.client_id = c.id) AS addresses,
+			(
+				SELECT json_agg(a)
+				FROM assignments a
+				INNER JOIN client_addresses ca ON a.address_id = ca.id
+				WHERE ca.client_id = c.id
+			) AS assignments,
+			(
+				SELECT json_agg(cs)
+				FROM cutting_schedule cs
+				INNER JOIN client_addresses ca ON cs.address_id = ca.id
+				WHERE ca.client_id = c.id
+			) AS schedules,
+			(
+				SELECT json_agg(
+					json_build_object(
+						'id', i.id,
+						'address_id', i.address_id,
+						'address', ca.address,
+						'imageURL', i.imageURL,
+						'isActive', i.isActive,
+						'client_id', ca.client_id
+					)
+				)
+				FROM images i
+				INNER JOIN client_addresses ca ON i.address_id = ca.id
+				WHERE ca.client_id = c.id
+			) AS "siteMaps"
+		FROM clients c
+		WHERE ${whereSql}
+		ORDER BY c.id DESC
+		LIMIT ${pageSize}
+		OFFSET ${offset}
+	`) as (Client & {
+		accounts: ClientAccount[] | null
+		addresses: ClientAddress[] | null
+		assignments: ClientAssignment[] | null
+		schedules: ClientCuttingSchedule[] | null
+		siteMaps: ClientSiteMapImages[] | null
+	})[]
+
+	/* ---------------- FLATTEN ---------------- */
+
+	const clients: Client[] = []
+	const accounts: ClientAccount[] = []
+	const addresses: ClientAddress[] = []
+	const assignments: ClientAssignment[] = []
+	const schedules: ClientCuttingSchedule[] = []
+	const siteMaps: ClientSiteMapImages[] = []
+
+	for (const row of results) {
+		const {
+			accounts: accs,
+			addresses: addrs,
+			assignments: asgns,
+			schedules: scheds,
+			siteMaps: sms,
+			...clientData
+		} = row
+
+		clients.push(clientData as Client)
+		if (accs) accounts.push(...accs)
+		if (addrs) addresses.push(...addrs)
+		if (asgns) assignments.push(...asgns)
+		if (scheds) schedules.push(...scheds)
+		if (sms) siteMaps.push(...sms)
 	}
 
-	const countQuery = sql`
-    ${baseQuery}
-    SELECT COUNT(*) AS total_count
-FROM(${selectQuery}) AS client_ids
-  `
-
-	const countResult = await countQuery
-	const totalCount = Number(countResult[0]?.total_count || 0)
-
-	const paginatedClientIdsQuery = sql`
-    ${baseQuery}
-    SELECT id
-FROM(${selectQuery}) AS client_ids
-    ORDER BY id
-    LIMIT ${pageSize} OFFSET ${offset}
-`
-
-	interface ClientIdRow {
-		id: number
+	return {
+		clients,
+		accounts,
+		addresses,
+		assignments,
+		schedules,
+		siteMaps,
+		totalPages,
 	}
-
-	const paginatedClientIdsResult =
-		(await paginatedClientIdsQuery) as ClientIdRow[]
-	const paginatedClientIds = paginatedClientIdsResult.map(
-		(row: ClientIdRow) => row.id,
-	)
-
-	const clientsQuery = sql`
-    WITH clients_with_balance AS(
-        SELECT 
-            c.*,
-            a.current_balance AS amount_owing
-        FROM clients c
-        LEFT JOIN accounts a ON c.id = a.client_id
-        WHERE c.organization_id = ${orgId}
-    ),
-    clients_with_schedules AS (
-        SELECT
-            cwb.*,
-            COALESCE(cs.cutting_week, 0) AS cutting_week,
-            COALESCE(cs.cutting_day, 'No cut') AS cutting_day,
-            COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments,
-            COALESCE(snow_assignments.assignments, '[]'::jsonb) AS snow_assignments
-        FROM clients_with_balance cwb
-        LEFT JOIN cutting_schedule cs ON cwb.id = cs.client_id
-        LEFT JOIN LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'grass'
-        ) grass_assignments ON TRUE
-        LEFT JOIN LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'snow'
-        ) snow_assignments ON TRUE
-        WHERE cwb.id = ANY(${paginatedClientIds})
-  )
-SELECT
-    cws.id,
-    cws.full_name,
-    cws.phone_number,
-    cws.email_address,
-    cws.address,
-    cws.amount_owing,  
-    cws.cutting_week,
-    cws.cutting_day,
-    cws.grass_assignments,
-    cws.snow_assignments,
-    COALESCE(img.urls, '[]'::jsonb) AS images
-FROM clients_with_schedules cws
-LEFT JOIN LATERAL(
-    SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.imageURL)) as urls
-    FROM images i
-    WHERE i.customerid = cws.id
-) img ON TRUE
-ORDER BY cws.id
-  `
-
-	const clientsResult = await clientsQuery
-
-	return { clientsResult, totalCount }
 }
+
+// export async function fetchClients(
+// 	orgId: string,
+// 	_pageSize: number,
+// 	_offset: number,
+// 	_searchTerm: string,
+// 	_searchTermCuttingWeek: number,
+// 	_searchTermCuttingDay: string,
+// 	_searchTermAssignedTo: string,
+// ) {
+// 	const sql = neon(`${process.env.DATABASE_URL} `)
+
+// 	return (await sql`
+
+//         SELECT * FROM clients WHERE organization_id = ${orgId}
+
+//   `) as Client[]
+// }
+// //MARK: Fetch client accounts for an array of clients
+// export async function fetchClientsAccounts(
+// 	clientIds: number[],
+// ): Promise<ClientAccount[]> {
+// 	if (clientIds.length === 0) return []
+
+// 	const sql = neon(`${process.env.DATABASE_URL}`)
+
+// 	return (await sql`
+// 		SELECT *
+// 		FROM accounts
+// 		WHERE client_id = ANY(${clientIds})
+// 	`) as ClientAccount[]
+// }
+
+//MARK: Fetch client addresses for an array of clients
+export async function fetchClientsAddresses(
+	clientIds: number[],
+): Promise<ClientAddress[]> {
+	if (clientIds.length === 0) return []
+
+	const sql = neon(`${process.env.DATABASE_URL}`)
+
+	return (await sql`
+		SELECT *
+		FROM client_addresses
+		WHERE client_id = ANY(${clientIds})
+	`) as ClientAddress[]
+}
+
+//MARK: Fetch cutting schedules
 export async function fetchClientsCuttingSchedules(
 	orgId: string,
 	searchTerm: string,
 	cuttingDate: Date,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-) {
+): Promise<ScheduledClient[]> {
 	const startOfYear = new Date(cuttingDate.getFullYear(), 0, 1)
 	const daysSinceStart = Math.floor(
 		(cuttingDate.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24),
@@ -591,154 +545,110 @@ export async function fetchClientsCuttingSchedules(
 		'Saturday',
 	]
 	const cuttingDay = daysOfWeek[cuttingDate.getDay()]
+	const date = cuttingDate.toISOString().split('T')[0]
 
-	const sql = neon(`${process.env.DATABASE_URL} `)
+	const sql = neon(`${process.env.DATABASE_URL}`)
 
-	const query = sql`
-    WITH clients_with_balance AS(
-      SELECT
-        c.*,
-        a.current_balance AS amount_owing
-      FROM clients c
-      LEFT JOIN accounts a ON c.id = a.client_id
-      WHERE c.organization_id = ${orgId}
-    ),
-    clients_with_schedules AS(
-      SELECT
-        cwb.*,
-        cs.cutting_week,
-        cs.cutting_day,
-		COALESCE(grass_assignments.assignments, '[]'::jsonb) AS grass_assignments
-      FROM clients_with_balance cwb
-      JOIN cutting_schedule cs ON cwb.id = cs.client_id
-	  LEFT JOIN LATERAL (
-            SELECT jsonb_agg(
-                jsonb_build_object('id', a.id, 'user_id', a.user_id, 'name', u.name, 'priority', a.priority)
-                ORDER BY a.priority
-            ) as assignments
-            FROM assignments a
-            JOIN users u ON a.user_id = u.id
-            WHERE a.client_id = cwb.id AND a.service_type = 'grass'
-        ) grass_assignments ON TRUE
-      WHERE cs.cutting_week = ${cuttingWeek} AND cs.cutting_day = ${cuttingDay}
-    ),
-    clients_marked_cut AS(
-      SELECT
-        ymc.client_id,
-        ymc.cutting_date
-      FROM yards_marked_cut ymc
-      WHERE ymc.cutting_date = ${cuttingDate}
-    )
-  `
-
-	let selectQuery = sql`
-    SELECT DISTINCT
-      cws.id,
-      cws.full_name,     
-      cws.address,
-      cws.amount_owing,
-      cws.cutting_week,
-      cws.cutting_day,
-      cws.grass_assignments,
-      COALESCE(img.urls, CAST('[]' AS JSONB)) AS images,
-      (
-			SELECT MIN((ga->>'priority')::int)
-			FROM jsonb_array_elements(cws.grass_assignments) AS ga
-		) as priority
-    FROM clients_with_schedules cws
-    LEFT JOIN clients_marked_cut cmc ON cws.id = cmc.client_id
-    LEFT JOIN LATERAL(
-      SELECT JSON_AGG(JSON_BUILD_OBJECT('id', i.id, 'url', i.imageURL))::jsonb as urls
-      FROM images i
-      WHERE i.customerid = cws.id
-    ) img ON TRUE
-    WHERE ${searchTermIsCut ? sql`cmc.client_id IS NOT NULL` : sql`cmc.client_id IS NULL`}
-  `
-
-	const whereClauses = []
-
-	if (searchTerm !== '') {
-		whereClauses.push(sql`
-      (cws.full_name ILIKE ${`%${searchTerm}%`}
-        OR cws.phone_number ILIKE ${`%${searchTerm}%`}
-        OR cws.email_address ILIKE ${`%${searchTerm}%`}
-        OR cws.address ILIKE ${`%${searchTerm}%`})
-    `)
+	// Base query: clients in org with assignments and cutting schedule for that day
+	let baseQuery = sql`
+		SELECT 
+			c.id,
+			c.full_name,
+			c.phone_number,
+			c.email_address,
+			ca.address,
+			ca.id AS address_id,
+			a.id AS assignment_id,
+			a.user_id,
+			a.priority
+		FROM clients c
+		JOIN client_addresses ca ON ca.client_id = c.id
+		JOIN cutting_schedule cs ON ca.id = cs.address_id
+		LEFT JOIN assignments a ON a.address_id = ca.id AND a.service_type = 'grass'
+		WHERE c.organization_id = ${orgId}
+		  AND cs.cutting_week = ${cuttingWeek}
+		  AND cs.cutting_day = ${cuttingDay}
+	`
+	if (searchTermIsCut !== undefined) {
+		const subquery = searchTermIsCut
+			? sql`EXISTS (
+					SELECT 1
+					FROM yards_marked_cut ymc
+					WHERE ymc.address_id = ca.id AND ymc.cutting_date = ${date}
+				)`
+			: sql`NOT EXISTS (
+					SELECT 1
+					FROM yards_marked_cut ymc
+					WHERE ymc.address_id = ca.id AND ymc.cutting_date = ${date}
+				)`
+		baseQuery = sql`${baseQuery} AND ${subquery}`
+	}
+	// Filter by assigned user if provided
+	if (searchTermAssignedTo && searchTermAssignedTo.trim() !== '') {
+		baseQuery = sql`${baseQuery} AND a.user_id = ${searchTermAssignedTo}`
 	}
 
-	if (searchTermAssignedTo && searchTermAssignedTo !== '') {
-		whereClauses.push(sql`
-      EXISTS (
-        SELECT 1
-        FROM jsonb_array_elements(cws.grass_assignments) AS ga
-        WHERE ga->>'user_id' = ${searchTermAssignedTo}
-      )
-    `)
+	// Filter by search term if provided
+	if (searchTerm && searchTerm.trim() !== '') {
+		const term = `%${searchTerm}%`
+		baseQuery = sql`${baseQuery} AND (
+			c.full_name ILIKE ${term} OR
+			c.phone_number ILIKE ${term} OR
+			c.email_address ILIKE ${term} OR
+			ca.address ILIKE ${term}
+		)`
 	}
 
-	if (whereClauses.length > 0) {
-		let whereClause = sql`AND ${whereClauses[0]}`
-		for (let i = 1; i < whereClauses.length; i++) {
-			whereClause = sql`${whereClause} AND ${whereClauses[i]}`
-		}
+	const clientsResult = await baseQuery
 
-		selectQuery = sql`
-      ${selectQuery}
-      ${whereClause}
-    `
-	}
-
-	const finalQuery = sql`
-    ${query}
-    ${selectQuery}
-    ORDER BY priority NULLS LAST, cws.id
-  `
-
-	const clientsResult = await finalQuery
-
-	return clientsResult as ClientResult[]
+	return clientsResult as ScheduledClient[]
 }
 
 //MARK: Mark yard cut
 export async function markYardServicedDb(
 	data: z.infer<typeof schemaMarkYardCut>,
-	organization_id: string,
 	snow: boolean,
 	assigned_to: string,
 ) {
-	const sql = neon(`${process.env.DATABASE_URL} `)
+	const sql = neon(`${process.env.DATABASE_URL}`)
 	console.log('Marking client serviced payload:', JSON.stringify(data))
+
+	// Validate inputs
+	if (!data.addressId || typeof data.addressId !== 'number') {
+		throw new Error('Invalid addressId')
+	}
+	if (!assigned_to || typeof assigned_to !== 'string') {
+		throw new Error('Invalid assigned_to')
+	}
+
+	// Convert date to YYYY-MM-DD
+	const dateValue =
+		data.date instanceof Date
+			? data.date.toISOString().split('T')[0]
+			: data.date
+
 	try {
 		const query = snow
 			? sql`
-          INSERT INTO yards_marked_clear(client_id, clearing_date, assigned_to)
-          SELECT ${data.clientId}, ${data.date}, ${assigned_to}
-          FROM clients
-          WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-          ON CONFLICT(client_id, clearing_date) DO UPDATE
-          SET assigned_to = EXCLUDED.assigned_to
-          RETURNING id;
-          `
+          INSERT INTO yards_marked_clear (address_id, clearing_date, assigned_to)
+          VALUES (${data.addressId}, ${dateValue}, ${assigned_to})
+          RETURNING *
+        `
 			: sql`
-          INSERT INTO yards_marked_cut(client_id, cutting_date, assigned_to)
-          SELECT ${data.clientId}, ${data.date}, ${assigned_to}
-          FROM clients
-          WHERE id = ${data.clientId} AND organization_id = ${organization_id}
-          ON CONFLICT(client_id, cutting_date) DO UPDATE
-          SET assigned_to = EXCLUDED.assigned_to
-          RETURNING id;
-          `
+          INSERT INTO yards_marked_cut (address_id, cutting_date, assigned_to)
+          VALUES (${data.addressId}, ${dateValue}, ${assigned_to})
+          RETURNING *
+        `
 
 		const result = await query
-
-		if (!result || result.length === 0) {
-			console.error(
-				'Error inserting data on table yards_marked_cut or yards_marked_clear',
-			)
-		}
-		return result[0].id
+		console.log('Inserted record:', result)
+		return result
 	} catch (e) {
-		console.log(e)
+		console.error(
+			'Error inserting data on table yards_marked_cut or yards_marked_clear',
+			e,
+		)
+		throw e
 	}
 }
 
@@ -753,13 +663,13 @@ export async function saveUrlImagesServices(
 	try {
 		const query = snow
 			? sql`INSERT INTO images_serviced(imageurl, fk_clear_id)
-  VALUES (${image_url}, ${fk_id})
-  returning *;
-  `
+				VALUES (${image_url}, ${fk_id})
+				returning *;
+				`
 			: sql`INSERT INTO images_serviced(imageurl, fk_cut_id)
-  VALUES (${image_url}, ${fk_id})
-  returning *;
-  `
+				VALUES (${image_url}, ${fk_id})
+				returning *;
+			`
 
 		const result = await query
 		if (!result || result.length === 0) {
@@ -913,7 +823,6 @@ export async function updateClientStripeIdByIdDb(
 		return result
 	} catch (error) {
 		console.error('Error in updateClientStripeIdByIdDb SQL query:', error)
-		throw error
 	}
 }
 
@@ -922,26 +831,84 @@ export async function updateClientInfoDb(
 	clientName: string,
 	clientEmail: string | null | undefined,
 	phoneNumber: string | null | undefined,
-	address: string,
+	addresses: { address: string }[],
+	stripeCustomerId?: string,
 ) {
 	const sql = neon(`${process.env.DATABASE_URL}`)
 	const stringPhoneNumber = phoneNumber ? String(phoneNumber) : null
 	try {
 		const result = await sql`
-            UPDATE clients
-            SET
-                full_name = ${clientName},
-                email_address = ${clientEmail},
-                phone_number = ${stringPhoneNumber},
-                address = ${address}
-            WHERE id = ${clientId}
-            RETURNING *;
-        `
+			UPDATE clients
+			SET
+				full_name = ${clientName},
+				email_address = ${clientEmail},
+				phone_number = ${stringPhoneNumber}
+			WHERE id = ${clientId}
+			RETURNING *;
+		`
+
+		if (stripeCustomerId) {
+			await sql`
+				UPDATE clients
+				SET stripe_customer_id = ${stripeCustomerId}
+				WHERE id = ${clientId};	`
+		}
+
+		await syncClientAddresses(sql, clientId, addresses ?? [])
 		return result
 	} catch (error) {
 		console.error('Error in updateClientInfoDb SQL query:', error)
 		throw error
 	}
+}
+const normalize = (a: string) => a.trim()
+
+async function syncClientAddresses(
+	sql: NeonQueryFunction<false, false>,
+	clientId: number,
+	newAddresses: { address: string }[],
+) {
+	// 1️⃣ Get existing addresses
+	const existing = (await sql`
+		SELECT id, address
+		FROM client_addresses
+		WHERE client_id = ${clientId}
+	`) as { id: number; address: string }[]
+
+	const existingSet = new Set(existing.map((a) => normalize(a.address)))
+	const incomingSet = new Set(newAddresses.map((a) => normalize(a.address)))
+
+	// 2️⃣ Determine inserts
+	const toInsert = newAddresses.filter(
+		(a) => !existingSet.has(normalize(a.address)),
+	)
+
+	// 3️⃣ Determine deletes
+	const toDelete = existing.filter(
+		(a) => !incomingSet.has(normalize(a.address)),
+	)
+
+	// 4️⃣ Insert new addresses
+	await Promise.all(
+		toInsert.map(
+			(addr) =>
+				sql`
+				INSERT INTO client_addresses (client_id, address)
+				VALUES (${clientId}, ${addr.address})
+			`,
+		),
+	)
+
+	// 5️⃣ Delete removed addresses
+	await Promise.all(
+		toDelete.map(
+			(addr) =>
+				sql`
+				DELETE FROM client_addresses
+				WHERE id = ${addr.id}
+			`,
+		),
+	)
 }
 
 export async function updateStripeCustomerIdDb(

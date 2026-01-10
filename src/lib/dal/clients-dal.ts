@@ -2,42 +2,56 @@ import { auth } from '@clerk/nextjs/server'
 import { cacheTag } from 'next/cache'
 import {
 	fetchClientListDb,
+	fetchClients,
 	fetchClientsClearingGroupsDb,
 	fetchClientsCuttingSchedules,
-	fetchClientsWithSchedules,
 	fetchStripeCustomerNamesDB,
 } from '@/lib/DB/clients-db'
 import { fetchClientNamesAndEmailsDb } from '@/lib/DB/resend-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import type {
+	ClientAssignment,
+	ScheduledClient,
+} from '@/types/assignment-types'
+import type {
+	Client,
+	ClientAccount,
+	ClientAddress,
 	ClientInfoList,
-	ClientResult,
-	ClientResultListClientPage,
 	CustomerName,
 	NamesAndEmails,
-	PaginatedClients,
 } from '@/types/clients-types'
+import type { ClientCuttingSchedule } from '@/types/schedules-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import { getServicedImagesUrlsDb } from '../DB/db-get-images'
-import { processClientsResult } from '../utils/sort'
+import { fetchClientSiteMapImages } from '../DB/sitemaps-db'
 
-export async function fetchAllClients(
+export async function fetchAllClientsInfo(
 	clientPageNumber: number,
 	searchTerm: string,
 	searchTermCuttingWeek: number,
 	searchTermCuttingDay: string,
 	searchTermAssignedTo: string,
-): Promise<PaginatedClients | null> {
+): Promise<{
+	clients: Client[]
+	addresses: ClientAddress[]
+	accounts: ClientAccount[]
+	assignments: ClientAssignment[]
+	schedules: ClientCuttingSchedule[]
+	siteMaps: ClientSiteMapImages[]
+	totalPages: number
+} | null> {
 	'use cache: private'
 	cacheTag(`clients-page-${clientPageNumber}`)
-	const { orgId, userId } = await isOrgAdmin(true)
-	// if (!isAdmin) throw new Error('Not admin!')
+	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
+	if (!isAdmin) throw new Error('Not admin!')
 
 	if (!userId) throw new Error('Not logged in!')
 	const pageSize = Number(process.env.PAGE_SIZE) || 10
 	const offset = (clientPageNumber - 1) * pageSize
 
 	try {
-		const result = await fetchClientsWithSchedules(
+		const allClientsInfo = await fetchClients(
 			orgId || userId,
 			pageSize,
 			offset,
@@ -47,14 +61,30 @@ export async function fetchAllClients(
 			searchTermAssignedTo,
 		)
 
-		if (!result.clientsResult) return null
+		if (!allClientsInfo) {
+			console.error('Failed to fetch clients')
+			return null
+		}
 
-		const { clients, totalPages } = processClientsResult(
-			result.clientsResult as ClientResultListClientPage[],
-			result.totalCount,
-			pageSize,
-		)
-		return { clients, totalPages }
+		const {
+			clients,
+			accounts,
+			addresses,
+			assignments,
+			schedules,
+			siteMaps,
+			totalPages,
+		} = allClientsInfo
+
+		return {
+			clients,
+			accounts,
+			addresses,
+			assignments,
+			schedules,
+			siteMaps,
+			totalPages,
+		}
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)
@@ -88,7 +118,15 @@ export async function fetchCuttingClients(
 	cuttingDate?: Date | undefined,
 	searchTermIsCut?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | { errorMessage: string }> {
+): Promise<
+	| {
+			clientsSchedules: ScheduledClient[]
+			siteMaps: ClientSiteMapImages[]
+	  }
+	| {
+			errorMessage: string
+	  }
+> {
 	'use cache: private'
 	cacheTag('grass-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
@@ -110,7 +148,7 @@ export async function fetchCuttingClients(
 		if (!assignedTo)
 			return { errorMessage: 'Can not search with no one assigned.' }
 
-		const result = await fetchClientsCuttingSchedules(
+		const clientsSchedules = await fetchClientsCuttingSchedules(
 			orgId || userId,
 			searchTerm,
 			cuttingDate || new Date(),
@@ -118,7 +156,10 @@ export async function fetchCuttingClients(
 			assignedTo,
 		)
 
-		return result
+		const clientIds = clientsSchedules.map((client) => client.id)
+		const siteMaps = await fetchClientSiteMapImages(clientIds)
+
+		return { clientsSchedules, siteMaps }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)
@@ -130,7 +171,15 @@ export async function fetchSnowClearingClients(
 	clearingDate?: Date,
 	searchTermIsServiced?: boolean,
 	searchTermAssignedTo?: string,
-): Promise<ClientResult[] | { errorMessage: string }> {
+): Promise<
+	| {
+			clientsSchedules: ScheduledClient[]
+			siteMaps: ClientSiteMapImages[]
+	  }
+	| {
+			errorMessage: string
+	  }
+> {
 	'use cache: private'
 	cacheTag('snow-clients')
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
@@ -146,7 +195,7 @@ export async function fetchSnowClearingClients(
 	}
 
 	try {
-		const result = await fetchClientsClearingGroupsDb(
+		const clientsSchedules = await fetchClientsClearingGroupsDb(
 			orgId || userId,
 			searchTerm,
 			clearingDate || new Date(),
@@ -155,7 +204,12 @@ export async function fetchSnowClearingClients(
 			searchTermAssignedTo,
 		)
 
-		return result
+		// let clientIds
+		// if('errorMessage' in result )throw new Error(" error Fetching from db")
+		const clientIds = clientsSchedules.map((client) => client.id)
+		const siteMaps = await fetchClientSiteMapImages(clientIds)
+
+		return { clientsSchedules, siteMaps }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)
@@ -199,11 +253,13 @@ export async function fetchClientNamesByStripeIds(
 
 //MARK: Get Serviced URLs
 export async function getServicedImagesUrls(
-	clientId: number,
+	addressId: number,
 ): Promise<{ date: Date; imageurl: string }[]> {
+	'use cache: private'
+	cacheTag(`serviced-images-${addressId}`)
 	await auth.protect()
 	try {
-		return await getServicedImagesUrlsDb(clientId)
+		return await getServicedImagesUrlsDb(addressId)
 	} catch (error) {
 		console.error('Error in getting Serviced Images Urls:', error)
 		return []

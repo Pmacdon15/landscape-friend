@@ -1,23 +1,24 @@
 'use client'
 
 import { Edit } from 'lucide-react'
-import { useState } from 'react'
-import type { Client } from '@/types/clients-types'
+import { use, useState } from 'react'
+import type { Client, ClientAddress } from '@/types/clients-types'
 import { EditSettingSheet } from '../sheets/edit-settings-sheet'
 import { EditClientForm } from './edit-client-form'
 
 export default function EditClientFormContainer({
 	client,
-	isAdmin,
-	page,
+	addresses,
+	pagePromise,
 }: {
 	client: Client
-	isAdmin: boolean
-	page: number
+	addresses: ClientAddress[]
+
+	pagePromise: Promise<number>
 }) {
+	const page = use(pagePromise)
 	const [open, setOpen] = useState(false)
 
-	if (!isAdmin) return null
 	return (
 		<div className="flex w-full justify-center">
 			<EditSettingSheet
@@ -32,6 +33,7 @@ export default function EditClientFormContainer({
 				variant="link"
 			>
 				<EditClientForm
+					addresses={addresses}
 					client={client}
 					page={page}
 					setSheetOpen={setOpen}

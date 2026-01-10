@@ -9,17 +9,17 @@ import { uploadImageBlobServiceDone } from '../utils/image-control'
 import { schemaAssign, schemaMarkYardCut } from '../zod/schemas'
 
 export async function markYardServiced(
-	clientId: number,
+	addressId: number,
 	date: Date,
 	snow = false,
 	images: File[],
 ) {
-	const { orgId, userId } = await isOrgAdmin(true)
+	const { userId } = await isOrgAdmin(true)
 
 	if (!userId) return { errorMessage: 'User ID is missing.' }
 
 	const validatedFields = schemaMarkYardCut.safeParse({
-		clientId: clientId,
+		addressId: addressId,
 		date: date,
 	})
 
@@ -31,12 +31,7 @@ export async function markYardServiced(
 	/// Try upload Image to Vercel Blob
 	try {
 		for (let i = 0; i < images.length; i++) {
-			result_upload[i] = await uploadImageBlobServiceDone(
-				orgId || userId,
-				clientId,
-				images[i],
-				true,
-			)
+			result_upload[i] = await uploadImageBlobServiceDone(images[i], true)
 			images_url[i] = result_upload[i].url
 		}
 		if (!result_upload)
@@ -54,26 +49,27 @@ export async function markYardServiced(
 
 	// Try save information into Database
 	try {
-		const result_mark = await markYardServicedDb(
+		const inserted_record = await markYardServicedDb(
 			validatedFields.data,
-			orgId || userId,
 			snow,
 			userId,
 		)
 
-		if (!result_mark) {
+		if (!inserted_record || inserted_record.length === 0) {
 			console.error(
-				'Failed to mark yard serviced: No ID returned from DB',
+				'Failed to mark yard serviced: No record returned from DB',
 			)
 			return { errorMessage: 'Failed to update client as serviced' }
 		}
+
+		const result_mark_id = inserted_record[0].id
 
 		const result_url = []
 		for (let i = 0; i < images.length; i++) {
 			result_url[i] = await saveUrlImagesServices(
 				snow,
 				images_url[i],
-				result_mark,
+				result_mark_id,
 			)
 		}
 
@@ -90,14 +86,17 @@ export async function markYardServiced(
 	}
 }
 
-export async function assignGrassCutting(clientId: number, assignedTo: string) {
-	const { isAdmin, orgId, userId } = await isOrgAdmin()
+export async function assignGrassCutting(
+	assignedTo: string,
+	addressId: number,
+) {
+	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!orgId && !userId)
 		throw new Error('Organization ID or User ID is missing.')
 
 	const validatedFields = schemaAssign.safeParse({
-		clientId: clientId,
+		addressId: addressId,
 		assignedTo: assignedTo,
 	})
 
@@ -105,16 +104,13 @@ export async function assignGrassCutting(clientId: number, assignedTo: string) {
 
 	try {
 		if (assignedTo === 'not-assigned') {
-			const result = await unassignGrassCuttingDb(
-				validatedFields.data.clientId,
-				orgId || String(userId),
-			)
+			const result = await unassignGrassCuttingDb(addressId)
 			if (!result) throw new Error('Failed to unassign grass cutting')
 			return result
 		} else {
 			const result = await assignGrassCuttingDb(
 				validatedFields.data,
-				orgId || String(userId),
+				addressId,
 			)
 			if (!result) throw new Error('Failed to update Client cut day')
 			return result

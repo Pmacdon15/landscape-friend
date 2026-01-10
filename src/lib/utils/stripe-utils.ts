@@ -100,7 +100,7 @@ export async function createOrUpdateStripeUser(
 	clientName: string,
 	clientEmail: string | null | undefined,
 	phoneNumber: string | null | undefined,
-	address: string,
+	addresses: { address: string }[],
 	organization_id: string | undefined,
 ) {
 	if (!organization_id) {
@@ -119,7 +119,7 @@ export async function createOrUpdateStripeUser(
 			clientName,
 			clientEmail,
 			phoneNumber,
-			address,
+			addresses,
 		)
 		return
 	}
@@ -131,47 +131,54 @@ export async function createOrUpdateStripeUser(
 	}
 
 	const stripePhoneNumber = phoneNumber ? String(phoneNumber) : undefined
+	const addressMetadata = JSON.stringify(addresses.map((a) => a.address))
+	let stripeCustomerId: string
 
 	if (!currentClient.stripe_customer_id) {
 		// Create a new Stripe customer
-		const customer = await stripe.customers.create({
-			name: clientName,
-			email: clientEmail ?? '',
-			phone: stripePhoneNumber,
-			address: {
-				line1: address,
-			},
-			metadata: {
-				organization_id: organization_id ?? '',
-				clientId: clientId,
-			},
-		})
+		stripeCustomerId = (
+			await stripe.customers.create({
+				name: clientName,
+				email: clientEmail ?? '',
+				phone: stripePhoneNumber,
+				address: {
+					line1: addresses[0]?.address ?? '',
+				},
+				metadata: {
+					organization_id: organization_id ?? '',
+					clientId: clientId,
+					addresses: addressMetadata,
+				},
+			})
+		).id
 
-		// Update the client in the database with the new Stripe customer ID
-		await updateClientStripeIdByIdDb(clientId, customer.id)
+		await updateClientStripeIdByIdDb(clientId, stripeCustomerId)
 	} else {
 		// Update an existing Stripe customer
-		await stripe.customers.update(currentClient.stripe_customer_id, {
-			name: clientName,
-			email: clientEmail ?? '',
-			phone: stripePhoneNumber,
-			address: {
-				line1: address,
-			},
-			metadata: {
-				organization_id: organization_id ?? '',
-				clientId: clientId,
-			},
-		})
+		stripeCustomerId = (
+			await stripe.customers.update(currentClient.stripe_customer_id, {
+				name: clientName,
+				email: clientEmail ?? '',
+				phone: stripePhoneNumber,
+				address: {
+					line1: addresses[0]?.address ?? '',
+				},
+				metadata: {
+					organization_id: organization_id ?? '',
+					clientId: clientId,
+					addresses: addressMetadata,
+				},
+			})
+		).id
+
+		await updateClientInfoDb(
+			clientId,
+			clientName,
+			clientEmail,
+			phoneNumber,
+			addresses,
+		)
 	}
-	// Always update the client's information in the local DB.
-	await updateClientInfoDb(
-		clientId,
-		clientName,
-		clientEmail,
-		phoneNumber,
-		address,
-	)
 }
 export async function createStripeWebhook(
 	apiKey: string,

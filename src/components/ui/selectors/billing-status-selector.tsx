@@ -1,7 +1,6 @@
 'use client'
-import { useOptimistic, useTransition } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import type { VariantBillingStatusSelector } from '@/types/search-fallback-types'
-import { useBillingStatusSearch } from '../../../lib/hooks/hooks'
 import {
 	Select,
 	SelectContent,
@@ -16,12 +15,9 @@ export function BillingStatusSelector({
 }: {
 	variant?: VariantBillingStatusSelector
 }) {
-	const { currentStatus, setBillingStatus } = useBillingStatusSearch()
-	const [optimisticStatus, setOptimisticStatus] = useOptimistic(
-		currentStatus,
-		(_, newValue: string) => newValue,
-	)
-	const [, startTransition] = useTransition()
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const billingStatus = searchParams.get('status') || 'all'
 
 	const statuses =
 		variant === 'invoices'
@@ -31,18 +27,19 @@ export function BillingStatusSelector({
 				: ['active', 'canceled', 'incomplete']
 
 	function handleChange(value: string) {
-		startTransition(() => {
-			setOptimisticStatus(value)
-			setBillingStatus(value)
-		})
+		if (value && value !== 'status') {
+			router.push(`?status=${encodeURIComponent(value)}`)
+		} else {
+			router.push(`?`)
+		}
 	}
 
 	return (
 		<div className="flex gap-1">
 			<Select
+				defaultValue={billingStatus}
 				name="status"
 				onValueChange={handleChange}
-				value={optimisticStatus}
 			>
 				<SelectTrigger>
 					<SelectValue placeholder="Status" />

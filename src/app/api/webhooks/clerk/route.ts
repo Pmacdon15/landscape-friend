@@ -1,4 +1,5 @@
 import { verifyWebhook } from '@clerk/nextjs/webhooks'
+import { revalidateTag } from 'next/cache'
 import type { NextRequest } from 'next/server'
 import {
 	handleOrganizationCreated,
@@ -68,6 +69,11 @@ export async function POST(req: NextRequest) {
 					break
 				}
 
+				case 'organizationMembership.created': {
+					const orgId = (evt.data as OrganizationCreatedEvent).id
+					revalidateTag(`org_membership-${orgId}`, { expire: 0 })
+					break
+				}
 				case 'user.deleted': {
 					const id = (evt.data as UserDeletedEvent).id
 					await handleOrganizationDeleted(id)

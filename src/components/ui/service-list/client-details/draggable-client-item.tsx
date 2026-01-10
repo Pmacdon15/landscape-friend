@@ -2,27 +2,30 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Grip } from 'lucide-react'
-import type { ClientResult } from '@/types/clients-types'
+import type { ScheduledClient } from '@/types/assignment-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import MarkYardServiced from '../../buttons/mark-yard-serviced'
 import FormContainer from '../../containers/form-container'
 import ClientDetailsCard from './ClientDetailsCard'
 
 interface DraggableClientItemProps {
-	client: ClientResult
-	isAdmin: boolean
-	searchTermIsServiced: boolean
+	client: ScheduledClient
+	isAdminPromise: Promise<{ isAdmin: boolean }>
+	addressId: number
 	serviceDate?: Date
 	snow: boolean
-	page: number
+	pagePromise: Promise<number>
+	siteMaps: ClientSiteMapImages[]
 }
 
 export default function DraggableClientItem({
 	client,
-	isAdmin,
-	searchTermIsServiced,
+	isAdminPromise,
+	addressId,
 	serviceDate,
 	snow,
-	page,
+	pagePromise,
+	siteMaps,
 }: DraggableClientItemProps) {
 	const {
 		attributes,
@@ -31,7 +34,9 @@ export default function DraggableClientItem({
 		transform,
 		transition,
 		isDragging,
-	} = useSortable({ id: client.id })
+	} = useSortable({
+		id: `${client.id}-${client.address}`,
+	})
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
@@ -40,7 +45,7 @@ export default function DraggableClientItem({
 	}
 
 	return (
-		<FormContainer key={client.id}>
+		<FormContainer key={`${client.id} + ${client.address}`}>
 			<li
 				className="flex w-full flex-col gap-4 rounded-sm border bg-white/50 p-4"
 				ref={setNodeRef}
@@ -61,18 +66,17 @@ export default function DraggableClientItem({
 					<div className="flex-1">
 						<ClientDetailsCard
 							client={client}
-							isAdmin={isAdmin}
-							page={page}
-							searchTermIsServiced={searchTermIsServiced}
+							isAdminPromise={isAdminPromise}
+							pagePromise={pagePromise}
 							serviceDate={serviceDate}
-							snow={snow}
+							siteMaps={siteMaps}
 						/>
 					</div>
 				</div>
 
 				{serviceDate && (
 					<MarkYardServiced
-						clientId={client.id}
+						addressId={addressId}
 						serviceDate={serviceDate}
 						snow={snow}
 					/>

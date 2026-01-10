@@ -5,7 +5,6 @@ import {
 	countClientsByOrgId,
 	deleteClientDB,
 	deleteSiteMapDB,
-	updateClientPricePerDb,
 	updatedClientCutDayDb,
 } from '@/lib/DB/clients-db'
 import { getOrganizationSettings } from '@/lib/DB/org-db'
@@ -14,7 +13,6 @@ import {
 	schemaDeleteClient,
 	schemaDeleteSiteMap,
 	schemaUpdateCuttingDay,
-	schemaUpdatePricePerMonth,
 } from '@/lib/zod/schemas'
 import { triggerNotificationSendToAdmin } from '../utils/novu'
 import {
@@ -26,7 +24,7 @@ import { AddClientFormSchema } from '../zod/client-schemas'
 export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	const organizationId = orgId || userId
-	if (!userId)
+	if (!organizationId)
 		return {
 			errorMessage: 'Not logged in',
 		}
@@ -35,13 +33,13 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 			errorMessage: 'Not Admin.',
 		}
 
-	const orgSettings = await getOrganizationSettings(orgId || userId)
+	const orgSettings = await getOrganizationSettings(organizationId)
 	if (!orgSettings)
 		return {
 			errorMessage: 'Organization not found.',
 		}
 
-	const clientCount = await countClientsByOrgId(orgId || userId)
+	const clientCount = await countClientsByOrgId(organizationId)
 	if (clientCount >= orgSettings.max_allowed_clients) {
 		return {
 			errorMessage:
@@ -49,41 +47,35 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 		}
 	}
 
-	const validatedFields = AddClientFormSchema.safeParse({
-		full_name: data.full_name,
-		phone_number: data.phone_number,
-		email_address: data.email_address,
-		address: data.address,
-		organization_id: organizationId,
-	})
+	const validatedFields = AddClientFormSchema.safeParse(data)
 
-	console.log('validatedFields: ', validatedFields)
-	if (!validatedFields.success)
+	if (!validatedFields.success) {
 		return {
 			errorMessage: 'Invalid form data',
 		}
+	}
 
 	try {
 		const customerId = await findOrCreateStripeCustomer(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
-			orgId || userId,
+			organizationId,
 		)
 
 		const result = await addClientDB(
 			{
 				...validatedFields.data,
 				stripe_customer_id: customerId || null,
-				organization_id: orgId || userId,
+				organization_id: organizationId,
 			},
-			orgId || userId,
+			organizationId,
 		)
 
-		if (!result || result.length === 0) {
+		if (!result) {
 			throw new Error('Failed to add client to database')
 		}
 
-		triggerNotificationSendToAdmin(orgId || userId, 'client-added', {
+		triggerNotificationSendToAdmin(organizationId, 'client-added', {
 			client: {
 				name: validatedFields.data.full_name,
 				encodedName: encodeURIComponent(validatedFields.data.full_name),
@@ -105,8 +97,8 @@ export async function updateClient(
 	clientId: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
-
-	if (!userId)
+	const organizationId = orgId || userId
+	if (!organizationId)
 		return {
 			errorMessage: 'Not logged in.',
 		}
@@ -114,13 +106,8 @@ export async function updateClient(
 		return {
 			errorMessage: 'Not Admin.',
 		}
-
-	const validatedFields = AddClientFormSchema.safeParse({
-		full_name: data.full_name,
-		phone_number: data.phone_number,
-		email_address: data.email_address,
-		address: data.address,
-	})
+	//TODO: address update is not implemented
+	const validatedFields = AddClientFormSchema.safeParse(data)
 
 	console.log('validatedFields: ', validatedFields)
 	if (!validatedFields.success)
@@ -133,8 +120,8 @@ export async function updateClient(
 			validatedFields.data.full_name,
 			validatedFields.data.email_address,
 			validatedFields.data.phone_number,
-			validatedFields.data.address,
-			(orgId ?? '') || (userId ?? ''),
+			validatedFields.data.addresses,
+			organizationId,
 		)
 		return { success: true }
 	} catch (e: unknown) {
@@ -173,48 +160,48 @@ export async function deleteClient(clientId: number) {
 	}
 }
 
-export async function updateClientPricePerMonth(
-	clientId: number,
-	price: number,
-	snow: boolean,
-) {
-	const { isAdmin, orgId, userId } = await isOrgAdmin()
-	if (!isAdmin) throw new Error('Not Admin')
-	if (!userId) throw new Error('User ID is missing.')
+// export async function updateClientPricePerMonth(
+// 	clientId: number,
+// 	price: number,
+// 	snow: boolean,
+// ) {
+// 	const { isAdmin, orgId, userId } = await isOrgAdmin()
+// 	if (!isAdmin) throw new Error('Not Admin')
+// 	if (!userId) throw new Error('User ID is missing.')
 
-	const validatedFields = schemaUpdatePricePerMonth.safeParse({
-		clientId: clientId,
-		pricePerMonthGrass: snow ? undefined : price,
-		pricePerMonthSnow: snow ? price : undefined,
-		snow: snow,
-	})
+// 	const validatedFields = schemaUpdatePricePerMonth.safeParse({
+// 		clientId: clientId,
+// 		pricePerMonthGrass: snow ? undefined : price,
+// 		pricePerMonthSnow: snow ? price : undefined,
+// 		snow: snow,
+// 	})
 
-	if (!validatedFields.success) throw new Error('Invalid input data')
+// 	if (!validatedFields.success) throw new Error('Invalid input data')
 
-	try {
-		const result = await updateClientPricePerDb(
-			validatedFields.data,
-			orgId || String(userId),
-		)
-		if (!result) throw new Error('Failed to update Client price per')
-		return result
-	} catch (e: unknown) {
-		const errorMessage = e instanceof Error ? e.message : String(e)
-		throw new Error(errorMessage)
-	}
-}
+// 	try {
+// 		const result = await updateClientPricePerDb(
+// 			validatedFields.data,
+// 			orgId || String(userId),
+// 		)
+// 		if (!result) throw new Error('Failed to update Client price per')
+// 		return result
+// 	} catch (e: unknown) {
+// 		const errorMessage = e instanceof Error ? e.message : String(e)
+// 		throw new Error(errorMessage)
+// 	}
+// }
 
 export async function updateCuttingDay(
-	clientId: number,
+	addressId: number,
 	cuttingWeek: number,
 	updatedDay: string,
 ) {
-	const { isAdmin, orgId, userId } = await isOrgAdmin()
+	const { isAdmin, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!userId) throw new Error('User ID is missing.')
 
 	const validatedFields = schemaUpdateCuttingDay.safeParse({
-		clientId: clientId,
+		addressId: addressId,
 		cuttingWeek: cuttingWeek,
 		updatedDay: updatedDay,
 	})
@@ -224,7 +211,7 @@ export async function updateCuttingDay(
 	try {
 		const result = await updatedClientCutDayDb(
 			validatedFields.data,
-			orgId || String(userId),
+			// orgId || String(userId),
 		)
 		if (!result) throw new Error('Failed to update Client cut day')
 		return result
@@ -234,22 +221,18 @@ export async function updateCuttingDay(
 	}
 }
 
-export async function deleteSiteMap(clientId: number, siteMapId: number) {
-	const { orgId, userId } = await isOrgAdmin()
+export async function deleteSiteMap(siteMapId: number) {
+	const { userId } = await isOrgAdmin()
 	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
 	const validatedFields = schemaDeleteSiteMap.safeParse({
-		client_id: clientId,
 		siteMap_id: siteMapId,
 	})
 
 	if (!validatedFields.success) throw new Error('Invalid form data')
 
 	try {
-		const result = await deleteSiteMapDB(
-			validatedFields.data,
-			orgId || String(userId),
-		)
+		const result = await deleteSiteMapDB(validatedFields.data)
 		if (!result.success) throw new Error('Delete Client')
 		return result
 	} catch (e: unknown) {

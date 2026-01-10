@@ -1,4 +1,5 @@
 'use client'
+
 import {
 	closestCenter,
 	DndContext,
@@ -16,8 +17,9 @@ import {
 } from '@dnd-kit/sortable'
 import { use, useEffect, useState } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
-import type { ClientResult } from '@/types/clients-types'
+import type { ScheduledClient } from '@/types/assignment-types'
 import type { ParsedClientListParams } from '@/types/params-types'
+import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import FormContainer from '../../containers/form-container'
 import FormHeader from '../../header/form-header'
 import ManyPointsMap from '../../map-component/many-points-map'
@@ -30,34 +32,40 @@ export default function ClientCards({
 	isAdminPromise,
 	pagePromise,
 }: {
-	clientsPromise: Promise<ClientResult[] | { errorMessage: string }>
+	clientsPromise: Promise<
+		| {
+				clientsSchedules: ScheduledClient[]
+				siteMaps: ClientSiteMapImages[]
+		  }
+		| {
+				errorMessage: string
+		  }
+	>
 	parseClientListParamsPromise: Promise<ParsedClientListParams>
 	snow: boolean
 	isAdminPromise?: Promise<{ isAdmin: boolean }>
 	pagePromise: Promise<number>
 }) {
-	const clients = use(clientsPromise)
-	const page = use(pagePromise)
+	const clientSchedules = use(clientsPromise)
+
 	const parseClientListParams = use(parseClientListParamsPromise)
-	const isAdmin = use(isAdminPromise ?? Promise.resolve({ isAdmin: false }))
+
 	const { mutate } = useChangePriority()
 
-	// console.log('clients:', clients)
 	// State for managing client order
-	// const [orderedClients, setOrderedClients] = useState<ClientResult[]>(
-	// 	clients || [],
-	// )
-	const [orderedClients, setOrderedClients] = useState<ClientResult[]>([])
+	const [orderedClients, setOrderedClients] = useState<ScheduledClient[]>([])
 
-	// Update ordered clients when clients data changes
+	// Update ordered clients when clientSchedules changes
 	useEffect(() => {
-		if (clients && Array.isArray(clients)) {
-			setOrderedClients(clients)
-		} else if (clients && 'errorMessage' in clients) {
-			// Handle error case
-			console.error(clients.errorMessage)
+		if (!clientSchedules) return
+
+		if ('errorMessage' in clientSchedules) {
+			console.error(clientSchedules.errorMessage)
+			setOrderedClients([])
+		} else {
+			setOrderedClients(clientSchedules.clientsSchedules)
 		}
-	}, [clients])
+	}, [clientSchedules])
 
 	// Configure drag sensors
 	const sensors = useSensors(
@@ -67,98 +75,71 @@ export default function ClientCards({
 		}),
 	)
 
-	// Handle drag end event
+	// Handle drag end
 	const handleDragEnd = (event: DragEndEvent) => {
 		const { active, over } = event
+		if (!over || active.id === over.id) return
 
-		if (over && active.id !== over.id) {
-			setOrderedClients((items) => {
-				const oldIndex = items.findIndex(
-					(item) => item.id === active.id,
-				)
-				const newIndex = items.findIndex((item) => item.id === over.id)
+		setOrderedClients((items) => {
+			const oldIndex = items.findIndex(
+				(item) => `${item.id}-${item.address}` === active.id,
+			)
+			const newIndex = items.findIndex(
+				(item) => `${item.id}-${item.address}` === over.id,
+			)
 
-				const newOrder = arrayMove(items, oldIndex, newIndex)
+			const newOrder = arrayMove(items, oldIndex, newIndex)
 
-				const draggedClient = items.find(
-					(item) => item.id === active.id,
-				)
-				const targetClient = items.find((item) => item.id === over.id)
+			const draggedClient = items[oldIndex]
+			const targetClient = items[newIndex]
 
-				if (!draggedClient || !targetClient) {
-					console.error('Client not found')
-					return newOrder
-				}
+			if (!draggedClient || !targetClient) return newOrder
 
-				// Get the assignment of the dragged client
-				const draggedAssignment = snow
-					? draggedClient.snow_assignments?.[0]
-					: draggedClient.grass_assignments?.[0]
+			const draggedAssignment = draggedClient.assignment_id
+			const targetAssignment = targetClient.priority
 
-				// Get the priority of the target client
-				const targetAssignment = snow
-					? targetClient.snow_assignments?.[0]
-					: targetClient.grass_assignments?.[0]
+			if (!draggedAssignment || !targetAssignment) return newOrder
 
-				if (!draggedAssignment || !targetAssignment) {
-					console.error('Client has no assignments')
-					return newOrder
-				}
-
-				const assignmentId = draggedAssignment.id
-				const newPriority = targetAssignment.priority
-
-				// Call the mutate function
-				mutate({ assignmentId, priority: newPriority })
-
-				console.log('Client order changed:', {
-					clientId: active.id,
-					oldPosition: oldIndex,
-					newPosition: newIndex,
-					newPriority,
-				})
-
-				return newOrder
+			mutate({
+				assignmentId: draggedAssignment,
+				priority: targetAssignment,
 			})
-		}
+
+			return newOrder
+		})
 	}
 
+	//TODO Break these down in to components
+	// Early returns for errors / no data
 	if (!parseClientListParams.serviceDate)
 		return (
 			<FormContainer>
-				{' '}
-				<FormHeader
-					text={'Please select a date to see the client list'}
-				/>{' '}
+				<FormHeader text="Please select a date to see the client list" />
 			</FormContainer>
 		)
 
-	if ('errorMessage' in clients)
+	if ('errorMessage' in clientSchedules)
 		return (
 			<FormContainer>
-				{' '}
-				<FormHeader text={'Error Loading clients'} />
+				<FormHeader text="Error Loading clients" />
 			</FormContainer>
 		)
 
-	if (clients.length < 1)
+	if (clientSchedules.clientsSchedules.length < 1)
 		return (
 			<FormContainer>
-				{' '}
-				<FormHeader text={'No clients scheduled for today'} />{' '}
+				<FormHeader text="No clients scheduled for today" />
 			</FormContainer>
 		)
 
-	const addresses = clients.map((c: ClientResult) => ({
-		id: c.id,
-		address: c.address,
-	}))
-	const flattenedAddresses =
-		addresses?.map((address: { address: string }) => address.address) ?? []
+	// Flatten addresses for map
+	const flattenedAddresses = clientSchedules.clientsSchedules.map(
+		(m) => m.address,
+	)
 
 	return (
 		<>
-			{addresses && addresses?.length > 0 && (
+			{flattenedAddresses.length > 0 && (
 				<FormContainer>
 					<div className="flex w-full flex-col items-center justify-center gap-4 p-2 align-middle md:flex-row">
 						<FormHeader
@@ -168,29 +149,42 @@ export default function ClientCards({
 					</div>
 				</FormContainer>
 			)}
+
 			<DndContext
 				collisionDetection={closestCenter}
 				onDragEnd={handleDragEnd}
 				sensors={sensors}
 			>
 				<SortableContext
-					items={orderedClients.map((c) => c.id)}
+					items={orderedClients.map((c) => `${c.id}-${c.address}`)}
 					strategy={verticalListSortingStrategy}
 				>
 					<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
-						{orderedClients.map((client: ClientResult) => (
-							<DraggableClientItem
-								client={client}
-								isAdmin={isAdmin?.isAdmin ?? false}
-								key={client.id}
-								page={page}
-								searchTermIsServiced={
-									parseClientListParams.searchTermIsServiced
-								}
-								serviceDate={parseClientListParams.serviceDate}
-								snow={snow}
-							/>
-						))}
+						{orderedClients.map((client) => {
+							const siteMapsForAddress =
+								clientSchedules.siteMaps.filter(
+									(map) =>
+										map.address_id === client.address_id,
+								)
+
+							return (
+								<DraggableClientItem
+									addressId={client.address_id}
+									client={client}
+									isAdminPromise={
+										isAdminPromise ||
+										Promise.resolve({ isAdmin: false })
+									}
+									key={`${client.id}-${client.address}`}
+									pagePromise={pagePromise}
+									serviceDate={
+										parseClientListParams.serviceDate
+									}
+									siteMaps={siteMapsForAddress}
+									snow={snow}
+								/>
+							)
+						})}
 					</ul>
 				</SortableContext>
 			</DndContext>

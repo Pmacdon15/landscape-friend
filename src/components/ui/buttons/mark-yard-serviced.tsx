@@ -8,23 +8,26 @@ import { Button } from '../button'
 import Spinner from '../loaders/spinner'
 
 export default function MarkYardServiced({
-	clientId,
+	addressId,
 	serviceDate,
 	snow = false,
 }: {
-	clientId: number
+	addressId: number
 	serviceDate: Date
 	snow?: boolean
 }) {
-	const { mutate, isError, isPending, error } = useMarkYardServiced({
-		onSuccess: () => {
-			toast.success('Yard marked serviced!', { duration: 1500 })
+	const { mutate, isError, isPending, error } = useMarkYardServiced(
+		addressId,
+		{
+			onSuccess: () => {
+				toast.success('Yard marked serviced!', { duration: 1500 })
+			},
+			onError: (error) => {
+				console.error('Error marking yard serviced', error)
+				toast.error('Error marking yard serviced!', { duration: 1500 })
+			},
 		},
-		onError: (error) => {
-			console.error('Error marking yard serviced', error)
-			toast.error('Error marking yard serviced!', { duration: 1500 })
-		},
-	})
+	)
 	const [images, setImages] = useState<File[]>([])
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -87,8 +90,10 @@ export default function MarkYardServiced({
 		})
 	}
 
+	//TODO: uncomment below
 	function isMobileDevice() {
-		return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		// return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		return true
 		// return true
 	}
 
@@ -143,11 +148,11 @@ export default function MarkYardServiced({
 			</label>
 			{images.length > 0 && (
 				<>
-					{images.map((img, _index) => (
+					{images.map((img, index) => (
 						<Image
 							alt={'Site Serviced Photo'}
 							height={400}
-							key={img.name}
+							key={`${img.name}-${index}`}
 							src={URL.createObjectURL(new Blob([img]))}
 							width={400}
 						/>
@@ -158,7 +163,7 @@ export default function MarkYardServiced({
 						onClick={() =>
 							images
 								? mutate({
-										clientId,
+										addressId,
 										date: serviceDate,
 										snow,
 										images,

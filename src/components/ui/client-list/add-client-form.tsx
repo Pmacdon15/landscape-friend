@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import type z from 'zod'
 import { useAddClient } from '@/lib/mutations/mutations'
@@ -22,8 +22,13 @@ export function AddClientForm({
 			full_name: '',
 			phone_number: undefined,
 			email_address: '',
-			address: '',
+			addresses: [{ address: '' }],
 		},
+	})
+
+	const { fields, append, remove } = useFieldArray({
+		control: form.control,
+		name: 'addresses',
 	})
 
 	const { mutate, isPending, isError, error } = useAddClient({
@@ -67,12 +72,32 @@ export function AddClientForm({
 					label={'Email Address'}
 					name={'email_address'}
 				/>
-
-				<FormInput
-					control={form.control}
-					label={'Address'}
-					name={'address'}
-				/>
+				<div>
+					{fields.map((field, index) => (
+						<div className="flex items-end gap-2" key={field.id}>
+							<FormInput
+								control={form.control}
+								label={`Address ${index + 1}`}
+								name={`addresses.${index}.address`}
+							/>
+							<Button
+								onClick={() => remove(index)}
+								type="button"
+								variant="destructive"
+							>
+								Remove
+							</Button>
+						</div>
+					))}
+					<Button
+						className="mt-2"
+						onClick={() => append({ address: '' })}
+						type="button"
+						variant="outline"
+					>
+						Add Address
+					</Button>
+				</div>
 			</div>
 			<div className="flex justify-end gap-2">
 				<Button disabled={isPending} type="submit" variant={'outline'}>

@@ -7,7 +7,6 @@ import {
 	deleteClient,
 	deleteSiteMap,
 	updateClient,
-	updateClientPricePerMonth,
 	updateCuttingDay,
 } from '@/lib/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
@@ -136,13 +135,13 @@ export const useUploadImage = ({
 }) => {
 	return useMutation({
 		mutationFn: ({
-			clientId,
+			addressId,
 			formData,
 		}: {
-			clientId: number
+			addressId: number
 			formData: FormData
 		}) => {
-			return uploadImage(clientId, formData)
+			return uploadImage(addressId, formData)
 		},
 		onSuccess: () => {
 			// revalidatePathAction("/lists/client");
@@ -161,14 +160,8 @@ export const useUploadImage = ({
 
 export const useDeleteSiteMap = (page?: number) => {
 	return useMutation({
-		mutationFn: ({
-			clientId,
-			siteMapId,
-		}: {
-			clientId: number
-			siteMapId: number
-		}) => {
-			return deleteSiteMap(clientId, siteMapId)
+		mutationFn: ({ siteMapId }: { siteMapId: number }) => {
+			return deleteSiteMap(siteMapId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -183,8 +176,14 @@ export const useDeleteSiteMap = (page?: number) => {
 // export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
 export const useUploadDrawing = (page?: number) => {
 	return useMutation({
-		mutationFn: ({ file, clientId }: { file: Blob; clientId: number }) => {
-			return uploadDrawing(file, clientId)
+		mutationFn: ({
+			file,
+			addressId,
+		}: {
+			file: Blob
+			addressId: number
+		}) => {
+			return uploadDrawing(file, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -199,39 +198,39 @@ export const useUploadDrawing = (page?: number) => {
 	})
 }
 
-//MARK:Update client price per cut
-export const useUpdateClientPricePer = () => {
-	return useMutation({
-		mutationFn: ({
-			clientId,
-			pricePerMonthGrass,
-			snow = false,
-		}: {
-			clientId: number
-			pricePerMonthGrass: number
-			snow: boolean
-		}) => {
-			return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow)
-		},
-		onError: (error) => {
-			console.error('Mutation error:', error)
-		},
-	})
-}
+// //MARK:Update client price per cut
+// export const useUpdateClientPricePer = () => {
+// 	return useMutation({
+// 		mutationFn: ({
+// 			clientId,
+// 			pricePerMonthGrass,
+// 			snow = false,
+// 		}: {
+// 			clientId: number
+// 			pricePerMonthGrass: number
+// 			snow: boolean
+// 		}) => {
+// 			return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow)
+// 		},
+// 		onError: (error) => {
+// 			console.error('Mutation error:', error)
+// 		},
+// 	})
+// }
 
 //MARK:Update cutting day
 export const useUpdateCuttingDay = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
-			clientId,
+			addressId,
 			cuttingWeek,
 			cuttingDay,
 		}: {
-			clientId: number
+			addressId: number
 			cuttingWeek: number
 			cuttingDay: string
 		}) => {
-			return updateCuttingDay(clientId, cuttingWeek, cuttingDay)
+			return updateCuttingDay(addressId, cuttingWeek, cuttingDay)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -249,13 +248,13 @@ export const useUpdateCuttingDay = (page?: number) => {
 export const useAssignSnowClearing = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
-			clientId,
 			assignedTo,
+			addressId,
 		}: {
-			clientId: number
 			assignedTo: string
+			addressId: number
 		}) => {
-			return assignSnowClearing(clientId, assignedTo)
+			return assignSnowClearing(assignedTo, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -270,13 +269,13 @@ export const useAssignSnowClearing = (page?: number) => {
 export const useAssignGrassCutting = (page?: number) => {
 	return useMutation({
 		mutationFn: ({
-			clientId,
 			assignedTo,
+			addressId,
 		}: {
-			clientId: number
 			assignedTo: string
+			addressId: number
 		}) => {
-			return assignGrassCutting(clientId, assignedTo)
+			return assignGrassCutting(assignedTo, addressId)
 		},
 		onSuccess: () => {
 			const currentPage = page ?? 1
@@ -287,23 +286,26 @@ export const useAssignGrassCutting = (page?: number) => {
 	})
 }
 //MARK:Mark yard serviced
-export const useMarkYardServiced = (options?: {
-	onSuccess?: () => void
-	onError?: (error: Error) => void
-}) => {
+export const useMarkYardServiced = (
+	addressId: number,
+	options?: {
+		onSuccess?: () => void
+		onError?: (error: Error) => void
+	},
+) => {
 	return useMutation({
 		mutationFn: async ({
-			clientId,
+			addressId,
 			date,
 			snow = false,
 			images,
 		}: {
-			clientId: number
+			addressId: number
 			date: Date
 			snow?: boolean
 			images: File[]
 		}) => {
-			const result = await markYardServiced(clientId, date, snow, images)
+			const result = await markYardServiced(addressId, date, snow, images)
 			if (result?.errorMessage) {
 				throw new Error(result.errorMessage)
 			}
@@ -313,6 +315,7 @@ export const useMarkYardServiced = (options?: {
 			options?.onSuccess?.()
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
+			updateTagAction(`serviced-images-${addressId}`)
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)

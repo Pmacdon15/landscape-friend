@@ -46,10 +46,8 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	if (addresses.length <= MAX_WAYPOINTS) {
 		const destination = encodeURIComponent(addresses[addresses.length - 1])
 
-		const startIndex = userLocation ? 0 : 1
-
 		const waypoints = addresses
-			.slice(startIndex, -1)
+			.slice(0, -1)
 			.map((addr) => encodeURIComponent(addr))
 			.join('|')
 
@@ -80,10 +78,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 
 			const destination = encodeURIComponent(chunk[chunk.length - 1])
 
-			let waypointsChunk = chunk.slice(0, -1)
-			if (currentIndex === 0 && !userLocation) {
-				waypointsChunk = chunk.slice(1, -1)
-			}
+			const waypointsChunk = chunk.slice(0, -1)
 
 			const waypoints = waypointsChunk
 				.map((addr) => encodeURIComponent(addr))
