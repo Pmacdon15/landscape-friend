@@ -52,8 +52,9 @@ export default async function ClientListAll({
 				{clients.map((client: Client, index) => {
 					// PRECOMPUTE data for this client
 					const clientAddresses = addresses.filter(
-						(a) => a.client_id === client.id,
+						(a) => a && a.client_id === client.id,
 					)
+					console.log('clientAddresses', clientAddresses)
 
 					const clientAddressIds = clientAddresses.map((a) => a.id)
 
