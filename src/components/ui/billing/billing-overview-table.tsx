@@ -1,5 +1,6 @@
 'use client'
 
+import type { Route } from 'next'
 import { use } from 'react'
 import type { FetchBillingOverviewResponse } from '@/types/stripe-types'
 import { DateDisplay } from '../date-display'
@@ -162,7 +163,11 @@ export function BillingOverviewTable({
 					</tbody>
 				</table>
 			</div>
-			<PaginationTabs fullWidth path={path} totalPages={totalPages} />
+			<PaginationTabs
+				fullWidth
+				path={path as Route}
+				totalPages={totalPages}
+			/>
 		</div>
 	)
 }
