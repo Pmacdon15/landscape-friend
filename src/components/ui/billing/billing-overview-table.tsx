@@ -31,7 +31,7 @@ export function BillingOverviewTable({
 
 	const handleRowClick = (item: (typeof items)[0]) => {
 		if (item.type === 'invoice') {
-			router.push(`/billing/edit/invoice?invoice=${item.id}`)
+			router.push(`/billing/manage/invoices?search=${item.id}`)
 		} else if (item.type === 'subscription') {
 			router.push(`/billing/manage/subscriptions?search=${item.id}`)
 		}
@@ -44,7 +44,132 @@ export function BillingOverviewTable({
 
 	return (
 		<div className="flex flex-col gap-4">
-			<div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+			{/* Mobile View - Card Layout */}
+			<div className="min-[1390px]:hidden">
+				{items.length === 0 ? (
+					<div className="px-6 py-10 text-center text-gray-500 italic">
+						No billing data found.
+					</div>
+				) : (
+					<div className="space-y-4">
+						{items.map((item) => (
+							<div
+								className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all hover:shadow-md"
+								key={`${item.type}-${item.id}`}
+								onClick={() => handleRowClick(item)}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault()
+										handleRowClick(item)
+									}
+								}}
+								role="button"
+								tabIndex={0}
+							>
+								<div className="flex items-center justify-between">
+									<button
+										className="cursor-pointer text-left font-medium text-gray-900 transition-colors hover:underline focus:outline-none"
+										onClick={(e) =>
+											handleClientClick(
+												e,
+												item.client_name,
+											)
+										}
+										type="button"
+									>
+										{item.client_name}
+									</button>
+									<span
+										className={`inline-flex items-center rounded-md px-2 py-0.5 font-medium text-xs ring-1 ring-inset ${
+											['paid', 'active'].includes(
+												item.status,
+											)
+												? 'bg-green-50 text-green-700 ring-green-600/20'
+												: 'bg-yellow-50 text-yellow-700 ring-yellow-600/20'
+										}`}
+									>
+										{item.status.charAt(0).toUpperCase() +
+											item.status.slice(1)}
+									</span>
+								</div>
+								<div className="mt-2 text-sm text-gray-600">
+									<div className="flex justify-between">
+										<span>Date:</span>
+										<span className="font-medium text-gray-900">
+											<DateDisplay
+												timestamp={item.date}
+											/>
+										</span>
+									</div>
+									<div className="flex justify-between">
+										<span>Type:</span>
+										<span
+											className={`font-medium ${
+												item.type === 'invoice'
+													? 'text-blue-700'
+													: 'text-purple-700'
+											}`}
+										>
+											{item.type.charAt(0).toUpperCase() +
+												item.type.slice(1)}
+										</span>
+									</div>
+									<div className="flex justify-between">
+										<span>Amount:</span>
+										<span className="font-semibold text-gray-900">
+											$
+											{item.amount.toLocaleString(
+												undefined,
+												{
+													minimumFractionDigits: 2,
+													maximumFractionDigits: 2,
+												},
+											)}
+										</span>
+									</div>
+									<div className="flex justify-between">
+										<span>YTD Earnings:</span>
+										<span className="font-medium text-gray-600">
+											$
+											{item.ytd_earnings.toLocaleString(
+												undefined,
+												{
+													minimumFractionDigits: 2,
+													maximumFractionDigits: 2,
+												},
+											)}
+										</span>
+									</div>
+									{item.projected_total !== undefined && (
+										<div className="flex justify-between">
+											<span>Projected Total:</span>
+											<span className="font-bold text-blue-600">
+												$
+												{item.projected_total.toLocaleString(
+													undefined,
+													{
+														minimumFractionDigits: 2,
+														maximumFractionDigits: 2,
+													},
+												)}
+											</span>
+										</div>
+									)}
+								</div>
+								<p
+									className="mt-2 truncate text-sm text-gray-600"
+									title={item.description}
+								>
+									{item.description}
+								</p>
+							</div>
+						))}
+					</div>
+				)}
+			</div>
+
+			{/* Desktop View - Table Layout */}
+			<div className="hidden min-[1390px]:block overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
 				<table className="w-full border-collapse text-left text-sm">
 					<thead>
 						<tr className="border-gray-200 border-b bg-gray-50/50">
