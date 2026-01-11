@@ -84,7 +84,7 @@ export default function AddressManagementSection({
 						<ViewSitePhotoSheet addressId={addr.id} />
 						<Suspense>
 							<SiteMapImageList
-								address={add}
+								address={addr}
 								isAdminPromise={isAdminPromise}
 								pagePromise={pagePromise}
 								siteMaps={clientSiteMaps}
