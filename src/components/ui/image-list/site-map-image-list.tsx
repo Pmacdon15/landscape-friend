@@ -1,7 +1,6 @@
 'use client'
 import { MapPlus } from 'lucide-react'
-import { Activity, use, useMemo, useState } from 'react'
-import type { ClientAddress } from '@/types/clients-types'
+import { Activity, use, useState } from 'react'
 import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
 import ImageGallery from './image-gallery'
@@ -16,7 +15,7 @@ export default function SiteMapImageList({
 	siteMaps,
 }: {
 	// isAdmin?: boolean
-	address: ClientAddress
+	address: { address: string; addressId: number }
 	pagePromise: Promise<number>
 	isAdminPromise: Promise<{ isAdmin: boolean }>
 	siteMaps: ClientSiteMapImages[]
@@ -25,10 +24,10 @@ export default function SiteMapImageList({
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
 
-	const siteMapForAddress = useMemo(
-		() => siteMaps.find((sm) => sm.address_id === address.id),
-		[siteMaps, address.id],
-	)
+	// const siteMapForAddress = useMemo(
+	// 	() => siteMaps.find((sm) => sm.address_id === address.id),
+	// 	[siteMaps, address.id],
+	// )
 	// console.log('SiteMaps: ', siteMaps)
 	return (
 		<div className="flex w-full flex-col">
@@ -43,7 +42,7 @@ export default function SiteMapImageList({
 			<Activity mode={showSiteMap ? 'visible' : 'hidden'}>
 				{view === 'list' && siteMaps.length < 1 && (
 					<AddSiteMap
-						addressId={address.id}
+						addressId={address.addressId}
 						pagePromise={pagePromise}
 						setView={setView}
 					/>
@@ -53,7 +52,7 @@ export default function SiteMapImageList({
 					<div className="flex h-75 min-h-75 w-full flex-col gap-y-2 overflow-y-auto rounded-md bg-background p-2">
 						<ImageSelectorMain
 							address={address.address || ''}
-							addressId={address.id}
+							addressId={address.addressId}
 							setView={setView}
 						/>
 					</div>
@@ -64,7 +63,7 @@ export default function SiteMapImageList({
 				)}
 				{view === 'add' && siteMaps.length > 0 && (
 					<AddSiteMap
-						addressId={address.id}
+						addressId={address.addressId}
 						pagePromise={pagePromise}
 						setView={setView}
 					/>

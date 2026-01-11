@@ -29,7 +29,10 @@ export default function ClientDetailsCard({
 			<div className="mt-2 flex flex-col gap-1 sm:flex-row">
 				<Suspense>
 					<SiteMapImageList
-						addressId={client.address_id}
+						address={{
+							address: client.address,
+							addressId: client.address_id,
+						}}
 						isAdminPromise={isAdminPromise}
 						pagePromise={pagePromise}
 						siteMaps={siteMaps}
