@@ -194,8 +194,12 @@ export async function createStripeQuote(
 		const quote = await stripe.quotes.create({
 			customer: customerId,
 			line_items: line_items,
+			description: validatedFields.data.description,
 			collection_method: 'send_invoice',
 			invoice_settings: { days_until_due: 10 },
+			metadata: {
+				addresses: JSON.stringify(validatedFields.data.addresses),
+			},
 		})
 
 		await triggerNotificationSendToAdmin(
@@ -591,7 +595,8 @@ export async function createSubscriptionQuoteAction(
 		clientName: formData.get('clientName'),
 		clientEmail: formData.get('clientEmail'),
 		phone_number: formData.get('phone_number'),
-		address: formData.get('address'),
+		addresses: JSON.parse(formData.get('addresses') as string),
+		description: (formData.get('description') as string) || undefined,
 		serviceType: formData.get('serviceType'),
 		price_per_month: parseFloat(formData.get('price_per_month') as string),
 		startDate: formData.get('startDate'),

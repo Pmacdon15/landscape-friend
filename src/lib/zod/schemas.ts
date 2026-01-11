@@ -79,7 +79,8 @@ export const schemaCreateQuote = z.object({
 	// .nullable()
 	// .optional(),
 	phone_number: z.string().min(7, 'Phone number is required'),
-	address: z.string().min(3),
+	addresses: z.array(z.string()).min(1, 'At least one address is required'),
+	description: z.string().optional(),
 	labourCostPerUnit: z.number(),
 	labourUnits: z.number(),
 	materials: z.array(materialSchema),
@@ -141,7 +142,8 @@ export const schemaCreateSubscription = z.object({
 	clientName: z.string().min(1, 'Client name is required'),
 	clientEmail: z.email('Invalid email address'),
 	phone_number: z.string().min(7, 'Phone number is required'),
-	address: z.string().min(1, 'Address is required'),
+	addresses: z.array(z.string()).min(1, 'At least one address is required'),
+	description: z.string().optional(),
 	serviceType: z.enum(['snow-as-needed', 'weekly', 'bi-weekly', 'monthly'], {
 		message: 'Please select a valid service type',
 	}),

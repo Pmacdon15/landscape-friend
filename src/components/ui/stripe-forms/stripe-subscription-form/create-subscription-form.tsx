@@ -34,7 +34,8 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			clientName: '',
 			clientEmail: '',
 			phone_number: '',
-			address: '',
+			addresses: [] as string[],
+			description: '',
 			serviceType: 'weekly', // Default value
 			price_per_month: 0,
 			startDate: startDate,
@@ -55,13 +56,13 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 		if (selectedClient) {
 			form.setValue('clientEmail', selectedClient.email_address)
 			form.setValue('phone_number', selectedClient.phone_number)
-			form.setValue('address', selectedClient.address)
+			form.setValue('addresses', selectedClient.addresses || [])
 		} else {
 			form.setValue('clientEmail', '')
 			form.setValue('phone_number', '')
-			form.setValue('address', '')
+			form.setValue('addresses', [])
 		}
-	}, [clientName, clients, form.setValue, form])
+	}, [clientName, clients, form])
 
 	const { mutate, isPending, isSuccess, isError, data, error } =
 		useCreateStripeSubscriptionQuote(snow)
@@ -71,7 +72,13 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 		for (const key in formData) {
 			const value = formData[key as keyof typeof formData]
 			if (value !== undefined && value !== null) {
-				form.append(key, String(value))
+				if (key === 'addresses' && Array.isArray(value)) {
+					form.append(key, JSON.stringify(value))
+				} else if (value instanceof Date) {
+					form.append(key, value.toISOString())
+				} else {
+					form.append(key, String(value))
+				}
 			}
 		}
 		mutate(form)
@@ -117,12 +124,57 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						label="Phone Number"
 						name="phone_number"
 					/>
-					<FormInput
-						control={form.control}
-						disabled
-						label="Address"
-						name="address"
-					/>
+					<div className="space-y-2">
+						<h1 className="font-semibold text-sm">
+							Addresses
+						</h1>
+						{clients
+							.find((c) => c.full_name === clientName)
+							?.addresses.map((addr) => (
+								<div
+									className="flex items-center space-x-2"
+									key={addr}
+								>
+									<input
+										checked={form
+											.watch('addresses')
+											?.includes(addr)}
+										className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										onChange={(e) => {
+											const current =
+												form.getValues('addresses') ||
+												[]
+											if (e.target.checked) {
+												form.setValue('addresses', [
+													...current,
+													addr,
+												])
+											} else {
+												form.setValue(
+													'addresses',
+													current.filter(
+														(a) => a !== addr,
+													),
+												)
+											}
+										}}
+										type="checkbox"
+									/>
+									<span className="text-sm">{addr}</span>
+								</div>
+							))}
+					</div>
+					<div className="mt-4">
+						<h1 className="mb-1 block font-semibold text-sm">
+							Description
+						</h1>
+						<textarea
+							className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+							{...form.register('description')}
+							placeholder="Subscription details..."
+							rows={3}
+						/>
+					</div>
 				</section>
 
 				{/* Subscription Details */}

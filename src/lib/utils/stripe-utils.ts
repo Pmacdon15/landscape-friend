@@ -286,13 +286,15 @@ export async function createStripeSubscriptionQuote(
 	const {
 		clientEmail,
 		clientName,
-		address,
+		addresses,
+		description,
 		phone_number,
 		price_per_month,
 		serviceType,
 		startDate,
 		endDate,
 		organization_id,
+		collectionMethod,
 	} = subscriptionData
 
 	if (!endDate) {
@@ -307,7 +309,7 @@ export async function createStripeSubscriptionQuote(
 		customer = await stripe.customers.create({
 			email: clientEmail,
 			name: clientName,
-			address: { line1: address },
+			address: { line1: addresses[0] },
 			phone: phone_number,
 			metadata: { organization_id },
 		})
@@ -326,7 +328,7 @@ export async function createStripeSubscriptionQuote(
 		product: product.id,
 		metadata: { organization_id, serviceType },
 	})
-
+	const startDateUnix = Math.floor(new Date(startDate).getTime() / 1000)
 	const quoteParams: Stripe.QuoteCreateParams = {
 		customer: customer.id,
 		line_items: [
@@ -335,12 +337,21 @@ export async function createStripeSubscriptionQuote(
 				quantity: 1,
 			},
 		],
+		description: description,
+		collection_method: collectionMethod || 'send_invoice',
+		invoice_settings: {
+			days_until_due: 10,
+		},
+		subscription_data: {
+			effective_date: startDateUnix,
+		},
 		metadata: {
 			organization_id,
 			clientEmail,
 			serviceType,
 			startDate: startDate.toISOString(),
 			endDate: endDate.toISOString(),
+			addresses: JSON.stringify(addresses),
 		},
 	}
 	const quote = await stripe.quotes.create(quoteParams)
@@ -442,40 +453,38 @@ export async function acceptAndScheduleQuote(
 	stripe: Stripe,
 	updatedQuote: Stripe.Quote,
 ) {
-	// Fetch the quote with metadata
-
-	const startDateUnix = Math.floor(
-		new Date(updatedQuote.metadata.startDate).getTime() / 1000,
-	)
-	const endDateUnix = Math.floor(
-		new Date(updatedQuote.metadata.endDate).getTime() / 1000,
-	)
-
-	// Update quote to set a future effective date
-	if (updatedQuote.metadata.startDate && updatedQuote.metadata.endDate) {
-		await stripe.quotes.update(updatedQuote.id, {
-			subscription_data: {
-				effective_date: startDateUnix,
-			},
-		})
-	}
-	//  else {
-	// 	await stripe.quotes.update(updatedQuote.id)
-	// }
-	//TODO: above might not be needed the else
+	const startDateUnix = updatedQuote.metadata?.startDate
+		? Math.floor(new Date(updatedQuote.metadata.startDate).getTime() / 1000)
+		: undefined
+	const endDateUnix = updatedQuote.metadata?.endDate
+		? Math.floor(new Date(updatedQuote.metadata.endDate).getTime() / 1000)
+		: undefined
 
 	// Accept the quote — this creates a subscription schedule
 	const acceptedQuote = await stripe.quotes.accept(updatedQuote.id)
 
 	const scheduleId = acceptedQuote.subscription_schedule as string
-	if (scheduleId) {
+	if (scheduleId && startDateUnix && endDateUnix) {
 		const schedule = await stripe.subscriptionSchedules.retrieve(scheduleId)
 
+		// console.log(
+		// 	'updatedQuote.invoice_settings.days_until_due: ',
+		// 	updatedQuote.invoice_settings.days_until_due,
+		// )
+		// console.log('schedule: ', schedule)
+		// console.log(
+		// 	'schedule: ',
+		// 	JSON.stringify(schedule.phases[0].invoice_settings),
+		// )
 		// Update the schedule to enforce an end date
 		await stripe.subscriptionSchedules.update(scheduleId, {
 			end_behavior: 'cancel',
 			phases: [
 				{
+					invoice_settings: {
+						days_until_due:
+							schedule.phases[0].invoice_settings?.days_until_due || 10,
+					},
 					start_date: startDateUnix,
 					end_date: endDateUnix,
 					items: schedule.phases[0].items.map((item) => ({
@@ -485,7 +494,6 @@ export async function acceptAndScheduleQuote(
 				},
 			],
 		})
-		// return updatedSchedule
 	}
 
 	const invoiceId = acceptedQuote.invoice as string | null
