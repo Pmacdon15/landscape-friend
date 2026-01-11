@@ -415,7 +415,7 @@ export async function fetchClients(
 						'id', i.id,
 						'address_id', i.address_id,
 						'address', ca.address,
-						'imageURL', i.imageURL,
+						'imageurl', i.imageURL,
 						'isActive', i.isActive,
 						'client_id', ca.client_id
 					)
