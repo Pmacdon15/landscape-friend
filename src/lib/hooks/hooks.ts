@@ -89,8 +89,6 @@ export function useGetLocation(): { userLocation: Location | '' } {
 	return { userLocation }
 }
 
-
-
 // export function useGetLonAndLatFromAddresses(addresses: string[]): {
 // 	loading: boolean
 // 	geocodeResults: GeocodeResult[]

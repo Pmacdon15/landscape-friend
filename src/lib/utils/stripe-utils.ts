@@ -483,7 +483,8 @@ export async function acceptAndScheduleQuote(
 				{
 					invoice_settings: {
 						days_until_due:
-							schedule.phases[0].invoice_settings?.days_until_due || 10,
+							schedule.phases[0].invoice_settings
+								?.days_until_due || 10,
 					},
 					start_date: startDateUnix,
 					end_date: endDateUnix,

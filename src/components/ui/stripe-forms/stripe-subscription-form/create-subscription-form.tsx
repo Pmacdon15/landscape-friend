@@ -125,9 +125,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						name="phone_number"
 					/>
 					<div className="space-y-2">
-						<h1 className="font-semibold text-sm">
-							Addresses
-						</h1>
+						<h1 className="font-semibold text-sm">Addresses</h1>
 						{clients
 							.find((c) => c.full_name === clientName)
 							?.addresses.map((addr) => (

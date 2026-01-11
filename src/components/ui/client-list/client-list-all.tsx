@@ -49,7 +49,7 @@ export default async function ClientListAll({
 			<PaginationTabs path="/lists/client" totalPages={totalPages} />
 
 			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
-				{clients.map((client: Client, index) => {
+				{clients.map((client: Client, _index) => {
 					// PRECOMPUTE data for this client
 					const clientAddresses = addresses.filter(
 						(a) => a && a.client_id === client.id,
@@ -126,9 +126,7 @@ export default async function ClientListAll({
 								<div className="flex flex-col items-center gap-2">
 									<p>
 										Amount owing: $
-										{account
-											? account.current_balance
-											: 0}
+										{account ? account.current_balance : 0}
 									</p>
 
 									<AddressManagementSection

@@ -180,9 +180,7 @@ export function CreateQuoteForm({
 						name="phone_number"
 					/>
 					<div className="space-y-2">
-						<label className="font-semibold text-sm">
-							Addresses
-						</label>
+						<h1 className="font-semibold text-sm">Addresses</h1>
 						{clients
 							.find(
 								(c) => c.full_name === watchedValues.clientName,
@@ -221,9 +219,9 @@ export function CreateQuoteForm({
 							))}
 					</div>
 					<div className="mt-4">
-						<label className="mb-1 block font-semibold text-sm">
+						<h1 className="mb-1 block font-semibold text-sm">
 							Description
-						</label>
+						</h1>
 						<textarea
 							className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
 							{...form.register('description')}

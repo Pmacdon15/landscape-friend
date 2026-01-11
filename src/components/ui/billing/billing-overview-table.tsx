@@ -21,7 +21,7 @@ export function BillingOverviewTable({
 
 	if ('errorMessage' in result) {
 		return (
-			<div className="p-4 text-red-500 bg-red-50 rounded-lg">
+			<div className="rounded-lg bg-red-50 p-4 text-red-500">
 				{result.errorMessage}
 			</div>
 		)
@@ -45,9 +45,9 @@ export function BillingOverviewTable({
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
-				<table className="w-full text-left text-sm border-collapse">
+				<table className="w-full border-collapse text-left text-sm">
 					<thead>
-						<tr className="bg-gray-50/50 border-b border-gray-200">
+						<tr className="border-gray-200 border-b bg-gray-50/50">
 							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
 								Date
 							</th>
@@ -69,7 +69,7 @@ export function BillingOverviewTable({
 							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
 								YTD Earnings
 							</th>
-							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight whitespace-nowrap">
+							<th className="whitespace-nowrap px-6 py-4 font-semibold text-gray-900 leading-tight">
 								Projected Total
 							</th>
 						</tr>
@@ -87,11 +87,14 @@ export function BillingOverviewTable({
 						) : (
 							items.map((item) => (
 								<tr
-									className="hover:bg-gray-50/80 transition-colors group cursor-pointer focus:bg-gray-50 focus:outline-none"
+									className="group cursor-pointer transition-colors hover:bg-gray-50/80 focus:bg-gray-50 focus:outline-none"
 									key={`${item.type}-${item.id}`}
 									onClick={() => handleRowClick(item)}
 									onKeyDown={(e) => {
-										if (e.key === 'Enter' || e.key === ' ') {
+										if (
+											e.key === 'Enter' ||
+											e.key === ' '
+										) {
 											e.preventDefault()
 											handleRowClick(item)
 										}
@@ -105,7 +108,7 @@ export function BillingOverviewTable({
 									<td className="px-6 py-4">
 										<div className="flex flex-col">
 											<button
-												className="text-left font-medium text-gray-900 group-hover:text-blue-600 transition-colors cursor-pointer hover:underline focus:outline-none"
+												className="cursor-pointer text-left font-medium text-gray-900 transition-colors hover:underline focus:outline-none group-hover:text-blue-600"
 												onClick={(e) =>
 													handleClientClick(
 														e,
@@ -116,14 +119,14 @@ export function BillingOverviewTable({
 											>
 												{item.client_name}
 											</button>
-											<span className="text-xs text-gray-500">
+											<span className="text-gray-500 text-xs">
 												{item.customer_email}
 											</span>
 										</div>
 									</td>
 									<td className="px-6 py-4">
 										<span
-											className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
+											className={`inline-flex items-center rounded-md px-2 py-0.5 font-medium text-xs ring-1 ring-inset ${
 												item.type === 'invoice'
 													? 'bg-blue-50 text-blue-700 ring-blue-600/20'
 													: 'bg-purple-50 text-purple-700 ring-purple-600/20'
@@ -134,14 +137,14 @@ export function BillingOverviewTable({
 										</span>
 									</td>
 									<td
-										className="px-6 py-4 text-gray-600 max-w-[200px] truncate"
+										className="max-w-[200px] truncate px-6 py-4 text-gray-600"
 										title={item.description}
 									>
 										{item.description}
 									</td>
 									<td className="px-6 py-4">
 										<span
-											className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
+											className={`inline-flex items-center rounded-md px-2 py-0.5 font-medium text-xs ring-1 ring-inset ${
 												['paid', 'active'].includes(
 													item.status,
 												)
@@ -162,7 +165,7 @@ export function BillingOverviewTable({
 											maximumFractionDigits: 2,
 										})}
 									</td>
-									<td className="px-6 py-4 text-gray-600 font-medium">
+									<td className="px-6 py-4 font-medium text-gray-600">
 										$
 										{item.ytd_earnings.toLocaleString(
 											undefined,

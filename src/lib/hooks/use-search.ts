@@ -1,6 +1,6 @@
 'use client'
 
-import { Route } from 'next'
+import type { Route } from 'next'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 export const useSearch = () => {
@@ -15,10 +15,10 @@ export const useSearch = () => {
 		} else {
 			params.delete(key)
 		}
-		 const fullPath = `${pathname}?${params.toString()}`
+		const fullPath = `${pathname}?${params.toString()}`
 
-    // Cast the entire string to Route
-    router.push(fullPath as Route)
+		// Cast the entire string to Route
+		router.push(fullPath as Route)
 	}
 
 	return { updateSearchParams }
