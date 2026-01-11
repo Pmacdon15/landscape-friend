@@ -3,7 +3,7 @@ import { parseClientListParams } from '@/lib/utils/params'
 import ManageQuoteButton from '../../buttons/manage-quote-button'
 import { DateDisplay } from '../../date-display'
 import { PaginationTabs } from '../../pagination/pagination-tabs'
-
+//TODO await these promises lower
 export async function ManageQuoteCardView({
 	props,
 }: {

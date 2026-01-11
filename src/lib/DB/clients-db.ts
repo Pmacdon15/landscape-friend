@@ -234,13 +234,13 @@ export async function fetchClientListDb(
 	const sql = neon(`${process.env.DATABASE_URL}`)
 	const result = await sql`
     SELECT
-      id,
-      full_name,
-      phone_number,
-      email_address,
-      address
-    FROM clients
-    WHERE organization_id = ${orgId};
+      c.id,
+      c.full_name,
+      c.phone_number,
+      c.email_address,
+      (SELECT json_agg(ca.address) FROM client_addresses ca WHERE ca.client_id = c.id) AS addresses
+    FROM clients c
+    WHERE c.organization_id = ${orgId};
   `
 	return result as ClientInfoList[]
 }

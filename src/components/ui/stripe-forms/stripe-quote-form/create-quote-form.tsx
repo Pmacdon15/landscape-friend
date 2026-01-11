@@ -50,7 +50,8 @@ export function CreateQuoteForm({
 			clientName: '',
 			clientEmail: '',
 			phone_number: '',
-			address: '',
+			addresses: [] as string[],
+			description: '',
 			labourCostPerUnit: 0,
 			labourUnits: 0,
 			materials: [
@@ -79,14 +80,14 @@ export function CreateQuoteForm({
 		if (!selectedClient) {
 			form.setValue('clientEmail', '')
 			form.setValue('phone_number', '')
-			form.setValue('address', '')
+			form.setValue('addresses', [])
 			setSelectedClientId(0)
 			return
 		}
 
 		form.setValue('clientEmail', selectedClient.email_address)
 		form.setValue('phone_number', selectedClient.phone_number)
-		form.setValue('address', selectedClient.address)
+		form.setValue('addresses', selectedClient.addresses || [])
 		setSelectedClientId(selectedClient.id)
 	}, [watchedValues.clientName, clients, form])
 
@@ -178,12 +179,58 @@ export function CreateQuoteForm({
 						label="Phone"
 						name="phone_number"
 					/>
-					<FormInput
-						control={form.control}
-						disabled
-						label="Address"
-						name="address"
-					/>
+					<div className="space-y-2">
+						<label className="font-semibold text-sm">
+							Addresses
+						</label>
+						{clients
+							.find(
+								(c) => c.full_name === watchedValues.clientName,
+							)
+							?.addresses.map((addr) => (
+								<div
+									className="flex items-center space-x-2"
+									key={addr}
+								>
+									<input
+										checked={watchedValues.addresses?.includes(
+											addr,
+										)}
+										className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+										onChange={(e) => {
+											const current =
+												watchedValues.addresses || []
+											if (e.target.checked) {
+												form.setValue('addresses', [
+													...current,
+													addr,
+												])
+											} else {
+												form.setValue(
+													'addresses',
+													current.filter(
+														(a) => a !== addr,
+													),
+												)
+											}
+										}}
+										type="checkbox"
+									/>
+									<span className="text-sm">{addr}</span>
+								</div>
+							))}
+					</div>
+					<div className="mt-4">
+						<label className="mb-1 block font-semibold text-sm">
+							Description
+						</label>
+						<textarea
+							className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+							{...form.register('description')}
+							placeholder="Project description..."
+							rows={3}
+						/>
+					</div>
 				</section>
 				<section>
 					<h3 className="mb-2 font-semibold text-md">Cost Details</h3>

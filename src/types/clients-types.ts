@@ -61,7 +61,7 @@ export interface ClientInfoList {
 	full_name: string
 	phone_number: string
 	email_address: string
-	address: string
+	addresses: string[]
 }
 
 export interface ClientResult {
