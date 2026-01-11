@@ -1,6 +1,6 @@
 'use client'
 import { MapPlus } from 'lucide-react'
-import { Activity, use, useState } from 'react'
+import { Activity, use, useMemo, useState } from 'react'
 import type { ClientSiteMapImages } from '@/types/site-maps-types'
 import ImageSelectorMain from '../image-selector/image-selector-main'
 import ImageGallery from './image-gallery'
@@ -23,6 +23,11 @@ export default function SiteMapImageList({
 	const isAdmin = use(isAdminPromise)
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
+
+	const siteMapForAddress = useMemo(
+		() => siteMaps.find((sm) => sm.address_id === addressId),
+		[siteMaps, addressId],
+	)
 	// console.log('SiteMaps: ', siteMaps)
 	return (
 		<div className="flex w-full flex-col">
@@ -46,7 +51,7 @@ export default function SiteMapImageList({
 				{view === 'map' && (
 					<div className="flex h-75 min-h-75 w-full flex-col gap-y-2 overflow-y-auto rounded-md bg-background p-2">
 						<ImageSelectorMain
-							address={siteMaps[0].address}
+							address={siteMapForAddress?.address || ''}
 							addressId={addressId}
 							setView={setView}
 						/>
