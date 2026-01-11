@@ -745,3 +745,307 @@ export async function fetchProductPrice(
 		)
 	}
 }
+
+//MARK: Fetch Billing Overview Data
+import type {
+	BillingOverviewItem,
+	FetchBillingOverviewResponse,
+} from '@/types/stripe-types'
+
+export async function fetchBillingOverviewData(
+	page: number,
+	searchTerm: string,
+): Promise<FetchBillingOverviewResponse | { errorMessage: string }> {
+	const { isAdmin } = await isOrgAdmin()
+	if (!isAdmin) return { errorMessage: 'Not Admin' }
+
+	const stripe = await getStripeInstance()
+	if (!stripe) return { errorMessage: 'Failed to get Stripe instance' }
+
+	const pageSize = Number(process.env.PAGE_SIZE) || 10
+	const currentYearStart =
+		new Date(new Date().getFullYear(), 0, 1).getTime() / 1000
+
+	try {
+		// 1. Fetch Invoices
+		let allInvoices: Stripe.Invoice[] = []
+		let hasMoreInvoices = true
+		let startingAfterInvoice: string | undefined
+
+		while (hasMoreInvoices) {
+			const invoiceBatch: Stripe.ApiList<Stripe.Invoice> =
+				await stripe.invoices.list({
+					limit: 100,
+					starting_after: startingAfterInvoice,
+					expand: ['data.lines.data'],
+				})
+			allInvoices = allInvoices.concat(invoiceBatch.data)
+			hasMoreInvoices = invoiceBatch.has_more
+			if (hasMoreInvoices) {
+				startingAfterInvoice =
+					invoiceBatch.data[invoiceBatch.data.length - 1].id
+			}
+		}
+
+		// 2. Fetch Subscriptions
+		let allSubscriptions: Stripe.Subscription[] = []
+		let hasMoreSubs = true
+		let startingAfterSub: string | undefined
+
+		while (hasMoreSubs) {
+			const subBatch: Stripe.ApiList<Stripe.Subscription> =
+				await stripe.subscriptions.list({
+					limit: 100,
+					starting_after: startingAfterSub,
+					expand: ['data.customer', 'data.schedule'],
+				})
+			allSubscriptions = allSubscriptions.concat(subBatch.data)
+			hasMoreSubs = subBatch.has_more
+			if (hasMoreSubs) {
+				startingAfterSub = subBatch.data[subBatch.data.length - 1].id
+			}
+		}
+
+		// 3. Pre-fetch Client Names and Products
+		const uniqueStripeCustomerIds = new Set([
+			...allInvoices
+				.map((i) =>
+					typeof i.customer === 'string'
+						? i.customer
+						: i.customer?.id,
+				)
+				.filter(Boolean),
+			...allSubscriptions
+				.map((s) =>
+					typeof s.customer === 'string'
+						? s.customer
+						: s.customer?.id,
+				)
+				.filter(Boolean),
+		]) as Set<string>
+
+		const clientNamesResult = await fetchClientNamesByStripeIds([
+			...uniqueStripeCustomerIds,
+		])
+		const clientNamesMap = new Map<string, string>()
+		if (clientNamesResult && !('errorMessage' in clientNamesResult)) {
+			clientNamesResult.forEach((client) => {
+				if (client.stripe_customer_id && client.full_name) {
+					clientNamesMap.set(
+						client.stripe_customer_id,
+						client.full_name,
+					)
+				}
+			})
+		}
+
+		// Fetch all products being used in subscriptions to get their names
+		const uniqueProductIds = new Set<string>()
+		allSubscriptions.forEach((sub) => {
+			sub.items.data.forEach((item) => {
+				if (typeof item.price.product === 'string') {
+					uniqueProductIds.add(item.price.product)
+				}
+			})
+		})
+
+		const productMap = new Map<string, string>()
+		await Promise.allSettled(
+			[...uniqueProductIds].map(async (pid) => {
+				try {
+					const prod = await stripe.products.retrieve(pid)
+					productMap.set(pid, prod.name)
+				} catch (e) {
+					console.error(`Error fetching product ${pid}:`, e)
+				}
+			}),
+		)
+
+		// 4. Calculate YTD Earnings per Client (from paid invoices in current year)
+		const clientYtdMap = new Map<string, number>()
+		allInvoices.forEach((invoice) => {
+			const customerId =
+				typeof invoice.customer === 'string'
+					? invoice.customer
+					: invoice.customer?.id
+			if (
+				customerId &&
+				invoice.status === 'paid' &&
+				invoice.created >= currentYearStart
+			) {
+				const amount = invoice.amount_paid / 100
+				clientYtdMap.set(
+					customerId,
+					(clientYtdMap.get(customerId) || 0) + amount,
+				)
+			}
+		})
+
+		// 5. Transform and Filter Data
+		const lowerSearch = searchTerm?.toLowerCase() || ''
+		const items: BillingOverviewItem[] = []
+
+		// 5a. Invoices
+		allInvoices.forEach((invoice) => {
+			const customerId =
+				typeof invoice.customer === 'string'
+					? invoice.customer
+					: invoice.customer?.id
+			if (!customerId || !clientNamesMap.has(customerId)) return
+
+			const clientName = clientNamesMap.get(customerId) ?? 'Unknown'
+			const description = invoice.lines.data
+				.map((l) => l.description)
+				.join(', ')
+
+			const item: BillingOverviewItem = {
+				id: invoice.id || 'no-id',
+				type: 'invoice',
+				date: invoice.created,
+				client_name: clientName,
+				customer_email: invoice.customer_email || '',
+				status: invoice.status || 'unknown',
+				amount: invoice.total / 100,
+				description,
+				ytd_earnings: clientYtdMap.get(customerId) || 0,
+			}
+
+			if (
+				!lowerSearch ||
+				item.client_name.toLowerCase().includes(lowerSearch) ||
+				item.customer_email.toLowerCase().includes(lowerSearch) ||
+				item.description.toLowerCase().includes(lowerSearch) ||
+				item.id.toLowerCase().includes(lowerSearch)
+			) {
+				items.push(item)
+			}
+		})
+
+		// 5b. Subscriptions
+		const subItems: BillingOverviewItem[] = []
+		await Promise.all(
+			allSubscriptions.map(async (sub) => {
+				const customerId =
+					typeof sub.customer === 'string'
+						? sub.customer
+						: sub.customer?.id
+				if (!customerId || !clientNamesMap.has(customerId)) return
+
+				const clientName = clientNamesMap.get(customerId) ?? 'Unknown'
+				const products = sub.items.data
+					.map(
+						(item) =>
+							productMap.get(item.price.product as string) ||
+							'Unknown Product',
+					)
+					.join(', ')
+
+				let projected_total = 0
+				if (sub.status === 'active' && sub.schedule) {
+					try {
+						const scheduleId =
+							typeof sub.schedule === 'string'
+								? sub.schedule
+								: sub.schedule.id
+						const schedule =
+							await stripe.subscriptionSchedules.retrieve(
+								scheduleId,
+							)
+						const lastPhase =
+							schedule.phases[schedule.phases.length - 1]
+						if (lastPhase?.end_date) {
+							const periodsRemaining = Math.max(
+								0,
+								Math.ceil(
+									(lastPhase.end_date - Date.now() / 1000) /
+										(30 * 24 * 60 * 60),
+								),
+							)
+							const monthlyAmount =
+								sub.items.data.reduce(
+									(acc, item) =>
+										acc +
+										(item.price.unit_amount || 0) *
+											(item.quantity || 1),
+									0,
+								) / 100
+							projected_total = monthlyAmount * periodsRemaining
+						}
+					} catch (e) {
+						console.error(
+							'Error retrieving schedule for projection',
+							e,
+						)
+					}
+				}
+
+				const item: BillingOverviewItem = {
+					id: sub.id,
+					type: 'subscription',
+					date: sub.start_date,
+					client_name: clientName,
+					customer_email:
+						(sub.customer as Stripe.Customer).email || '',
+					status: sub.status,
+					amount:
+						sub.items.data.reduce(
+							(acc, item) =>
+								acc +
+								(item.price.unit_amount || 0) *
+									(item.quantity || 1),
+							0,
+						) / 100,
+					description: products,
+					ytd_earnings: clientYtdMap.get(customerId) || 0,
+					projected_total,
+				}
+
+				if (
+					!lowerSearch ||
+					item.client_name.toLowerCase().includes(lowerSearch) ||
+					item.customer_email.toLowerCase().includes(lowerSearch) ||
+					item.description.toLowerCase().includes(lowerSearch) ||
+					item.id.toLowerCase().includes(lowerSearch)
+				) {
+					subItems.push(item)
+				}
+			}),
+		)
+
+		items.push(...subItems)
+
+		// Sort by date DESC
+		items.sort((a, b) => b.date - a.date)
+
+		// 6. Pagination
+		const totalItems = items.length
+		const totalPages = Math.ceil(totalItems / pageSize)
+		const paginatedItems = items.slice(
+			(page - 1) * pageSize,
+			page * pageSize,
+		)
+
+		// 7. Overall Stats (Re-calculate based on filtered clients only)
+		const filteredCustomerIds = [...clientNamesMap.keys()]
+		const totalYtdEarnings = filteredCustomerIds.reduce(
+			(acc, cid) => acc + (clientYtdMap.get(cid) || 0),
+			0,
+		)
+		const totalProjected = subItems.reduce(
+			(acc, val) => acc + (val.projected_total || 0),
+			0,
+		)
+
+		return {
+			items: paginatedItems,
+			totalPages,
+			stats: {
+				totalYtdEarnings,
+				estimatedTotalYearEarnings: totalYtdEarnings + totalProjected,
+			},
+		}
+	} catch (error) {
+		console.error('Error fetching billing overview:', error)
+		return { errorMessage: 'Failed to fetch billing overview data' }
+	}
+}

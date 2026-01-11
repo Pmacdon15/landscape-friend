@@ -1,0 +1,168 @@
+'use client'
+
+import { use } from 'react'
+import type { FetchBillingOverviewResponse } from '@/types/stripe-types'
+import { DateDisplay } from '../date-display'
+import { PaginationTabs } from '../pagination/pagination-tabs'
+
+export function BillingOverviewTable({
+	dataPromise,
+	path,
+}: {
+	dataPromise: Promise<
+		FetchBillingOverviewResponse | { errorMessage: string }
+	>
+	path: string
+}) {
+	const result = use(dataPromise)
+
+	if ('errorMessage' in result) {
+		return (
+			<div className="p-4 text-red-500 bg-red-50 rounded-lg">
+				{result.errorMessage}
+			</div>
+		)
+	}
+
+	const { items, totalPages } = result
+
+	return (
+		<div className="flex flex-col gap-4">
+			<div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+				<table className="w-full text-left text-sm border-collapse">
+					<thead>
+						<tr className="bg-gray-50/50 border-b border-gray-200">
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
+								Date
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
+								Client
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
+								Type
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
+								Description
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
+								Status
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
+								Amount
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight">
+								YTD Earnings
+							</th>
+							<th className="px-6 py-4 font-semibold text-gray-900 leading-tight whitespace-nowrap">
+								Projected Total
+							</th>
+						</tr>
+					</thead>
+					<tbody className="divide-y divide-gray-100">
+						{items.length === 0 ? (
+							<tr>
+								<td
+									className="px-6 py-10 text-center text-gray-500 italic"
+									colSpan={8}
+								>
+									No billing data found.
+								</td>
+							</tr>
+						) : (
+							items.map((item) => (
+								<tr
+									className="hover:bg-gray-50/80 transition-colors group"
+									key={`${item.type}-${item.id}`}
+								>
+									<td className="px-6 py-4 text-gray-600">
+										<DateDisplay timestamp={item.date} />
+									</td>
+									<td className="px-6 py-4">
+										<div className="flex flex-col">
+											<span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+												{item.client_name}
+											</span>
+											<span className="text-xs text-gray-500">
+												{item.customer_email}
+											</span>
+										</div>
+									</td>
+									<td className="px-6 py-4">
+										<span
+											className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
+												item.type === 'invoice'
+													? 'bg-blue-50 text-blue-700 ring-blue-600/20'
+													: 'bg-purple-50 text-purple-700 ring-purple-600/20'
+											}`}
+										>
+											{item.type.charAt(0).toUpperCase() +
+												item.type.slice(1)}
+										</span>
+									</td>
+									<td
+										className="px-6 py-4 text-gray-600 max-w-[200px] truncate"
+										title={item.description}
+									>
+										{item.description}
+									</td>
+									<td className="px-6 py-4">
+										<span
+											className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset ${
+												['paid', 'active'].includes(
+													item.status,
+												)
+													? 'bg-green-50 text-green-700 ring-green-600/20'
+													: 'bg-yellow-50 text-yellow-700 ring-yellow-600/20'
+											}`}
+										>
+											{item.status
+												.charAt(0)
+												.toUpperCase() +
+												item.status.slice(1)}
+										</span>
+									</td>
+									<td className="px-6 py-4 font-semibold text-gray-900">
+										$
+										{item.amount.toLocaleString(undefined, {
+											minimumFractionDigits: 2,
+											maximumFractionDigits: 2,
+										})}
+									</td>
+									<td className="px-6 py-4 text-gray-600 font-medium">
+										$
+										{item.ytd_earnings.toLocaleString(
+											undefined,
+											{
+												minimumFractionDigits: 2,
+												maximumFractionDigits: 2,
+											},
+										)}
+									</td>
+									<td className="px-6 py-4">
+										{item.projected_total !== undefined ? (
+											<span className="font-bold text-blue-600">
+												$
+												{item.projected_total.toLocaleString(
+													undefined,
+													{
+														minimumFractionDigits: 2,
+														maximumFractionDigits: 2,
+													},
+												)}
+											</span>
+										) : (
+											<span className="text-gray-300">
+												—
+											</span>
+										)}
+									</td>
+								</tr>
+							))
+						)}
+					</tbody>
+				</table>
+			</div>
+			<PaginationTabs fullWidth path={path} totalPages={totalPages} />
+		</div>
+	)
+}

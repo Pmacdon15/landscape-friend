@@ -86,3 +86,27 @@ export interface MarkQuoteProps {
 	action: 'accept' | 'cancel' | 'send' | 'edit'
 	quoteId: string
 }
+
+export interface BillingOverviewItem {
+	id: string
+	type: 'invoice' | 'subscription'
+	date: number
+	client_name: string
+	customer_email: string
+	status: string
+	amount: number
+	description: string
+	ytd_earnings: number
+	projected_total?: number
+}
+
+export interface BillingStats {
+	totalYtdEarnings: number
+	estimatedTotalYearEarnings: number
+}
+
+export interface FetchBillingOverviewResponse {
+	items: BillingOverviewItem[]
+	totalPages: number
+	stats: BillingStats
+}
