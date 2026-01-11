@@ -12,6 +12,7 @@ export interface ParsedClientListParams {
 	searchTermCuttingDay: string
 	searchTermAssignedTo: string
 	searchTermStatus: string
+	searchTermType: string
 }
 
 export interface Props {

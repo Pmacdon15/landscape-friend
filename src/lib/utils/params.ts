@@ -15,6 +15,7 @@ export function parseClientListParams(
 	const searchTermCuttingDay = String(params.day ?? '')
 	const searchTermAssignedTo = String(params.assigned ?? '')
 	const searchTermStatus = String(params.status ?? '')
+	const searchTermType = String(params.type ?? '')
 
 	return {
 		page,
@@ -25,5 +26,6 @@ export function parseClientListParams(
 		searchTermCuttingDay,
 		searchTermAssignedTo,
 		searchTermStatus,
+		searchTermType,
 	}
 }

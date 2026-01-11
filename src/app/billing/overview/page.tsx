@@ -18,8 +18,10 @@ export default function BillingOverviewPage(
 		<FormContainer>
 			<FormHeader text="Billing Overview" />
 
-			<Suspense fallback={<SearchFormFallBack variant="invoices" />}>
-				<SearchForm variant="invoices" />
+			<Suspense
+				fallback={<SearchFormFallBack variant="billing-overview" />}
+			>
+				<SearchForm variant="billing-overview" />
 			</Suspense>
 
 			<div className="mt-8 flex flex-col gap-8">
@@ -47,12 +49,18 @@ async function StatsContainer({
 	searchParamsPromise: Promise<SearchParams>
 }) {
 	const searchParams = await searchParamsPromise
-	const { page, searchTerm } = parseClientListParams(searchParams)
+	const { page, searchTerm, searchTermStatus, searchTermType } =
+		parseClientListParams(searchParams)
 
 	// We want the data but not awaited at the top level, but for stats we might need it.
 	// Actually the prompt says: "promise for data to be at the top but not awaited and passed to a suspended component as low as possible"
 	// So I'll pass the promise down.
-	const dataPromise = fetchBillingOverviewData(page, searchTerm)
+	const dataPromise = fetchBillingOverviewData(
+		page,
+		searchTerm,
+		searchTermStatus,
+		searchTermType,
+	)
 
 	return <BillingStatsComponent dataPromise={dataPromise} />
 }
@@ -63,8 +71,14 @@ async function TableContainer({
 	searchParamsPromise: Promise<SearchParams>
 }) {
 	const searchParams = await searchParamsPromise
-	const { page, searchTerm } = parseClientListParams(searchParams)
-	const dataPromise = fetchBillingOverviewData(page, searchTerm)
+	const { page, searchTerm, searchTermStatus, searchTermType } =
+		parseClientListParams(searchParams)
+	const dataPromise = fetchBillingOverviewData(
+		page,
+		searchTerm,
+		searchTermStatus,
+		searchTermType,
+	)
 
 	return (
 		<BillingOverviewTable

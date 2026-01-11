@@ -5,6 +5,7 @@ import { AssignedToSelectorFallback } from '../fallbacks/search/assigned-to-sele
 import { SearchInput } from '../inputs/search-input'
 import { AssignedToSelector } from '../selectors/assigned-to-selector'
 import { BillingStatusSelector } from '../selectors/billing-status-selector'
+import { BillingTypeSelector } from '../selectors/billing-type-selector'
 import { CuttingPeriodSelector } from '../selectors/cutting-period-selector'
 import { ServiceStatusSelector } from '../selectors/service-status-selector'
 import { ServiceListDatePicker } from '../service-list/service-list-date-picker'
@@ -55,6 +56,12 @@ export default async function SearchForm({
 			{variant === 'quotes' && <BillingStatusSelector variant="quotes" />}
 			{variant === 'subscriptions' && (
 				<BillingStatusSelector variant="subscriptions" />
+			)}
+			{variant === 'billing-overview' && (
+				<>
+					<BillingTypeSelector />
+					<BillingStatusSelector variant="billing-overview" />
+				</>
 			)}
 		</div>
 	)

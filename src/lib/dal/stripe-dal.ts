@@ -755,6 +755,8 @@ import type {
 export async function fetchBillingOverviewData(
 	page: number,
 	searchTerm: string,
+	status?: string,
+	type?: string,
 ): Promise<FetchBillingOverviewResponse | { errorMessage: string }> {
 	const { isAdmin } = await isOrgAdmin()
 	if (!isAdmin) return { errorMessage: 'Not Admin' }
@@ -886,133 +888,157 @@ export async function fetchBillingOverviewData(
 		const items: BillingOverviewItem[] = []
 
 		// 5a. Invoices
-		allInvoices.forEach((invoice) => {
-			const customerId =
-				typeof invoice.customer === 'string'
-					? invoice.customer
-					: invoice.customer?.id
-			if (!customerId || !clientNamesMap.has(customerId)) return
-
-			const clientName = clientNamesMap.get(customerId) ?? 'Unknown'
-			const description = invoice.lines.data
-				.map((l) => l.description)
-				.join(', ')
-
-			const item: BillingOverviewItem = {
-				id: invoice.id || 'no-id',
-				type: 'invoice',
-				date: invoice.created,
-				client_name: clientName,
-				customer_email: invoice.customer_email || '',
-				status: invoice.status || 'unknown',
-				amount: invoice.total / 100,
-				description,
-				ytd_earnings: clientYtdMap.get(customerId) || 0,
-			}
-
-			if (
-				!lowerSearch ||
-				item.client_name.toLowerCase().includes(lowerSearch) ||
-				item.customer_email.toLowerCase().includes(lowerSearch) ||
-				item.description.toLowerCase().includes(lowerSearch) ||
-				item.id.toLowerCase().includes(lowerSearch)
-			) {
-				items.push(item)
-			}
-		})
-
-		// 5b. Subscriptions
-		const subItems: BillingOverviewItem[] = []
-		await Promise.all(
-			allSubscriptions.map(async (sub) => {
+		if (!type || type === 'all' || type === 'invoice') {
+			allInvoices.forEach((invoice) => {
 				const customerId =
-					typeof sub.customer === 'string'
-						? sub.customer
-						: sub.customer?.id
+					typeof invoice.customer === 'string'
+						? invoice.customer
+						: invoice.customer?.id
 				if (!customerId || !clientNamesMap.has(customerId)) return
 
 				const clientName = clientNamesMap.get(customerId) ?? 'Unknown'
-				const products = sub.items.data
-					.map(
-						(item) =>
-							productMap.get(item.price.product as string) ||
-							'Unknown Product',
-					)
+				const description = invoice.lines.data
+					.map((l) => l.description)
 					.join(', ')
 
-				let projected_total = 0
-				if (sub.status === 'active' && sub.schedule) {
-					try {
-						const scheduleId =
-							typeof sub.schedule === 'string'
-								? sub.schedule
-								: sub.schedule.id
-						const schedule =
-							await stripe.subscriptionSchedules.retrieve(
-								scheduleId,
-							)
-						const lastPhase =
-							schedule.phases[schedule.phases.length - 1]
-						if (lastPhase?.end_date) {
-							const periodsRemaining = Math.max(
-								0,
-								Math.ceil(
-									(lastPhase.end_date - Date.now() / 1000) /
-										(30 * 24 * 60 * 60),
-								),
-							)
-							const monthlyAmount =
-								sub.items.data.reduce(
-									(acc, item) =>
-										acc +
-										(item.price.unit_amount || 0) *
-											(item.quantity || 1),
-									0,
-								) / 100
-							projected_total = monthlyAmount * periodsRemaining
-						}
-					} catch (e) {
-						console.error(
-							'Error retrieving schedule for projection',
-							e,
-						)
-					}
+				const item: BillingOverviewItem = {
+					id: invoice.id || 'no-id',
+					type: 'invoice',
+					date: invoice.created,
+					client_name: clientName,
+					customer_email: invoice.customer_email || '',
+					status: invoice.status || 'unknown',
+					amount: invoice.total / 100,
+					description,
+					ytd_earnings: clientYtdMap.get(customerId) || 0,
 				}
 
-				const item: BillingOverviewItem = {
-					id: sub.id,
-					type: 'subscription',
-					date: sub.start_date,
-					client_name: clientName,
-					customer_email:
-						(sub.customer as Stripe.Customer).email || '',
-					status: sub.status,
-					amount:
-						sub.items.data.reduce(
-							(acc, item) =>
-								acc +
-								(item.price.unit_amount || 0) *
-									(item.quantity || 1),
-							0,
-						) / 100,
-					description: products,
-					ytd_earnings: clientYtdMap.get(customerId) || 0,
-					projected_total,
-				}
+				// Unified status filtering
+				const matchesStatus =
+					!status || status === 'all' || item.status === status
 
 				if (
-					!lowerSearch ||
-					item.client_name.toLowerCase().includes(lowerSearch) ||
-					item.customer_email.toLowerCase().includes(lowerSearch) ||
-					item.description.toLowerCase().includes(lowerSearch) ||
-					item.id.toLowerCase().includes(lowerSearch)
+					matchesStatus &&
+					(!lowerSearch ||
+						item.client_name.toLowerCase().includes(lowerSearch) ||
+						item.customer_email
+							.toLowerCase()
+							.includes(lowerSearch) ||
+						item.description.toLowerCase().includes(lowerSearch) ||
+						item.id.toLowerCase().includes(lowerSearch))
 				) {
-					subItems.push(item)
+					items.push(item)
 				}
-			}),
-		)
+			})
+		}
 
-		items.push(...subItems)
+		// 5b. Subscriptions
+		const subItems: BillingOverviewItem[] = []
+		if (!type || type === 'all' || type === 'subscription') {
+			await Promise.all(
+				allSubscriptions.map(async (sub) => {
+					const customerId =
+						typeof sub.customer === 'string'
+							? sub.customer
+							: sub.customer?.id
+					if (!customerId || !clientNamesMap.has(customerId)) return
+
+					const clientName =
+						clientNamesMap.get(customerId) ?? 'Unknown'
+					const products = sub.items.data
+						.map(
+							(item) =>
+								productMap.get(item.price.product as string) ||
+								'Unknown Product',
+						)
+						.join(', ')
+
+					let projected_total = 0
+					if (sub.status === 'active' && sub.schedule) {
+						try {
+							const scheduleId =
+								typeof sub.schedule === 'string'
+									? sub.schedule
+									: sub.schedule.id
+							const schedule =
+								await stripe.subscriptionSchedules.retrieve(
+									scheduleId,
+								)
+							const lastPhase =
+								schedule.phases[schedule.phases.length - 1]
+							if (lastPhase?.end_date) {
+								const periodsRemaining = Math.max(
+									0,
+									Math.ceil(
+										(lastPhase.end_date -
+											Date.now() / 1000) /
+											(30 * 24 * 60 * 60),
+									),
+								)
+								const monthlyAmount =
+									sub.items.data.reduce(
+										(acc, item) =>
+											acc +
+											(item.price.unit_amount || 0) *
+												(item.quantity || 1),
+										0,
+									) / 100
+								projected_total =
+									monthlyAmount * periodsRemaining
+							}
+						} catch (e) {
+							console.error(
+								'Error retrieving schedule for projection',
+								e,
+							)
+						}
+					}
+
+					const item: BillingOverviewItem = {
+						id: sub.id,
+						type: 'subscription',
+						date: sub.start_date,
+						client_name: clientName,
+						customer_email:
+							(sub.customer as Stripe.Customer).email || '',
+						status: sub.status,
+						amount:
+							sub.items.data.reduce(
+								(acc, item) =>
+									acc +
+									(item.price.unit_amount || 0) *
+										(item.quantity || 1),
+								0,
+							) / 100,
+						description: products,
+						ytd_earnings: clientYtdMap.get(customerId) || 0,
+						projected_total,
+					}
+
+					// Unified status filtering
+					const matchesStatus =
+						!status || status === 'all' || item.status === status
+
+					if (
+						matchesStatus &&
+						(!lowerSearch ||
+							item.client_name
+								.toLowerCase()
+								.includes(lowerSearch) ||
+							item.customer_email
+								.toLowerCase()
+								.includes(lowerSearch) ||
+							item.description
+								.toLowerCase()
+								.includes(lowerSearch) ||
+							item.id.toLowerCase().includes(lowerSearch))
+					) {
+						subItems.push(item)
+					}
+				}),
+			)
+			items.push(...subItems)
+		}
 
 		// Sort by date DESC
 		items.sort((a, b) => b.date - a.date)

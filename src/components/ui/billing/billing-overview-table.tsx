@@ -1,6 +1,7 @@
 'use client'
 
 import type { Route } from 'next'
+import { useRouter } from 'next/navigation'
 import { use } from 'react'
 import type { FetchBillingOverviewResponse } from '@/types/stripe-types'
 import { DateDisplay } from '../date-display'
@@ -16,6 +17,7 @@ export function BillingOverviewTable({
 	path: string
 }) {
 	const result = use(dataPromise)
+	const router = useRouter()
 
 	if ('errorMessage' in result) {
 		return (
@@ -26,6 +28,19 @@ export function BillingOverviewTable({
 	}
 
 	const { items, totalPages } = result
+
+	const handleRowClick = (item: (typeof items)[0]) => {
+		if (item.type === 'invoice') {
+			router.push(`/billing/edit/invoice?invoice=${item.id}`)
+		} else if (item.type === 'subscription') {
+			router.push(`/billing/manage/subscriptions?search=${item.id}`)
+		}
+	}
+
+	const handleClientClick = (e: React.MouseEvent, clientName: string) => {
+		e.stopPropagation()
+		router.push(`/lists/client?search=${encodeURIComponent(clientName)}`)
+	}
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -72,17 +87,35 @@ export function BillingOverviewTable({
 						) : (
 							items.map((item) => (
 								<tr
-									className="hover:bg-gray-50/80 transition-colors group"
+									className="hover:bg-gray-50/80 transition-colors group cursor-pointer focus:bg-gray-50 focus:outline-none"
 									key={`${item.type}-${item.id}`}
+									onClick={() => handleRowClick(item)}
+									onKeyDown={(e) => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.preventDefault()
+											handleRowClick(item)
+										}
+									}}
+									role="button"
+									tabIndex={0}
 								>
 									<td className="px-6 py-4 text-gray-600">
 										<DateDisplay timestamp={item.date} />
 									</td>
 									<td className="px-6 py-4">
 										<div className="flex flex-col">
-											<span className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
+											<button
+												className="text-left font-medium text-gray-900 group-hover:text-blue-600 transition-colors cursor-pointer hover:underline focus:outline-none"
+												onClick={(e) =>
+													handleClientClick(
+														e,
+														item.client_name,
+													)
+												}
+												type="button"
+											>
 												{item.client_name}
-											</span>
+											</button>
 											<span className="text-xs text-gray-500">
 												{item.customer_email}
 											</span>

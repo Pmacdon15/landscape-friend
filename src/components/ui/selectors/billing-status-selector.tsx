@@ -25,7 +25,18 @@ export function BillingStatusSelector({
 			? ['all', 'draft', 'open', 'paid', 'void']
 			: variant === 'quotes'
 				? ['all', 'draft', 'open', 'accepted', 'canceled']
-				: ['active', 'canceled', 'incomplete']
+				: variant === 'subscriptions'
+					? ['all', 'active', 'canceled', 'incomplete']
+					: [
+							'all',
+							'draft',
+							'open',
+							'paid',
+							'void',
+							'active',
+							'canceled',
+							'incomplete',
+						]
 
 	function handleChange(value: string) {
 		updateSearchParams('status', value)
