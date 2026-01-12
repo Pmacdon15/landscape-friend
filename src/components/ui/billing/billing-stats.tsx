@@ -43,7 +43,7 @@ export function BillingStatsComponent({
 					</div>
 				</div>
 				<div className="absolute top-0 right-0 p-4">
-					<TrendingUp className="-mr-4 -mt-4 h-20 w-20 rotate-12 text-green-50/50" />
+					<TrendingUp className="-mt-4 -mr-4 h-20 w-20 rotate-12 text-green-50/50" />
 				</div>
 			</div>
 
@@ -72,7 +72,7 @@ export function BillingStatsComponent({
 					* Based on current YTD and active subscription projections
 				</p>
 				<div className="absolute top-0 right-0 p-4">
-					<TrendingUp className="-mr-4 -mt-4 h-20 w-20 rotate-12 text-blue-50/50" />
+					<TrendingUp className="-mt-4 -mr-4 h-20 w-20 rotate-12 text-blue-50/50" />
 				</div>
 			</div>
 		</div>

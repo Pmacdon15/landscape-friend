@@ -10,7 +10,7 @@ export default function HeaderHeader() {
 					<HeaderImageIco />
 				</Link>
 			</div>
-			<div className="-translate-x-1/2 -translate-y-1/2 absolute top-1/2 left-1/2 w-fit">
+			<div className="absolute top-1/2 left-1/2 w-fit -translate-x-1/2 -translate-y-1/2">
 				<Link href="/">
 					<HeaderTitle text="Landscape Friend" />
 				</Link>

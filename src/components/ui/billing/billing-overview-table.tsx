@@ -92,7 +92,7 @@ export function BillingOverviewTable({
 											item.status.slice(1)}
 									</span>
 								</div>
-								<div className="mt-2 text-sm text-gray-600">
+								<div className="mt-2 text-gray-600 text-sm">
 									<div className="flex justify-between">
 										<span>Date:</span>
 										<span className="font-medium text-gray-900">
@@ -157,7 +157,7 @@ export function BillingOverviewTable({
 									)}
 								</div>
 								<p
-									className="mt-2 truncate text-sm text-gray-600"
+									className="mt-2 truncate text-gray-600 text-sm"
 									title={item.description}
 								>
 									{item.description}
@@ -169,7 +169,7 @@ export function BillingOverviewTable({
 			</div>
 
 			{/* Desktop View - Table Layout */}
-			<div className="hidden min-[1390px]:block overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md">
+			<div className="hidden overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md min-[1390px]:block">
 				<table className="w-full border-collapse text-left text-sm">
 					<thead>
 						<tr className="border-gray-200 border-b bg-gray-50/50">

@@ -46,9 +46,7 @@ export function EditSettingSheet({
 					<SheetTitle>Update Form</SheetTitle>
 					<SheetDescription>{prompt}</SheetDescription>
 				</SheetHeader>
-				<div className="flex-grow overflow-y-auto">
-					{children}
-				</div>
+				<div className="flex-grow overflow-y-auto">{children}</div>
 				<SheetClose asChild>
 					<Button className="w-full">Close</Button>
 				</SheetClose>

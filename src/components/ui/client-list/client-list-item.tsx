@@ -15,7 +15,7 @@ const ClientListItemHeader = ({
 				src="/client-list/telephone.png"
 				width={512}
 			/>
-			<div className="-translate-x-1/2 absolute left-1/2 flex flex-col items-center">
+			<div className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center">
 				<p className="text-sm">Phone Number:</p>
 				<a
 					className="cursor-pointer text-center hover:underline"
@@ -44,7 +44,7 @@ const ClientListItemEmail = ({
 				src="/client-list/email.png"
 				width={512}
 			/>
-			<div className="-translate-x-1/2 absolute left-1/2 flex flex-col items-center">
+			<div className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center">
 				<p className="text-sm">Email:</p>
 				<ClientEmailPopover
 					clientEmailAddress={clientEmailAddress}

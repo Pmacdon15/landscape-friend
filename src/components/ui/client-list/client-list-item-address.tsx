@@ -36,7 +36,7 @@ export default function ClientListItemAddress({
 					src="/client-list/address.png"
 					width={512}
 				/>
-				<div className="-translate-x-1/2 absolute left-1/2 flex w-full flex-col items-center">
+				<div className="absolute left-1/2 flex w-full -translate-x-1/2 flex-col items-center">
 					<p className="text-sm">Address:</p>
 					<p>{clientAddress}</p>
 				</div>
