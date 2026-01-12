@@ -113,6 +113,18 @@ export default function NavigationMenuComponent() {
 								<ul className="grid w-max gap-4">
 									<li>
 										<NavigationMenuLink asChild>
+											<Link href="/billing/overview">
+												<div className="font-medium">
+													Billing Overview
+												</div>
+												<div className="text-muted-foreground">
+													View your billing overview.
+												</div>
+											</Link>
+										</NavigationMenuLink>
+									</li>
+									<li>
+										<NavigationMenuLink asChild>
 											<Link href="/billing/create-quote">
 												<div className="font-medium">
 													Create a Quote

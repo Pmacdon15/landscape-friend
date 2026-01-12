@@ -129,6 +129,14 @@ export default function VerticalNav() {
 					<SheetClose asChild>
 						<Link
 							className="rounded-md p-2 hover:bg-accent"
+							href="/billing/overview"
+						>
+							Billing Overview
+						</Link>
+					</SheetClose>
+					<SheetClose asChild>
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
 							href="/billing/create-quote"
 						>
 							Create a Quote
