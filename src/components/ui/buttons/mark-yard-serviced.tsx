@@ -92,8 +92,8 @@ export default function MarkYardServiced({
 
 	//TODO: uncomment below
 	function isMobileDevice() {
-		// return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-		return true
+		return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+		// return true
 		// return true
 	}
 
