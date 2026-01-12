@@ -40,18 +40,18 @@ export function EditSettingSheet({
 					</button>
 				)}
 			</SheetTrigger>
-			<SheetContent>
+			<SheetContent className="flex flex-col">
 				<SheetHeader>
 					<SheetLogoHeader />
 					<SheetTitle>Update Form</SheetTitle>
 					<SheetDescription>{prompt}</SheetDescription>
 				</SheetHeader>
-				<div className="flex flex-col gap-2">
+				<div className="flex-grow overflow-y-auto">
 					{children}
-					<SheetClose asChild>
-						<Button className="w-full">Close</Button>
-					</SheetClose>
 				</div>
+				<SheetClose asChild>
+					<Button className="w-full">Close</Button>
+				</SheetClose>
 			</SheetContent>
 		</Sheet>
 	)
