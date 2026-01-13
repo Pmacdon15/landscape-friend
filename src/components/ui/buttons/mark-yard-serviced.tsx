@@ -1,7 +1,7 @@
 'use client'
 import imageCompression from 'browser-image-compression'
 import Image from 'next/image'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
@@ -117,6 +117,24 @@ export default function MarkYardServiced({
 			setImages([...images, imageWithTimeStamp])
 		}
 	}
+
+	const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
+
+	useEffect(() => {
+		const getDevices = async () => {
+			try {
+				const deviceList =
+					await navigator.mediaDevices.enumerateDevices()
+				setDevices(deviceList)
+			} catch (err) {
+				console.error('Failed to enumerate devices', err)
+			}
+		}
+
+		getDevices()
+	}, [])
+
+	console.log('devices: ', devices)
 	if (!isMobileDevice())
 		return (
 			<div className="flex select-none flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-3 shadow-sm transition duration-300 ease-in-out hover:bg-green-200">
@@ -126,7 +144,7 @@ export default function MarkYardServiced({
 
 	return (
 		<>
-			<label>
+			<div>
 				<input
 					accept="image/*"
 					capture
@@ -145,7 +163,7 @@ export default function MarkYardServiced({
 							: 'Add more photos'}
 					</div>
 				</div>
-			</label>
+			</div>
 			{images.length > 0 && (
 				<>
 					{images.map((img, index) => (
