@@ -31,25 +31,24 @@ export default function ImageGallery({
 
 			<div className="flex h-full flex-wrap items-center justify-center align-middle">
 				{siteMaps.map((siteMap, index) => (
-					<div
-						className="relative"
-						key={`${siteMap.imageurl}-${index}`}
-					>
+					<div className="relative" key={`${siteMap.id}-${index}`}>
 						<Suspense>
 							<DeleteSiteMapButton
 								pagePromise={pagePromise}
 								siteMap={siteMap}
 							/>
 						</Suspense>
-						{siteMap.imageurl && (
+						{(siteMap.base64Image || siteMap.imageurl) && (
 							<Image
 								alt={`Image ${index + 1}`}
 								className="p-2 hover:cursor-zoom-in"
 								height={300}
 								onClick={() => {
-									setPreviewSrc(siteMap.imageurl)
+									setPreviewSrc(
+										siteMap.base64Image || siteMap.imageurl,
+									)
 								}}
-								src={siteMap.imageurl}
+								src={siteMap.base64Image || siteMap.imageurl}
 								width={300}
 							/>
 						)}
