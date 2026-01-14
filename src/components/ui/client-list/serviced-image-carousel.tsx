@@ -19,7 +19,7 @@ import {
 
 interface ServicedImage {
 	date: Date
-	imageurl: string
+	base64Image: string
 }
 
 export default function ServicedImageCarousel({
@@ -85,14 +85,14 @@ export default function ServicedImageCarousel({
 					{(groupedImages[selectedDay] || []).map((image, index) => (
 						<CarouselItem
 							className={'basis-[85%]'}
-							key={image.imageurl}
+							key={image.base64Image}
 						>
 							<Image
 								alt={`Serviced Image: ${index}`}
 								blurDataURL={'/placeholder.png'}
 								height={500}
 								placeholder="blur"
-								src={image.imageurl}
+								src={image.base64Image}
 								width={500}
 							/>
 						</CarouselItem>

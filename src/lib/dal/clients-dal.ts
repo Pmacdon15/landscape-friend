@@ -254,12 +254,44 @@ export async function fetchClientNamesByStripeIds(
 //MARK: Get Serviced URLs
 export async function getServicedImagesUrls(
 	addressId: number,
-): Promise<{ date: Date; imageurl: string }[]> {
+): Promise<{ date: Date; base64Image: string }[]> {
 	'use cache: private'
 	cacheTag(`serviced-images-${addressId}`)
 	await auth.protect()
 	try {
-		return await getServicedImagesUrlsDb(addressId)
+		const images = await getServicedImagesUrlsDb(addressId)
+
+		const base64Images = await Promise.all(
+			images.map(async (img) => {
+				try {
+					const response = await fetch(img.imageurl)
+					if (!response.ok) {
+						throw new Error(
+							`Failed to fetch image: ${response.statusText}`,
+						)
+					}
+					const arrayBuffer = await response.arrayBuffer()
+					const buffer = Buffer.from(arrayBuffer)
+					const contentType =
+						response.headers.get('content-type') || 'image/png'
+					const base64 = buffer.toString('base64')
+					return {
+						date: img.date,
+						base64Image: `data:${contentType};base64,${base64}`,
+					}
+				} catch (error) {
+					console.error(
+						`Error converting image ${img.imageurl} to base64:`,
+						error,
+					)
+					return null
+				}
+			}),
+		)
+
+		return base64Images.filter(
+			(img): img is { date: Date; base64Image: string } => img !== null,
+		)
 	} catch (error) {
 		console.error('Error in getting Serviced Images Urls:', error)
 		return []
