@@ -16,7 +16,7 @@ export default async function ListServices({ client }: { client: Client }) {
 		<div className="mx-auto mt-2 flex min-h-[300px] w-full flex-col items-center justify-center overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
 			`
 			{imagesUrls.map((imageUrl) => (
-				<>
+				<div key={imageUrl.base64Image}>
 					<h1 className="font-bold text-white">
 						{`Last Service: ${imageUrl.date.toDateString()}`}
 					</h1>
@@ -24,10 +24,10 @@ export default async function ListServices({ client }: { client: Client }) {
 						alt="Image"
 						className="my-2 py-2"
 						height={400}
-						src={imageUrl.imageurl}
+						src={imageUrl.base64Image}
 						width={400}
 					/>
-				</>
+				</div>
 			))}
 		</div>
 	)
