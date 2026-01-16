@@ -98,7 +98,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 		}
 	}
 
-	console.log('Generated Route Chunks:', routeChunks)
+	// console.log('Generated Route Chunks:', routeChunks)
 
 	return (
 		<div className="relative">

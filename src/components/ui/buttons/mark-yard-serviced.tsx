@@ -1,7 +1,9 @@
 'use client'
+
 import imageCompression from 'browser-image-compression'
+import { Camera } from 'lucide-react'
 import Image from 'next/image'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
@@ -19,23 +21,115 @@ export default function MarkYardServiced({
 	const { mutate, isError, isPending, error } = useMarkYardServiced(
 		addressId,
 		{
-			onSuccess: () => {
-				toast.success('Yard marked serviced!', { duration: 1500 })
-			},
-			onError: (error) => {
-				console.error('Error marking yard serviced', error)
-				toast.error('Error marking yard serviced!', { duration: 1500 })
-			},
+			onSuccess: () =>
+				toast.success('Yard marked serviced!', { duration: 1500 }),
+			onError: () =>
+				toast.error('Error marking yard serviced!', { duration: 1500 }),
 		},
 	)
-	const [images, setImages] = useState<File[]>([])
-	const fileInputRef = useRef<HTMLInputElement>(null)
 
+	const [images, setImages] = useState<File[]>([])
+	const [hasCamera, setHasCamera] = useState<boolean | null>(null)
+	const [cameraOpen, setCameraOpen] = useState<boolean>(false)
+
+	const videoRef = useRef<HTMLVideoElement>(null)
+	const streamRef = useRef<MediaStream | null>(null)
+
+	/* --------------------------------------------
+	   CAMERA CHECK
+	-------------------------------------------- */
+	useEffect(() => {
+		async function checkCamera() {
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({
+					video: true,
+				})
+
+				stream.getTracks().forEach((t) => {
+					t.stop()
+				})
+
+				setHasCamera(true)
+			} catch {
+				setHasCamera(false)
+			}
+		}
+
+		checkCamera()
+	}, [])
+
+	/* --------------------------------------------
+	   OPEN CAMERA
+	-------------------------------------------- */
+	const openCamera = async () => {
+		setCameraOpen(true)
+		const stream = await navigator.mediaDevices.getUserMedia({
+			video: { facingMode: 'environment' },
+			audio: false,
+		})
+
+		streamRef.current = stream
+
+		if (videoRef.current) {
+			videoRef.current.srcObject = stream
+			await videoRef.current.play()
+		}
+	}
+
+	/* --------------------------------------------
+	   TAKE PHOTO
+	-------------------------------------------- */
+	const takePhoto = async () => {
+		setCameraOpen(false)
+		if (!videoRef.current || !streamRef.current) return
+
+		const video = videoRef.current
+
+		const canvas = document.createElement('canvas')
+		canvas.width = video.videoWidth
+		canvas.height = video.videoHeight
+
+		const ctx = canvas.getContext('2d')
+		if (!ctx) return
+
+		ctx.drawImage(video, 0, 0)
+
+		// Stop camera immediately
+		streamRef.current.getTracks().forEach((t) => {
+			t.stop()
+		})
+		streamRef.current = null
+
+		const blob = await new Promise<Blob | null>((resolve) =>
+			canvas.toBlob(resolve, 'image/jpeg'),
+		)
+
+		if (!blob) return
+
+		let file = new File([blob], `capture-${Date.now()}.jpg`, {
+			type: 'image/jpeg',
+		})
+
+		// Compress if needed
+		if (file.size / 1024 / 1024 > 1) {
+			file = await imageCompression(file, {
+				maxSizeMB: 1,
+				maxWidthOrHeight: 1920,
+			})
+		}
+
+		const stamped = await addTimestampToImage(file)
+		setImages((prev) => [...prev, stamped])
+	}
+
+	/* --------------------------------------------
+	   TIMESTAMP OVERLAY
+	-------------------------------------------- */
 	const addTimestampToImage = async (file: File): Promise<File> => {
 		const img = document.createElement('img')
 		const url = URL.createObjectURL(file)
 
-		return new Promise<File>((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			img.onload = () => {
 				const canvas = document.createElement('canvas')
 				canvas.width = img.width
@@ -43,144 +137,149 @@ export default function MarkYardServiced({
 
 				const ctx = canvas.getContext('2d')
 				if (!ctx) {
-					reject(new Error('Canvas context not available'))
-					return
+					URL.revokeObjectURL(url)
+					return reject('Canvas unavailable')
 				}
 
-				// Draw the image
+				// Draw original image
 				ctx.drawImage(img, 0, 0)
-				//Draw rectangle (bakgroung)
-				ctx.fillStyle = 'black'
-				ctx.fillRect(0, 0, img.width, 68)
-
-				// Add timestamp text
-				const timestamp = new Date().toLocaleString()
-				const serviced = snow ? 'SNOW REMOVAL - ' : 'GRASS CUT - '
-				ctx.font = '48px Arial'
-				ctx.fillStyle = 'red'
-				// ctx.strokeStyle = "white";
-				ctx.lineWidth = 2
-				ctx.textBaseline = 'top'
 
 				const padding = 10
-				const x = padding
-				const y = padding
+				const label = snow ? 'SNOW REMOVAL - ' : 'GRASS CUT - '
+				const timestamp = new Date().toLocaleString()
+				const fullText = label + timestamp
 
-				// ctx.strokeText(timestamp, x, y);
-				ctx.fillText(serviced + timestamp, x, y)
+				// Dynamically calculate font size based on image width
+				const fontSize = Math.floor(img.width / 20) // arbitrary ratio, tweak if needed
+				ctx.font = `${fontSize}px Arial`
+				ctx.fillStyle = 'red'
+				ctx.textBaseline = 'top'
 
-				// Convert canvas back to Blob
-				canvas.toBlob((blob) => {
-					if (blob) {
-						const newFile = new File([blob], file.name, {
-							type: file.type,
-						})
-						resolve(newFile)
+				const lineHeight = fontSize * 1.2 // slightly bigger than font size
+
+				// Draw black background big enough for two lines
+				ctx.fillStyle = 'black'
+				ctx.fillRect(0, 0, img.width, lineHeight * 2 + padding * 2)
+
+				// Set text color
+				ctx.fillStyle = 'red'
+
+				// Wrap text if too long
+				const maxWidth = img.width - padding * 2
+				const words = fullText.split(' ')
+				let line = ''
+				let y = padding
+
+				for (let n = 0; n < words.length; n++) {
+					const testLine = `${line + words[n]} `
+					const metrics = ctx.measureText(testLine)
+					if (metrics.width > maxWidth && n > 0) {
+						ctx.fillText(line, padding, y)
+						line = `${words[n]} `
+						y += lineHeight
 					} else {
-						reject(new Error('Failed to convert canvas to Blob'))
+						line = testLine
 					}
+				}
+				ctx.fillText(line, padding, y)
+
+				// Convert to blob
+				canvas.toBlob((blob) => {
+					URL.revokeObjectURL(url)
+					if (!blob) return reject('Blob failed')
+					resolve(new File([blob], file.name, { type: file.type }))
 				}, file.type)
 			}
 
-			img.onerror = () => {
-				reject(new Error('Failed to load image'))
-			}
-
+			img.onerror = () => reject('Image load failed')
 			img.src = url
 		})
 	}
 
-	//TODO: uncomment below
-	function isMobileDevice() {
-		return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-		// return true
-		// return true
+	/* --------------------------------------------
+	   UI GUARDS
+	-------------------------------------------- */
+	if (hasCamera === null) {
+		return <div className="border p-4 text-center">Checking camera…</div>
 	}
 
-	async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-		const selectedFile = e.target.files?.[0]
-		if (selectedFile) {
-			const options = {
-				maxSizeMB: 1,
-				maxWidthOrHeight: 1920,
-				useWebWorker: true,
-			}
-
-			let compressedFile = selectedFile
-
-			if (selectedFile.size / 1024 / 1024 > 1) {
-				compressedFile = await imageCompression(selectedFile, options)
-			}
-
-			const imageWithTimeStamp = await addTimestampToImage(compressedFile)
-
-			setImages([...images, imageWithTimeStamp])
-		}
-	}
-	if (!isMobileDevice())
+	if (!hasCamera) {
 		return (
-			<div className="flex select-none flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-3 shadow-sm transition duration-300 ease-in-out hover:bg-green-200">
-				<h1>Device not supported for complete services</h1>
-			</div>
+			<div className="border p-4 text-center">Camera access required</div>
 		)
+	}
 
+	/* --------------------------------------------
+	   RENDER
+	-------------------------------------------- */
 	return (
-		<>
-			<label>
-				<input
-					accept="image/*"
-					capture
-					className="hidden"
-					name="image"
-					onChange={handleFileChange}
-					ref={fileInputRef}
-					required
-					type="file"
+		<div className="flex flex-col space-y-4">
+			{/* Hidden live camera */}
+			{cameraOpen && (
+				<video
+					className="rounded-sm border"
+					muted
+					playsInline
+					ref={videoRef}
 				/>
-				<div className="flex select-none flex-col items-center rounded-md border border-gray-300 bg-white px-6 py-2 shadow-sm transition duration-300 ease-in-out hover:bg-green-200">
-					<div className="text-4xl">📸</div>
-					<div className="max-w-full truncate px-2">
-						{images.length === 0
-							? 'Mark service complete'
-							: 'Add more photos'}
-					</div>
-				</div>
-			</label>
-			{images.length > 0 && (
-				<>
-					{images.map((img, index) => (
-						<Image
-							alt={'Site Serviced Photo'}
-							height={400}
-							key={`${img.name}-${index}`}
-							src={URL.createObjectURL(new Blob([img]))}
-							width={400}
-						/>
-					))}
-
-					<Button
-						disabled={isPending}
-						onClick={() =>
-							images
-								? mutate({
-										addressId,
-										date: serviceDate,
-										snow,
-										images,
-									})
-								: null
-						}
-						variant={'outline'}
-					>
-						Mark Yard Serviced{isPending && <Spinner />}
-					</Button>
-					{isError && (
-						<p className="text-red-500">
-							{error.message ?? 'Error Marking Serviced'}
-						</p>
-					)}
-				</>
 			)}
-		</>
+
+			{!cameraOpen && (
+				<Button
+					className="w-full"
+					onClick={openCamera}
+					variant={'outline'}
+				>
+					<Camera />
+					Take Photo to mark yard serviced
+				</Button>
+			)}
+
+			{cameraOpen && (
+				<Button
+					className="w-full"
+					onClick={takePhoto}
+					variant="outline"
+				>
+					<Camera />
+					Take Photo
+				</Button>
+			)}
+
+			{cameraOpen && (
+				<Button
+					className="w-full"
+					onClick={() => setCameraOpen(false)}
+					variant={'destructive'}
+				>
+					<Camera />
+					Close Camera
+				</Button>
+			)}
+
+			{images.map((img, i) => (
+				<Image
+					alt="Serviced"
+					height={400}
+					key={i}
+					src={URL.createObjectURL(img)}
+					width={400}
+				/>
+			))}
+
+			{images.length > 0 && (
+				<Button
+					disabled={isPending}
+					onClick={() =>
+						mutate({ addressId, date: serviceDate, snow, images })
+					}
+					variant="outline"
+				>
+					Mark Yard Serviced {isPending && <Spinner />}
+				</Button>
+			)}
+
+			{isError && <p className="text-red-500">{error.message}</p>}
+		</div>
 	)
 }
