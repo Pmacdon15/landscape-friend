@@ -29,6 +29,7 @@ export default function MarkYardServiced({
 
 	const [images, setImages] = useState<File[]>([])
 	const [hasCamera, setHasCamera] = useState<boolean | null>(null)
+	const [cameraOpen, setCameraOpen] = useState<boolean>(false)
 
 	const videoRef = useRef<HTMLVideoElement>(null)
 	const streamRef = useRef<MediaStream | null>(null)
@@ -60,6 +61,7 @@ export default function MarkYardServiced({
 	   OPEN CAMERA
 	-------------------------------------------- */
 	const openCamera = async () => {
+		setCameraOpen(true)
 		const stream = await navigator.mediaDevices.getUserMedia({
 			video: { facingMode: 'environment' },
 			audio: false,
@@ -77,6 +79,7 @@ export default function MarkYardServiced({
 	   TAKE PHOTO
 	-------------------------------------------- */
 	const takePhoto = async () => {
+		setCameraOpen(false)
 		if (!videoRef.current || !streamRef.current) return
 
 		const video = videoRef.current
@@ -181,15 +184,34 @@ export default function MarkYardServiced({
 	return (
 		<div className="space-y-4">
 			{/* Hidden live camera */}
-			<video className="" muted playsInline ref={videoRef} />
+			{cameraOpen && (
+				<video
+					className="border rounded-sm"
+					muted
+					playsInline
+					ref={videoRef}
+				/>
+			)}
 
-			<Button className="w-full" onClick={openCamera}>
-				📸 Open Camera
-			</Button>
+			{!cameraOpen && (
+				<Button
+					className="w-full"
+					onClick={openCamera}
+					variant={'outline'}
+				>
+					📸 Open Camera
+				</Button>
+			)}
 
-			<Button className="w-full" onClick={takePhoto} variant="outline">
-				📷 Take Photo
-			</Button>
+			{cameraOpen && (
+				<Button
+					className="w-full"
+					onClick={takePhoto}
+					variant="outline"
+				>
+					📷 Take Photo
+				</Button>
+			)}
 
 			{images.map((img, i) => (
 				<Image
