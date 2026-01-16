@@ -46,11 +46,13 @@ export default function MarkYardServiced({
 			}
 
 			try {
-				// Request permission once (required on some Android/iOS devices)
 				const stream = await navigator.mediaDevices.getUserMedia({
 					video: true,
 				})
-				stream.getTracks().forEach((t) => t.stop())
+
+				stream.getTracks().forEach((t) => {
+					t.stop()
+				})
 
 				const devices = await navigator.mediaDevices.enumerateDevices()
 				const hasVideoInput = devices.some(
@@ -73,9 +75,9 @@ export default function MarkYardServiced({
 	const extractFrameFromVideo = async (videoFile: File): Promise<File> => {
 		return new Promise((resolve, reject) => {
 			const video = document.createElement('video')
-			const url = URL.createObjectURL(videoFile)
+			const videoUrl = URL.createObjectURL(videoFile)
 
-			video.src = url
+			video.src = videoUrl
 			video.muted = true
 			video.playsInline = true
 
@@ -89,11 +91,16 @@ export default function MarkYardServiced({
 				canvas.height = video.videoHeight
 
 				const ctx = canvas.getContext('2d')
-				if (!ctx) return reject('Canvas unavailable')
+				if (!ctx) {
+					URL.revokeObjectURL(videoUrl)
+					return reject('Canvas unavailable')
+				}
 
 				ctx.drawImage(video, 0, 0)
 
 				canvas.toBlob((blob) => {
+					URL.revokeObjectURL(videoUrl) // 🔥 cleanup video immediately
+
 					if (!blob) return reject('Frame capture failed')
 
 					resolve(
@@ -104,7 +111,10 @@ export default function MarkYardServiced({
 				}, 'image/jpeg')
 			}
 
-			video.onerror = () => reject('Video load failed')
+			video.onerror = () => {
+				URL.revokeObjectURL(videoUrl)
+				reject('Video load failed')
+			}
 		})
 	}
 
@@ -113,7 +123,7 @@ export default function MarkYardServiced({
 	-------------------------------------------- */
 	const addTimestampToImage = async (file: File): Promise<File> => {
 		const img = document.createElement('img')
-		const url = URL.createObjectURL(file)
+		const imageUrl = URL.createObjectURL(file)
 
 		return new Promise((resolve, reject) => {
 			img.onload = () => {
@@ -122,7 +132,10 @@ export default function MarkYardServiced({
 				canvas.height = img.height
 
 				const ctx = canvas.getContext('2d')
-				if (!ctx) return reject('Canvas unavailable')
+				if (!ctx) {
+					URL.revokeObjectURL(imageUrl)
+					return reject('Canvas unavailable')
+				}
 
 				ctx.drawImage(img, 0, 0)
 				ctx.fillStyle = 'black'
@@ -137,14 +150,20 @@ export default function MarkYardServiced({
 				ctx.fillText(label + timestamp, 10, 10)
 
 				canvas.toBlob((blob) => {
+					URL.revokeObjectURL(imageUrl) // 🔥 cleanup image URL
+
 					if (!blob) return reject('Blob failed')
 
 					resolve(new File([blob], file.name, { type: file.type }))
 				}, file.type)
 			}
 
-			img.onerror = () => reject('Image load failed')
-			img.src = url
+			img.onerror = () => {
+				URL.revokeObjectURL(imageUrl)
+				reject('Image load failed')
+			}
+
+			img.src = imageUrl
 		})
 	}
 
@@ -166,7 +185,13 @@ export default function MarkYardServiced({
 				: frame
 
 		const stamped = await addTimestampToImage(compressed)
+
 		setImages((prev) => [...prev, stamped])
+
+		// 🔥 delete video reference so it’s gone immediately
+		if (fileInputRef.current) {
+			fileInputRef.current.value = ''
+		}
 	}
 
 	/* --------------------------------------------
