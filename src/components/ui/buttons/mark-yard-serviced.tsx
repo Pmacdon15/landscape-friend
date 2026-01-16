@@ -206,10 +206,30 @@ export default function MarkYardServiced({
 			{cameraOpen && (
 				<Button
 					className="w-full"
+					onClick={() => setCameraOpen(false)}
+					variant={'destructive'}
+				>
+					📸 Close Camera
+				</Button>
+			)}
+
+			{cameraOpen && (
+				<Button
+					className="w-full"
 					onClick={takePhoto}
 					variant="outline"
 				>
 					📷 Take Photo
+				</Button>
+			)}
+
+			{cameraOpen && (
+				<Button
+					className="w-full"
+					onClick={() => setCameraOpen(false)}
+					variant={'destructive'}
+				>
+					📸 Close Camera
 				</Button>
 			)}
 
