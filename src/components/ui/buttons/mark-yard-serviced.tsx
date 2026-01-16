@@ -29,11 +29,9 @@ export default function MarkYardServiced({
 
 	const [images, setImages] = useState<File[]>([])
 	const [hasCamera, setHasCamera] = useState<boolean | null>(null)
-	const [isRecording, setIsRecording] = useState(false)
 
 	const videoRef = useRef<HTMLVideoElement>(null)
-	const recorderRef = useRef<MediaRecorder | null>(null)
-	const mediaStreamRef = useRef<MediaStream | null>(null)
+	const streamRef = useRef<MediaStream | null>(null)
 
 	/* --------------------------------------------
 	   CAMERA CHECK
@@ -48,6 +46,7 @@ export default function MarkYardServiced({
 				stream.getTracks().forEach((t) => {
 					t.stop()
 				})
+
 				setHasCamera(true)
 			} catch {
 				setHasCamera(false)
@@ -58,46 +57,65 @@ export default function MarkYardServiced({
 	}, [])
 
 	/* --------------------------------------------
-	   FRAME EXTRACTION
+	   OPEN CAMERA
 	-------------------------------------------- */
-	const extractFrameFromVideoBlob = async (blob: Blob): Promise<File> => {
-		return new Promise((resolve, reject) => {
-			const video = document.createElement('video')
-			const url = URL.createObjectURL(blob)
-
-			video.src = url
-			video.muted = true
-			video.playsInline = true
-
-			video.onloadeddata = () => {
-				video.currentTime = 0.5
-			}
-
-			video.onseeked = () => {
-				const canvas = document.createElement('canvas')
-				canvas.width = video.videoWidth
-				canvas.height = video.videoHeight
-
-				const ctx = canvas.getContext('2d')
-				if (!ctx) {
-					URL.revokeObjectURL(url)
-					return reject('Canvas unavailable')
-				}
-
-				ctx.drawImage(video, 0, 0)
-
-				canvas.toBlob((blob) => {
-					URL.revokeObjectURL(url)
-					if (!blob) return reject('Frame failed')
-
-					resolve(
-						new File([blob], `frame-${Date.now()}.jpg`, {
-							type: 'image/jpeg',
-						}),
-					)
-				}, 'image/jpeg')
-			}
+	const openCamera = async () => {
+		const stream = await navigator.mediaDevices.getUserMedia({
+			video: { facingMode: 'environment' },
+			audio: false,
 		})
+
+		streamRef.current = stream
+
+		if (videoRef.current) {
+			videoRef.current.srcObject = stream
+			await videoRef.current.play()
+		}
+	}
+
+	/* --------------------------------------------
+	   TAKE PHOTO
+	-------------------------------------------- */
+	const takePhoto = async () => {
+		if (!videoRef.current || !streamRef.current) return
+
+		const video = videoRef.current
+
+		const canvas = document.createElement('canvas')
+		canvas.width = video.videoWidth
+		canvas.height = video.videoHeight
+
+		const ctx = canvas.getContext('2d')
+		if (!ctx) return
+
+		ctx.drawImage(video, 0, 0)
+
+		// Stop camera immediately
+		streamRef.current.getTracks().forEach((t) => {
+			t.stop()
+		})
+		streamRef.current = null
+
+		const blob = await new Promise<Blob | null>((resolve) =>
+			canvas.toBlob(resolve, 'image/jpeg'),
+		)
+
+		if (!blob) return
+
+		let file = new File([blob], `capture-${Date.now()}.jpg`, {
+			type: 'image/jpeg',
+		})
+
+		// Compress if needed
+		if (file.size / 1024 / 1024 > 1) {
+			file = await imageCompression(file, {
+				maxSizeMB: 1,
+				maxWidthOrHeight: 1920,
+			})
+		}
+
+		const stamped = await addTimestampToImage(file)
+		setImages((prev) => [...prev, stamped])
 	}
 
 	/* --------------------------------------------
@@ -145,63 +163,6 @@ export default function MarkYardServiced({
 	}
 
 	/* --------------------------------------------
-	   RECORD CONTROLS
-	-------------------------------------------- */
-	const startRecording = async () => {
-		const stream = await navigator.mediaDevices.getUserMedia({
-			video: { facingMode: 'environment' },
-			audio: false,
-		})
-
-		mediaStreamRef.current = stream
-
-		if (videoRef.current) {
-			videoRef.current.srcObject = stream
-		}
-
-		const recorder = new MediaRecorder(stream, {
-			mimeType: 'video/webm',
-		})
-
-		const chunks: BlobPart[] = []
-
-		recorder.ondataavailable = (e) => {
-			if (e.data.size) chunks.push(e.data)
-		}
-
-		recorder.onstop = async () => {
-			stream.getTracks().forEach((t) => {
-				t.stop()
-			})
-
-			const blob = new Blob(chunks, { type: 'video/webm' })
-
-			const frame = await extractFrameFromVideoBlob(blob)
-
-			const compressed =
-				frame.size / 1024 / 1024 > 1
-					? await imageCompression(frame, {
-							maxSizeMB: 1,
-							maxWidthOrHeight: 1920,
-						})
-					: frame
-
-			const stamped = await addTimestampToImage(compressed)
-			setImages((prev) => [...prev, stamped])
-		}
-
-		recorder.start()
-		recorderRef.current = recorder
-		setIsRecording(true)
-	}
-
-	const stopRecording = () => {
-		recorderRef.current?.stop()
-		recorderRef.current = null
-		setIsRecording(false)
-	}
-
-	/* --------------------------------------------
 	   UI GUARDS
 	-------------------------------------------- */
 	if (hasCamera === null) {
@@ -219,23 +180,16 @@ export default function MarkYardServiced({
 	-------------------------------------------- */
 	return (
 		<div className="space-y-4">
-			<video
-				autoPlay
-				className="w-full rounded-md border"
-				muted
-				playsInline
-				ref={videoRef}
-			/>
+			{/* Hidden live camera */}
+			<video className="hidden" muted playsInline ref={videoRef} />
 
-			<div className="flex gap-4">
-				{!isRecording ? (
-					<Button onClick={startRecording}>🎥 Start Recording</Button>
-				) : (
-					<Button onClick={stopRecording} variant="destructive">
-						⏹ Stop & Capture
-					</Button>
-				)}
-			</div>
+			<Button className="w-full" onClick={openCamera}>
+				📸 Open Camera
+			</Button>
+
+			<Button className="w-full" onClick={takePhoto} variant="outline">
+				📷 Take Photo
+			</Button>
 
 			{images.map((img, i) => (
 				<Image
