@@ -181,7 +181,7 @@ export default function MarkYardServiced({
 	return (
 		<div className="space-y-4">
 			{/* Hidden live camera */}
-			<video className="hidden" muted playsInline ref={videoRef} />
+			<video className="" muted playsInline ref={videoRef} />
 
 			<Button className="w-full" onClick={openCamera}>
 				📸 Open Camera
