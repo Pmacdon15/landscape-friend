@@ -2,7 +2,7 @@
 
 import imageCompression from 'browser-image-compression'
 import Image from 'next/image'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
@@ -28,11 +28,44 @@ export default function MarkYardServiced({
 	)
 
 	const [images, setImages] = useState<File[]>([])
+	const [hasCamera, setHasCamera] = useState<boolean | null>(null)
 	const fileInputRef = useRef<HTMLInputElement>(null)
 
+	/* --------------------------------------------
+	   DEVICE CHECKS
+	-------------------------------------------- */
 	function isMobileDevice() {
 		return /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 	}
+
+	useEffect(() => {
+		async function checkCamera() {
+			if (!navigator.mediaDevices?.enumerateDevices) {
+				setHasCamera(false)
+				return
+			}
+
+			try {
+				// Request permission once (required on some Android/iOS devices)
+				const stream = await navigator.mediaDevices.getUserMedia({
+					video: true,
+				})
+				stream.getTracks().forEach((t) => t.stop())
+
+				const devices = await navigator.mediaDevices.enumerateDevices()
+				const hasVideoInput = devices.some(
+					(device) => device.kind === 'videoinput',
+				)
+
+				setHasCamera(hasVideoInput)
+			} catch (err) {
+				console.error('Camera check failed', err)
+				setHasCamera(false)
+			}
+		}
+
+		checkCamera()
+	}, [])
 
 	/* --------------------------------------------
 	   VIDEO → IMAGE FRAME
@@ -47,7 +80,7 @@ export default function MarkYardServiced({
 			video.playsInline = true
 
 			video.onloadeddata = () => {
-				video.currentTime = 0.5 // grab frame slightly into video
+				video.currentTime = 0.5
 			}
 
 			video.onseeked = () => {
@@ -61,7 +94,7 @@ export default function MarkYardServiced({
 				ctx.drawImage(video, 0, 0)
 
 				canvas.toBlob((blob) => {
-					if (!blob) return reject('Failed to capture frame')
+					if (!blob) return reject('Frame capture failed')
 
 					resolve(
 						new File([blob], `frame-${Date.now()}.jpg`, {
@@ -71,12 +104,12 @@ export default function MarkYardServiced({
 				}, 'image/jpeg')
 			}
 
-			video.onerror = () => reject('Failed to load video')
+			video.onerror = () => reject('Video load failed')
 		})
 	}
 
 	/* --------------------------------------------
-	   TIMESTAMP (unchanged logic)
+	   TIMESTAMP OVERLAY
 	-------------------------------------------- */
 	const addTimestampToImage = async (file: File): Promise<File> => {
 		const img = document.createElement('img')
@@ -136,6 +169,9 @@ export default function MarkYardServiced({
 		setImages((prev) => [...prev, stamped])
 	}
 
+	/* --------------------------------------------
+	   UI GUARDS
+	-------------------------------------------- */
 	if (!isMobileDevice()) {
 		return (
 			<div className="rounded-md border p-4 text-center">
@@ -144,6 +180,25 @@ export default function MarkYardServiced({
 		)
 	}
 
+	if (hasCamera === null) {
+		return (
+			<div className="rounded-md border p-4 text-center">
+				Checking camera availability…
+			</div>
+		)
+	}
+
+	if (hasCamera === false) {
+		return (
+			<div className="rounded-md border p-4 text-center">
+				Camera access required to complete service
+			</div>
+		)
+	}
+
+	/* --------------------------------------------
+	   RENDER
+	-------------------------------------------- */
 	return (
 		<>
 			<label>
@@ -182,6 +237,7 @@ export default function MarkYardServiced({
 					onClick={() =>
 						mutate({ addressId, date: serviceDate, snow, images })
 					}
+					variant="outline"
 				>
 					Mark Yard Serviced {isPending && <Spinner />}
 				</Button>
