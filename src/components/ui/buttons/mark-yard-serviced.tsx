@@ -144,20 +144,25 @@ export default function MarkYardServiced({
 				// Draw original image
 				ctx.drawImage(img, 0, 0)
 
-				// Background for text
 				const padding = 10
-				const lineHeight = 54
-				ctx.fillStyle = 'black'
-				ctx.fillRect(0, 0, img.width, lineHeight + padding * 2)
-
-				// Text settings
-				ctx.font = '48px Arial'
-				ctx.fillStyle = 'red'
-				ctx.textBaseline = 'top'
-
 				const label = snow ? 'SNOW REMOVAL - ' : 'GRASS CUT - '
 				const timestamp = new Date().toLocaleString()
 				const fullText = label + timestamp
+
+				// Dynamically calculate font size based on image width
+				const fontSize = Math.floor(img.width / 20) // arbitrary ratio, tweak if needed
+				ctx.font = `${fontSize}px Arial`
+				ctx.fillStyle = 'red'
+				ctx.textBaseline = 'top'
+
+				const lineHeight = fontSize * 1.2 // slightly bigger than font size
+
+				// Draw black background big enough for two lines
+				ctx.fillStyle = 'black'
+				ctx.fillRect(0, 0, img.width, lineHeight * 2 + padding * 2)
+
+				// Set text color
+				ctx.fillStyle = 'red'
 
 				// Wrap text if too long
 				const maxWidth = img.width - padding * 2
