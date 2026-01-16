@@ -231,7 +231,7 @@ export default function MarkYardServiced({
 					variant={'outline'}
 				>
 					<Camera />
-					take Photo to mark yard serviced
+					Take Photo to mark yard serviced
 				</Button>
 			)}
 
