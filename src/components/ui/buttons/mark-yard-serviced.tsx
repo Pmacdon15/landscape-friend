@@ -141,22 +141,47 @@ export default function MarkYardServiced({
 					return reject('Canvas unavailable')
 				}
 
+				// Draw original image
 				ctx.drawImage(img, 0, 0)
+
+				// Background for text
+				const padding = 10
+				const lineHeight = 54
 				ctx.fillStyle = 'black'
-				ctx.fillRect(0, 0, img.width, 68)
+				ctx.fillRect(0, 0, img.width, lineHeight + padding * 2)
 
-				const label = snow ? 'SNOW REMOVAL - ' : 'GRASS CUT - '
-				const timestamp = new Date().toLocaleString()
-
+				// Text settings
 				ctx.font = '48px Arial'
 				ctx.fillStyle = 'red'
 				ctx.textBaseline = 'top'
-				ctx.fillText(label + timestamp, 10, 10)
 
+				const label = snow ? 'SNOW REMOVAL - ' : 'GRASS CUT - '
+				const timestamp = new Date().toLocaleString()
+				const fullText = label + timestamp
+
+				// Wrap text if too long
+				const maxWidth = img.width - padding * 2
+				const words = fullText.split(' ')
+				let line = ''
+				let y = padding
+
+				for (let n = 0; n < words.length; n++) {
+					const testLine = line + words[n] + ' '
+					const metrics = ctx.measureText(testLine)
+					if (metrics.width > maxWidth && n > 0) {
+						ctx.fillText(line, padding, y)
+						line = words[n] + ' '
+						y += lineHeight
+					} else {
+						line = testLine
+					}
+				}
+				ctx.fillText(line, padding, y)
+
+				// Convert to blob
 				canvas.toBlob((blob) => {
 					URL.revokeObjectURL(url)
 					if (!blob) return reject('Blob failed')
-
 					resolve(new File([blob], file.name, { type: file.type }))
 				}, file.type)
 			}
