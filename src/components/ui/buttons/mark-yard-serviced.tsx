@@ -1,8 +1,9 @@
 'use client'
 
 import imageCompression from 'browser-image-compression'
+import { Camera } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
@@ -28,7 +29,7 @@ export default function MarkYardServiced({
 	)
 
 	const [images, setImages] = useState<File[]>([])
-	const [hasCamera, setHasCamera] = useState<boolean | null>(null)
+	// const [hasCamera, setHasCamera] = useState<boolean | null>(null)
 	const [cameraOpen, setCameraOpen] = useState<boolean>(false)
 
 	const videoRef = useRef<HTMLVideoElement>(null)
@@ -37,25 +38,25 @@ export default function MarkYardServiced({
 	/* --------------------------------------------
 	   CAMERA CHECK
 	-------------------------------------------- */
-	useEffect(() => {
-		async function checkCamera() {
-			try {
-				const stream = await navigator.mediaDevices.getUserMedia({
-					video: true,
-				})
+	// useEffect(() => {
+	// 	async function checkCamera() {
+	// 		try {
+	// 			const stream = await navigator.mediaDevices.getUserMedia({
+	// 				video: true,
+	// 			})
 
-				stream.getTracks().forEach((t) => {
-					t.stop()
-				})
+	// 			stream.getTracks().forEach((t) => {
+	// 				t.stop()
+	// 			})
 
-				setHasCamera(true)
-			} catch {
-				setHasCamera(false)
-			}
-		}
+	// 			setHasCamera(true)
+	// 		} catch {
+	// 			setHasCamera(false)
+	// 		}
+	// 	}
 
-		checkCamera()
-	}, [])
+	// 	checkCamera()
+	// }, [])
 
 	/* --------------------------------------------
 	   OPEN CAMERA
@@ -168,21 +169,21 @@ export default function MarkYardServiced({
 	/* --------------------------------------------
 	   UI GUARDS
 	-------------------------------------------- */
-	if (hasCamera === null) {
-		return <div className="border p-4 text-center">Checking camera…</div>
-	}
+	// if (hasCamera === null) {
+	// 	return <div className="border p-4 text-center">Checking camera…</div>
+	// }
 
-	if (!hasCamera) {
-		return (
-			<div className="border p-4 text-center">Camera access required</div>
-		)
-	}
+	// if (!hasCamera) {
+	// 	return (
+	// 		<div className="border p-4 text-center">Camera access required</div>
+	// 	)
+	// }
 
 	/* --------------------------------------------
 	   RENDER
 	-------------------------------------------- */
 	return (
-		<div className="space-y-4">
+		<div className="space-y-4 flex flex-col">
 			{/* Hidden live camera */}
 			{cameraOpen && (
 				<video
@@ -195,21 +196,14 @@ export default function MarkYardServiced({
 
 			{!cameraOpen && (
 				<Button
-					className="w-full"
+					className="w-full "
 					onClick={openCamera}
 					variant={'outline'}
 				>
-					📸 Open Camera
-				</Button>
-			)}
-
-			{cameraOpen && (
-				<Button
-					className="w-full"
-					onClick={() => setCameraOpen(false)}
-					variant={'destructive'}
-				>
-					📸 Close Camera
+					<div>
+						<Camera />
+					</div>{' '}
+					<p>Take Photo to mark yard serviced</p>
 				</Button>
 			)}
 
@@ -219,7 +213,10 @@ export default function MarkYardServiced({
 					onClick={takePhoto}
 					variant="outline"
 				>
-					📷 Take Photo
+					<div>
+						<Camera />
+					</div>{' '}
+					<p>Take Photo</p>
 				</Button>
 			)}
 
@@ -229,7 +226,10 @@ export default function MarkYardServiced({
 					onClick={() => setCameraOpen(false)}
 					variant={'destructive'}
 				>
-					📸 Close Camera
+					<div>
+						<Camera />
+					</div>{' '}
+					<p>Close Camera</p>
 				</Button>
 			)}
 
