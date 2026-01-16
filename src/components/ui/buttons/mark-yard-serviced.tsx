@@ -171,11 +171,11 @@ export default function MarkYardServiced({
 				let y = padding
 
 				for (let n = 0; n < words.length; n++) {
-					const testLine = line + words[n] + ' '
+					const testLine = `${line + words[n]} `
 					const metrics = ctx.measureText(testLine)
 					if (metrics.width > maxWidth && n > 0) {
 						ctx.fillText(line, padding, y)
-						line = words[n] + ' '
+						line = `${words[n]} `
 						y += lineHeight
 					} else {
 						line = testLine
@@ -213,11 +213,11 @@ export default function MarkYardServiced({
 	   RENDER
 	-------------------------------------------- */
 	return (
-		<div className="space-y-4 flex flex-col">
+		<div className="flex flex-col space-y-4">
 			{/* Hidden live camera */}
 			{cameraOpen && (
 				<video
-					className="border rounded-sm"
+					className="rounded-sm border"
 					muted
 					playsInline
 					ref={videoRef}
@@ -226,14 +226,12 @@ export default function MarkYardServiced({
 
 			{!cameraOpen && (
 				<Button
-					className="w-full "
+					className="w-full"
 					onClick={openCamera}
 					variant={'outline'}
 				>
-					<div>
-						<Camera />
-					</div>{' '}
-					<p>Take Photo to mark yard serviced</p>
+					<Camera />
+					take Photo to mark yard serviced
 				</Button>
 			)}
 
@@ -243,10 +241,8 @@ export default function MarkYardServiced({
 					onClick={takePhoto}
 					variant="outline"
 				>
-					<div>
-						<Camera />
-					</div>{' '}
-					<p>Take Photo</p>
+					<Camera />
+					Take Photo
 				</Button>
 			)}
 
@@ -256,10 +252,8 @@ export default function MarkYardServiced({
 					onClick={() => setCameraOpen(false)}
 					variant={'destructive'}
 				>
-					<div>
-						<Camera />
-					</div>{' '}
-					<p>Close Camera</p>
+					<Camera />
+					Close Camera
 				</Button>
 			)}
 
