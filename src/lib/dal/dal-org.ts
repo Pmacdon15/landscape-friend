@@ -28,7 +28,7 @@ export async function fetchOrgMembers(): Promise<
 			await clerk.organizations.getOrganizationMembershipList({
 				organizationId: orgId,
 			})
-		console.log('fetchOrgMembers: Clerk API Response:', response)
+		// console.log('fetchOrgMembers: Clerk API Response:', response)
 
 		// Transform OrganizationMembership objects into the simplified OrgMember type
 		const orgMembers: OrgMember[] = response.data.flatMap((member) => {
@@ -56,7 +56,7 @@ export async function fetchOrgMembers(): Promise<
 			]
 		})
 
-		console.log('fetchOrgMembers: Processed Org Members:', orgMembers)
+		// console.log('fetchOrgMembers: Processed Org Members:', orgMembers)
 		return orgMembers
 	} catch (error) {
 		console.error('Error fetching org members:', error)
