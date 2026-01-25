@@ -15,7 +15,7 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { use, useEffect, useOptimistic } from 'react'
+import { startTransition, use, useEffect, useOptimistic } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
 import type { ScheduledClient } from '@/types/assignment-types'
 import type { ParsedClientListParams } from '@/types/params-types'
@@ -68,11 +68,11 @@ export default function ClientCards({
 		return state
 	})
 
-	
-
 	useEffect(() => {
 		if ('errorMessage' in clientSchedules) return
-		setOptimisticClients(clientSchedules.clientsSchedules)
+		startTransition(() => {
+			setOptimisticClients(clientSchedules.clientsSchedules)
+		})
 	}, [clientSchedules, setOptimisticClients])
 
 	// Configure drag sensors
@@ -116,10 +116,11 @@ export default function ClientCards({
 	}
 
 	const handleServiced = (addressId: number) => {
-	setOptimisticClients({
-		type: 'remove',
-		addressId,
-	})}
+		setOptimisticClients({
+			type: 'remove',
+			addressId,
+		})
+	}
 
 	//TODO Break these down in to components
 	// Early returns for errors / no data
