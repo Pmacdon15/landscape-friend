@@ -57,16 +57,26 @@ export default function ClientCards({
 
 	const [optimisticClients, setOptimisticClients] = useOptimistic<
 		ScheduledClient[],
-		ScheduledClient[] | { type: 'remove'; addressId: number }
-	>([], (state, action) => {
-		if (Array.isArray(action)) {
-			return action
-		}
-		if (action.type === 'remove') {
-			return state.filter((c) => c.address_id !== action.addressId)
-		}
-		return state
-	})
+		| {
+				type: 'remove'
+				addressId: number
+		  }
+		| {
+				type: 'reorder'
+				newOrder: ScheduledClient[]
+		  }
+	>(
+		'errorMessage' in clientSchedules ? [] : clientSchedules.clientsSchedules,
+		(state, action) => {
+			if (action.type === 'reorder') {
+				return action.newOrder
+			}
+			if (action.type === 'remove') {
+				return state.filter((c) => c.address_id !== action.addressId)
+			}
+			return state
+		},
+	)
 
 	useEffect(() => {
 		if ('errorMessage' in clientSchedules) return
