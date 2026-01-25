@@ -16,6 +16,7 @@ interface DraggableClientItemProps {
 	snow: boolean
 	pagePromise: Promise<number>
 	siteMaps: ClientSiteMapImages[]
+	onServiced: (addressId: number) => void
 }
 
 export default function DraggableClientItem({
@@ -26,6 +27,7 @@ export default function DraggableClientItem({
 	snow,
 	pagePromise,
 	siteMaps,
+	onServiced,
 }: DraggableClientItemProps) {
 	const {
 		attributes,
@@ -77,6 +79,7 @@ export default function DraggableClientItem({
 				{serviceDate && (
 					<MarkYardServiced
 						addressId={addressId}
+						onServiced={onServiced}
 						serviceDate={serviceDate}
 						snow={snow}
 					/>

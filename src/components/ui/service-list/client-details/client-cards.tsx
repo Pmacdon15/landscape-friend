@@ -15,7 +15,7 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useOptimistic } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
 import type { ScheduledClient } from '@/types/assignment-types'
 import type { ParsedClientListParams } from '@/types/params-types'
@@ -53,19 +53,27 @@ export default function ClientCards({
 	const { mutate } = useChangePriority()
 
 	// State for managing client order
-	const [orderedClients, setOrderedClients] = useState<ScheduledClient[]>([])
+	// const [orderedClients, setOrderedClients] = useState<ScheduledClient[]>([])
 
-	// Update ordered clients when clientSchedules changes
-	useEffect(() => {
-		if (!clientSchedules) return
-
-		if ('errorMessage' in clientSchedules) {
-			console.error(clientSchedules.errorMessage)
-			setOrderedClients([])
-		} else {
-			setOrderedClients(clientSchedules.clientsSchedules)
+	const [optimisticClients, setOptimisticClients] = useOptimistic<
+		ScheduledClient[],
+		ScheduledClient[] | { type: 'remove'; addressId: number }
+	>([], (state, action) => {
+		if (Array.isArray(action)) {
+			return action
 		}
-	}, [clientSchedules])
+		if (action.type === 'remove') {
+			return state.filter((c) => c.address_id !== action.addressId)
+		}
+		return state
+	})
+
+	
+
+	useEffect(() => {
+		if ('errorMessage' in clientSchedules) return
+		setOptimisticClients(clientSchedules.clientsSchedules)
+	}, [clientSchedules, setOptimisticClients])
 
 	// Configure drag sensors
 	const sensors = useSensors(
@@ -80,34 +88,38 @@ export default function ClientCards({
 		const { active, over } = event
 		if (!over || active.id === over.id) return
 
-		setOrderedClients((items) => {
-			const oldIndex = items.findIndex(
-				(item) => `${item.id}-${item.address}` === active.id,
-			)
-			const newIndex = items.findIndex(
-				(item) => `${item.id}-${item.address}` === over.id,
-			)
+		const oldIndex = optimisticClients.findIndex(
+			(item) => `${item.id}-${item.address}` === active.id,
+		)
+		const newIndex = optimisticClients.findIndex(
+			(item) => `${item.id}-${item.address}` === over.id,
+		)
 
-			const newOrder = arrayMove(items, oldIndex, newIndex)
+		const newOrder = arrayMove(optimisticClients, oldIndex, newIndex)
 
-			const draggedClient = items[oldIndex]
-			const targetClient = items[newIndex]
+		const draggedClient = optimisticClients[oldIndex]
+		const targetClient = optimisticClients[newIndex]
 
-			if (!draggedClient || !targetClient) return newOrder
+		if (!draggedClient || !targetClient) return
 
-			const draggedAssignment = draggedClient.assignment_id
-			const targetAssignment = targetClient.priority
+		const draggedAssignment = draggedClient.assignment_id
+		const targetAssignment = targetClient.priority
 
-			if (!draggedAssignment || !targetAssignment) return newOrder
+		if (!draggedAssignment || !targetAssignment) return
 
-			mutate({
-				assignmentId: draggedAssignment,
-				priority: targetAssignment,
-			})
+		setOptimisticClients(newOrder)
 
-			return newOrder
+		mutate({
+			assignmentId: draggedAssignment,
+			priority: targetAssignment,
 		})
 	}
+
+	const handleServiced = (addressId: number) => {
+	setOptimisticClients({
+		type: 'remove',
+		addressId,
+	})}
 
 	//TODO Break these down in to components
 	// Early returns for errors / no data
@@ -156,11 +168,11 @@ export default function ClientCards({
 				sensors={sensors}
 			>
 				<SortableContext
-					items={orderedClients.map((c) => `${c.id}-${c.address}`)}
+					items={optimisticClients.map((c) => `${c.id}-${c.address}`)}
 					strategy={verticalListSortingStrategy}
 				>
 					<ul className="flex w-full flex-col items-center gap-2 rounded-sm md:gap-4">
-						{orderedClients.map((client) => {
+						{optimisticClients.map((client) => {
 							const siteMapsForAddress =
 								clientSchedules.siteMaps.filter(
 									(map) =>
@@ -176,6 +188,7 @@ export default function ClientCards({
 										Promise.resolve({ isAdmin: false })
 									}
 									key={`${client.id}-${client.address}`}
+									onServiced={handleServiced}
 									pagePromise={pagePromise}
 									serviceDate={
 										parseClientListParams.serviceDate

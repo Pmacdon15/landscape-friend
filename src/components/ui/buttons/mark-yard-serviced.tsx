@@ -3,7 +3,7 @@
 import imageCompression from 'browser-image-compression'
 import { Camera } from 'lucide-react'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { startTransition, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
@@ -13,16 +13,23 @@ export default function MarkYardServiced({
 	addressId,
 	serviceDate,
 	snow = false,
+	onServiced,
 }: {
 	addressId: number
 	serviceDate: Date
 	snow?: boolean
+	onServiced: (addressId: number) => void
 }) {
 	const { mutate, isError, isPending, error } = useMarkYardServiced(
 		addressId,
 		{
-			onSuccess: () =>
-				toast.success('Yard marked serviced!', { duration: 1500 }),
+			onSuccess: () => {
+				startTransition(() => {
+					onServiced(addressId)
+				})
+
+				toast.success('Yard marked serviced!', { duration: 1500 })
+			},
 			onError: () =>
 				toast.error('Error marking yard serviced!', { duration: 1500 }),
 		},
