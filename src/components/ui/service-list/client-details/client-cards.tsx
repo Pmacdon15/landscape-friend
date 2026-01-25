@@ -57,19 +57,16 @@ export default function ClientCards({
 
 	const [optimisticClients, setOptimisticClients] = useOptimistic<
 		ScheduledClient[],
+		| ScheduledClient[]
 		| {
 				type: 'remove'
 				addressId: number
 		  }
-		| {
-				type: 'reorder'
-				newOrder: ScheduledClient[]
-		  }
 	>(
 		'errorMessage' in clientSchedules ? [] : clientSchedules.clientsSchedules,
 		(state, action) => {
-			if (action.type === 'reorder') {
-				return action.newOrder
+			if (Array.isArray(action)) {
+				return action
 			}
 			if (action.type === 'remove') {
 				return state.filter((c) => c.address_id !== action.addressId)
@@ -77,13 +74,6 @@ export default function ClientCards({
 			return state
 		},
 	)
-
-	useEffect(() => {
-		if ('errorMessage' in clientSchedules) return
-		startTransition(() => {
-			setOptimisticClients(clientSchedules.clientsSchedules)
-		})
-	}, [clientSchedules, setOptimisticClients])
 
 	// Configure drag sensors
 	const sensors = useSensors(
@@ -116,8 +106,9 @@ export default function ClientCards({
 		const targetAssignment = targetClient.priority
 
 		if (!draggedAssignment || !targetAssignment) return
-
-		setOptimisticClients(newOrder)
+		startTransition(() => {
+			setOptimisticClients(newOrder)
+		})
 
 		mutate({
 			assignmentId: draggedAssignment,
