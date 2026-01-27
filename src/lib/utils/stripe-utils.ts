@@ -17,6 +17,7 @@ import { sendEmailWithTemplate } from '../actions/sendEmails-action'
 import { getStripeInstance } from '../dal/stripe-dal'
 import type { schemaCreateSubscription } from '../zod/schemas'
 import { formatCompanyName } from './resend'
+import { fetchClientNamesByStripeIds } from '../dal/clients-dal'
 
 let stripe: Stripe | null = null
 
@@ -509,4 +510,30 @@ export async function acceptAndScheduleQuote(
 		console.log('No invoice created for this quote.')
 		return null
 	}
+}
+
+export async function getQuoteDetailsAndClientName(
+	quoteId: string,
+	stripe: Stripe,
+) {
+	const updatedQuote = await stripe.quotes.retrieve(quoteId, {
+		expand: ['line_items'],
+	})
+	const customerId =
+		typeof updatedQuote.customer === 'string'
+			? updatedQuote.customer
+			: updatedQuote.customer?.id
+	let clientName = ''
+	if (customerId) {
+		const clientNamesResult = await fetchClientNamesByStripeIds([
+			customerId,
+		])
+		if (
+			!(clientNamesResult && 'errorMessage' in clientNamesResult) &&
+			clientNamesResult.length > 0
+		) {
+			clientName = clientNamesResult[0].full_name || ''
+		}
+	}
+	return { updatedQuote, clientName }
 }

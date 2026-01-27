@@ -14,6 +14,7 @@ import {
 	createNotificationPayloadQuote,
 	createStripeSubscriptionQuote,
 	findOrCreateStripeCustomer,
+	getQuoteDetailsAndClientName,
 	sendQuote,
 } from '@/lib/utils/stripe-utils'
 import {
@@ -483,29 +484,6 @@ export async function markInvoiceVoid(invoiceId: string) {
 		console.error(error)
 		throw new Error(`Failed to mark invoice ${invoiceId} as paid`)
 	}
-}
-
-async function getQuoteDetailsAndClientName(quoteId: string, stripe: Stripe) {
-	const updatedQuote = await stripe.quotes.retrieve(quoteId, {
-		expand: ['line_items'],
-	})
-	const customerId =
-		typeof updatedQuote.customer === 'string'
-			? updatedQuote.customer
-			: updatedQuote.customer?.id
-	let clientName = ''
-	if (customerId) {
-		const clientNamesResult = await fetchClientNamesByStripeIds([
-			customerId,
-		])
-		if (
-			!(clientNamesResult && 'errorMessage' in clientNamesResult) &&
-			clientNamesResult.length > 0
-		) {
-			clientName = clientNamesResult[0].full_name || ''
-		}
-	}
-	return { updatedQuote, clientName }
 }
 
 //MARK: Mark quote
