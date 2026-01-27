@@ -1,4 +1,3 @@
-'use server'
 import { put } from '@vercel/blob'
 import { sql } from '@vercel/postgres'
 
