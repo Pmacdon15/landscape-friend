@@ -360,6 +360,7 @@ export async function createStripeSubscriptionQuote(
 			startDate: startDate.toISOString(),
 			endDate: endDate.toISOString(),
 			addresses: JSON.stringify(addresses),
+			description:String(subscriptionData.description)
 		},
 	}
 	const quote = await stripe.quotes.create(quoteParams)
