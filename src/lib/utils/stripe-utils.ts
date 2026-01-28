@@ -14,10 +14,10 @@ import {
 	storeWebhookInfoDb,
 } from '@/lib/DB/stripe-db'
 import { sendEmailWithTemplate } from '../actions/sendEmails-action'
+import { fetchClientNamesByStripeIds } from '../dal/clients-dal'
 import { getStripeInstance } from '../dal/stripe-dal'
 import type { schemaCreateSubscription } from '../zod/schemas'
 import { formatCompanyName } from './resend'
-import { fetchClientNamesByStripeIds } from '../dal/clients-dal'
 
 let stripe: Stripe | null = null
 
@@ -312,11 +312,18 @@ export async function createStripeSubscriptionQuote(
 			name: clientName,
 			address: { line1: addresses[0] },
 			phone: phone_number,
-			metadata: { organization_id },
+			metadata: {
+				organization_id,
+				serviceType,
+				addresses: addresses.join(' | '),
+			},
 		})
 	}
 
-	const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${clientName}`
+	const formattedAddresses = addresses.join(', ')
+
+	const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${formattedAddresses}`
+
 	const product = await stripe.products.create({
 		name: productName,
 		metadata: { organization_id, serviceType },
