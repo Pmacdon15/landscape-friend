@@ -62,10 +62,13 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 			organizationId,
 		)
 
+		const stripeCustomerId =
+			typeof customerId === 'string' ? customerId : null
+
 		const result = await addClientDB(
 			{
 				...validatedFields.data,
-				stripe_customer_id: customerId || null,
+				stripe_customer_id: stripeCustomerId,
 				organization_id: organizationId,
 			},
 			organizationId,
@@ -82,7 +85,10 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 			},
 		})
 
-		return { success: true, customerId: customerId || null }
+		return {
+			success: true,
+			customerId: typeof customerId === 'string' ? customerId : null,
+		}
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		console.error(errorMessage)

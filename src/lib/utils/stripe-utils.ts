@@ -51,7 +51,7 @@ export async function findOrCreateStripeCustomer(
 	// _address: string,
 	organization_id: string,
 	clientId?: number,
-): Promise<string | null> {
+): Promise<string | null | { error: string }> {
 	const stripe = await getStripeInstance()
 
 	if (!stripe) {
@@ -59,7 +59,8 @@ export async function findOrCreateStripeCustomer(
 	}
 
 	let customerId: string
-	if (!clientEmail) throw new Error('No client Email')
+	if (!clientEmail)
+		return { error: 'No client Email unable to create stripe customer' }
 
 	const existingCustomers = await stripe.customers.list({
 		email: clientEmail,
@@ -360,7 +361,7 @@ export async function createStripeSubscriptionQuote(
 			startDate: startDate.toISOString(),
 			endDate: endDate.toISOString(),
 			addresses: JSON.stringify(addresses),
-			description:String(subscriptionData.description)
+			description: String(subscriptionData.description),
 		},
 	}
 	const quote = await stripe.quotes.create(quoteParams)
