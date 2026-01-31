@@ -26,7 +26,7 @@ export default function HeaderEmail({
 					<Img
 						alt="Landscape Friend Logo"
 						className="h-auto w-full"
-						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/Screenshot%20From%202025-08-10%2020-37-34.png"
+						src="https://ugojuoyfyrxkjqju.public.blob.vercel-storage.com/email-header-Jz4uQWzokbCXtDz6I8i45CcrTdx6sj"
 					/>
 
 					{/* Main content container */}
