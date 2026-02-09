@@ -39,7 +39,7 @@ export async function getStripeInstanceUnprotected(
 	}
 
 	stripe = new Stripe(apiKey, {
-		apiVersion: '2025-08-27.basil',
+		// apiVersion: '2025-08-27.basil',
 	})
 	return stripe
 }
