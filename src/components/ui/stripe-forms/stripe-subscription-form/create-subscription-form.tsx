@@ -35,9 +35,9 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			clientEmail: '',
 			phone_number: '',
 			addresses: [] as string[],
+			addressPricing: [] as { address: string; price: number }[],
 			description: '',
 			serviceType: 'weekly', // Default value
-			price_per_month: 0,
 			startDate: startDate,
 			endDate: endDate,
 			organization_id: organizationId || '',
@@ -57,10 +57,12 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			form.setValue('clientEmail', selectedClient.email_address)
 			form.setValue('phone_number', selectedClient.phone_number)
 			form.setValue('addresses', selectedClient.addresses || [])
+			form.setValue('addressPricing', [])
 		} else {
 			form.setValue('clientEmail', '')
 			form.setValue('phone_number', '')
 			form.setValue('addresses', [])
+			form.setValue('addressPricing', [])
 		}
 	}, [clientName, clients, form])
 
@@ -72,7 +74,10 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 		for (const key in formData) {
 			const value = formData[key as keyof typeof formData]
 			if (value !== undefined && value !== null) {
-				if (key === 'addresses' && Array.isArray(value)) {
+				if (
+					(key === 'addresses' || key === 'addressPricing') &&
+					Array.isArray(value)
+				) {
 					form.append(key, JSON.stringify(value))
 				} else if (value instanceof Date) {
 					form.append(key, value.toISOString())
@@ -125,42 +130,154 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 						name="phone_number"
 					/>
 					<div className="space-y-2">
-						<h1 className="font-semibold text-sm">Addresses</h1>
+						<h1 className="font-semibold text-sm">
+							Addresses & Pricing
+						</h1>
 						{clients
 							.find((c) => c.full_name === clientName)
-							?.addresses.map((addr) => (
-								<div
-									className="flex items-center space-x-2"
-									key={addr}
-								>
-									<input
-										checked={form
-											.watch('addresses')
-											?.includes(addr)}
-										className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-										onChange={(e) => {
-											const current =
-												form.getValues('addresses') ||
-												[]
-											if (e.target.checked) {
-												form.setValue('addresses', [
-													...current,
-													addr,
-												])
-											} else {
-												form.setValue(
-													'addresses',
-													current.filter(
-														(a) => a !== addr,
-													),
-												)
-											}
-										}}
-										type="checkbox"
-									/>
-									<span className="text-sm">{addr}</span>
-								</div>
-							))}
+							?.addresses.map((addr) => {
+								const addressPricing =
+									form.watch('addressPricing') || []
+								const currentPricing = addressPricing.find(
+									(ap) => ap.address === addr,
+								)
+								const isSelected = !!currentPricing
+
+								return (
+									<div
+										className="flex items-center gap-4 rounded border p-2"
+										key={addr}
+									>
+										<input
+											checked={isSelected}
+											className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+											onChange={(e) => {
+												const current =
+													form.getValues(
+														'addressPricing',
+													) || []
+												if (e.target.checked) {
+													form.setValue(
+														'addressPricing',
+														[
+															...current,
+															{
+																address: addr,
+																price: 0,
+															},
+														],
+													)
+													// Also add to addresses array
+													const addresses =
+														form.getValues(
+															'addresses',
+														) || []
+													if (
+														!addresses.includes(
+															addr,
+														)
+													) {
+														form.setValue(
+															'addresses',
+															[
+																...addresses,
+																addr,
+															],
+														)
+													}
+												} else {
+													form.setValue(
+														'addressPricing',
+														current.filter(
+															(ap) =>
+																ap.address !==
+																addr,
+														),
+													)
+													// Also remove from addresses array
+													const addresses =
+														form.getValues(
+															'addresses',
+														) || []
+													form.setValue(
+														'addresses',
+														addresses.filter(
+															(a) => a !== addr,
+														),
+													)
+												}
+											}}
+											type="checkbox"
+										/>
+										<span className="flex-1 text-sm">
+											{addr}
+										</span>
+										{isSelected && (
+											<div className="flex items-center gap-2">
+												<span className="text-sm">
+													$
+												</span>
+												<input
+													className="w-32 rounded border px-2 py-1 text-sm"
+													min="0.01"
+													onChange={(e) => {
+														const current =
+															form.getValues(
+																'addressPricing',
+															) || []
+														form.setValue(
+															'addressPricing',
+															current.map((ap) =>
+																ap.address ===
+																addr
+																	? {
+																			...ap,
+																			price:
+																				parseFloat(
+																					e
+																						.target
+																						.value,
+																				) ||
+																				0,
+																		}
+																	: ap,
+															),
+														)
+													}}
+													placeholder="Price/month"
+													step="0.01"
+													type="number"
+													value={
+														currentPricing?.price ||
+														''
+													}
+												/>
+												<span className="text-sm">
+													/month
+												</span>
+											</div>
+										)}
+									</div>
+								)
+							})}
+
+						{/* Total Price Display */}
+						{form.watch('addressPricing')?.length > 0 && (
+							<div className="mt-2 rounded bg-gray-50 p-2">
+								<span className="font-semibold">
+									Total Monthly:{' '}
+								</span>
+								<span className="text-lg">
+									$
+									{(form.watch('addressPricing') || [])
+										.reduce(
+											(sum, ap) => sum + (ap.price || 0),
+											0,
+										)
+										.toFixed(2)}
+								</span>
+							</div>
+						)}
 					</div>
 					<div className="mt-4">
 						<h1 className="mb-1 block font-semibold text-sm">
@@ -190,19 +307,12 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 								{ value: 'bi-weekly', label: 'Bi-Weekly' },
 								{ value: 'monthly', label: 'Monthly' },
 								{
-									value: 'snow-as-needed',
-									label: 'Snow as needed',
+									value: 'snow-unlimited',
+									label: 'Snow unlimited',
 								},
 							]}
 						/>
 					</div>
-					<FormInput
-						control={form.control}
-						label="Price Per Month"
-						name="price_per_month"
-						step="0.01"
-						type="number"
-					/>
 					<FormDatePicker
 						control={form.control}
 						label="Start Date"

@@ -97,7 +97,7 @@ export async function createStripeQuote(
 			clientId,
 		)
 
-		if (!customerId) {
+		if (!customerId || typeof customerId !== 'string') {
 			throw new Error('Stripe customer ID needed')
 		}
 
@@ -574,14 +574,14 @@ export async function createSubscriptionQuoteAction(
 		clientEmail: formData.get('clientEmail'),
 		phone_number: formData.get('phone_number'),
 		addresses: JSON.parse(formData.get('addresses') as string),
+		addressPricing: JSON.parse(formData.get('addressPricing') as string),
 		description: (formData.get('description') as string) || undefined,
 		serviceType: formData.get('serviceType'),
-		price_per_month: parseFloat(formData.get('price_per_month') as string),
 		startDate: formData.get('startDate'),
 		endDate: formData.get('endDate') || undefined,
 		notes: formData.get('notes') || undefined,
 		organization_id: organizationId,
-		collectionMethod: formData.get('collectionMethod') || undefined, // Add this line
+		collectionMethod: formData.get('collectionMethod') || undefined,
 	})
 
 	if (!parsed.success) {

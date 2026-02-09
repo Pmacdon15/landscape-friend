@@ -32,20 +32,6 @@ export default function CreateSubscriptionFormFallback() {
 				</div>
 				<label
 					className="block font-medium text-gray-700 text-sm"
-					htmlFor="price_per_month"
-				>
-					Price Per Month
-				</label>
-				<input
-					className={inputClassName}
-					defaultValue={0}
-					id="price_per_month"
-					min="0.01"
-					step="0.01"
-					type="number"
-				/>
-				<label
-					className="block font-medium text-gray-700 text-sm"
 					htmlFor="startDate"
 				>
 					Start Date

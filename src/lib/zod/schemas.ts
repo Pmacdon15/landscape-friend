@@ -143,20 +143,25 @@ export const schemaCreateSubscription = z.object({
 	clientEmail: z.email('Invalid email address'),
 	phone_number: z.string().min(7, 'Phone number is required'),
 	addresses: z.array(z.string()).min(1, 'At least one address is required'),
+	addressPricing: z
+		.array(
+			z.object({
+				address: z.string(),
+				price: z.number().min(0.01, 'Price must be positive'),
+			}),
+		)
+		.min(1, 'At least one address with pricing is required'),
 	description: z.string().optional(),
-	serviceType: z.enum(['snow-as-needed', 'weekly', 'bi-weekly', 'monthly'], {
+	serviceType: z.enum(['snow-unlimited', 'weekly', 'bi-weekly', 'monthly'], {
 		message: 'Please select a valid service type',
 	}),
-	price_per_month: z
-		.number()
-		.min(0.01, 'Price per month must be a positive number'),
 	startDate: z.coerce.date({ message: 'Start date is required' }),
 	endDate: z.coerce.date({ message: 'End date is required' }),
 	organization_id: z.string(),
 	collectionMethod: z
 		.enum(['charge_automatically', 'send_invoice'])
 		.default('send_invoice')
-		.optional(), // New field
+		.optional(),
 })
 
 export const formSchema = z.object({
