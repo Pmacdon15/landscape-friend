@@ -68,6 +68,10 @@ export async function CardView({
 							</p>
 							<div className="mt-2 grid grid-cols-2 gap-2 text-sm">
 								<p>
+									<span className="font-semibold">Id</span>{' '}
+									{invoice.id}
+								</p>
+								<p>
 									<span className="font-semibold">
 										Amount Due:
 									</span>{' '}
