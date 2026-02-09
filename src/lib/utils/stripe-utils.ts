@@ -283,15 +283,14 @@ export async function createStripeCustomer(customerData: {
 export async function createStripeSubscriptionQuote(
 	subscriptionData: z.infer<typeof schemaCreateSubscription>,
 	sessionClaims: JwtPayload,
-	snow: boolean,
 ) {
 	const {
 		clientEmail,
 		clientName,
 		addresses,
+		addressPricing,
 		description,
 		phone_number,
-		price_per_month,
 		serviceType,
 		startDate,
 		endDate,
@@ -321,31 +320,35 @@ export async function createStripeSubscriptionQuote(
 		})
 	}
 
-	const formattedAddresses = addresses.join(', ')
+	// Create a product and price for each address
+	const lineItems = await Promise.all(
+		addressPricing.map(async ({ address, price }) => {
+			const productName = `Seasonal Subscription - ${serviceType} for ${address}`
 
-	const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${formattedAddresses}`
+			const product = await stripe.products.create({
+				name: productName,
+				metadata: { organization_id, serviceType, address },
+			})
 
-	const product = await stripe.products.create({
-		name: productName,
-		metadata: { organization_id, serviceType },
-	})
+			const priceObj = await stripe.prices.create({
+				unit_amount: Math.round(price * 100),
+				currency: 'cad',
+				recurring: { interval: 'month' },
+				product: product.id,
+				metadata: { organization_id, serviceType, address },
+			})
 
-	const price = await stripe.prices.create({
-		unit_amount: Math.round(price_per_month * 100),
-		currency: 'cad',
-		recurring: { interval: 'month' },
-		product: product.id,
-		metadata: { organization_id, serviceType },
-	})
+			return {
+				price: priceObj.id,
+				quantity: 1,
+			}
+		}),
+	)
+
 	const startDateUnix = Math.floor(new Date(startDate).getTime() / 1000)
 	const quoteParams: Stripe.QuoteCreateParams = {
 		customer: customer.id,
-		line_items: [
-			{
-				price: price.id,
-				quantity: 1,
-			},
-		],
+		line_items: lineItems,
 		description: description,
 		collection_method: collectionMethod || 'send_invoice',
 		invoice_settings: {
@@ -361,6 +364,7 @@ export async function createStripeSubscriptionQuote(
 			startDate: startDate.toISOString(),
 			endDate: endDate.toISOString(),
 			addresses: JSON.stringify(addresses),
+			addressPricing: JSON.stringify(addressPricing),
 			description: String(subscriptionData.description),
 		},
 	}
