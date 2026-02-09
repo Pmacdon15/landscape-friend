@@ -303,9 +303,18 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 							label="Service Type"
 							name="serviceType"
 							options={[
-								{ value: 'weekly-grass-cutting', label: 'Weekly Grass Cutting' },
-								{ value: 'bi-weekly-grass-cutting', label: 'Bi-Weekly Grass Cutting' },
-								{ value: 'monthly-grass-cutting', label: 'Monthly Grass Cutting' },
+								{
+									value: 'weekly-grass-cutting',
+									label: 'Weekly Grass Cutting',
+								},
+								{
+									value: 'bi-weekly-grass-cutting',
+									label: 'Bi-Weekly Grass Cutting',
+								},
+								{
+									value: 'monthly-grass-cutting',
+									label: 'Monthly Grass Cutting',
+								},
 								{
 									value: 'snow-unlimited',
 									label: 'Snow unlimited',
@@ -345,16 +354,16 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			{isSuccess && data && (
 				<AlertMessage
 					message="Subscription Quote created successfully!"
-					path="Quotes"
-					pathname="/billing/manage/quotes "
+					path="Quote"
+					pathname={`/billing/manage/quotes?search=${data.subscription.id}`}
 					type="success"
 				/>
 			)}
 			{isError && error && (
 				<AlertMessage
 					message={`Error creating subscription: ${error.message}`}
-					path="Quotes"
-					pathname="/billing/manage/quotes "
+					path="Quote"
+					pathname="/billing/manage/quotes"
 					type="error"
 				/>
 			)}
