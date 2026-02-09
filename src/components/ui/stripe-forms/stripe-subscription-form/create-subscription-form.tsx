@@ -37,7 +37,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 			addresses: [] as string[],
 			addressPricing: [] as { address: string; price: number }[],
 			description: '',
-			serviceType: 'weekly', // Default value
+			serviceType: 'weekly-grass-cutting', // Default value
 			startDate: startDate,
 			endDate: endDate,
 			organization_id: organizationId || '',
