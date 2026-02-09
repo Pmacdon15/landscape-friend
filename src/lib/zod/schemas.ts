@@ -152,7 +152,7 @@ export const schemaCreateSubscription = z.object({
 		)
 		.min(1, 'At least one address with pricing is required'),
 	description: z.string().optional(),
-	serviceType: z.enum(['snow-unlimited', 'weekly', 'bi-weekly', 'monthly'], {
+	serviceType: z.enum(['snow-unlimited', 'weekly-grass-cutting', 'bi-weekly-grass-cutting', 'monthly-grass-cutting'], {
 		message: 'Please select a valid service type',
 	}),
 	startDate: z.coerce.date({ message: 'Start date is required' }),

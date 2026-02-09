@@ -303,9 +303,9 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 							label="Service Type"
 							name="serviceType"
 							options={[
-								{ value: 'weekly', label: 'Weekly' },
-								{ value: 'bi-weekly', label: 'Bi-Weekly' },
-								{ value: 'monthly', label: 'Monthly' },
+								{ value: 'weekly-grass-cutting', label: 'Weekly Grass Cutting' },
+								{ value: 'bi-weekly-grass-cutting', label: 'Bi-Weekly Grass Cutting' },
+								{ value: 'monthly-grass-cutting', label: 'Monthly Grass Cutting' },
 								{
 									value: 'snow-unlimited',
 									label: 'Snow unlimited',

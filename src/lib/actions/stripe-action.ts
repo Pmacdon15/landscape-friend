@@ -592,8 +592,7 @@ export async function createSubscriptionQuoteAction(
 	try {
 		const subscription = await createStripeSubscriptionQuote(
 			parsed.data,
-			sessionClaims,
-			snow,
+			sessionClaims,			
 		)
 		return {
 			success: true,

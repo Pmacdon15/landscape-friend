@@ -283,7 +283,6 @@ export async function createStripeCustomer(customerData: {
 export async function createStripeSubscriptionQuote(
 	subscriptionData: z.infer<typeof schemaCreateSubscription>,
 	sessionClaims: JwtPayload,
-	snow: boolean,
 ) {
 	const {
 		clientEmail,
@@ -324,7 +323,7 @@ export async function createStripeSubscriptionQuote(
 	// Create a product and price for each address
 	const lineItems = await Promise.all(
 		addressPricing.map(async ({ address, price }) => {
-			const productName = `${snow ? 'Snow clearing' : 'Lawn Mowing'} - ${serviceType} for ${address}`
+			const productName = `Seasonal Subscription - ${serviceType} for ${address}`
 
 			const product = await stripe.products.create({
 				name: productName,
