@@ -149,6 +149,7 @@ export function CreateQuoteForm({
 	return (
 		<>
 			<form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+				<h1 className='text-muted-foreground/40'>Requires Stripe plan Invoicing Plus</h1>
 				<FormInput
 					control={form.control}
 					hidden
