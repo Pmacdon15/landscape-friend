@@ -517,7 +517,7 @@ export async function acceptAndScheduleQuote(
 	if (invoiceId) {
 		// Fetch the full Stripe invoice object
 		const invoice = await stripe.invoices.retrieve(invoiceId)
-		await stripe.invoices.sendInvoice(invoiceId)
+		// await stripe.invoices.sendInvoice(invoiceId)
 		console.log('Invoice retrieved from Stripe:', invoice)
 
 		return invoice.id
