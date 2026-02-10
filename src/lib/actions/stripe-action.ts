@@ -3,10 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { revalidateTag } from 'next/cache'
 import type Stripe from 'stripe'
 import type { z } from 'zod'
-import { sendEmailWithTemplate } from '@/lib/actions/sendEmails-action'
 import { updatedStripeAPIKeyDb } from '@/lib/DB/stripe-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import { formatCompanyName } from '@/lib/utils/resend'
 import {
 	acceptAndScheduleQuote,
 	cancelStripeSubscription,
@@ -33,7 +31,11 @@ import {
 	hasStripAPIKey,
 } from '../dal/stripe-dal'
 import { fetchNovuId } from '../dal/user-dal'
-import { triggerNotificationSendToAdmin, triggerNovuEvent } from '../utils/novu'
+import {
+	createInvoicePayload,
+	triggerNotificationSendToAdmin,
+	triggerNovuEvent,
+} from '../utils/novu'
 import { createStripeWebhook } from '../utils/stripe-utils'
 
 //MARK: Update API key
@@ -366,7 +368,7 @@ export async function updateStripeDocument(
 export async function resendInvoice(invoiceId: string) {
 	const { isAdmin, sessionClaims, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
-	if (!orgId && !userId) throw new Error('Not logged in.')
+	if (!userId) throw new Error('Not logged in.')
 	const stripe = await getStripeInstance()
 	if (!stripe) throw new Error('Failed to get Stripe instance')
 	//TODO: when in Prod there is not need for use to send the email strip will do that
@@ -375,45 +377,66 @@ export async function resendInvoice(invoiceId: string) {
 		const invoice: Stripe.Invoice =
 			await stripe.invoices.sendInvoice(invoiceId)
 
-		if (!invoice.id)
-			throw new Error('Invoice ID is missing after resending.')
+		// if (!invoice.id)
+		// 	throw new Error('Invoice ID is missing after resending.')
 
-		const customerEmail = invoice.customer_email
-		const customerName =
-			invoice.customer_name ||
-			invoice.customer?.toString() ||
-			'Valued Customer'
-		const hostedInvoiceUrl = invoice.hosted_invoice_url
+		// const customerEmail = invoice.customer_email
+		// const customerName =
+		// 	invoice.customer_name ||
+		// 	invoice.customer?.toString() ||
+		// 	'Valued Customer'
+		// const hostedInvoiceUrl = invoice.hosted_invoice_url
 
-		if (!customerEmail)
-			throw new Error('Customer email not found for invoice.')
-		if (!hostedInvoiceUrl)
-			throw new Error('Hosted invoice URL not found for invoice.')
+		// if (!customerEmail)
+		// 	throw new Error('Customer email not found for invoice.')
+		// if (!hostedInvoiceUrl)
+		// 	throw new Error('Hosted invoice URL not found for invoice.')
 
-		const companyName = formatCompanyName({
-			orgName: sessionClaims?.orgName as string,
-			userFullName: sessionClaims?.userFullName as string,
-		})
+		// const companyName = formatCompanyName({
+		// 	orgName: sessionClaims?.orgName as string,
+		// 	userFullName: sessionClaims?.userFullName as string,
+		// })
 
-		const emailSubject = `Your Invoice from ${companyName}`
-		const emailBody = `Dear ${customerName},
+		// const emailSubject = `Your Invoice from ${companyName}`
+		// const emailBody = `Dear ${customerName},
 
-                            Please find your invoice here: ${hostedInvoiceUrl}
+		//                     Please find your invoice here: ${hostedInvoiceUrl}
 
-                            Thank you for your business!`
+		//                     Thank you for your business!`
 
-		const formDataForEmail = new FormData()
-		formDataForEmail.append('title', emailSubject)
-		formDataForEmail.append('message', emailBody)
+		// const formDataForEmail = new FormData()
+		// formDataForEmail.append('title', emailSubject)
+		// formDataForEmail.append('message', emailBody)
 
-		const emailResult = await sendEmailWithTemplate(
-			formDataForEmail,
-			customerEmail,
+		// const emailResult = await sendEmailWithTemplate(
+		// 	formDataForEmail,
+		// 	customerEmail,
+		// )
+
+		// if (!emailResult) throw new Error('Failed to send invoice email.')
+
+		const customerId =
+			typeof invoice.customer === 'string'
+				? invoice.customer
+				: invoice.customer?.id
+		let customerName = ''
+		if (customerId) {
+			const clientNamesResult = await fetchClientNamesByStripeIds([
+				customerId,
+			])
+			if (
+				!(clientNamesResult && 'errorMessage' in clientNamesResult) &&
+				clientNamesResult.length > 0
+			) {
+				customerName = clientNamesResult[0].full_name || ''
+			}
+		}
+
+		triggerNotificationSendToAdmin(
+			orgId || userId,
+			'invoice-sent',
+			await createInvoicePayload(customerName, invoice.amount_due, invoice.id),
 		)
-
-		if (!emailResult) throw new Error('Failed to send invoice email.')
-
-		// triggerNotificationSendToAdmin(orgId || userId!, 'invoice-sent', createInvoicePayload(customerName, invoice.amount_due, invoice.id))
 
 		// console.log("Invoice re-sent and email sent successfully:", invoice.id);
 	} catch (error) {
@@ -592,7 +615,7 @@ export async function createSubscriptionQuoteAction(
 	try {
 		const subscription = await createStripeSubscriptionQuote(
 			parsed.data,
-			sessionClaims,			
+			sessionClaims,
 		)
 		return {
 			success: true,
