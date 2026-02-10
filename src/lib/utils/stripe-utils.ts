@@ -350,7 +350,8 @@ export async function createStripeSubscriptionQuote(
 		customer: customer.id,
 		line_items: lineItems,
 		description: description,
-		collection_method: collectionMethod || 'send_invoice',
+		// collection_method: collectionMethod || 'send_invoice',
+		collection_method: 'send_invoice',
 		invoice_settings: {
 			days_until_due: 10,
 		},

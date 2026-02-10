@@ -67,7 +67,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 	}, [clientName, clients, form])
 
 	const { mutate, isPending, isSuccess, isError, data, error } =
-		useCreateStripeSubscriptionQuote(snow)
+		useCreateStripeSubscriptionQuote()
 
 	const onSubmit = (formData: z.infer<typeof schemaCreateSubscription>) => {
 		const form = new FormData()

@@ -560,7 +560,7 @@ export async function hasStripeApiKeyAction(): Promise<boolean> {
 //Mark:Create Subscription
 export async function createSubscriptionQuoteAction(
 	formData: FormData,
-	snow: boolean,
+	// snow: boolean,
 ) {
 	const { orgId, userId, sessionClaims } = await auth.protect()
 	const organizationId = orgId || userId

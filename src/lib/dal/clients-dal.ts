@@ -99,7 +99,7 @@ export async function fetchClientList(): Promise<ClientInfoList[] | []> {
 	if (!userId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}
-	const organizationId = orgId
+	const organizationId = orgId || userId
 	if (!organizationId) {
 		throw new Error('Organization ID or User ID is missing.')
 	}

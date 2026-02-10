@@ -390,10 +390,10 @@ export const useCreateStripeQuote = ({
 }
 
 //MARK:Create stripe subscription
-export const useCreateStripeSubscriptionQuote = (snow: boolean) => {
+export const useCreateStripeSubscriptionQuote = () => {
 	return useMutation({
 		mutationFn: async (formData: FormData) => {
-			const result = await createSubscriptionQuoteAction(formData, snow)
+			const result = await createSubscriptionQuoteAction(formData)
 			if (!result.success) {
 				throw new Error('Failed to create Stripe subscription')
 			}
