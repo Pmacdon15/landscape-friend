@@ -4,6 +4,7 @@ import {
 	fetchSnowClearingClients,
 } from '@/lib/dal/clients-dal'
 import { parseClientListParams } from '@/lib/utils/params'
+import ListsClearingClientCardsFallback from '../fallbacks/lists-clearing-client-cards-fallback'
 import ClientCards from './client-details/client-cards'
 
 export default async function ClientListService({
@@ -38,7 +39,7 @@ export default async function ClientListService({
 			)
 
 	return (
-		<Suspense>
+		<Suspense fallback={<ListsClearingClientCardsFallback />}>
 			<ClientCards
 				clientsPromise={promiseToPass}
 				isAdminPromise={isAdminPromise}
