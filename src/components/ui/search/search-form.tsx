@@ -22,7 +22,7 @@ export default async function SearchForm({
 	const isAdmin = await isAdminPromise
 
 	return (
-		<div className="flex flex-col flex-wrap justify-center gap-2 rounded-sm bg-white/70 p-2 shadow-lg md:flex-row">
+		<div className="flex w-full flex-col flex-wrap justify-center gap-2 rounded-sm bg-white/70 p-2 shadow-lg md:flex-row">
 			<SearchInput />
 			{isAdmin?.isAdmin && (
 				// variant !== 'invoices' &&
@@ -40,15 +40,15 @@ export default async function SearchForm({
 				</>
 			)}
 			{variant === 'cutting' && (
-				<>
+				<div className="flex gap-2">
 					<ServiceListDatePicker />
 					<ServiceStatusSelector />
-				</>
+				</div>
 			)}
 			{variant === 'clearing' && (
-				<>
+				<div className="flex gap-2">
 					<ServiceStatusSelector /> <ServiceListDatePicker />
-				</>
+				</div>
 			)}
 			{variant === 'invoices' && (
 				<BillingStatusSelector variant="invoices" />

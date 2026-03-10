@@ -35,18 +35,12 @@ export default async function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen flex-col`}
 			>
 				<ClerkProvider>
 					<QueryProviders>
 						<FCMProvider>
-							<div
-								style={
-									{
-										/* your styles */
-									}
-								}
-							>
+							<div className="flex flex-1 flex-col">
 								<Header>
 									<HeaderHeader />
 								</Header>
