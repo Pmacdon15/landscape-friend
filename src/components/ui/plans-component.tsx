@@ -1,9 +1,4 @@
-import {
-	PricingTable,
-	SignedOut,
-	SignInButton,
-	SignUpButton,
-} from '@clerk/nextjs'
+import { PricingTable, Show, SignInButton, SignUpButton } from '@clerk/nextjs'
 import { Suspense } from 'react'
 import FillFormContainer from './containers/fill-form-container'
 import FormContainer from './containers/form-container'
@@ -20,7 +15,7 @@ export default function PlansComponent() {
 				</div>
 				<div className="flex flex-col items-center sm:flex-row">
 					<Suspense>
-						<SignedOut>
+						<Show when="signed-out">
 							<h1 className="text-muted-foreground">
 								Sign in and create an organization to start free
 								a trail!
@@ -33,7 +28,7 @@ export default function PlansComponent() {
 									forceRedirectUrl={'/documentation/plans'}
 								/>
 							</div>
-						</SignedOut>
+						</Show>
 					</Suspense>
 				</div>
 			</FillFormContainer>

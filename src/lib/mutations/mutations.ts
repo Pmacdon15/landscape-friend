@@ -312,7 +312,6 @@ export const useMarkYardServiced = (
 			return result // Return the result to indicate success
 		},
 		onSuccess: () => {
-			
 			updateTagAction('snow-clients')
 			updateTagAction('grass-clients')
 			updateTagAction(`serviced-images-${addressId}`)

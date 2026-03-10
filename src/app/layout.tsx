@@ -33,28 +33,19 @@ export default async function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<ClerkProvider>
-			<QueryProviders>
-				<FCMProvider>
-					<html lang="en">
-						<body
-							className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-							style={{
-								margin: 0,
-								padding: 0,
-								minHeight: '100vh',
-								display: 'flex',
-								flexDirection: 'column',
-							}}
-						>
+		<html lang="en">
+			<body
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+			>
+				<ClerkProvider>
+					<QueryProviders>
+						<FCMProvider>
 							<div
-								style={{
-									flex: 1,
-									backgroundImage: 'url(/lawn4.png)',
-									backgroundSize: 'cover',
-									backgroundAttachment: 'fixed',
-									backgroundRepeat: 'no-repeat',
-								}}
+								style={
+									{
+										/* your styles */
+									}
+								}
 							>
 								<Header>
 									<HeaderHeader />
@@ -66,10 +57,10 @@ export default async function RootLayout({
 							</div>
 							<Footer />
 							<Toaster />
-						</body>
-					</html>
-				</FCMProvider>
-			</QueryProviders>
-		</ClerkProvider>
+						</FCMProvider>
+					</QueryProviders>
+				</ClerkProvider>
+			</body>
+		</html>
 	)
 }

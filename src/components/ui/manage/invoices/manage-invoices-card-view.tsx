@@ -20,7 +20,6 @@ export async function CardView({
 
 	const result = await fetchInvoices(searchTermStatus, page, searchTerm)
 	if ('errorMessage' in result) {
-		
 		return (
 			<div className="grid grid-cols-1 gap-4">
 				<div className="rounded-lg bg-white p-4 shadow-md">

@@ -1,8 +1,7 @@
 'use client'
 import {
 	OrganizationSwitcher,
-	SignedIn,
-	SignedOut,
+	Show,
 	SignInButton,
 	SignUpButton,
 	UserButton,
@@ -24,21 +23,21 @@ export default function Header({ children }: { children: React.ReactNode }) {
 			<div className="flex w-full flex-wrap justify-between border-t pt-2">
 				{user?.id && <NavBar />}
 				<div className="ml-auto flex items-center gap-2">
-					<SignedIn>
+					<Show when="signed-in">
 						<UserButton />
 						<OrganizationSwitcher />
-					</SignedIn>
+					</Show>
 				</div>
 				{isPending && user && <Spinner variant="notification-menu" />}
 				{novuId && !isPending && (
 					<NotificationInbox userNovuId={novuId.UserNovuId} />
 				)}
-				<SignedOut>
+				<Show when="signed-out">
 					<div className="ml-auto flex gap-4 rounded-sm bg-white/30 p-2 backdrop-blur-md backdrop-filter">
 						<SignInButton />
 						<SignUpButton />
 					</div>
-				</SignedOut>
+				</Show>
 			</div>
 		</div>
 	)

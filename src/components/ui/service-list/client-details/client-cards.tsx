@@ -15,7 +15,7 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { startTransition, use, useEffect, useOptimistic } from 'react'
+import { startTransition, use, useOptimistic } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
 import type { ScheduledClient } from '@/types/assignment-types'
 import type { ParsedClientListParams } from '@/types/params-types'
@@ -63,7 +63,9 @@ export default function ClientCards({
 				addressId: number
 		  }
 	>(
-		'errorMessage' in clientSchedules ? [] : clientSchedules.clientsSchedules,
+		'errorMessage' in clientSchedules
+			? []
+			: clientSchedules.clientsSchedules,
 		(state, action) => {
 			if (Array.isArray(action)) {
 				return action

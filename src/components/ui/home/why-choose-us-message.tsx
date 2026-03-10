@@ -55,7 +55,7 @@ export default function WhyChooseUsMessage() {
 									<ListsLinks />
 								</Suspense>
 								<li>
-									View your billing overview here{" "}
+									View your billing overview here{' '}
 									<Link
 										className="text-blue-500 underline"
 										href={'/billing/overview'}

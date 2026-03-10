@@ -366,7 +366,7 @@ export async function updateStripeDocument(
 
 //MARK: Resend invoice
 export async function resendInvoice(invoiceId: string) {
-	const { isAdmin, sessionClaims, orgId, userId } = await isOrgAdmin()
+	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
 	if (!userId) throw new Error('Not logged in.')
 	const stripe = await getStripeInstance()
@@ -435,7 +435,11 @@ export async function resendInvoice(invoiceId: string) {
 		triggerNotificationSendToAdmin(
 			orgId || userId,
 			'invoice-sent',
-			await createInvoicePayload(customerName, invoice.amount_due, invoice.id),
+			await createInvoicePayload(
+				customerName,
+				invoice.amount_due,
+				invoice.id,
+			),
 		)
 
 		// console.log("Invoice re-sent and email sent successfully:", invoice.id);

@@ -1,5 +1,5 @@
 'use client'
-import { useUser } from '@clerk/clerk-react'
+import { useUser } from '@clerk/nextjs'
 import { initializeApp } from 'firebase/app'
 import {
 	getMessaging,

@@ -47,7 +47,7 @@ export const CreateSubscriptionForm: React.FC<CreateSubscriptionFormProps> = ({
 
 	const serviceType = form.watch('serviceType')
 	const clientName = form.watch('clientName')
-	const snow = useIsSnowService(serviceType)
+	const _snow = useIsSnowService(serviceType)
 
 	useEffect(() => {
 		const selectedClient = clients.find(
