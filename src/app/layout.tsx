@@ -26,7 +26,6 @@ export const metadata: Metadata = {
 	description: 'Track and Invoice your lawn clients easily',
 	keywords: 'lawn care, lawn tracking, invoice lawn clients, lawn management',
 }
-
 export default async function RootLayout({
 	children,
 }: Readonly<{
@@ -35,7 +34,8 @@ export default async function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen flex-col`}
+				className={`
+					${geistSans.variable} ${geistMono.variable} flex min-h-screen flex-col bg-[url('/lawn4.png')] bg-cover bg-fixed bg-no-repeat antialiased`}
 			>
 				<ClerkProvider>
 					<QueryProviders>
@@ -44,12 +44,14 @@ export default async function RootLayout({
 								<Header>
 									<HeaderHeader />
 								</Header>
-								<PageContainer>
-									{children}
-									<Analytics />
-								</PageContainer>
+								<main className="flex-1">
+									<PageContainer>
+										{children}
+										<Analytics />
+									</PageContainer>
+								</main>
+								<Footer />
 							</div>
-							<Footer />
 							<Toaster />
 						</FCMProvider>
 					</QueryProviders>
