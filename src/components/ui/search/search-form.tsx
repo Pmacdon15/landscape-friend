@@ -22,45 +22,80 @@ export default async function SearchForm({
 	const isAdmin = await isAdminPromise
 
 	return (
-		<div className="flex w-full flex-col flex-wrap justify-center gap-2 rounded-sm bg-white/70 p-2 shadow-lg md:flex-row">
-			<SearchInput />
+		<div className="grid grid-cols-1 items-center justify-center gap-3 rounded-md bg-white/70 p-4 shadow-lg backdrop-blur-sm sm:grid-cols-2 lg:flex lg:flex-wrap">
+			<div className="w-full lg:w-auto">
+				<SearchInput />
+			</div>
+
 			{isAdmin?.isAdmin && (
-				// variant !== 'invoices' &&
-				// variant !== 'quotes' &&
-				// variant !== 'subscriptions' && (
-				<Suspense fallback={<AssignedToSelectorFallback />}>
-					<AssignedToSelector orgMembersPromise={orgMembersPromise} />
-				</Suspense>
+				<div className="w-full lg:w-auto">
+					<Suspense fallback={<AssignedToSelectorFallback />}>
+						<AssignedToSelector
+							orgMembersPromise={orgMembersPromise}
+						/>
+					</Suspense>
+				</div>
 			)}
 
 			{variant === 'default' && (
 				<>
-					<CuttingPeriodSelector variant="week" />
-					<CuttingPeriodSelector variant="day" />
+					<div className="w-full lg:w-auto">
+						<CuttingPeriodSelector variant="week" />
+					</div>
+					<div className="w-full lg:w-auto">
+						<CuttingPeriodSelector variant="day" />
+					</div>
 				</>
 			)}
+
 			{variant === 'cutting' && (
-				<div className="flex gap-2">
-					<ServiceListDatePicker />
-					<ServiceStatusSelector />
-				</div>
+				<>
+					<div className="w-full lg:w-auto">
+						<ServiceListDatePicker />
+					</div>
+					<div className="w-full lg:w-auto">
+						<ServiceStatusSelector />
+					</div>
+				</>
 			)}
+
 			{variant === 'clearing' && (
-				<div className="flex gap-2">
-					<ServiceStatusSelector /> <ServiceListDatePicker />
+				<>
+					<div className="w-full lg:w-auto">
+						<ServiceStatusSelector />
+					</div>
+					<div className="w-full lg:w-auto">
+						<ServiceListDatePicker />
+					</div>
+				</>
+			)}
+
+			{variant === 'invoices' && (
+				<div className="w-full lg:w-auto">
+					<BillingStatusSelector variant="invoices" />
 				</div>
 			)}
-			{variant === 'invoices' && (
-				<BillingStatusSelector variant="invoices" />
+
+			{variant === 'quotes' && (
+				<div className="w-full lg:w-auto">
+					<BillingStatusSelector variant="quotes" />
+				</div>
 			)}
-			{variant === 'quotes' && <BillingStatusSelector variant="quotes" />}
+
 			{variant === 'subscriptions' && (
-				<BillingStatusSelector variant="subscriptions" />
+				<div className="w-full lg:w-auto">
+					<BillingStatusSelector variant="subscriptions" />
+				</div>
 			)}
+
 			{variant === 'billing-overview' && (
 				<>
-					<BillingTypeSelector />
-					<BillingStatusSelector variant="billing-overview" />
+					<div className="w-full lg:w-auto">
+						<BillingTypeSelector />
+					</div>
+					<div className="w-full lg:w-auto">
+						<BillingStatusSelector variant="billing-overview" />
+					</div>
 				</>
 			)}
 		</div>

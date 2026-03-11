@@ -1,7 +1,7 @@
 'use client'
 
 import { useDebouncedCallback } from '@tanstack/react-pacer/debouncer'
-import { X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useSearch } from '@/lib/hooks/use-search'
@@ -10,11 +10,8 @@ import { Input } from '../input'
 export function SearchInput() {
 	const searchParams = useSearchParams()
 	const { updateSearchParams } = useSearch()
-
-	// Controlled state for the input
 	const [value, setValue] = useState(searchParams.get('search') || '')
 
-	// Debounced function to update URL
 	const updateSearch = useDebouncedCallback(
 		(next: string) => {
 			updateSearchParams('search', next)
@@ -22,32 +19,36 @@ export function SearchInput() {
 		{ wait: 1000 },
 	)
 
-	// Sync URL changes to input (if URL changes externally)
 	useEffect(() => {
 		const param = searchParams.get('search') || ''
 		setValue(param)
 	}, [searchParams])
 
 	const handleClear = () => {
-		setValue('') // immediately clear input
-		updateSearchParams('search', null) // immediately clear URL param
+		setValue('')
+		updateSearchParams('search', null)
 	}
 
 	return (
-		<div className="relative sm:w-1/2 md:w-2/6">
+		<div className="group relative w-full">
+			<div className="absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary">
+				<Search size={18} />
+			</div>
+
 			<Input
+				className="h-10 w-full border-none bg-white/50 pr-10 pl-10 shadow-sm focus-visible:ring-2 focus-visible:ring-primary/50"
 				onChange={(e) => {
 					const v = e.target.value
 					setValue(v)
-					updateSearch(v) // debounced update to URL
+					updateSearch(v)
 				}}
-				placeholder="Search"
+				placeholder="Search clients..."
 				value={value}
 			/>
 
 			{value && (
 				<button
-					className="absolute top-1/2 right-2 -translate-y-1/2"
+					className="absolute top-1/2 right-3 -translate-y-1/2 rounded-full p-1 text-muted-foreground transition-all hover:bg-black/5"
 					onClick={handleClear}
 					type="button"
 				>
