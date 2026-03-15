@@ -129,18 +129,21 @@ export async function fetchCuttingClients(
 > {
 	'use cache: private'
 	cacheTag('grass-clients')
-	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
-
-	if (!userId) return { errorMessage: 'User ID is missing.' }
-
-	if (
-		!isAdmin &&
-		userId !== searchTermAssignedTo &&
-		searchTermAssignedTo !== ''
-	)
-		return { errorMessage: 'Not admin can not view other coworkers list' }
 
 	try {
+		const { orgId, userId, isAdmin } = await isOrgAdmin(true)
+
+		if (!userId) return { errorMessage: 'User ID is missing.' }
+
+		if (
+			!isAdmin &&
+			userId !== searchTermAssignedTo &&
+			searchTermAssignedTo !== ''
+		)
+			return {
+				errorMessage: 'Not admin can not view other coworkers list',
+			}
+
 		let assignedTo: string
 		if (searchTermAssignedTo === '') assignedTo = userId
 		else assignedTo = String(searchTermAssignedTo)
@@ -184,19 +187,21 @@ export async function fetchSnowClearingClients(
 	'use cache: private'
 	cacheTag('snow-clients')
 	// await new Promise(resolve => setTimeout(resolve, 5000))
-	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
-
-	if (!userId) return { errorMessage: 'User ID is missing.' }
-
-	if (
-		!isAdmin &&
-		userId !== searchTermAssignedTo &&
-		searchTermAssignedTo !== ''
-	) {
-		return { errorMessage: 'Not admin can not view other coworkers list' }
-	}
 
 	try {
+		const { orgId, userId, isAdmin } = await isOrgAdmin(true)
+
+		if (!userId) return { errorMessage: 'User ID is missing.' }
+
+		if (
+			!isAdmin &&
+			userId !== searchTermAssignedTo &&
+			searchTermAssignedTo !== ''
+		) {
+			return {
+				errorMessage: 'Not admin can not view other coworkers list',
+			}
+		}
 		const clientsSchedules = await fetchClientsClearingGroupsDb(
 			orgId || userId,
 			searchTerm,
