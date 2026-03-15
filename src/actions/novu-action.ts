@@ -2,7 +2,7 @@
 import { auth } from '@clerk/nextjs/server'
 import { Novu } from '@novu/api'
 import { ChatOrPushProviderEnum } from '@novu/api/models/components'
-import { fetchNovuId } from '../dal/user-dal'
+import { fetchNovuId } from '@/lib/dal/user-dal'
 
 export async function fetchNovuIdAction(userId: string) {
 	return await fetchNovuId(userId)

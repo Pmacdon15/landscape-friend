@@ -15,7 +15,7 @@ import {
 	useRef,
 	useState,
 } from 'react'
-import { registerNovuDevice } from '@/lib/actions/novu-action'
+import { registerNovuDevice } from '@/actions/novu-action'
 import type { FCMContextType } from '@/types/fcm-types'
 
 const firebaseConfig = {

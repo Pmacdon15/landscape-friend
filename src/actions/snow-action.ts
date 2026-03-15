@@ -4,7 +4,7 @@ import {
 	unassignSnowClearingDb,
 } from '@/lib/DB/assignment-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import { schemaAssignSnow } from '../zod/schemas'
+import { schemaAssignSnow } from '@/lib/zod/schemas'
 
 export async function assignSnowClearing(
 	assignedTo: string,

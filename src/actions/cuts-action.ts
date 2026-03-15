@@ -3,11 +3,11 @@ import { updateTag } from 'next/cache'
 import {
 	assignGrassCuttingDb,
 	unassignGrassCuttingDb,
-} from '../DB/assignment-db'
-import { markYardServicedDb, saveUrlImagesServices } from '../DB/clients-db'
-import { isOrgAdmin } from '../utils/clerk'
-import { uploadImageBlobServiceDone } from '../utils/image-control'
-import { schemaAssign, schemaMarkYardCut } from '../zod/schemas'
+} from '@/lib/DB/assignment-db'
+import { markYardServicedDb, saveUrlImagesServices } from '@/lib/DB/clients-db'
+import { isOrgAdmin } from '@/lib/utils/clerk'
+import { uploadImageBlobServiceDone } from '@/lib/utils/image-control'
+import { schemaAssign, schemaMarkYardCut } from '@/lib/zod/schemas'
 
 export async function markYardServiced(
 	addressId: number,

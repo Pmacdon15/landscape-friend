@@ -1,8 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import {
-	getProductPrice,
-	hasStripeApiKeyAction,
-} from '@/lib/actions/stripe-action'
+import { getProductPrice, hasStripeApiKeyAction } from '@/actions/stripe-action'
 
 export const useHasStripeApiKey = () => {
 	return useQuery({

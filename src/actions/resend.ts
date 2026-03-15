@@ -2,7 +2,7 @@
 import { Resend } from 'resend'
 import type z from 'zod'
 import { EmailTemplate } from '@/components/ui/email-templates/contact-email'
-import { formSchema } from '../zod/schemas'
+import { formSchema } from '@/lib/zod/schemas'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 

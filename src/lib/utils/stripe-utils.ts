@@ -1,6 +1,7 @@
 import type { JwtPayload } from '@clerk/types'
 import Stripe from 'stripe'
 import type z from 'zod'
+import { sendEmailWithTemplate } from '@/actions/sendEmails-action'
 import {
 	getClientByIdDb,
 	updateClientInfoDb,
@@ -13,7 +14,6 @@ import {
 	fetchWebhookIdDb,
 	storeWebhookInfoDb,
 } from '@/lib/DB/stripe-db'
-import { sendEmailWithTemplate } from '../actions/sendEmails-action'
 import { fetchClientNamesByStripeIds } from '../dal/clients-dal'
 import { getStripeInstance } from '../dal/stripe-dal'
 import type { schemaCreateSubscription } from '../zod/schemas'

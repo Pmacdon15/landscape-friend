@@ -1,6 +1,7 @@
 'use server'
-import { changePriorityDb } from '../DB/assignment-db'
-import { isOrgAdmin } from '../utils/clerk'
+
+import { changePriorityDb } from '@/lib/DB/assignment-db'
+import { isOrgAdmin } from '@/lib/utils/clerk'
 
 export async function changePriority(assignmentId: number, priority: number) {
 	const { userId } = await isOrgAdmin(true)

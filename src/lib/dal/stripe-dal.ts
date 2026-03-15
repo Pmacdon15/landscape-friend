@@ -11,7 +11,7 @@ import type {
 	StripeQuote,
 } from '@/types/stripe-types'
 import type { Subscription } from '@/types/subscription-types'
-import { getProductPrice } from '../actions/stripe-action'
+import { getProductPrice } from '@/actions/stripe-action'
 import { fetchClientNamesByStripeIds } from './clients-dal'
 
 let stripe: Stripe | null = null
