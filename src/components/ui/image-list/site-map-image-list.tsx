@@ -13,8 +13,7 @@ export default function SiteMapImageList({
 	pagePromise,
 	isAdminPromise,
 	siteMaps,
-}: {
-	// isAdmin?: boolean
+}: {	
 	address: { address: string; addressId: number }
 	pagePromise: Promise<number>
 	isAdminPromise: Promise<{ isAdmin: boolean }>
@@ -24,11 +23,6 @@ export default function SiteMapImageList({
 	const [view, setView] = useState<string>('list')
 	const [showSiteMap, setShowSiteMap] = useState(false)
 
-	// const siteMapForAddress = useMemo(
-	// 	() => siteMaps.find((sm) => sm.address_id === address.id),
-	// 	[siteMaps, address.id],
-	// )
-	// console.log('SiteMaps: ', siteMaps)
 	return (
 		<div className="flex w-full flex-col">
 			<button

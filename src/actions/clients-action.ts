@@ -242,7 +242,7 @@ export async function updateCuttingDay(
 	}
 }
 
-export async function deleteSiteMap(siteMapId: number) {
+export async function deleteSiteMap(siteMapId: number, page:number) {
 	const { userId } = await isOrgAdmin()
 	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
@@ -254,7 +254,10 @@ export async function deleteSiteMap(siteMapId: number) {
 
 	try {
 		const result = await deleteSiteMapDB(validatedFields.data)
-		if (!result.success) throw new Error('Delete Client')
+		if (!result.success) throw new Error('Error deleting site map')
+		updateTag(`clients-page-${page}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)

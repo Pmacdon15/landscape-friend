@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import type z from 'zod'
 import { changePriority } from '@/actions/assignment-action'
 import { uploadDrawing, uploadImage } from '@/actions/blobs-action'
@@ -121,7 +122,7 @@ export const useUploadImage = ({
 }: {
 	onSuccess?: () => void
 	onError?: (error: Error) => void
-	page?: number
+	page: number
 }) => {
 	return useMutation({
 		mutationFn: ({
@@ -131,40 +132,40 @@ export const useUploadImage = ({
 			addressId: number
 			formData: FormData
 		}) => {
-			return uploadImage(addressId, formData)
+			return uploadImage(addressId, formData, page)
 		},
 		onSuccess: () => {
-			// revalidatePathAction("/lists/client");
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
 			onSuccess?.()
+			toast.success('Image uploaded successfully!', {
+				duration: 1500,
+			})
 		},
+
 		onError: (error) => {
 			onError?.(error)
+			console.error('Upload failed:', error)
+			toast.error('Image upload failed!', { duration: 1500 })
 		},
 	})
 }
 //MARK:Delete site map
 
-export const useDeleteSiteMap = (page?: number) => {
+export const useDeleteSiteMap = (page: number) => {
 	return useMutation({
 		mutationFn: ({ siteMapId }: { siteMapId: number }) => {
-			return deleteSiteMap(siteMapId)
+			return deleteSiteMap(siteMapId, page)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			revalidatePathAction('/lists/clearing')
-			revalidatePathAction('/lists/cutting')
+			toast.success('Success deleting sitemap.')
 		},
-		onError: () => {},
+		onError: () => {
+			toast.error('Error deleting sitemap.')
+		},
 	})
 }
 //MARK:Upload drawing site map
 // export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
-export const useUploadDrawing = (page?: number) => {
+export const useUploadDrawing = (page: number) => {
 	return useMutation({
 		mutationFn: ({
 			file,
@@ -173,13 +174,9 @@ export const useUploadDrawing = (page?: number) => {
 			file: Blob
 			addressId: number
 		}) => {
-			return uploadDrawing(file, addressId)
+			return uploadDrawing(file, addressId, page)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
 			// onSuccess?.();
 		},
 		onError: () => {
@@ -227,8 +224,11 @@ export const useUpdateCuttingDay = (page?: number) => {
 				page ?? 1,
 			)
 		},
-		onSuccess: () => {},
+		onSuccess: () => {
+			toast.success('Success updating cutting day.')
+		},
 		onError: (error) => {
+			toast.error('Error updating cutting day.')
 			console.error('Mutation error:', error)
 		},
 	})
@@ -246,7 +246,12 @@ export const useAssignSnowClearing = (page?: number) => {
 		}) => {
 			return assignSnowClearing(assignedTo, addressId, page ?? 1)
 		},
-		onSuccess: () => {},
+		onSuccess: () => {
+			toast.success('Success changing snow assignment.')
+		},
+		onError: () => {
+			toast.error('Error changing snow assignment.')
+		},
 	})
 }
 
@@ -262,17 +267,19 @@ export const useAssignGrassCutting = (page?: number) => {
 		}) => {
 			return assignGrassCutting(assignedTo, addressId, page ?? 1)
 		},
-		onSuccess: () => {},
+		onSuccess: () => {
+			toast.success('Success changing grass assignment.')
+		},
+		onError: () => {
+			toast.error('Error changing grass assignment.')
+		},
 	})
 }
 //MARK:Mark yard serviced
-export const useMarkYardServiced = (
-	addressId: number,
-	options?: {
-		onSuccess?: () => void
-		onError?: (error: Error) => void
-	},
-) => {
+export const useMarkYardServiced = (options?: {
+	onSuccess?: () => void
+	onError?: (error: Error) => void
+}) => {
 	return useMutation({
 		mutationFn: async ({
 			addressId,
