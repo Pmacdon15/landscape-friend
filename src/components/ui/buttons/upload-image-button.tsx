@@ -1,6 +1,5 @@
 'use client'
 import { use } from 'react'
-import { toast } from 'sonner'
 import { useUploadImage } from '@/lib/mutations/mutations'
 import Spinner from '../loaders/spinner'
 
@@ -16,14 +15,10 @@ export default function UploadImageButton({
 	const page = use(pagePromise)
 	const { mutate, isPending } = useUploadImage({
 		onSuccess: () => {
-			toast.success('Image uploaded successfully!', {
-				duration: 1500,
-			})
 			setView('list')
 		},
 		onError: (error) => {
 			console.error('Upload failed:', error)
-			toast.error('Image upload failed!', { duration: 1500 })
 		},
 		page,
 	})

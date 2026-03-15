@@ -1,12 +1,13 @@
 'use server'
+import { updateTag } from 'next/cache'
 import {
 	assignGrassCuttingDb,
 	unassignGrassCuttingDb,
-} from '../DB/assignment-db'
-import { markYardServicedDb, saveUrlImagesServices } from '../DB/clients-db'
-import { isOrgAdmin } from '../utils/clerk'
-import { uploadImageBlobServiceDone } from '../utils/image-control'
-import { schemaAssign, schemaMarkYardCut } from '../zod/schemas'
+} from '@/lib/DB/assignment-db'
+import { markYardServicedDb, saveUrlImagesServices } from '@/lib/DB/clients-db'
+import { isOrgAdmin } from '@/lib/utils/clerk'
+import { uploadImageBlobServiceDone } from '@/lib/utils/image-control'
+import { schemaAssign, schemaMarkYardCut } from '@/lib/zod/schemas'
 
 export async function markYardServiced(
 	addressId: number,
@@ -75,6 +76,9 @@ export async function markYardServiced(
 
 		if (!result_url)
 			return { errorMessage: 'Failed to update client serviced' }
+		updateTag('snow-clients')
+		updateTag('grass-clients')
+		updateTag(`serviced-images-${addressId}`)
 		return { success: true }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
@@ -89,6 +93,7 @@ export async function markYardServiced(
 export async function assignGrassCutting(
 	assignedTo: string,
 	addressId: number,
+	page: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
@@ -106,13 +111,19 @@ export async function assignGrassCutting(
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignGrassCuttingDb(addressId)
 			if (!result) throw new Error('Failed to unassign grass cutting')
+			updateTag(`clients-page-${page}`)
+			updateTag('snow-clients')
+			updateTag('grass-clients')
 			return result
 		} else {
 			const result = await assignGrassCuttingDb(
 				validatedFields.data,
 				addressId,
 			)
-			if (!result) throw new Error('Failed to update Client cut day')
+			if (!result) throw new Error('Failed to update client cut day')
+			updateTag(`clients-page-${page}`)
+			updateTag('snow-clients')
+			updateTag('grass-clients')
 			return result
 		}
 	} catch (e: unknown) {

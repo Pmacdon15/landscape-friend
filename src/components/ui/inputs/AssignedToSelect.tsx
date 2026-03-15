@@ -16,17 +16,20 @@ import {
 
 export default function AssignedTo({
 	clientAssignedTo,
-	orgMembersPromise,
 	addressId,
+	pagePromise,
+	orgMembersPromise,
 	snow = false,
 }: {
 	clientAssignedTo: string
 	addressId: number
+	pagePromise: Promise<number>
 	orgMembersPromise?: Promise<OrgMember[] | { errorMessage: string }>
 	snow?: boolean
 }) {
-	const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing()
-	const { mutate: mutateAssignGrassCutting } = useAssignGrassCutting()
+	const page = use(pagePromise)
+	const { mutate: mutateAssignSnowClearing } = useAssignSnowClearing(page)
+	const { mutate: mutateAssignGrassCutting } = useAssignGrassCutting(page)
 
 	const orgMembers = use(orgMembersPromise ?? Promise.resolve([]))
 

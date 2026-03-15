@@ -13,11 +13,13 @@ export function useImageSelector({
 	address,
 	addressId,
 	mapContainer,
+	page,
 }: {
 	setView: React.Dispatch<React.SetStateAction<string>>
 	address: string
 	addressId: number
 	mapContainer: React.RefObject<HTMLDivElement | null>
+	page: number
 }) {
 	const [geocodeOptions, setGeocodeOptions] = useState<
 		google.maps.GeocoderResult[] | null
@@ -34,7 +36,7 @@ export function useImageSelector({
 		null,
 	)
 	const mapInitializedRef = useRef(false)
-	const { mutate, isPending } = useUploadDrawing()
+	const { mutate, isPending } = useUploadDrawing(page)
 
 	const initMap = useCallback(async () => {
 		if (mapInitializedRef.current) return

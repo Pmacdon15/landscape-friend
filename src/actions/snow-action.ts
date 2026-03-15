@@ -1,14 +1,16 @@
 'use server'
+import { updateTag } from 'next/cache'
 import {
 	assignSnowClearingDb,
 	unassignSnowClearingDb,
 } from '@/lib/DB/assignment-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import { schemaAssignSnow } from '../zod/schemas'
+import { schemaAssignSnow } from '@/lib/zod/schemas'
 
 export async function assignSnowClearing(
 	assignedTo: string,
 	addressId: number,
+	page: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin()
 	if (!isAdmin) throw new Error('Not Admin')
@@ -25,6 +27,9 @@ export async function assignSnowClearing(
 	try {
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignSnowClearingDb(addressId)
+			updateTag(`clients-page-${page}`)
+			updateTag('snow-clients')
+			updateTag('grass-clients')
 			return {
 				...result,
 				message: 'Successfully unassigned snow clearing',
@@ -34,7 +39,11 @@ export async function assignSnowClearing(
 				validatedFields.data,
 				addressId,
 			)
-			if (!result) throw new Error('Failed to update Client cut day')
+			if (!result) throw new Error('Failed to update client cut day')
+
+			updateTag(`clients-page-${page}`)
+			updateTag('snow-clients')
+			updateTag('grass-clients')
 			return result
 		}
 	} catch (e: unknown) {

@@ -1,20 +1,22 @@
 import { useMutation } from '@tanstack/react-query'
-import type { z } from 'zod'
-import { changePriority } from '@/lib/actions/assignment-action'
-import { uploadDrawing, uploadImage } from '@/lib/actions/blobs-action'
+import { toast } from 'sonner'
+import type z from 'zod'
+import { changePriority } from '@/actions/assignment-action'
+import { uploadDrawing, uploadImage } from '@/actions/blobs-action'
 import {
 	addClient,
 	deleteClient,
 	deleteSiteMap,
 	updateClient,
 	updateCuttingDay,
-} from '@/lib/actions/clients-action'
-import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
+} from '@/actions/clients-action'
+import { assignGrassCutting, markYardServiced } from '@/actions/cuts-action'
+
 import {
 	sendEmailWithTemplate,
 	sendNewsLetter,
-} from '@/lib/actions/sendEmails-action'
-import { assignSnowClearing } from '@/lib/actions/snow-action'
+} from '@/actions/sendEmails-action'
+import { assignSnowClearing } from '@/actions/snow-action'
 import {
 	cancelSubscription,
 	createStripeQuote,
@@ -25,16 +27,12 @@ import {
 	resendInvoice,
 	updateStripeAPIKey,
 	updateStripeDocument,
-} from '@/lib/actions/stripe-action'
+} from '@/actions/stripe-action'
 import type {
 	schemaCreateQuote,
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
-import {
-	revalidatePathAction,
-	updateTagAction,
-} from '../actions/revalidatePath-action'
 import type { AddClientFormSchema } from '../zod/client-schemas'
 
 //MARK: Add client
@@ -51,8 +49,6 @@ export const useAddClient = (options?: {
 			return result
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
-			updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -77,17 +73,13 @@ export const useUpdateClient = (
 			data: z.infer<typeof AddClientFormSchema>
 			clientId: number
 		}) => {
-			const result = await updateClient(data, clientId)
+			const result = await updateClient(data, clientId, page)
 			if (result.errorMessage) {
 				throw new Error(result.errorMessage)
 			}
 			return result
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -107,13 +99,9 @@ export const useDeleteClient = (
 ) => {
 	return useMutation({
 		mutationFn: (clientId: number) => {
-			return deleteClient(clientId)
+			return deleteClient(clientId, page ?? 1)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -131,7 +119,7 @@ export const useUploadImage = ({
 }: {
 	onSuccess?: () => void
 	onError?: (error: Error) => void
-	page?: number
+	page: number
 }) => {
 	return useMutation({
 		mutationFn: ({
@@ -141,40 +129,39 @@ export const useUploadImage = ({
 			addressId: number
 			formData: FormData
 		}) => {
-			return uploadImage(addressId, formData)
+			return uploadImage(addressId, formData, page)
 		},
 		onSuccess: () => {
-			// revalidatePathAction("/lists/client");
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
 			onSuccess?.()
+			toast.success('Image uploaded successfully!', {
+				duration: 1500,
+			})
 		},
+
 		onError: (error) => {
 			onError?.(error)
+			console.error('Upload failed:', error)
+			toast.error('Image upload failed!', { duration: 1500 })
 		},
 	})
 }
 //MARK:Delete site map
 
-export const useDeleteSiteMap = (page?: number) => {
+export const useDeleteSiteMap = (page: number) => {
 	return useMutation({
 		mutationFn: ({ siteMapId }: { siteMapId: number }) => {
-			return deleteSiteMap(siteMapId)
+			return deleteSiteMap(siteMapId, page)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			revalidatePathAction('/lists/clearing')
-			revalidatePathAction('/lists/cutting')
+			toast.success('Success deleting sitemap.')
 		},
-		onError: () => {},
+		onError: () => {
+			toast.error('Error deleting sitemap.')
+		},
 	})
 }
 //MARK:Upload drawing site map
-// export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
-export const useUploadDrawing = (page?: number) => {
+export const useUploadDrawing = (page: number) => {
 	return useMutation({
 		mutationFn: ({
 			file,
@@ -183,13 +170,9 @@ export const useUploadDrawing = (page?: number) => {
 			file: Blob
 			addressId: number
 		}) => {
-			return uploadDrawing(file, addressId)
+			return uploadDrawing(file, addressId, page)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
 			// onSuccess?.();
 		},
 		onError: () => {
@@ -197,26 +180,6 @@ export const useUploadDrawing = (page?: number) => {
 		},
 	})
 }
-
-// //MARK:Update client price per cut
-// export const useUpdateClientPricePer = () => {
-// 	return useMutation({
-// 		mutationFn: ({
-// 			clientId,
-// 			pricePerMonthGrass,
-// 			snow = false,
-// 		}: {
-// 			clientId: number
-// 			pricePerMonthGrass: number
-// 			snow: boolean
-// 		}) => {
-// 			return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow)
-// 		},
-// 		onError: (error) => {
-// 			console.error('Mutation error:', error)
-// 		},
-// 	})
-// }
 
 //MARK:Update cutting day
 export const useUpdateCuttingDay = (page?: number) => {
@@ -230,15 +193,18 @@ export const useUpdateCuttingDay = (page?: number) => {
 			cuttingWeek: number
 			cuttingDay: string
 		}) => {
-			return updateCuttingDay(addressId, cuttingWeek, cuttingDay)
+			return updateCuttingDay(
+				addressId,
+				cuttingWeek,
+				cuttingDay,
+				page ?? 1,
+			)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
+			toast.success('Success updating cutting day.')
 		},
 		onError: (error) => {
+			toast.error('Error updating cutting day.')
 			console.error('Mutation error:', error)
 		},
 	})
@@ -254,13 +220,13 @@ export const useAssignSnowClearing = (page?: number) => {
 			assignedTo: string
 			addressId: number
 		}) => {
-			return assignSnowClearing(assignedTo, addressId)
+			return assignSnowClearing(assignedTo, addressId, page ?? 1)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
+			toast.success('Success changing snow assignment.')
+		},
+		onError: () => {
+			toast.error('Error changing snow assignment.')
 		},
 	})
 }
@@ -275,24 +241,21 @@ export const useAssignGrassCutting = (page?: number) => {
 			assignedTo: string
 			addressId: number
 		}) => {
-			return assignGrassCutting(assignedTo, addressId)
+			return assignGrassCutting(assignedTo, addressId, page ?? 1)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
+			toast.success('Success changing grass assignment.')
+		},
+		onError: () => {
+			toast.error('Error changing grass assignment.')
 		},
 	})
 }
 //MARK:Mark yard serviced
-export const useMarkYardServiced = (
-	addressId: number,
-	options?: {
-		onSuccess?: () => void
-		onError?: (error: Error) => void
-	},
-) => {
+export const useMarkYardServiced = (options?: {
+	onSuccess?: () => void
+	onError?: (error: Error) => void
+}) => {
 	return useMutation({
 		mutationFn: async ({
 			addressId,
@@ -312,9 +275,6 @@ export const useMarkYardServiced = (
 			return result // Return the result to indicate success
 		},
 		onSuccess: () => {
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
-			updateTagAction(`serviced-images-${addressId}`)
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -398,9 +358,7 @@ export const useCreateStripeSubscriptionQuote = () => {
 			}
 			return result
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/subscriptions') // Assuming a subscriptions management page
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -433,7 +391,6 @@ export const useUpdateStripeAPIKey = () => {
 			return updateStripeAPIKey({ formData })
 		},
 		onSuccess: () => {
-			revalidatePathAction('/settings/stripe-api-key')
 			// revalidateTagAction('api-key')
 		},
 		onError: (error) => {
@@ -448,9 +405,7 @@ export const useResendInvoice = () => {
 		mutationFn: async (invoiceId: string) => {
 			return resendInvoice(invoiceId)
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -460,9 +415,7 @@ export const useMarkInvoicePaid = () => {
 		mutationFn: async (invoiceId: string) => {
 			return markInvoicePaid(invoiceId)
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-		},
+		onSuccess: () => {},
 	})
 }
 //MARK: Mark invoice void
@@ -471,9 +424,7 @@ export const useMarkInvoiceVoid = () => {
 		mutationFn: async (invoiceId: string) => {
 			return markInvoiceVoid(invoiceId)
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -483,10 +434,7 @@ export const useMarkQuote = () => {
 		mutationFn: async ({ action, quoteId }: MarkQuoteProps) => {
 			return markQuote({ action, quoteId })
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-			revalidatePathAction('/billing/manage/quotes')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -495,9 +443,7 @@ export const useCancelSubscription = () => {
 	return useMutation({
 		mutationFn: (subscriptionId: string) =>
 			cancelSubscription(subscriptionId),
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/subscriptions')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -513,9 +459,7 @@ export const useChangePriority = () => {
 		}) => {
 			return changePriority(assignmentId, priority)
 		},
-		onSuccess: () => {
-			updateTagAction('snow-clients')
-		},
+		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Mutation error:', error)
 		},

@@ -1,4 +1,5 @@
 import { auth, clerkClient } from '@clerk/nextjs/server'
+import { cacheTag } from 'next/cache'
 import type { OrgMember } from '@/types/clerk-types'
 
 type AuthProtectResult = Awaited<ReturnType<typeof auth.protect>>
@@ -22,7 +23,9 @@ export async function isOrgAdmin(protect = true) {
 }
 
 export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
-	if (!orgId) return []
+	'use cache'
+	cacheTag(`org_members-${orgId}`)
+
 	const clerk = await clerkClient()
 	try {
 		const memberships =
@@ -74,3 +77,11 @@ export async function deleteEmptyOrganizations() {
 		console.error(`Error deleting organization: ${error}`)
 	}
 }
+// export async function getOrgMembersClerkClient(orgId: string) {
+// 	'use cache'
+// 	cacheTag(`org_members-${orgId}`)
+// 	const clerk = await clerkClient()
+// 	await clerk.organizations.getOrganizationMembershipList({
+// 		organizationId: orgId,
+// 	})
+// }

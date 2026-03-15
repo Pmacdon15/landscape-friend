@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import Stripe from 'stripe'
+import { getProductPrice } from '@/actions/stripe-action'
 import { fetchStripAPIKeyDb } from '@/lib/DB/stripe-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import type {
@@ -11,7 +12,6 @@ import type {
 	StripeQuote,
 } from '@/types/stripe-types'
 import type { Subscription } from '@/types/subscription-types'
-import { getProductPrice } from '../actions/stripe-action'
 import { fetchClientNamesByStripeIds } from './clients-dal'
 
 let stripe: Stripe | null = null

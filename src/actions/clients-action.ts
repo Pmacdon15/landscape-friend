@@ -1,5 +1,7 @@
 'use server'
+import { revalidatePath, updateTag } from 'next/cache'
 import type z from 'zod'
+
 import {
 	addClientDB,
 	countClientsByOrgId,
@@ -9,17 +11,17 @@ import {
 } from '@/lib/DB/clients-db'
 import { getOrganizationSettings } from '@/lib/DB/org-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
+import { triggerNotificationSendToAdmin } from '@/lib/utils/novu'
+import {
+	createOrUpdateStripeUser,
+	findOrCreateStripeCustomer,
+} from '@/lib/utils/stripe-utils'
+import { AddClientFormSchema } from '@/lib/zod/client-schemas'
 import {
 	schemaDeleteClient,
 	schemaDeleteSiteMap,
 	schemaUpdateCuttingDay,
 } from '@/lib/zod/schemas'
-import { triggerNotificationSendToAdmin } from '../utils/novu'
-import {
-	createOrUpdateStripeUser,
-	findOrCreateStripeCustomer,
-} from '../utils/stripe-utils'
-import { AddClientFormSchema } from '../zod/client-schemas'
 
 export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
@@ -84,7 +86,7 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 				encodedName: encodeURIComponent(validatedFields.data.full_name),
 			},
 		})
-
+		revalidatePath('/lists/client')
 		return {
 			success: true,
 			customerId: typeof customerId === 'string' ? customerId : null,
@@ -101,6 +103,7 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 export async function updateClient(
 	data: z.infer<typeof AddClientFormSchema>,
 	clientId: number,
+	page: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	const organizationId = orgId || userId
@@ -129,6 +132,10 @@ export async function updateClient(
 			validatedFields.data.addresses,
 			organizationId,
 		)
+		const currentPage = page ?? 1
+		updateTag(`clients-page-${currentPage}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return { success: true }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
@@ -139,7 +146,7 @@ export async function updateClient(
 	}
 }
 
-export async function deleteClient(clientId: number) {
+export async function deleteClient(clientId: number, page: number) {
 	const { orgId, userId } = await isOrgAdmin()
 	if (!userId) throw new Error('User ID is missing.')
 
@@ -159,6 +166,10 @@ export async function deleteClient(clientId: number) {
 			orgId || String(userId),
 			'client-deleted',
 		)
+		const currentPage = page ?? 1
+		updateTag(`clients-page-${currentPage}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
@@ -201,6 +212,7 @@ export async function updateCuttingDay(
 	addressId: number,
 	cuttingWeek: number,
 	updatedDay: string,
+	page: number,
 ) {
 	const { isAdmin, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
@@ -220,6 +232,9 @@ export async function updateCuttingDay(
 			// orgId || String(userId),
 		)
 		if (!result) throw new Error('Failed to update Client cut day')
+		updateTag(`clients-page-${page}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
@@ -227,7 +242,7 @@ export async function updateCuttingDay(
 	}
 }
 
-export async function deleteSiteMap(siteMapId: number) {
+export async function deleteSiteMap(siteMapId: number, page: number) {
 	const { userId } = await isOrgAdmin()
 	if (!userId) throw new Error('Organization ID or User ID is missing.')
 
@@ -239,7 +254,10 @@ export async function deleteSiteMap(siteMapId: number) {
 
 	try {
 		const result = await deleteSiteMapDB(validatedFields.data)
-		if (!result.success) throw new Error('Delete Client')
+		if (!result.success) throw new Error('Error deleting site map')
+		updateTag(`clients-page-${page}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)

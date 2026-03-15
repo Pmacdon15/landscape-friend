@@ -1,16 +1,31 @@
 'use server'
 import { auth } from '@clerk/nextjs/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import type Stripe from 'stripe'
 import type { z } from 'zod'
+import { markPaidDb } from '@/lib/DB/clients-db'
 import { updatedStripeAPIKeyDb } from '@/lib/DB/stripe-db'
+import { fetchClientNamesByStripeIds } from '@/lib/dal/clients-dal'
+import {
+	fetchProductPrice,
+	getInvoiceDAL,
+	getStripeInstance,
+	hasStripAPIKey,
+} from '@/lib/dal/stripe-dal'
+import { fetchNovuId } from '@/lib/dal/user-dal'
 import { isOrgAdmin } from '@/lib/utils/clerk'
+import {
+	createInvoicePayload,
+	triggerNotificationSendToAdmin,
+	triggerNovuEvent,
+} from '@/lib/utils/novu'
 import {
 	acceptAndScheduleQuote,
 	cancelStripeSubscription,
 	createNotificationPayloadInvoice,
 	createNotificationPayloadQuote,
 	createStripeSubscriptionQuote,
+	createStripeWebhook,
 	findOrCreateStripeCustomer,
 	getQuoteDetailsAndClientName,
 	sendQuote,
@@ -22,21 +37,6 @@ import {
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
-import { markPaidDb } from '../DB/clients-db'
-import { fetchClientNamesByStripeIds } from '../dal/clients-dal'
-import {
-	fetchProductPrice,
-	getInvoiceDAL,
-	getStripeInstance,
-	hasStripAPIKey,
-} from '../dal/stripe-dal'
-import { fetchNovuId } from '../dal/user-dal'
-import {
-	createInvoicePayload,
-	triggerNotificationSendToAdmin,
-	triggerNovuEvent,
-} from '../utils/novu'
-import { createStripeWebhook } from '../utils/stripe-utils'
 
 //MARK: Update API key
 export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
@@ -64,6 +64,8 @@ export async function updateStripeAPIKey({ formData }: { formData: FormData }) {
 
 		if (novuId)
 			await triggerNovuEvent(novuId.UserNovuId, 'stripe-api-key-updated')
+
+		revalidatePath('/settings/stripe-api-key')
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
 		throw new Error(errorMessage)
@@ -460,6 +462,7 @@ export async function markInvoicePaid(invoiceId: string) {
 		await stripe.invoices.pay(invoiceId, {
 			paid_out_of_band: true,
 		})
+		revalidatePath('/billing/manage/invoices')
 	} catch (error) {
 		console.error(error)
 		throw new Error(`Failed to mark invoice ${invoiceId} as paid`)
@@ -502,6 +505,7 @@ export async function markInvoiceVoid(invoiceId: string) {
 					invoice?.customer_name || 'Unknown Customer',
 				),
 			)
+			revalidatePath('/billing/manage/invoices')
 		} else {
 			console.warn(
 				`Skipping local DB update for invoice ${invoiceId}: Missing customer email.`,
@@ -559,6 +563,8 @@ export async function markQuote({ action, quoteId }: MarkQuoteProps) {
 				),
 			)
 		}
+		revalidatePath('/billing/manage/invoices')
+		revalidatePath('/billing/manage/quotes')
 	} catch (e) {
 		throw new Error(`Error: ${e instanceof Error ? e.message : String(e)}`)
 	}
@@ -571,6 +577,7 @@ export async function cancelSubscription(subscriptionId: string) {
 
 	try {
 		await cancelStripeSubscription(subscriptionId)
+		revalidatePath('/billing/manage/subscriptions')
 		return { success: true }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
@@ -621,6 +628,7 @@ export async function createSubscriptionQuoteAction(
 			parsed.data,
 			sessionClaims,
 		)
+		revalidatePath('/billing/manage/subscriptions')
 		return {
 			success: true,
 			subscription: { id: subscription.id, status: subscription.status },

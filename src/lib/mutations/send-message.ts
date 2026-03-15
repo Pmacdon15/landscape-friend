@@ -1,7 +1,7 @@
 'use client'
 import { useMutation } from '@tanstack/react-query'
 import type z from 'zod'
-import { sendEmail } from '@/lib/actions/resend'
+import { sendEmail } from '@/actions/resend'
 import type { formSchema } from '../zod/schemas'
 
 export const useSendMessage = (options?: {

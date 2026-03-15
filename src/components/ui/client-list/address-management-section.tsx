@@ -27,7 +27,7 @@ export default function AddressManagementSection({
 	pagePromise: Promise<number>
 	siteMaps: ClientSiteMapImages[]
 }) {
-	console.log('SiteMaps addressms: ', siteMaps)
+	console.log('SiteMaps addresses: ', siteMaps)
 	return (
 		<>
 			{addresses.map((addr) => {
@@ -60,6 +60,7 @@ export default function AddressManagementSection({
 										)?.user_id ?? 'not-assigned'
 									}
 									orgMembersPromise={orgMembersPromise}
+									pagePromise={pagePromise}
 								/>
 							</Suspense>
 							<Suspense fallback={<AssignedToFallback />}>
@@ -73,12 +74,14 @@ export default function AddressManagementSection({
 										)?.user_id ?? 'not-assigned'
 									}
 									orgMembersPromise={orgMembersPromise}
+									pagePromise={pagePromise}
 									snow
 								/>
 							</Suspense>
 						</div>
 						<CuttingWeekDropDownContainer
 							addressId={addr.id}
+							pagePromise={pagePromise}
 							schedules={schedules}
 						/>
 						<ViewSitePhotoSheet addressId={addr.id} />

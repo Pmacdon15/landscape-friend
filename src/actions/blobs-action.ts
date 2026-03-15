@@ -1,5 +1,5 @@
 'use server'
-import { revalidatePath } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { isOrgAdmin } from '@/lib/utils/clerk'
 import { uploadImageBlob } from '@/lib/utils/image-control'
 import { ImageSchema } from '@/lib/zod/schemas'
@@ -7,6 +7,7 @@ import { ImageSchema } from '@/lib/zod/schemas'
 export async function uploadImage(
 	addressId: number,
 	formData: FormData,
+	page: number,
 ): Promise<
 	| { success: boolean; message: string; status: number }
 	| { error: string; status: number }
@@ -36,15 +37,17 @@ export async function uploadImage(
 		if (e instanceof Error) return e
 		else return new Error('An unknown error occurred')
 	}
-	revalidatePath('/lists/client')
-	revalidatePath('/lists/cutting')
-	revalidatePath('/lists/clearing')
+	updateTag(`clients-page-${page}`)
+	updateTag('snow-clients')
+	updateTag('grass-clients')
+
 	return result
 }
 
 export async function uploadDrawing(
 	file: Blob,
 	addressId: number,
+	page: number,
 ): Promise<
 	| { success: boolean; message: string; status: number }
 	| { error: string; status: number }
@@ -84,8 +87,8 @@ export async function uploadDrawing(
 		if (e instanceof Error) return e
 		else return new Error('An unknown error occurred')
 	}
-	revalidatePath('/lists/client')
-	revalidatePath('/lists/cutting')
-	revalidatePath('/lists/clearing')
+	updateTag(`clients-page-${page}`)
+	updateTag('snow-clients')
+	updateTag('grass-clients')
 	return result
 }
