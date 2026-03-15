@@ -5,18 +5,17 @@ import { getOrgMembers } from '../utils/clerk'
 export async function fetchOrgMembers(): Promise<
 	OrgMember[] | { errorMessage: string }
 > {
-	const { orgId, userId, sessionClaims } = await auth.protect()
-
-	if (!orgId) {
-		return [
-			{
-				userId: userId,
-				userName: sessionClaims.userFullName as string | null,
-			},
-		]
-	}
-
 	try {
+		const { orgId, userId, sessionClaims } = await auth.protect()
+
+		if (!orgId) {
+			return [
+				{
+					userId: userId,
+					userName: sessionClaims.userFullName as string | null,
+				},
+			]
+		}
 		const clerk = await clerkClient()
 		const orgMembers = await getOrgMembers(orgId, clerk)
 
