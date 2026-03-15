@@ -391,11 +391,13 @@ export const useUpdateStripeAPIKey = () => {
 			return updateStripeAPIKey({ formData })
 		},
 		onSuccess: () => {
-			// revalidateTagAction('api-key')
+			toast.success('Success updating stripe API key.')
 		},
 		onError: (error) => {
 			console.error('Mutation error:', error)
+			toast.error('Error  updating stripe API key.')
 		},
+		y,
 	})
 }
 
@@ -415,7 +417,12 @@ export const useMarkInvoicePaid = () => {
 		mutationFn: async (invoiceId: string) => {
 			return markInvoicePaid(invoiceId)
 		},
-		onSuccess: () => {},
+		onSuccess: () => {
+			toast.success('Success marking invoice paid.')
+		},
+		onError: () => {
+			toast.error('Error marking invoice paid.')
+		},
 	})
 }
 //MARK: Mark invoice void
@@ -424,7 +431,12 @@ export const useMarkInvoiceVoid = () => {
 		mutationFn: async (invoiceId: string) => {
 			return markInvoiceVoid(invoiceId)
 		},
-		onSuccess: () => {},
+		onSuccess: () => {
+			toast.success('Success marking invoice void.')
+		},
+		onError: () => {
+			toast.error('Error marking invoice void.')
+		},
 	})
 }
 
@@ -434,7 +446,12 @@ export const useMarkQuote = () => {
 		mutationFn: async ({ action, quoteId }: MarkQuoteProps) => {
 			return markQuote({ action, quoteId })
 		},
-		onSuccess: () => {},
+		onSuccess: () => {
+			toast.success('Success updating quote')
+		},
+		onError: () => {
+			toast.error('Error updating quote.')
+		},
 	})
 }
 
@@ -443,7 +460,12 @@ export const useCancelSubscription = () => {
 	return useMutation({
 		mutationFn: (subscriptionId: string) =>
 			cancelSubscription(subscriptionId),
-		onSuccess: () => {},
+		onSuccess: () => {
+			toast.success('Success canceling subscription')
+		},
+		onError: () => {
+			toast.error('Error canceling subscription')
+		},
 	})
 }
 
