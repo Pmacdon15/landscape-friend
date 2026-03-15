@@ -101,7 +101,7 @@ export const useDeleteClient = (
 ) => {
 	return useMutation({
 		mutationFn: (clientId: number) => {
-			return deleteClient(clientId, page)
+			return deleteClient(clientId, page ?? 1)
 		},
 		onSuccess: () => {
 			// const currentPage = page ?? 1
