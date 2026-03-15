@@ -212,6 +212,7 @@ export async function updateCuttingDay(
 	addressId: number,
 	cuttingWeek: number,
 	updatedDay: string,
+	page: number,
 ) {
 	const { isAdmin, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
@@ -231,6 +232,9 @@ export async function updateCuttingDay(
 			// orgId || String(userId),
 		)
 		if (!result) throw new Error('Failed to update Client cut day')
+		updateTag(`clients-page-${page}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)

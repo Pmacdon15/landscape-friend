@@ -93,6 +93,7 @@ export async function markYardServiced(
 export async function assignGrassCutting(
 	assignedTo: string,
 	addressId: number,
+	page: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not Admin')
@@ -110,13 +111,19 @@ export async function assignGrassCutting(
 		if (assignedTo === 'not-assigned') {
 			const result = await unassignGrassCuttingDb(addressId)
 			if (!result) throw new Error('Failed to unassign grass cutting')
+			updateTag(`clients-page-${page}`)
+			updateTag('snow-clients')
+			updateTag('grass-clients')
 			return result
 		} else {
 			const result = await assignGrassCuttingDb(
 				validatedFields.data,
 				addressId,
 			)
-			if (!result) throw new Error('Failed to update Client cut day')
+			if (!result) throw new Error('Failed to update client cut day')
+			updateTag(`clients-page-${page}`)
+			updateTag('snow-clients')
+			updateTag('grass-clients')
 			return result
 		}
 	} catch (e: unknown) {

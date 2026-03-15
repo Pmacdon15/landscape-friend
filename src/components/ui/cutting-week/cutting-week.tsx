@@ -1,5 +1,5 @@
 'use client'
-import { useOptimistic, useTransition } from 'react'
+import { Suspense, use, useOptimistic, useTransition } from 'react'
 import { useUpdateCuttingDay } from '@/lib/mutations/mutations'
 import type { ClientCuttingSchedule } from '@/types/schedules-types'
 import {
@@ -15,11 +15,14 @@ function CuttingWeekDropDown({
 	addressId,
 	week,
 	schedule,
+	pagePromise,
 }: {
 	addressId: number
 	week: number
 	schedule: ClientCuttingSchedule
+	pagePromise: Promise<number>
 }) {
+	const page = use(pagePromise)
 	const days = [
 		'No cut',
 		'Monday',
@@ -37,7 +40,7 @@ function CuttingWeekDropDown({
 	)
 	const [, startTransition] = useTransition()
 
-	const { mutate } = useUpdateCuttingDay()
+	const { mutate } = useUpdateCuttingDay(page)
 
 	function handleChange(value: string) {
 		startTransition(() => {
@@ -75,9 +78,11 @@ function CuttingWeekDropDown({
 export function CuttingWeekDropDownContainer({
 	addressId,
 	schedules,
+	pagePromise,
 }: {
 	addressId: number
 	schedules: ClientCuttingSchedule[]
+	pagePromise: Promise<number>
 }) {
 	// Filter schedules for THIS address first
 	const addressSchedules = schedules.filter((s) => s.address_id === addressId)
@@ -104,12 +109,14 @@ export function CuttingWeekDropDownContainer({
 	return (
 		<div className="flex flex-col flex-wrap items-center justify-center gap-2 md:flex-row">
 			{clientSchedules.map((schedule, index) => (
-				<CuttingWeekDropDown
-					addressId={addressId}
-					key={schedule.cutting_week}
-					schedule={schedule}
-					week={index + 1}
-				/>
+				<Suspense key={schedule.cutting_week}>
+					<CuttingWeekDropDown
+						addressId={addressId}
+						pagePromise={pagePromise}
+						schedule={schedule}
+						week={index + 1}
+					/>
+				</Suspense>
 			))}
 		</div>
 	)

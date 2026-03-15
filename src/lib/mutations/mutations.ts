@@ -104,10 +104,6 @@ export const useDeleteClient = (
 			return deleteClient(clientId, page ?? 1)
 		},
 		onSuccess: () => {
-			// const currentPage = page ?? 1
-			// updateTagAction(`clients-page-${currentPage}`)
-			// updateTagAction('snow-clients')
-			// updateTagAction('grass-clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -224,14 +220,14 @@ export const useUpdateCuttingDay = (page?: number) => {
 			cuttingWeek: number
 			cuttingDay: string
 		}) => {
-			return updateCuttingDay(addressId, cuttingWeek, cuttingDay)
+			return updateCuttingDay(
+				addressId,
+				cuttingWeek,
+				cuttingDay,
+				page ?? 1,
+			)
 		},
-		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
-		},
+		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Mutation error:', error)
 		},
@@ -248,14 +244,9 @@ export const useAssignSnowClearing = (page?: number) => {
 			assignedTo: string
 			addressId: number
 		}) => {
-			return assignSnowClearing(assignedTo, addressId)
+			return assignSnowClearing(assignedTo, addressId, page ?? 1)
 		},
-		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -269,14 +260,9 @@ export const useAssignGrassCutting = (page?: number) => {
 			assignedTo: string
 			addressId: number
 		}) => {
-			return assignGrassCutting(assignedTo, addressId)
+			return assignGrassCutting(assignedTo, addressId, page ?? 1)
 		},
-		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
-		},
+		onSuccess: () => {},
 	})
 }
 //MARK:Mark yard serviced
