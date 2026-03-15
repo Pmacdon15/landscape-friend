@@ -1,7 +1,7 @@
 'use server'
 import { revalidatePath, updateTag } from 'next/cache'
 import type z from 'zod'
-import page from '@/app/page'
+
 import {
 	addClientDB,
 	countClientsByOrgId,
@@ -103,6 +103,7 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 export async function updateClient(
 	data: z.infer<typeof AddClientFormSchema>,
 	clientId: number,
+	page: number,
 ) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
 	const organizationId = orgId || userId
@@ -145,7 +146,7 @@ export async function updateClient(
 	}
 }
 
-export async function deleteClient(clientId: number) {
+export async function deleteClient(clientId: number, page: number) {
 	const { orgId, userId } = await isOrgAdmin()
 	if (!userId) throw new Error('User ID is missing.')
 
@@ -165,6 +166,10 @@ export async function deleteClient(clientId: number) {
 			orgId || String(userId),
 			'client-deleted',
 		)
+		const currentPage = page ?? 1
+		updateTag(`clients-page-${currentPage}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return result
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)

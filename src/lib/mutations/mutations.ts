@@ -75,7 +75,7 @@ export const useUpdateClient = (
 			data: z.infer<typeof AddClientFormSchema>
 			clientId: number
 		}) => {
-			const result = await updateClient(data, clientId)
+			const result = await updateClient(data, clientId, page)
 			if (result.errorMessage) {
 				throw new Error(result.errorMessage)
 			}
@@ -101,13 +101,13 @@ export const useDeleteClient = (
 ) => {
 	return useMutation({
 		mutationFn: (clientId: number) => {
-			return deleteClient(clientId)
+			return deleteClient(clientId, page)
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
+			// const currentPage = page ?? 1
+			// updateTagAction(`clients-page-${currentPage}`)
+			// updateTagAction('snow-clients')
+			// updateTagAction('grass-clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
