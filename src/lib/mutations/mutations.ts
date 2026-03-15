@@ -11,10 +11,7 @@ import {
 	updateCuttingDay,
 } from '@/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/actions/cuts-action'
-import {
-	revalidatePathAction,
-	updateTagAction,
-} from '@/actions/revalidatePath-action'
+
 import {
 	sendEmailWithTemplate,
 	sendNewsLetter,
@@ -361,9 +358,7 @@ export const useCreateStripeSubscriptionQuote = () => {
 			}
 			return result
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/subscriptions') // Assuming a subscriptions management page
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -396,7 +391,6 @@ export const useUpdateStripeAPIKey = () => {
 			return updateStripeAPIKey({ formData })
 		},
 		onSuccess: () => {
-			revalidatePathAction('/settings/stripe-api-key')
 			// revalidateTagAction('api-key')
 		},
 		onError: (error) => {
@@ -411,9 +405,7 @@ export const useResendInvoice = () => {
 		mutationFn: async (invoiceId: string) => {
 			return resendInvoice(invoiceId)
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -423,9 +415,7 @@ export const useMarkInvoicePaid = () => {
 		mutationFn: async (invoiceId: string) => {
 			return markInvoicePaid(invoiceId)
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-		},
+		onSuccess: () => {},
 	})
 }
 //MARK: Mark invoice void
@@ -434,9 +424,7 @@ export const useMarkInvoiceVoid = () => {
 		mutationFn: async (invoiceId: string) => {
 			return markInvoiceVoid(invoiceId)
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -446,10 +434,7 @@ export const useMarkQuote = () => {
 		mutationFn: async ({ action, quoteId }: MarkQuoteProps) => {
 			return markQuote({ action, quoteId })
 		},
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/invoices')
-			revalidatePathAction('/billing/manage/quotes')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -458,9 +443,7 @@ export const useCancelSubscription = () => {
 	return useMutation({
 		mutationFn: (subscriptionId: string) =>
 			cancelSubscription(subscriptionId),
-		onSuccess: () => {
-			revalidatePathAction('/billing/manage/subscriptions')
-		},
+		onSuccess: () => {},
 	})
 }
 
@@ -476,9 +459,7 @@ export const useChangePriority = () => {
 		}) => {
 			return changePriority(assignmentId, priority)
 		},
-		onSuccess: () => {
-			updateTagAction('snow-clients')
-		},
+		onSuccess: () => {},
 		onError: (error) => {
 			console.error('Mutation error:', error)
 		},
