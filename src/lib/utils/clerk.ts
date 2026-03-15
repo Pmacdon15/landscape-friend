@@ -22,25 +22,30 @@ export async function isOrgAdmin(protect = true) {
 	return { userId, orgId, sessionClaims, isAdmin }
 }
 
-export async function getOrgMembers(orgId: string): Promise<OrgMember[]> {
+export async function getOrgMembers(
+	orgId: string,
+	clerk: any,
+): Promise<OrgMember[]> {
 	'use cache'
 	cacheTag(`org_members-${orgId}`)
 
-	const clerk = await clerkClient()
 	try {
 		const memberships =
 			await clerk.organizations.getOrganizationMembershipList({
 				organizationId: orgId,
 			})
 
-		const members: OrgMember[] = memberships.data.map((membership) => ({
-			userId: membership.publicUserData?.userId || '',
-			userName:
-				membership.publicUserData?.firstName +
-					' ' +
-					membership.publicUserData?.lastName || 'Personal Workspace',
-			role: membership.role,
-		}))
+		const members: OrgMember[] = memberships.data.map(
+			(membership: any) => ({
+				userId: membership.publicUserData?.userId || '',
+				userName:
+					membership.publicUserData?.firstName +
+						' ' +
+						membership.publicUserData?.lastName ||
+					'Personal Workspace',
+				role: membership.role,
+			}),
+		)
 
 		return members
 	} catch (error) {

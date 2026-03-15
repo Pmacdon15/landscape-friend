@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import type { OrgMember } from '@/types/clerk-types'
 import { getOrgMembers } from '../utils/clerk'
 
@@ -17,7 +17,8 @@ export async function fetchOrgMembers(): Promise<
 	}
 
 	try {
-		const orgMembers = getOrgMembers(orgId)
+		const clerk = await clerkClient()
+		const orgMembers = getOrgMembers(orgId, clerk)
 
 		return orgMembers
 	} catch (error) {
