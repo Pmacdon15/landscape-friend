@@ -242,7 +242,7 @@ export async function updateCuttingDay(
 	}
 }
 
-export async function deleteSiteMap(siteMapId: number, page:number) {
+export async function deleteSiteMap(siteMapId: number, page: number) {
 	const { userId } = await isOrgAdmin()
 	if (!userId) throw new Error('Organization ID or User ID is missing.')
 

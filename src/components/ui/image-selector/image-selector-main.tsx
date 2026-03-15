@@ -1,7 +1,7 @@
 'use client'
 import { ArrowLeftCircleIcon, CameraIcon } from '@heroicons/react/24/solid'
 import type React from 'react'
-import { useRef } from 'react'
+import { use, useRef } from 'react'
 import Spinner from '@/components/ui/loaders/spinner'
 import { useImageSelector } from '@/lib/hooks/useImageSelector'
 
@@ -9,12 +9,15 @@ export default function ImageSelectorMain({
 	setView,
 	address,
 	addressId,
+	pagePromise,
 }: {
 	setView: React.Dispatch<React.SetStateAction<string>>
 	address: string
 	addressId: number
+	pagePromise: Promise<number>
 }) {
 	const mapContainerRef = useRef<HTMLDivElement | null>(null)
+	const page = use(pagePromise)
 	const {
 		mapElementRef,
 		showGeocodeSelector,
@@ -28,6 +31,7 @@ export default function ImageSelectorMain({
 		address,
 		addressId,
 		mapContainer: mapContainerRef,
+		page,
 	})
 
 	return (

@@ -1,61 +1,24 @@
-import { auth, clerkClient } from '@clerk/nextjs/server'
-import { cacheTag } from 'next/cache'
+import { auth } from '@clerk/nextjs/server'
 import type { OrgMember } from '@/types/clerk-types'
+import { getOrgMembers } from '../utils/clerk'
 
 export async function fetchOrgMembers(): Promise<
 	OrgMember[] | { errorMessage: string }
 > {
-	'use cache: private'
-
-	const { orgId, sessionClaims } = await auth.protect()
-
-	cacheTag(`org_members-${orgId}`)
+	const { orgId, userId, sessionClaims } = await auth.protect()
 
 	if (!orgId) {
-		// If there's no organization, return the current user's information
 		return [
 			{
-				userId: sessionClaims.sub,
+				userId: userId,
 				userName: sessionClaims.userFullName as string | null,
 			},
 		]
 	}
 
-	const clerk = await clerkClient()
 	try {
-		const response =
-			await clerk.organizations.getOrganizationMembershipList({
-				organizationId: orgId,
-			})
-		// console.log('fetchOrgMembers: Clerk API Response:', response)
+		const orgMembers = getOrgMembers(orgId)
 
-		// Transform OrganizationMembership objects into the simplified OrgMember type
-		const orgMembers: OrgMember[] = response.data.flatMap((member) => {
-			const userId = member.publicUserData?.userId
-			if (!userId) {
-				console.warn(
-					'fetchOrgMembers: Skipping member due to missing userId:',
-					member,
-				)
-				return [] // Skip this member if userId is not available
-			}
-
-			// console.log('Public User Data:', member.publicUserData)
-			const userName =
-				member.publicUserData?.firstName &&
-				member.publicUserData?.lastName
-					? `${member.publicUserData.firstName} ${member.publicUserData.lastName}`
-					: (member.publicUserData?.identifier ?? null)
-
-			return [
-				{
-					userId: userId,
-					userName: userName,
-				},
-			]
-		})
-
-		// console.log('fetchOrgMembers: Processed Org Members:', orgMembers)
 		return orgMembers
 	} catch (error) {
 		console.error('Error fetching org members:', error)

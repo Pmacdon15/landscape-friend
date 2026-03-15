@@ -47,7 +47,7 @@ export async function uploadImage(
 export async function uploadDrawing(
 	file: Blob,
 	addressId: number,
-	page:number
+	page: number,
 ): Promise<
 	| { success: boolean; message: string; status: number }
 	| { error: string; status: number }

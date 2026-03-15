@@ -41,16 +41,14 @@ export async function fetchAllClientsInfo(
 	siteMaps: ClientSiteMapImages[]
 	totalPages: number
 } | null> {
-	// 'use cache: private'
-	// cacheTag(`clients-page-${clientPageNumber}`)
-	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
-	if (!isAdmin) throw new Error('Not admin!')
-
-	if (!userId) throw new Error('Not logged in!')
-	const pageSize = Number(process.env.PAGE_SIZE) || 10
-	const offset = (clientPageNumber - 1) * pageSize
-
 	try {
+		const { orgId, userId, isAdmin } = await isOrgAdmin(true)
+		if (!isAdmin) throw new Error('Not admin!')
+
+		if (!userId) throw new Error('Not logged in!')
+		const pageSize = Number(process.env.PAGE_SIZE) || 10
+		const offset = (clientPageNumber - 1) * pageSize
+
 		const allClientsInfo = await fetchClients(
 			orgId || userId,
 			pageSize,
@@ -95,15 +93,15 @@ export async function fetchAllClientsInfo(
 }
 
 export async function fetchClientList(): Promise<ClientInfoList[] | []> {
-	const { orgId, userId } = await isOrgAdmin(true)
-	if (!userId) {
-		throw new Error('Organization ID or User ID is missing.')
-	}
-	const organizationId = orgId || userId
-	if (!organizationId) {
-		throw new Error('Organization ID or User ID is missing.')
-	}
 	try {
+		const { orgId, userId } = await isOrgAdmin(true)
+		if (!userId) {
+			throw new Error('Organization ID or User ID is missing.')
+		}
+		const organizationId = orgId || userId
+		if (!organizationId) {
+			throw new Error('Organization ID or User ID is missing.')
+		}
 		const result = await fetchClientListDb(organizationId)
 		if (!result) {
 			return []

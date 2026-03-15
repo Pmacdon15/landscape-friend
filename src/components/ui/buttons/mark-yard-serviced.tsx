@@ -20,20 +20,17 @@ export default function MarkYardServiced({
 	snow?: boolean
 	onServiced: (addressId: number) => void
 }) {
-	const { mutate, isError, isPending, error } = useMarkYardServiced(
-		addressId,
-		{
-			onSuccess: () => {
-				startTransition(() => {
-					onServiced(addressId)
-				})
+	const { mutate, isError, isPending, error } = useMarkYardServiced({
+		onSuccess: () => {
+			startTransition(() => {
+				onServiced(addressId)
+			})
 
-				toast.success('Yard marked serviced!', { duration: 1500 })
-			},
-			onError: () =>
-				toast.error('Error marking yard serviced!', { duration: 1500 }),
+			toast.success('Yard marked serviced!', { duration: 1500 })
 		},
-	)
+		onError: () =>
+			toast.error('Error marking yard serviced!', { duration: 1500 }),
+	})
 
 	const [images, setImages] = useState<File[]>([])
 	const [hasCamera, setHasCamera] = useState<boolean | null>(null)

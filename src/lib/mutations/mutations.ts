@@ -164,7 +164,6 @@ export const useDeleteSiteMap = (page: number) => {
 	})
 }
 //MARK:Upload drawing site map
-// export const useUploadDrawing = ({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: Error) => void }) => {
 export const useUploadDrawing = (page: number) => {
 	return useMutation({
 		mutationFn: ({
@@ -184,26 +183,6 @@ export const useUploadDrawing = (page: number) => {
 		},
 	})
 }
-
-// //MARK:Update client price per cut
-// export const useUpdateClientPricePer = () => {
-// 	return useMutation({
-// 		mutationFn: ({
-// 			clientId,
-// 			pricePerMonthGrass,
-// 			snow = false,
-// 		}: {
-// 			clientId: number
-// 			pricePerMonthGrass: number
-// 			snow: boolean
-// 		}) => {
-// 			return updateClientPricePerMonth(clientId, pricePerMonthGrass, snow)
-// 		},
-// 		onError: (error) => {
-// 			console.error('Mutation error:', error)
-// 		},
-// 	})
-// }
 
 //MARK:Update cutting day
 export const useUpdateCuttingDay = (page?: number) => {
@@ -299,9 +278,6 @@ export const useMarkYardServiced = (options?: {
 			return result // Return the result to indicate success
 		},
 		onSuccess: () => {
-			// updateTagAction('snow-clients')
-			// updateTagAction('grass-clients')
-			// updateTagAction(`serviced-images-${addressId}`)
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
