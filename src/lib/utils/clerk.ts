@@ -25,6 +25,9 @@ export async function getOrgMembers(
 	orgId: string,
 	clerk: any,
 ): Promise<OrgMember[]> {
+	if (!orgId || !orgId.startsWith('org_')) {
+		return []
+	}
 	try {
 		const memberships =
 			await clerk.organizations.getOrganizationMembershipList({
@@ -32,10 +35,9 @@ export async function getOrgMembers(
 			})
 
 		if (!memberships || !memberships.data) {
-			console.error('No memberships data found for org:', orgId)
 			return []
 		}
-		
+
 		const members: OrgMember[] = memberships.data.map(
 			(membership: any) => ({
 				userId: membership.publicUserData?.userId || '',
@@ -51,8 +53,11 @@ export async function getOrgMembers(
 		)
 
 		return members
-	} catch (error) {
-		console.error('Error fetching organization members:', error)
+	} catch (error: any) {
+		// Only log if it's not a common "expected" error or an abort
+		if (error.code !== 'api_response_error') {
+			console.error('Error fetching organization members:', error)
+		}
 		return []
 	}
 }
