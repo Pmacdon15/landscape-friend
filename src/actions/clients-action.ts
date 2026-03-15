@@ -1,6 +1,7 @@
 'use server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 import type z from 'zod'
+import page from '@/app/page'
 import {
 	addClientDB,
 	countClientsByOrgId,
@@ -130,6 +131,10 @@ export async function updateClient(
 			validatedFields.data.addresses,
 			organizationId,
 		)
+		const currentPage = page ?? 1
+		updateTag(`clients-page-${currentPage}`)
+		updateTag('snow-clients')
+		updateTag('grass-clients')
 		return { success: true }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)

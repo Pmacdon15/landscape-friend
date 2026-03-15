@@ -11,6 +11,10 @@ import {
 } from '@/actions/clients-action'
 import { assignGrassCutting, markYardServiced } from '@/actions/cuts-action'
 import {
+	revalidatePathAction,
+	updateTagAction,
+} from '@/actions/revalidatePath-action'
+import {
 	sendEmailWithTemplate,
 	sendNewsLetter,
 } from '@/actions/sendEmails-action'
@@ -32,10 +36,6 @@ import type {
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
 import type { AddClientFormSchema } from '../zod/client-schemas'
-import {
-	updateTagAction,
-	revalidatePathAction,
-} from '@/actions/revalidatePath-action'
 
 //MARK: Add client
 export const useAddClient = (options?: {
@@ -51,8 +51,6 @@ export const useAddClient = (options?: {
 			return result
 		},
 		onSuccess: () => {
-			// revalidatePathAction('/lists/client')
-			// updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
@@ -84,10 +82,6 @@ export const useUpdateClient = (
 			return result
 		},
 		onSuccess: () => {
-			const currentPage = page ?? 1
-			updateTagAction(`clients-page-${currentPage}`)
-			updateTagAction('snow-clients')
-			updateTagAction('grass-clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {
