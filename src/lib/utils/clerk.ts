@@ -1,5 +1,4 @@
 import { auth, clerkClient } from '@clerk/nextjs/server'
-import { cacheTag } from 'next/cache'
 import type { OrgMember } from '@/types/clerk-types'
 
 type AuthProtectResult = Awaited<ReturnType<typeof auth.protect>>
@@ -26,23 +25,27 @@ export async function getOrgMembers(
 	orgId: string,
 	clerk: any,
 ): Promise<OrgMember[]> {
-	'use cache'
-	cacheTag(`org_members-${orgId}`)
-
 	try {
 		const memberships =
 			await clerk.organizations.getOrganizationMembershipList({
 				organizationId: orgId,
 			})
 
+		if (!memberships || !memberships.data) {
+			console.error('No memberships data found for org:', orgId)
+			return []
+		}
+		
 		const members: OrgMember[] = memberships.data.map(
 			(membership: any) => ({
 				userId: membership.publicUserData?.userId || '',
 				userName:
-					membership.publicUserData?.firstName +
-						' ' +
-						membership.publicUserData?.lastName ||
-					'Personal Workspace',
+					membership.publicUserData?.firstName ||
+					membership.publicUserData?.lastName
+						? `${membership.publicUserData.firstName || ''} ${
+								membership.publicUserData.lastName || ''
+							}`.trim()
+						: 'Member',
 				role: membership.role,
 			}),
 		)

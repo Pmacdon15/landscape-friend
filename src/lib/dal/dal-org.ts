@@ -18,7 +18,7 @@ export async function fetchOrgMembers(): Promise<
 
 	try {
 		const clerk = await clerkClient()
-		const orgMembers = getOrgMembers(orgId, clerk)
+		const orgMembers = await getOrgMembers(orgId, clerk)
 
 		return orgMembers
 	} catch (error) {
