@@ -1,20 +1,20 @@
 import { useMutation } from '@tanstack/react-query'
-import type { z } from 'zod'
-import { changePriority } from '@/lib/actions/assignment-action'
-import { uploadDrawing, uploadImage } from '@/lib/actions/blobs-action'
+import type z from 'zod'
+import { changePriority } from '@/actions/assignment-action'
+import { uploadDrawing, uploadImage } from '@/actions/blobs-action'
 import {
 	addClient,
 	deleteClient,
 	deleteSiteMap,
 	updateClient,
 	updateCuttingDay,
-} from '@/lib/actions/clients-action'
-import { assignGrassCutting, markYardServiced } from '@/lib/actions/cuts-action'
+} from '@/actions/clients-action'
+import { assignGrassCutting, markYardServiced } from '@/actions/cuts-action'
 import {
 	sendEmailWithTemplate,
 	sendNewsLetter,
-} from '@/lib/actions/sendEmails-action'
-import { assignSnowClearing } from '@/lib/actions/snow-action'
+} from '@/actions/sendEmails-action'
+import { assignSnowClearing } from '@/actions/snow-action'
 import {
 	cancelSubscription,
 	createStripeQuote,
@@ -25,17 +25,17 @@ import {
 	resendInvoice,
 	updateStripeAPIKey,
 	updateStripeDocument,
-} from '@/lib/actions/stripe-action'
+} from '@/actions/stripe-action'
 import type {
 	schemaCreateQuote,
 	schemaUpdateStatement,
 } from '@/lib/zod/schemas'
 import type { MarkQuoteProps } from '@/types/stripe-types'
-import {
-	revalidatePathAction,
-	updateTagAction,
-} from '../actions/revalidatePath-action'
 import type { AddClientFormSchema } from '../zod/client-schemas'
+import {
+	updateTagAction,
+	revalidatePathAction,
+} from '@/actions/revalidatePath-action'
 
 //MARK: Add client
 export const useAddClient = (options?: {
@@ -51,8 +51,8 @@ export const useAddClient = (options?: {
 			return result
 		},
 		onSuccess: () => {
-			revalidatePathAction('/lists/client')
-			updateTagAction('clients')
+			// revalidatePathAction('/lists/client')
+			// updateTagAction('clients')
 			options?.onSuccess?.()
 		},
 		onError: (error) => {

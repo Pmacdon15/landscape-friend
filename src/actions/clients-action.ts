@@ -1,4 +1,5 @@
 'use server'
+import { revalidatePath } from 'next/cache'
 import type z from 'zod'
 import {
 	addClientDB,
@@ -9,17 +10,17 @@ import {
 } from '@/lib/DB/clients-db'
 import { getOrganizationSettings } from '@/lib/DB/org-db'
 import { isOrgAdmin } from '@/lib/utils/clerk'
+import { triggerNotificationSendToAdmin } from '@/lib/utils/novu'
+import {
+	createOrUpdateStripeUser,
+	findOrCreateStripeCustomer,
+} from '@/lib/utils/stripe-utils'
+import { AddClientFormSchema } from '@/lib/zod/client-schemas'
 import {
 	schemaDeleteClient,
 	schemaDeleteSiteMap,
 	schemaUpdateCuttingDay,
 } from '@/lib/zod/schemas'
-import { triggerNotificationSendToAdmin } from '../utils/novu'
-import {
-	createOrUpdateStripeUser,
-	findOrCreateStripeCustomer,
-} from '../utils/stripe-utils'
-import { AddClientFormSchema } from '../zod/client-schemas'
 
 export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 	const { isAdmin, orgId, userId } = await isOrgAdmin(true)
@@ -84,7 +85,7 @@ export async function addClient(data: z.infer<typeof AddClientFormSchema>) {
 				encodedName: encodeURIComponent(validatedFields.data.full_name),
 			},
 		})
-
+		revalidatePath('/lists/client')
 		return {
 			success: true,
 			customerId: typeof customerId === 'string' ? customerId : null,

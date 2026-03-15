@@ -1,4 +1,5 @@
 import { type NeonQueryFunction, neon } from '@neondatabase/serverless'
+import { cacheTag } from 'next/cache'
 import type z from 'zod'
 import type {
 	schemaAddClient,
@@ -336,6 +337,8 @@ export async function fetchClients(
 	siteMaps: ClientSiteMapImages[]
 	totalPages: number
 } | null> {
+	'use cache'
+	cacheTag(`clients-page-${offset + 1}`)
 	const sql = neon(process.env.DATABASE_URL as string)
 
 	/* ---------------- WHERE CLAUSE ---------------- */

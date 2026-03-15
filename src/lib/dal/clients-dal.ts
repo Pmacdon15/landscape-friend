@@ -41,8 +41,8 @@ export async function fetchAllClientsInfo(
 	siteMaps: ClientSiteMapImages[]
 	totalPages: number
 } | null> {
-	'use cache: private'
-	cacheTag(`clients-page-${clientPageNumber}`)
+	// 'use cache: private'
+	// cacheTag(`clients-page-${clientPageNumber}`)
 	const { orgId, userId, isAdmin } = await isOrgAdmin(true)
 	if (!isAdmin) throw new Error('Not admin!')
 
