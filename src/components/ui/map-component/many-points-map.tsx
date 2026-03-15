@@ -1,5 +1,6 @@
 'use client'
 import Image from 'next/image'
+import { useGetLocation } from '@/lib/hooks/hooks'
 import type { MapComponentProps } from '@/types/google-map-iframe-types'
 import FormHeader from '../header/form-header'
 
@@ -8,7 +9,7 @@ const MAX_STATIC_MARKERS = 15
 // Slice the array to include only the first 15 addresses.
 
 export default function ManyPointsMap({ addresses }: MapComponentProps) {
-	// const { userLocation } = useGetLocation()
+	const { userLocation } = useGetLocation()
 
 	if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
 		return <div>Error: Google Maps API key is missing</div>
@@ -27,11 +28,11 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 		)
 		.join('&')
 
-	// const userMarker = userLocation
-	// 	? `&markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`
-	// 	: ''
+	const userMarker = userLocation
+		? `&markers=size:mid%7Ccolor:blue%7C${userLocation.lat},${userLocation.lng}`
+		: ''
 
-	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=500x200&maptype=roadmap${markers}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+	const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=500x200&maptype=roadmap&${markers}${userMarker}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
 
 	// const origin = userLocation
 	// 	? `${userLocation.lat},${userLocation.lng}`
@@ -107,6 +108,7 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 				height={800}
 				src={mapUrl}
 				title="Map View"
+				unoptimized
 				width={800}
 			/>
 			<div className="absolute top-2 right-2 flex flex-col gap-1">
