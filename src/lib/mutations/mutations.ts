@@ -397,7 +397,6 @@ export const useUpdateStripeAPIKey = () => {
 			console.error('Mutation error:', error)
 			toast.error('Error  updating stripe API key.')
 		},
-		y,
 	})
 }
 
