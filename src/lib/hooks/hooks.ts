@@ -78,6 +78,7 @@ export function useGetLocation(): { userLocation: Location | '' } {
 					})
 				} catch (error) {
 					console.error('Geolocation error:', error)
+					return null
 				}
 			} else {
 				console.error('Geolocation is not supported by this browser.')
