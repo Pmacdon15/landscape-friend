@@ -1,4 +1,5 @@
 'use server'
+import { updateTag } from 'next/cache'
 import {
 	assignGrassCuttingDb,
 	unassignGrassCuttingDb,
@@ -75,6 +76,9 @@ export async function markYardServiced(
 
 		if (!result_url)
 			return { errorMessage: 'Failed to update client serviced' }
+		updateTag('snow-clients')
+		updateTag('grass-clients')
+		updateTag(`serviced-images-${addressId}`)
 		return { success: true }
 	} catch (e: unknown) {
 		const errorMessage = e instanceof Error ? e.message : String(e)
