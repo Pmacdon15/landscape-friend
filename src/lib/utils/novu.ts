@@ -2,6 +2,7 @@ import { Novu } from '@novu/api'
 import type { PayloadType } from '@/types/webhooks-types'
 import { getNovuIds } from '../DB/clients-db'
 import { getOrgMembers } from './clerk'
+import { clerkClient } from '@clerk/nextjs/server'
 
 export async function addNovuSubscriber(
 	subscriberId: string,
@@ -79,7 +80,8 @@ export async function triggerNotificationSendToAdmin(
 ) {
 	let adminUserIds: string[]
 	if (!orgId.startsWith('user')) {
-		const membersOfOrg = await getOrgMembers(orgId)
+		const clerk = await clerkClient()
+		const membersOfOrg = await getOrgMembers(orgId, clerk)
 		const adminMembers = membersOfOrg.filter(
 			(member) => member.role === 'org:admin',
 		)
