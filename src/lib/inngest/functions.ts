@@ -33,8 +33,12 @@ function getWeekOfYear(date: Date): number {
 }
 
 const cutReminders = inngest.createFunction(
-	{ id: 'cut-reminders', retries: 2 },
-	{ cron: '0 12 * * *' },
+	{
+		id: 'cut-reminders',
+		retries: 2,
+		// The cron goes inside the triggers array here
+		triggers: [{ cron: '0 12 * * *' }],
+	},
 	async ({ step }) => {
 		console.log('Running cut reminders function')
 		const now = new Date()
@@ -83,8 +87,8 @@ const cutReminders = inngest.createFunction(
 	},
 )
 const snowfallCheck = inngest.createFunction(
-	{ id: 'snowfall-check', retries: 2 },
-	{ cron: '0 */6 * * *' },
+	{ id: 'snowfall-check', retries: 2, triggers: [{ cron: '0*/6***' }] },
+
 	async ({ step }) => {
 		console.log('Running snowfall check function')
 		const now = new Date()

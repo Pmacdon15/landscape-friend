@@ -51,11 +51,12 @@ export async function registerNovuDevice(token: string, userId: string) {
 			await novu.subscribers.credentials.update(
 				{
 					providerId: ChatOrPushProviderEnum.Fcm,
+					integrationIdentifier: subscriberId?.UserNovuId, 
 					credentials: {
 						deviceTokens: updatedTokens,
 					},
 				},
-				subscriberId?.UserNovuId,
+				subscriberId?.UserNovuId, // subscriberId goes second
 			)
 		} else {
 			console.warn(
