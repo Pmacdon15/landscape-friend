@@ -15,7 +15,7 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
-import { startTransition, use, useOptimistic } from 'react'
+import { startTransition, use, useOptimistic, ViewTransition } from 'react'
 import { useChangePriority } from '@/lib/mutations/mutations'
 import type { ScheduledClient } from '@/types/assignment-types'
 import type { ParsedClientListParams } from '@/types/params-types'
@@ -184,22 +184,25 @@ export default function ClientCards({
 								)
 
 							return (
-								<DraggableClientItem
-									addressId={client.address_id}
-									client={client}
-									isAdminPromise={
-										isAdminPromise ||
-										Promise.resolve({ isAdmin: false })
-									}
+								<ViewTransition
 									key={`${client.id}-${client.address}`}
-									onServiced={handleServiced}
-									pagePromise={pagePromise}
-									serviceDate={
-										parseClientListParams.serviceDate
-									}
-									siteMaps={siteMapsForAddress}
-									snow={snow}
-								/>
+								>
+									<DraggableClientItem
+										addressId={client.address_id}
+										client={client}
+										isAdminPromise={
+											isAdminPromise ||
+											Promise.resolve({ isAdmin: false })
+										}
+										onServiced={handleServiced}
+										pagePromise={pagePromise}
+										serviceDate={
+											parseClientListParams.serviceDate
+										}
+										siteMaps={siteMapsForAddress}
+										snow={snow}
+									/>
+								</ViewTransition>
 							)
 						})}
 					</ul>
