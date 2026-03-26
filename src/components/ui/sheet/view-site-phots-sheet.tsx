@@ -1,4 +1,8 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
 import { Camera } from 'lucide-react'
+import { fetchServicedImagesUrlsAction } from '@/actions/clients-action'
 import {
 	Sheet,
 	SheetClose,
@@ -9,15 +13,35 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet'
-import { getServicedImagesUrls } from '@/lib/dal/clients-dal'
 import { Button } from '../button'
 import ServicedImageCarousel from '../client-list/serviced-image-carousel'
 import FormHeader from '../header/form-header'
 import SheetLogoHeader from '../header/sheet-logo-header'
 
-export async function ViewSitePhotoSheet({ addressId }: { addressId: number }) {
-	const imagesUrlsObjects = await getServicedImagesUrls(addressId)
+function SitePhotosContent({ addressId }: { addressId: number }) {
+	const { data: imagesUrlsObjects = [], isLoading } = useQuery({
+		queryKey: ['serviced-images', addressId],
+		queryFn: () => fetchServicedImagesUrlsAction(addressId),
+	})
 
+	if (isLoading) {
+		return <p className="m-4 text-center">Loading images...</p>
+	}
+
+	return (
+		<>
+			{imagesUrlsObjects.length > 0 ? (
+				<ServicedImageCarousel imageUrlList={imagesUrlsObjects} />
+			) : (
+				<div className="m-2">
+					<FormHeader>Add Images by marking yard serviced</FormHeader>
+				</div>
+			)}
+		</>
+	)
+}
+
+export function ViewSitePhotoSheet({ addressId }: { addressId: number }) {
 	return (
 		<Sheet>
 			<SheetTrigger asChild>
@@ -37,15 +61,9 @@ export async function ViewSitePhotoSheet({ addressId }: { addressId: number }) {
 						View photos of the serviced sites.
 					</SheetDescription>
 				</SheetHeader>
-				{imagesUrlsObjects.length > 0 ? (
-					<ServicedImageCarousel imageUrlList={imagesUrlsObjects} />
-				) : (
-					<div className="m-2">
-						<FormHeader>
-							Add Images by marking yard serviced
-						</FormHeader>
-					</div>
-				)}
+
+				<SitePhotosContent addressId={addressId} />
+
 				<SheetFooter>
 					<SheetClose asChild>
 						<Button variant="outline">Close</Button>

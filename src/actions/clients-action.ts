@@ -266,3 +266,9 @@ export async function deleteSiteMap(siteMapId: number, page: number) {
 }
 
 export async function changePriority() {}
+
+import { getServicedImagesUrls } from '@/lib/dal/clients-dal'
+
+export async function fetchServicedImagesUrlsAction(addressId: number) {
+	return getServicedImagesUrls(addressId)
+}
