@@ -1,30 +1,16 @@
 import { Suspense } from 'react'
 import AddClientFormContainer from '@/components/ui/client-list/add-client-form-container'
-import ClientListAll from '@/components/ui/client-list/client-list-all'
+import ClientListClient from '@/components/ui/client-list/client-list-client'
 import FormContainer from '@/components/ui/containers/form-container'
 import ClientListAllFallback from '@/components/ui/fallbacks/client-list-all-fallback'
 import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fallback'
 import FormHeader from '@/components/ui/header/form-header'
 import SearchForm from '@/components/ui/search/search-form'
-import { fetchAllClientsInfo } from '@/lib/dal/clients-dal'
 import { fetchOrgMembers } from '@/lib/dal/dal-org'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-import { parseClientListParams } from '@/lib/utils/params'
-
-export default function page(props: PageProps<'/lists/client'>) {
+export default function page() {
 	const orgMembersPromise = fetchOrgMembers()
 	const isAdminPromise = isOrgAdmin()
-	const searchParamsPromise = props.searchParams.then(parseClientListParams)
-
-	const clientsPromise = searchParamsPromise.then((params) =>
-		fetchAllClientsInfo(
-			params.page,
-			params.searchTerm,
-			params.searchTermCuttingWeek,
-			params.searchTermCuttingDay,
-			params.searchTermAssignedTo,
-		),
-	)
 
 	return (
 		<>
@@ -41,11 +27,9 @@ export default function page(props: PageProps<'/lists/client'>) {
 			<AddClientFormContainer />
 
 			<Suspense fallback={<ClientListAllFallback />}>
-				<ClientListAll
-					clientsPromise={clientsPromise}
+				<ClientListClient
 					isAdminPromise={isAdminPromise}
 					orgMembersPromise={orgMembersPromise}
-					searchParamsPromise={searchParamsPromise}
 				/>
 			</Suspense>
 		</>
