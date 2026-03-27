@@ -14,7 +14,7 @@ export default function ImageGallery({
 }: ImageGalleryProps) {
 	const [previewSrc, setPreviewSrc] = useState<string | null>(null)
 	return (
-		<div className="relative mx-auto h-fit w-full overflow-y-auto rounded-md bg-background p-2 lg:w-4/6">
+		<div className="relative mx-auto h-fit w-full overflow-hidden rounded-md bg-background p-2 lg:w-4/6">
 			{isAdmin && (
 				<div
 					className={`absolute top-1 right-1 z-10 flex flex-nowrap px-4 py-2`}
@@ -31,7 +31,7 @@ export default function ImageGallery({
 
 			<div className="flex h-full flex-wrap items-center justify-center align-middle">
 				{siteMaps.map((siteMap, index) => (
-					<div className="relative" key={`${siteMap.id}-${index}`}>
+					<div className="relative max-w-full" key={`${siteMap.id}-${index}`}>
 						<Suspense>
 							<DeleteSiteMapButton
 								pagePromise={pagePromise}
@@ -41,7 +41,7 @@ export default function ImageGallery({
 						{(siteMap.base64Image || siteMap.imageurl) && (
 							<Image
 								alt={`Image ${index + 1}`}
-								className="p-2 hover:cursor-zoom-in"
+								className="h-auto max-w-full p-2 hover:cursor-zoom-in"
 								height={300}
 								onClick={() => {
 									setPreviewSrc(

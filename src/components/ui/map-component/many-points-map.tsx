@@ -101,15 +101,15 @@ export default function ManyPointsMap({ addresses }: MapComponentProps) {
 	// console.log('Generated Route Chunks:', routeChunks)
 
 	return (
-		<div className="relative">
+		<div className="relative w-full min-w-0 max-w-full overflow-hidden">
 			<Image
 				alt="Map of un-serviced yards"
-				className="h-[200px] w-full"
-				height={800}
+				className="h-auto w-full rounded-md object-cover"
+				height={200}
 				src={mapUrl}
 				title="Map View"
 				unoptimized
-				width={800}
+				width={500}
 			/>
 			<div className="absolute top-2 right-2 flex flex-col gap-1">
 				{routeChunks.map((route, index) => (

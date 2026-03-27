@@ -2,8 +2,8 @@ export default function MapComponent({ address }: { address: string }) {
 	const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${address}`
 
 	return (
-		<div className="flex max-h-[300px] w-full flex-col rounded-md bg-background p-2 md:flex-row">
-			<iframe className="h-full w-full" src={mapUrl} title="Map View" />
+		<div className="flex max-h-[300px] w-full min-w-0 max-w-full flex-col rounded-md bg-background p-2 md:flex-row">
+			<iframe className="h-full w-full max-w-full" src={mapUrl} title="Map View" />
 		</div>
 	)
 }
