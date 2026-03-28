@@ -4,7 +4,6 @@ import imageCompression from 'browser-image-compression'
 import { Camera } from 'lucide-react'
 import Image from 'next/image'
 import { startTransition, useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
 import { useMarkYardServiced } from '@/lib/mutations/mutations'
 import { Button } from '../button'
 import Spinner from '../loaders/spinner'
@@ -20,17 +19,7 @@ export default function MarkYardServiced({
 	snow?: boolean
 	onServiced: (addressId: number) => void
 }) {
-	const { mutate, isError, isPending, error } = useMarkYardServiced({
-		onSuccess: () => {
-			startTransition(() => {
-				onServiced(addressId)
-			})
-
-			toast.success('Yard marked serviced!', { duration: 1500 })
-		},
-		onError: () =>
-			toast.error('Error marking yard serviced!', { duration: 1500 }),
-	})
+	const { mutate, isError, isPending, error } = useMarkYardServiced()
 
 	const [images, setImages] = useState<File[]>([])
 	const [hasCamera, setHasCamera] = useState<boolean | null>(null)
@@ -275,7 +264,15 @@ export default function MarkYardServiced({
 				<Button
 					disabled={isPending}
 					onClick={() =>
-						mutate({ addressId, date: serviceDate, snow, images })
+						startTransition(() => {
+							onServiced(addressId)
+							mutate({
+								addressId,
+								date: serviceDate,
+								snow,
+								images,
+							})
+						})
 					}
 					variant="outline"
 				>
