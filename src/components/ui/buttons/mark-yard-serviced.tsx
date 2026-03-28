@@ -22,9 +22,9 @@ export default function MarkYardServiced({
 }) {
 	const { mutate, isError, isPending, error } = useMarkYardServiced({
 		onSuccess: () => {
-			startTransition(() => {
-				onServiced(addressId)
-			})
+			// startTransition(() => {
+			// 	onServiced(addressId)
+			// })
 
 			toast.success('Yard marked serviced!', { duration: 1500 })
 		},
@@ -275,7 +275,15 @@ export default function MarkYardServiced({
 				<Button
 					disabled={isPending}
 					onClick={() =>
-						mutate({ addressId, date: serviceDate, snow, images })
+						startTransition(() => {
+							onServiced(addressId)
+							mutate({
+								addressId,
+								date: serviceDate,
+								snow,
+								images,
+							})
+						})
 					}
 					variant="outline"
 				>
