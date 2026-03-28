@@ -252,10 +252,7 @@ export const useAssignGrassCutting = (page?: number) => {
 	})
 }
 //MARK:Mark yard serviced
-export const useMarkYardServiced = (options?: {
-	onSuccess?: () => void
-	onError?: (error: Error) => void
-}) => {
+export const useMarkYardServiced = () => {
 	return useMutation({
 		mutationFn: async ({
 			addressId,
@@ -274,12 +271,14 @@ export const useMarkYardServiced = (options?: {
 			}
 			return result // Return the result to indicate success
 		},
+
 		onSuccess: () => {
-			options?.onSuccess?.()
+			toast.success('Yard marked serviced!', { duration: 1500 })
 		},
+
 		onError: (error) => {
 			console.error('Mutation error:', error)
-			options?.onError?.(error)
+			toast.error('Error marking yard serviced!', { duration: 1500 })
 		},
 	})
 }
