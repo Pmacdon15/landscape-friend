@@ -74,6 +74,17 @@ export default function VerticalNav() {
 						</Link>
 					</SheetClose>
 				)}
+				{isAdmin && (
+					<SheetClose asChild>
+						{/* @ts-ignore typedRoutes will pick this up when next dev runs */}
+						<Link
+							className="rounded-md p-2 hover:bg-accent"
+							href="/lists/past-services"
+						>
+							Past Services
+						</Link>
+					</SheetClose>
+				)}
 				<SheetClose asChild>
 					<Link
 						className="rounded-md p-2 hover:bg-accent"
