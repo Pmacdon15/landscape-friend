@@ -26,7 +26,7 @@ export default async function ServiceHistoryFilters({
 			</div>
 
 			<div className="w-full lg:w-auto">
-				<ServiceListDatePicker />
+				<ServiceListDatePicker allowEmptyDate={true} />
 			</div>
 
 			{isAdmin?.isAdmin && (
