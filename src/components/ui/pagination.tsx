@@ -52,6 +52,7 @@ const PaginationLink = ({
 					variant: isActive ? 'outline' : 'ghost',
 					size,
 				}),
+				'active:scale-95 transition-all',
 				className,
 			)}
 			data-active={isActive}
