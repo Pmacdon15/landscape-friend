@@ -5,12 +5,20 @@ import { useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import { useSearch } from '@/lib/hooks/use-search'
 
-export const ServiceListDatePicker = ({ allowEmptyDate = false }: { allowEmptyDate?: boolean }) => {
+export const ServiceListDatePicker = ({
+	allowEmptyDate = false,
+}: {
+	allowEmptyDate?: boolean
+}) => {
 	const searchParams = useSearchParams()
 	const { updateSearchParams } = useSearch()
 
 	const dateParam = searchParams.get('date')
-	const date = dateParam || (allowEmptyDate ? '' : `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`)
+	const date =
+		dateParam ||
+		(allowEmptyDate
+			? ''
+			: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`)
 
 	// Parse currentServiceDate as a local date
 	const parseLocalDate = (dateStr: string) => {
@@ -54,12 +62,12 @@ export const ServiceListDatePicker = ({ allowEmptyDate = false }: { allowEmptyDa
 								? 'bg-yellow-200'
 								: 'bg-red-200'
 				}}
+				isClearable={allowEmptyDate}
 				onChange={handleDateChange}
+				placeholderText={allowEmptyDate ? 'Select a date' : undefined}
 				portalId="root-portal"
 				selected={date ? parseLocalDate(date) : null}
 				withPortal
-				isClearable={allowEmptyDate}
-				placeholderText={allowEmptyDate ? 'Select a date' : undefined}
 				wrapperClassName="custom-datepicker-wrapper"
 			/>
 		</Suspense>

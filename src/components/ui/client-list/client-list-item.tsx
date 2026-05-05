@@ -55,4 +55,4 @@ const ClientListItemEmail = ({
 	)
 }
 
-export { ClientListItemHeader, ClientListItemEmail }
+export { ClientListItemEmail, ClientListItemHeader }

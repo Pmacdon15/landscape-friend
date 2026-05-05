@@ -1,6 +1,6 @@
 'use client'
 
-import { use, Suspense } from 'react'
+import { Suspense, use } from 'react'
 import type { ClientAssignment } from '@/types/assignment-types'
 import type { OrgMember } from '@/types/clerk-types'
 import type {
@@ -41,7 +41,7 @@ export default function ClientListClient({
 	clientsPromise,
 	pagePromise,
 }: ClientListClientProps) {
-	const data = use(clientsPromise)	
+	const data = use(clientsPromise)
 
 	if (!data || data.clients.length === 0) {
 		return (
@@ -61,11 +61,10 @@ export default function ClientListClient({
 		totalPages,
 	} = data
 
-
 	return (
 		<>
 			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
-				<div className="w-full flex flex-col justify-center items-center gap-4">
+				<div className="flex w-full flex-col items-center justify-center gap-4">
 					{clients.map((client: Client) => {
 						const clientAddresses = (addresses || []).filter(
 							(a: ClientAddress) =>

@@ -43,12 +43,15 @@ export default function NavigationMenuComponent() {
 							{isAdmin && (
 								<li>
 									<NavigationMenuLink asChild>
-										<Link href={"/lists/past-services" as any}>
+										<Link
+											href={'/lists/past-services' as any}
+										>
 											<div className="font-medium">
 												Past Services
 											</div>
 											<div className="text-muted-foreground">
-												View past history of cuttings and clearings.
+												View past history of cuttings
+												and clearings.
 											</div>
 										</Link>
 									</NavigationMenuLink>

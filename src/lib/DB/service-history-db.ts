@@ -22,13 +22,12 @@ export async function fetchServiceHistoryDB(
 
 	let dateFilterCut = sql`1=1`
 	let dateFilterClear = sql`1=1`
-	
+
 	if (dateStr) {
 		dateFilterCut = sql`ymc.cutting_date = ${dateStr}`
 		dateFilterClear = sql`ymcl.clearing_date = ${dateStr}`
 	}
 
-	
 	const cutQuery = sql`
 		SELECT
 			'grass' as service_type,
@@ -104,25 +103,33 @@ export async function fetchServiceHistoryDB(
 
 	const [servicesResult, countResult] = await Promise.all([
 		paginatedQuery,
-		countQuery
+		countQuery,
 	])
 
 	// The id needs to be generated generically for the client array mapped list.
 	// We'll map them after.
-	const services = servicesResult.map((row: Record<string, any>, i: number) => ({
-		id: row.service_id * 1000 + (row.service_type === 'grass' ? 1 : 2) + offset + i, // Unique react list key generator fallback
-		service_id: row.service_id,
-		service_type: row.service_type,
-		service_date: new Date(row.service_date).toISOString().split('T')[0],
-		address_id: row.address_id,
-		address: row.address,
-		assigned_to_id: row.assigned_to_id,
-		assigned_to_name: row.assigned_to_name,
-		client_id: row.client_id,
-		client_name: row.client_name,
-		organization_id: row.organization_id,
-		image_url: row.image_url,
-	})) as ServiceHistoryItem[]
+	const services = servicesResult.map(
+		(row: Record<string, any>, i: number) => ({
+			id:
+				row.service_id * 1000 +
+				(row.service_type === 'grass' ? 1 : 2) +
+				offset +
+				i, // Unique react list key generator fallback
+			service_id: row.service_id,
+			service_type: row.service_type,
+			service_date: new Date(row.service_date)
+				.toISOString()
+				.split('T')[0],
+			address_id: row.address_id,
+			address: row.address,
+			assigned_to_id: row.assigned_to_id,
+			assigned_to_name: row.assigned_to_name,
+			client_id: row.client_id,
+			client_name: row.client_name,
+			organization_id: row.organization_id,
+			image_url: row.image_url,
+		}),
+	) as ServiceHistoryItem[]
 
 	const totalCount = Number(countResult[0]?.total_count || 0)
 

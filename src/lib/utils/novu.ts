@@ -1,8 +1,8 @@
+import { clerkClient } from '@clerk/nextjs/server'
 import { Novu } from '@novu/api'
 import type { PayloadType } from '@/types/webhooks-types'
 import { getNovuIds } from '../DB/clients-db'
 import { getOrgMembers } from './clerk'
-import { clerkClient } from '@clerk/nextjs/server'
 
 export async function addNovuSubscriber(
 	subscriberId: string,

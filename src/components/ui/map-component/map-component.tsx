@@ -3,7 +3,11 @@ export default function MapComponent({ address }: { address: string }) {
 
 	return (
 		<div className="flex max-h-[300px] w-full min-w-0 max-w-full flex-col rounded-md bg-background p-2 md:flex-row">
-			<iframe className="h-full w-full max-w-full" src={mapUrl} title="Map View" />
+			<iframe
+				className="h-full w-full max-w-full"
+				src={mapUrl}
+				title="Map View"
+			/>
 		</div>
 	)
 }

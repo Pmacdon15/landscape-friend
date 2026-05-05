@@ -15,7 +15,6 @@ function parseProp(prop: string[] | string | undefined): string {
 }
 
 export default async function page(props: PageProps<'/lists/client'>) {
-
 	const pagePromise = props.searchParams.then(
 		(params) => Number(parseProp(params.page)) || 1,
 	)
