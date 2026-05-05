@@ -116,19 +116,19 @@ export default function ServiceHistoryClient() {
 			<ul className="flex w-full flex-col items-center justify-center gap-4 rounded-sm">
 				{data?.pages.map((page, groupIndex) => (
 					<div
-						className="w-full flex flex-col justify-center items-center gap-4"
+						className="flex w-full flex-col items-center justify-center gap-4"
 						key={groupIndex}
 					>
 						{page?.services?.map((service: ServiceHistoryItem) => (
 							<FormContainer key={service.id}>
 								<li className="relative rounded-sm border bg-white/70 p-4">
-									<div className="flex flex-col md:flex-row justify-between items-center bg-gray-50 p-2 rounded-t-md mb-2 border-b">
-										<div className="font-semibold text-lg text-green-900">
+									<div className="mb-2 flex flex-col items-center justify-between rounded-t-md border-b bg-gray-50 p-2 md:flex-row">
+										<div className="font-semibold text-green-900 text-lg">
 											{service.service_type === 'grass'
 												? '🌾 Grass Cut'
 												: '❄️ Snow Cleared'}
 										</div>
-										<div className="text-gray-500 text-sm font-medium">
+										<div className="font-medium text-gray-500 text-sm">
 											{service.service_date}
 										</div>
 									</div>
@@ -136,10 +136,10 @@ export default function ServiceHistoryClient() {
 									<FormHeader text={service.client_name} />
 
 									<div className="mt-4 mb-4 flex w-full flex-col items-center justify-center gap-2">
-										<p className="text-center font-medium bg-gray-100 px-4 py-2 rounded-md shadow-inner text-gray-700">
+										<p className="rounded-md bg-gray-100 px-4 py-2 text-center font-medium text-gray-700 shadow-inner">
 											📍 {service.address}
 										</p>
-										<p className="text-sm text-gray-600 mt-2">
+										<p className="mt-2 text-gray-600 text-sm">
 											Assigned to:{' '}
 											<span className="font-semibold">
 												{service.assigned_to_name ||
@@ -150,10 +150,10 @@ export default function ServiceHistoryClient() {
 
 									{service.image_url ? (
 										<div className="mt-4 flex flex-col items-center gap-2">
-											<p className="text-sm font-bold text-gray-500 underline mb-2">
+											<p className="mb-2 font-bold text-gray-500 text-sm underline">
 												Completion Photo
 											</p>
-											<div className="relative h-64 w-full md:w-96 rounded-md overflow-hidden shadow-md border border-gray-200">
+											<div className="relative h-64 w-full overflow-hidden rounded-md border border-gray-200 shadow-md md:w-96">
 												<Image
 													alt="Service completion photo"
 													className="object-cover"
@@ -165,7 +165,7 @@ export default function ServiceHistoryClient() {
 										</div>
 									) : (
 										<div className="mt-4 flex flex-col items-center opacity-60">
-											<p className="italic text-gray-400">
+											<p className="text-gray-400 italic">
 												No photo uploaded for this
 												service.
 											</p>
@@ -180,17 +180,17 @@ export default function ServiceHistoryClient() {
 
 			{/* Intersection Observer target for infinite scroll */}
 			<div
-				className="h-10 w-full flex items-center justify-center mt-4 mb-4"
+				className="mt-4 mb-4 flex h-10 w-full items-center justify-center"
 				ref={sentinelRef}
 			>
 				{isFetchingNextPage ? (
 					<Spinner variant="notification-menu" />
 				) : hasNextPage ? (
-					<div className="bg-white/60 p-2 rounded-sm">
+					<div className="rounded-sm bg-white/60 p-2">
 						<span className="text-black">Scroll for more</span>
 					</div>
 				) : (
-					<div className="bg-white/60 p-2 rounded-sm">
+					<div className="rounded-sm bg-white/60 p-2">
 						<span className="text-black text-sm">
 							End of history
 						</span>

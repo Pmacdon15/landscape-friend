@@ -338,7 +338,8 @@ export async function fetchClients(
 	totalPages: number
 } | null> {
 	'use cache'
-	cacheTag(`clients-page-${offset + 1}`)
+	const page = Math.floor(offset / pageSize) + 1
+	cacheTag(`clients-page-${page}`)
 	const sql = neon(process.env.DATABASE_URL as string)
 
 	/* ---------------- WHERE CLAUSE ---------------- */

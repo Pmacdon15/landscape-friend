@@ -6,11 +6,29 @@ import ClientListAllFallback from '@/components/ui/fallbacks/client-list-all-fal
 import SearchFormFallBack from '@/components/ui/fallbacks/search/search-form-fallback'
 import FormHeader from '@/components/ui/header/form-header'
 import SearchForm from '@/components/ui/search/search-form'
+import { fetchAllClientsInfo } from '@/lib/dal/clients-dal'
 import { fetchOrgMembers } from '@/lib/dal/dal-org'
 import { isOrgAdmin } from '@/lib/utils/clerk'
-export default function page() {
+
+function parseProp(prop: string[] | string | undefined): string {
+	return Array.isArray(prop) ? (prop[0] ?? '') : (prop ?? '')
+}
+
+export default async function page(props: PageProps<'/lists/client'>) {
+	const pagePromise = props.searchParams.then(
+		(params) => Number(parseProp(params.page)) || 1,
+	)
 	const orgMembersPromise = fetchOrgMembers()
 	const isAdminPromise = isOrgAdmin()
+	const clientsPromise = props.searchParams.then((params) =>
+		fetchAllClientsInfo(
+			Number(parseProp(params.page)) || 1,
+			parseProp(params.search),
+			Number(parseProp(params.week)) || 1,
+			parseProp(params.day),
+			parseProp(params.assigned),
+		),
+	)
 
 	return (
 		<>
@@ -28,8 +46,10 @@ export default function page() {
 
 			<Suspense fallback={<ClientListAllFallback />}>
 				<ClientListClient
+					clientsPromise={clientsPromise}
 					isAdminPromise={isAdminPromise}
 					orgMembersPromise={orgMembersPromise}
+					pagePromise={pagePromise}
 				/>
 			</Suspense>
 		</>

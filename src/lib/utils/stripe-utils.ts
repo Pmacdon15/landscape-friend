@@ -294,7 +294,7 @@ export async function createStripeSubscriptionQuote(
 		serviceType,
 		startDate,
 		endDate,
-		organization_id,		
+		organization_id,
 	} = subscriptionData
 
 	if (!endDate) {

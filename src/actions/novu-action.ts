@@ -51,7 +51,7 @@ export async function registerNovuDevice(token: string, userId: string) {
 			await novu.subscribers.credentials.update(
 				{
 					providerId: ChatOrPushProviderEnum.Fcm,
-					integrationIdentifier: subscriberId?.UserNovuId, 
+					integrationIdentifier: subscriberId?.UserNovuId,
 					credentials: {
 						deviceTokens: updatedTokens,
 					},

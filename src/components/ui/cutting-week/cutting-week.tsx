@@ -1,5 +1,5 @@
 'use client'
-import { Suspense, use, useOptimistic, useTransition } from 'react'
+import { Suspense, startTransition, use, useOptimistic } from 'react'
 import { useUpdateCuttingDay } from '@/lib/mutations/mutations'
 import type { ClientCuttingSchedule } from '@/types/schedules-types'
 import {
@@ -38,18 +38,18 @@ function CuttingWeekDropDown({
 		cuttingDay,
 		(_, newDay: string) => newDay,
 	)
-	const [, startTransition] = useTransition()
 
 	const { mutate } = useUpdateCuttingDay(page)
 
 	function handleChange(value: string) {
 		startTransition(() => {
 			setOptimisticDay(value)
-		})
-		mutate({
-			addressId: addressId,
-			cuttingWeek: week,
-			cuttingDay: value,
+
+			mutate({
+				addressId: addressId,
+				cuttingWeek: week,
+				cuttingDay: value,
+			})
 		})
 	}
 
