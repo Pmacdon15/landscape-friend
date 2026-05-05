@@ -24,9 +24,9 @@ export default async function page(props: PageProps<'/lists/client'>) {
 		fetchAllClientsInfo(
 			Number(parseProp(params.page)) || 1,
 			parseProp(params.search),
-			Number(parseProp(params.week)) || 1,
-			parseProp(params.day),
-			parseProp(params.assigned),
+			Number(parseProp(params.week)) || 0,
+			parseProp(params.day) === 'all' ? '' : parseProp(params.day),
+			parseProp(params.assigned) === 'all' ? '' : parseProp(params.assigned),
 		),
 	)
 
