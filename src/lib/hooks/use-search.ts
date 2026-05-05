@@ -15,6 +15,11 @@ export const useSearch = () => {
 		} else {
 			params.delete(key)
 		}
+
+		if (key !== 'page') {
+			params.delete('page')
+		}
+
 		const fullPath = `${pathname}?${params.toString()}`
 
 		// Cast the entire string to Route
