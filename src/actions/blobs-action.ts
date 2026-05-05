@@ -7,7 +7,7 @@ import { ImageSchema } from '@/lib/zod/schemas'
 export async function uploadImage(
 	addressId: number,
 	formData: FormData,
-	page: number,
+	_page: number,
 ): Promise<
 	| { success: boolean; message: string; status: number }
 	| { error: string; status: number }
@@ -15,7 +15,7 @@ export async function uploadImage(
 	| Error
 	| null
 > {
-	const { isAdmin, userId } = await isOrgAdmin()
+	const { isAdmin, userId, orgId } = await isOrgAdmin()
 	if (!isAdmin) return new Error('Not Admin')
 	if (!userId) return new Error('No Id')
 
@@ -29,7 +29,11 @@ export async function uploadImage(
 
 		if (!validatedImage.success) throw new Error('invalid inputs')
 
-		result = await uploadImageBlob(addressId, validatedImage.data.image)
+		result = await uploadImageBlob(
+			addressId,
+			validatedImage.data.image,
+			orgId,
+		)
 		if (result && 'error' in result) {
 			throw new Error(result.error)
 		}
@@ -37,7 +41,7 @@ export async function uploadImage(
 		if (e instanceof Error) return e
 		else return new Error('An unknown error occurred')
 	}
-	updateTag(`clients-page-${page}`)
+	updateTag(`clients-page-${orgId}`)
 	updateTag('snow-clients')
 	updateTag('grass-clients')
 
